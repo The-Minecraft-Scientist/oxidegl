@@ -1,3 +1,6 @@
 [submodule "oxidegl-glfw"]
 	path = oxidegl-glfw
 	url = https://github.com/The-Minecraft-Scientist/oxidegl-glfw.git
+[submodule "OpenGL-Registry"]
+	path = OpenGL-Registry
+	url = https://github.com/KhronosGroup/OpenGL-Registry
