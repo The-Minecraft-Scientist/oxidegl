@@ -1,0 +1,3 @@
+[submodule "oxidegl-glfw"]
+	path = oxidegl-glfw
+	url = https://github.com/The-Minecraft-Scientist/oxidegl-glfw.git
