@@ -4,3 +4,6 @@
 [submodule "OpenGL-Registry"]
 	path = OpenGL-Registry
 	url = https://github.com/KhronosGroup/OpenGL-Registry
+[submodule "OpenGL-Refpages"]
+	path = OpenGL-Refpages
+	url = https://github.com/KhronosGroup/OpenGL-Refpages.git
