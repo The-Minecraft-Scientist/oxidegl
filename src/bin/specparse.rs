@@ -75,12 +75,8 @@ fn get_all_entries<'a>(reg: &'a Document<'a>) -> HashMap<&'a str, GLAPIEntry<'a>
                             _ => {}
                         }
                     }
-                    let Some(n) = name else {
-                        continue
-                    };
-                    let Some(rtype) = ret_type else {
-                        continue
-                    };
+                    let Some(n) = name else { continue };
+                    let Some(rtype) = ret_type else { continue };
                     let _ = output.insert(
                         n,
                         GLAPIEntry::Command {
@@ -389,7 +385,7 @@ fn print_abi_fn_sig<'a>(name: &'a str, ret_type: GLTypes, params: &Vec<Parameter
         .map(|p| match p.name {
             "type" => "r#type, ".to_owned(),
             "ref" => "r#ref, ".to_owned(),
-            s => format!("{}, ", p.name),
+            _ => format!("{}, ", p.name),
         })
         .collect::<Vec<String>>()
         .join("");
@@ -526,7 +522,7 @@ impl GLTypes {
             "GLint64" => Self::GLint64,
             "GLvoid" => Self::GLvoid,
             "void " => Self::GLvoid,
-            e => Self::DontCare,
+            _ => Self::DontCare,
         }
     }
     fn from_c_type_str_prefix_suffix(prefix: &str, base: &str, suffix: &str) -> Self {
@@ -536,7 +532,7 @@ impl GLTypes {
             ("const ", " **") => Self::ConstPtrTo(Self::PtrTo(t.bo()).bo()),
             (_s, " *") => Self::PtrTo(t.bo()),
             (_s, " **") => Self::PtrTo(Self::PtrTo(t.bo()).bo()),
-            (a, b) => t,
+            _ => t,
         }
     }
     fn from_proto_node<'a>(node: Node<'a, 'a>) -> Self {
@@ -566,7 +562,7 @@ impl GLTypes {
     fn to_rust_ret_type_str(&self) -> String {
         match self {
             Self::GLvoid => "".to_owned(),
-            s => {
+            _ => {
                 format!(" -> {}", &self.to_rust_type_str())
             }
         }

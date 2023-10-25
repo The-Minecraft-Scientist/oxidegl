@@ -75,7 +75,7 @@ impl OxideGLContext {
         panic!("command oxidegl_draw_buffer not yet implemented");
     }
     pub(crate) fn oxidegl_clear(&mut self, mask: GLbitfield) {
-        panic!("command oxidegl_clear not yet implemented");
+        println!("command oxidegl_clear not yet implemented");
     }
     pub(crate) fn oxidegl_clear_color(
         &mut self,

@@ -14,7 +14,7 @@ name = "specparse"
 crossbeam = "0.8.2"
 glam = "0.24.1"
 libc = "0.2.147"
-metal = "0.25.0"
+metal = "0.26.0"
 objc2 = "0.4.0"
 once_cell = "1.18.0"
 roxmltree = "0.18.0"
@@ -23,6 +23,7 @@ strum_macros = "0.25.1"
 state = { version = "0.6.0", features = ["tls"] }
 icrate = { version = "0.0.3", features = [
     "AppKit",
+    "AppKit_NSView",
     "CoreAnimation",
     "CoreAnimation_CALayer",
 ] }
