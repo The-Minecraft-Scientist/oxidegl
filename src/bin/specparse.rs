@@ -4,8 +4,6 @@ use std::{
     collections::{HashMap, HashSet},
     fs::File,
     io::{BufWriter, Write},
-    path::PathBuf,
-    str::FromStr,
 };
 
 use roxmltree::{Attribute, Children, Document, Node, ParsingOptions};
@@ -57,11 +55,11 @@ pub struct RefPageEntry {
 }
 fn get_refpage_entry<'a>(reg: &'a Document<'a>) -> Option<RefPageEntry> {
     let mut set = Vec::with_capacity(10);
-    let mut purpose: Option<String> = None;
-    let mut paramdesc: HashMap<String, String> = HashMap::new();
+    let _purpose: Option<String> = None;
+    let _paramdesc: HashMap<String, String> = HashMap::new();
     let mut description = None;
-    let mut error = HashSet::<String>::new();
-    let mut seealso = HashSet::<String>::new();
+    let _error = HashSet::<String>::new();
+    let _seealso = HashSet::<String>::new();
     let rec: Children<'a, '_> = reg.root_element().children();
     for node in rec {
         if let Some(id) = node.find_named_attribute("id") {
@@ -271,7 +269,7 @@ fn get_all_required_features<'a>(reg: &'a Document<'a>) -> OrderedFeatureStorage
 fn main() {
     //let mut out = Vec::with_capacity(1000);
     let mut backing_strs = Vec::with_capacity(1000);
-    let specfile = include_str!("../../OpenGL-Registry/xml/gl.xml");
+    let _specfile = include_str!("../../OpenGL-Registry/xml/gl.xml");
     for file in std::fs::read_dir("OpenGL-Refpages/gl4").unwrap() {
         if let Ok(entry) = file {
             let f = entry.file_name();
@@ -424,7 +422,7 @@ fn print_ctx_fn_sig<'a>(
     name: &'a str,
     ret_type: GLTypes,
     params: &Vec<Parameter<'a>>,
-    refpage: &HashMap<&'a str, RefPageEntry>,
+    _refpage: &HashMap<&'a str, RefPageEntry>,
 ) -> String {
     let body = format!(
         "{{\n    panic!(\"command {} not yet implemented\");\n}}",
