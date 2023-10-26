@@ -1,12 +1,14 @@
 #![allow(dead_code)]
 
 use std::{
-    collections::HashMap,
+    collections::{HashMap, HashSet},
     fs::File,
     io::{BufWriter, Write},
+    path::PathBuf,
+    str::FromStr,
 };
 
-use roxmltree::{Document, Node};
+use roxmltree::{Attribute, Children, Document, Node, ParsingOptions};
 
 use strum_macros::AsRefStr;
 
@@ -44,6 +46,45 @@ enum GLAPIEntry<'a> {
         name: &'a str,
         params: Vec<Parameter<'a>>,
     },
+}
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct RefPageEntry {
+    pub purpose: String,
+    pub paramdesc: HashMap<String, String>,
+    pub description: String,
+    pub errors: HashSet<String>,
+    pub seealso: HashSet<String>,
+}
+fn get_refpage_entry<'a>(reg: &'a Document<'a>) -> Option<RefPageEntry> {
+    let mut set = Vec::with_capacity(10);
+    let mut purpose: Option<String> = None;
+    let mut paramdesc: HashMap<String, String> = HashMap::new();
+    let mut description = None;
+    let mut error = HashSet::<String>::new();
+    let mut seealso = HashSet::<String>::new();
+    let rec: Children<'a, '_> = reg.root_element().children();
+    for node in rec {
+        if let Some(id) = node.find_named_attribute("id") {
+            set.push(id.value().to_string());
+            match id.value() {
+                "parameters" => {}
+                "description" => {
+                    description = Some(make_description(&node));
+                }
+                "notes" => {}
+                "seealso" => {}
+                "associatedgets" => {}
+                _ => {}
+            }
+        }
+    }
+    None
+}
+fn make_description<'a>(node: &'a Node<'a, '_>) -> String {
+    for child in node.children() {
+        dbg!(child.tag_name().name());
+    }
+    "".to_string()
 }
 
 fn get_all_entries<'a>(reg: &'a Document<'a>) -> HashMap<&'a str, GLAPIEntry<'a>> {
@@ -228,9 +269,42 @@ fn get_all_required_features<'a>(reg: &'a Document<'a>) -> OrderedFeatureStorage
 }
 
 fn main() {
-    let mut out = vec![];
+    //let mut out = Vec::with_capacity(1000);
+    let mut backing_strs = Vec::with_capacity(1000);
     let specfile = include_str!("../../OpenGL-Registry/xml/gl.xml");
+    for file in std::fs::read_dir("OpenGL-Refpages/gl4").unwrap() {
+        if let Ok(entry) = file {
+            let f = entry.file_name();
+            let s = f.to_str().unwrap();
+            if !s.starts_with("gl_") && s.starts_with("gl") {
+                backing_strs.push((
+                    s.to_string(),
+                    std::fs::read_to_string(entry.path()).unwrap(),
+                ));
+            }
+        }
+    }
+    backing_strs.iter_mut().for_each(|a| {
+        let mut iter = a.1.split("\n");
+        let _ = iter.next();
+        a.1 = iter.collect::<String>();
+    });
+    let mut opts = ParsingOptions::default();
+    let mut pages = Vec::with_capacity(500);
+    let mut pagemap = HashMap::with_capacity(500);
+    opts.allow_dtd = true;
+    for string in backing_strs {
+        if let Ok(doc) = Document::parse_with_options(&string.1, opts) {
+            if let Some(refpage) = get_refpage_entry(&doc) {
+                pages.push((string.0, refpage));
+            }
+        }
+    }
+    pages.iter().for_each(|(name, page)| {
+        let _ = pagemap.insert(name, page);
+    });
 
+    /*
     let doc = roxmltree::Document::parse(specfile).unwrap();
     let elems = &get_all_required_features(&doc);
     let entries = &get_all_entries(&doc);
@@ -248,13 +322,14 @@ fn main() {
         }
     }
 
-    let mut commands = open_file_writer("src/gl/gl_core.rs");
-    let mut enums = open_file_writer("src/enums.rs");
-    let mut dispatch = open_file_writer("src/context/dispatch_unused.rs");
-
-    write_command_impl(&mut commands, &out);
-    write_enum_impl(&mut enums, &out);
-    write_dispatch_impl(&mut dispatch, &out);
+    //let mut commands = open_file_writer("src/gl/gl_core.rs");
+    //let mut enums = open_file_writer("src/enums.rs");
+    //let mut dispatch = open_file_writer("src/context/dispatch_unused.rs");
+    let mut dispatch = open_file_writer("testing/commands.rs");
+    //write_command_impl(&mut commands, &out);
+    //write_enum_impl(&mut enums, &out);
+    //write_dispatch_impl(&mut dispatch, &out);
+    */
 }
 fn open_file_writer(path: &str) -> impl Write {
     let _ = std::fs::remove_file(path);
@@ -296,9 +371,14 @@ fn write_enum_impl<'a, T: Write>(w: &mut T, v: &Vec<&GLAPIEntry<'a>>) {
         }
     }
 }
-fn write_dispatch_impl<'a, T: Write>(w: &mut T, v: &Vec<&GLAPIEntry<'a>>) {
+fn write_dispatch_impl<'a, T: Write>(
+    w: &mut T,
+    v: &Vec<&GLAPIEntry<'a>>,
+    pages: &HashMap<&'a str, RefPageEntry>,
+) {
     writeln!(w, "use super::OxideGLContext;\n use crate::gl::gltypes::*;").unwrap();
     writeln!(w, "impl OxideGLContext {{").unwrap();
+
     for entry in v {
         match entry {
             GLAPIEntry::Command {
@@ -312,7 +392,8 @@ fn write_dispatch_impl<'a, T: Write>(w: &mut T, v: &Vec<&GLAPIEntry<'a>>) {
                     print_ctx_fn_sig(
                         &format!("oxide{}", snake_case_from_title_case(name.to_string())),
                         return_type.clone(),
-                        params
+                        params,
+                        pages
                     )
                 )
                 .unwrap();
@@ -339,7 +420,12 @@ fn snake_case_from_title_case(src: String) -> String {
     }
     a
 }
-fn print_ctx_fn_sig<'a>(name: &'a str, ret_type: GLTypes, params: &Vec<Parameter<'a>>) -> String {
+fn print_ctx_fn_sig<'a>(
+    name: &'a str,
+    ret_type: GLTypes,
+    params: &Vec<Parameter<'a>>,
+    refpage: &HashMap<&'a str, RefPageEntry>,
+) -> String {
     let body = format!(
         "{{\n    panic!(\"command {} not yet implemented\");\n}}",
         name
@@ -454,12 +540,21 @@ fn print_rust_enum_entry<'a>(name: &'a str, value: u32) -> String {
 
 trait NodeExt: Sized {
     fn find_named_child(&self, name: &str) -> Option<Self>;
+    fn find_named_attribute<'a>(&'a self, name: &'a str) -> Option<Attribute<'a, '_>>;
 }
-impl NodeExt for Node<'_, '_> {
+impl<'a, 'input> NodeExt for Node<'a, 'input> {
     fn find_named_child(&self, name: &str) -> Option<Self> {
         self.children()
             .find(|child| child.tag_name().name() == name)
     }
+
+    fn find_named_attribute<'b>(&'b self, name: &'b str) -> Option<Attribute<'b, '_>> {
+        let mut attrs = self.attributes().into_iter();
+        attrs.find(|attr| attr.name() == name)
+    }
+}
+fn find_predicate<'a>(attr: &'a Attribute<'a, '_>, name: &'a str) -> bool {
+    attr.name() == name
 }
 #[derive(Clone, Debug, AsRefStr)]
 enum GLTypes {
