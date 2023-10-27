@@ -50,8 +50,6 @@ pub struct RefPageEntry {
     pub purpose: String,
     pub paramdesc: HashMap<String, String>,
     pub description: String,
-    pub errors: HashSet<String>,
-    pub seealso: HashSet<String>,
 }
 fn get_refpage_entry<'a>(reg: &'a Document<'a>) -> Option<RefPageEntry> {
     let mut set = Vec::with_capacity(10);
@@ -78,10 +76,105 @@ fn get_refpage_entry<'a>(reg: &'a Document<'a>) -> Option<RefPageEntry> {
     }
     None
 }
+pub const CONSTANTS_PATH: &'static str = "crate::enums::";
 fn make_description<'a>(node: &'a Node<'a, '_>) -> String {
+    let mut string = String::with_capacity(100);
     for child in node.children() {
-        dbg!(child.tag_name().name());
+        let allchildren = child.children().collect::<Vec<Node>>();
+        for child in allchildren {
+            match child.tag_name().name() {
+                "para" => string.push_str(child.text().unwrap()),
+                "constant" => {
+                    string.push_str(&format!("[{}{}]", CONSTANTS_PATH, child.text().unwrap()));
+                    string.push_str(child.tail().unwrap_or(""));
+                }
+                "parameter" => {
+                    string.push_str(child.text().unwrap_or(""));
+                    string.push_str(child.tail().unwrap_or(""));
+                }
+                "emphasis" => {
+                    string.push_str(&format!("*{}*", child.text().unwrap_or("")));
+                    string.push_str(child.tail().unwrap_or(""));
+                }
+                "function" => {
+                    string.push_str(child.text().unwrap_or(""));
+                    string.push_str(child.tail().unwrap_or(""))
+                }
+
+                _ => {}
+            }
+        }
     }
+    let split = string
+        .split(" ")
+        .filter(|s| s.chars().any(|e| e != ' '))
+        .map(|s| s.to_string())
+        .collect::<Vec<String>>()
+        .join(" ");
+    let mut ctr = 0;
+    let mut string2 = String::with_capacity(split.len());
+    string2.push_str("/// ");
+    for word in split.split(" ") {
+        ctr += word.chars().count();
+        if ctr > 70 {
+            string2.push_str("\n/// ");
+            ctr = 0;
+        } else {
+            string2.push(' ');
+        }
+        string2.push_str(word);
+    }
+    println!("{}", string2);
+    "".to_string()
+}
+fn make_parameters<'a>(node: &'a Node<'a, '_>) -> String {
+    let mut string = String::with_capacity(100);
+    for child in node.children() {
+        let allchildren = child.children().collect::<Vec<Node>>();
+        for child in allchildren {
+            match child.tag_name().name() {
+                "para" => string.push_str(child.text().unwrap()),
+                "constant" => {
+                    string.push_str(&format!("[{}{}]", CONSTANTS_PATH, child.text().unwrap()));
+                    string.push_str(child.tail().unwrap_or(""));
+                }
+                "parameter" => {
+                    string.push_str(child.text().unwrap_or(""));
+                    string.push_str(child.tail().unwrap_or(""));
+                }
+                "emphasis" => {
+                    string.push_str(&format!("*{}*", child.text().unwrap_or("")));
+                    string.push_str(child.tail().unwrap_or(""));
+                }
+                "function" => {
+                    string.push_str(child.text().unwrap_or(""));
+                    string.push_str(child.tail().unwrap_or(""))
+                }
+
+                _ => {}
+            }
+        }
+    }
+    let split = string
+        .split(" ")
+        .filter(|s| s.chars().any(|e| e != ' '))
+        .map(|s| s.to_string())
+        .collect::<Vec<String>>()
+        .join(" ");
+    let mut ctr = 0;
+    let mut string2 = String::with_capacity(split.len());
+    string2.push_str("/// ");
+    for word in split.split(" ") {
+        ctr += word.chars().count();
+        if ctr > 70 {
+            string2.push_str("\n/// ");
+            ctr = 0;
+        } else {
+            string2.push(' ');
+        }
+        string2.push_str(word);
+    }
+    println!("{}", string2);
     "".to_string()
 }
 
