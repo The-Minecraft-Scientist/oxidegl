@@ -44,7 +44,7 @@ extern "C" fn oxidegl_set_current_context(uid: u32) {
 
 #[no_mangle]
 extern "C" fn oxidegl_swap_buffers(uid: u32) {
-    println!("not yet implemented")
+    println!("oxideGl swap buffers called");
 }
 #[derive(Debug, Clone)]
 #[repr(transparent)]

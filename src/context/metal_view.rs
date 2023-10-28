@@ -37,12 +37,15 @@ pub struct ContextMetalComponents {
     device: Device,
 }
 impl ContextMetalComponents {
+    //SAFETY: this is wildly unsafe. However, it seems to work
     pub(crate) fn new(mut view: NSViewPtr) -> Self {
         let device = Device::system_default().unwrap();
         let mut layer = MetalLayer::new();
         layer.set_device(&device);
+        // The amount of invariants that need to hold for this cast to be valid cannot be counted on two hands
         let cast_view: Id<NSView> = unsafe { std::mem::transmute(view) };
         let cast_layer = unsafe {
+            //Unspeakable horrors beyond mortal comprehension
             Id::new(core::mem::transmute::<*mut MetalLayerRef, *mut CALayer>(
                 layer.as_mut(),
             ))
@@ -50,6 +53,7 @@ impl ContextMetalComponents {
         };
 
         mem::forget(layer);
+        //This function call is actually surprisingly safe
         unsafe { cast_view.set_layer(&cast_layer) };
         dbg!(&cast_view);
         dbg!(&cast_layer);

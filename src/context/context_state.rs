@@ -62,6 +62,7 @@ pub struct Characteristics {
     pub line_width_granularity: f32,
     pub context_flags: GLenum,
     pub context_profile_mask: GLenum,
+    pub num_extensions: u32,
 }
 impl Characteristics {
     pub fn new() -> Self {
@@ -72,6 +73,7 @@ impl Characteristics {
             line_width_granularity: 0.0001,
             context_flags: GL_CONTEXT_FLAG_FORWARD_COMPATIBLE_BIT | GL_CONTEXT_FLAG_NO_ERROR_BIT,
             context_profile_mask: GL_CONTEXT_CORE_PROFILE_BIT,
+            num_extensions: 0,
         }
     }
 }

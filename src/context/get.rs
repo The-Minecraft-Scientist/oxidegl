@@ -17,6 +17,7 @@ pub enum OxideGLItemSingle {
     Float(f32),
     Double(f64),
 }
+#[derive(Debug, Clone)]
 pub enum OxideGLItem {
     Single(OxideGLItemSingle),
     Array(Rc<[OxideGLItemSingle]>),
@@ -131,7 +132,6 @@ where
 
 impl OxideGLContext {
     fn get(&self, parameter_name: GLenum, idx: Option<GLint>) -> OxideGLItem {
-        println!("glGet called");
         let item: OxideGLItem = match parameter_name {
             0x0B11 => self.state.point_size.into(), // GL_POINT_SIZE
             0x0B12 => self.state.characteristics.point_size_range.into(), // GL_POINT_SIZE_RANGE
@@ -320,7 +320,7 @@ impl OxideGLContext {
             // 0x88EF => self.state.pixel_unpack_buffer_binding.into(), // GL_PIXEL_UNPACK_BUFFER_BINDING
             // 0x821B => self.state.major_version.into(), // GL_MAJOR_VERSION
             // 0x821C => self.state.minor_version.into(), // GL_MINOR_VERSION
-            // 0x821D => self.state.num_extensions.into(), // GL_NUM_EXTENSIONS
+            0x821D => self.state.characteristics.num_extensions.into(), // GL_NUM_EXTENSIONS
             0x821E => self.state.characteristics.context_flags.into(),
             // GL_CONTEXT_FLAGS
             // 0x88FF => self.state.max_array_texture_layers.into(), // GL_MAX_ARRAY_TEXTURE_LAYERS
@@ -429,10 +429,12 @@ impl OxideGLContext {
             // 0x82D9 => self.state.max_vertex_attrib_relative_offset.into(), // GL_MAX_VERTEX_ATTRIB_RELATIVE_OFFSET
             // 0x82DA => self.state.max_vertex_attrib_bindings.into(), // GL_MAX_VERTEX_ATTRIB_BINDINGS
             u => {
-                panic!("unrecognized enum {}", u)
+                panic!("unrecognized enum {:x}", u)
             }
         };
-        item
+
+        println!("{:x}", parameter_name);
+        dbg!(item)
     }
 
     pub(crate) fn oxidegl_get_booleanv(&mut self, pname: GLenum, mut data: *mut GLboolean) {
