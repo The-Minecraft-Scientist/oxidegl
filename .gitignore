@@ -2,4 +2,5 @@
 /testing
 
 /Cargo.lock
-.DS_Store
+*.DS_Store
+*install.sh
