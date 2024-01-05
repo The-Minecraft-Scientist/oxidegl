@@ -10,3 +10,6 @@ An open-source OpenGL 4.6 Core implementation atop Apple's Metal API, written in
 
 ## Non-Goals
  * Full OpenGL 4.6 compliance
+
+## Current State
+ * everything is broken, There's so much UB hiding in this thing that it does different things based on what parent process it has
