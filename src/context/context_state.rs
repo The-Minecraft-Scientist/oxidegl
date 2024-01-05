@@ -8,10 +8,7 @@ macro_rules! impl_gl_enum {
         impl From<$e> for OxideGLItemSingle {
             #[inline]
             fn from(val: $e) -> Self {
-                const _: () = assert!(std::mem::align_of::<$e>() == std::mem::align_of::<u32>());
-                const _: () = assert!(std::mem::size_of::<$e>() == std::mem::size_of::<u32>());
-                let ret = unsafe { std::mem::transmute::<$e, u32>(val) }.into();
-                ret
+                (val as u32).into()
             }
         }
     };
