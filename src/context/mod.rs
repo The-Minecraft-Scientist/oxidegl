@@ -29,7 +29,7 @@ pub struct OxideGLContext {
 }
 
 impl OxideGLContext {
-    pub(crate) fn new(view: NSViewPtr) -> Self {
+    pub(crate) unsafe fn new(view: NSViewPtr) -> Self {
         Self {
             state: OxideGLContextState::new(view),
         }
@@ -101,7 +101,7 @@ extern "C" fn oxidegl_create_context(
     stencil_type: GLenum,
 ) -> *mut OxideGLContext {
     let ptr = NSViewPtr(unsafe { Id::new(view).unwrap() });
-    let b = Box::new(OxideGLContext::new(ptr));
+    let b = unsafe { Box::new(OxideGLContext::new(ptr)) };
     let p = Box::into_raw(b);
     let ptr = unsafe { NonNull::new_unchecked(p) };
     p

@@ -42,7 +42,7 @@ pub struct OxideGLContextState {
 }
 
 impl OxideGLContextState {
-    pub(crate) fn new(view: NSViewPtr) -> Self {
+    pub(crate) unsafe fn new(view: NSViewPtr) -> Self {
         Self {
             metal_components: ContextMetalComponents::new(view),
             characteristics: Characteristics::new(),
