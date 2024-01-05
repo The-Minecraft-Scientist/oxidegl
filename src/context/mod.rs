@@ -21,7 +21,7 @@ pub(crate) mod get;
 pub(crate) mod metal_view;
 
 thread_local! {
-    pub static CTX: Cell<Option<CtxRef>> = const {Cell::new(None)};
+    static CTX: Cell<Option<CtxRef>> = const {Cell::new(None)};
 }
 #[repr(transparent)]
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Hash)]
@@ -46,6 +46,7 @@ pub fn get_state<'a>() -> dashmap::mapref::one::RefMut<'a, CtxRef, OxideGLContex
         "\n\nstack trace from get_state: {}",
         std::backtrace::Backtrace::force_capture().to_string()
     );
+    dbg!(CTX_IDIOT.get());
     //Panic here
     dbg!(&CTX.get().unwrap());
     CTX_STORE.get().get_mut(&CTX.get().unwrap()).unwrap()
