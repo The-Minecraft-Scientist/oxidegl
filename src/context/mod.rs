@@ -1,11 +1,13 @@
+use dashmap::DashMap;
 use objc2::mutability::IsMutable;
 use objc2::rc::Id;
-use state::LocalInitCell;
+use state::{InitCell, LocalInitCell};
 use std::borrow::BorrowMut;
 use std::cell::{Cell, OnceCell, RefCell, RefMut};
 use std::ops::{Deref, DerefMut};
 use std::ptr::NonNull;
 use std::sync::atomic::{AtomicBool, AtomicU32};
+use std::sync::{Mutex, MutexGuard};
 
 use crate::gl::gltypes::GLenum;
 
@@ -19,8 +21,12 @@ pub(crate) mod get;
 pub(crate) mod metal_view;
 
 thread_local! {
-    pub static CTX: Cell<Option<NonNull<OxideGLContext>>> = const {Cell::new(None)};
+    pub static CTX: Cell<Option<CtxRef>> = const {Cell::new(None)};
 }
+#[repr(transparent)]
+#[derive(Clone, Copy, Debug, PartialEq, Eq, Hash)]
+pub struct CtxRef(u32);
+pub static CTX_STORE: InitCell<DashMap<CtxRef, OxideGLContext>> = InitCell::new();
 
 #[derive(Debug)]
 #[repr(C)]
@@ -35,61 +41,38 @@ impl OxideGLContext {
         }
     }
 }
-static CTX_INUSE: AtomicBool = AtomicBool::new(false);
-pub fn get_state() -> CtxPtr {
+pub fn get_state<'a>() -> dashmap::mapref::one::RefMut<'a, CtxRef, OxideGLContext> {
     println!(
         "\n\nstack trace from get_state: {}",
         std::backtrace::Backtrace::force_capture().to_string()
     );
-    let c = CTX.with(|a| a.get()).take().unwrap();
-    println!("got context {:?}", &c);
-    CTX_INUSE.store(true, std::sync::atomic::Ordering::Release);
-    CtxPtr(c)
-}
-#[derive(Clone, Debug)]
-#[repr(transparent)]
-pub struct CtxPtr(NonNull<OxideGLContext>);
-impl Deref for CtxPtr {
-    type Target = OxideGLContext;
-    fn deref(&self) -> &Self::Target {
-        if CTX_INUSE.load(std::sync::atomic::Ordering::Acquire) {
-            panic!("tried to create aliasing references to CTX");
-        }
-        unsafe { self.0.as_ref() }
-    }
-}
-impl Drop for CtxPtr {
-    fn drop(&mut self) {
-        CTX_INUSE.store(false, std::sync::atomic::Ordering::Release);
-    }
-}
-impl DerefMut for CtxPtr {
-    fn deref_mut(&mut self) -> &mut Self::Target {
-        if CTX_INUSE.load(std::sync::atomic::Ordering::Acquire) {
-            panic!("tried to create aliasing mutable references to CTX");
-        }
-        unsafe { self.0.as_mut() }
-    }
+    //Panic here
+    dbg!(&CTX.get().unwrap());
+    CTX_STORE.get().get_mut(&CTX.get().unwrap()).unwrap()
 }
 
 #[no_mangle]
-extern "C" fn oxidegl_set_current_context(ctx: Option<NonNull<OxideGLContext>>) {
+extern "C" fn oxidegl_set_current_context(ctx: CtxRef) {
     println!(
-        "stace trace in set_context: {}",
+        "stack trace in set_context: {}",
         std::backtrace::Backtrace::force_capture().to_string()
     );
-    CTX.set(ctx);
+    if ctx.0 == 0 {
+        CTX.set(None);
+    } else {
+        CTX.set(Some(ctx));
+    }
     println!("set context {:?}", ctx);
 }
 
 #[no_mangle]
-extern "C" fn oxidegl_swap_buffers(ctx: CtxPtr) {
+extern "C" fn oxidegl_swap_buffers(ctx: CtxRef) {
     println!("oxideGl swap buffers called");
 }
 #[derive(Debug, Clone)]
 #[repr(transparent)]
 pub(crate) struct NSViewPtr(Id<NSView>);
-
+static COUNTER: AtomicU32 = AtomicU32::new(1);
 #[no_mangle]
 extern "C" fn oxidegl_create_context(
     view: *mut NSView,
@@ -99,10 +82,12 @@ extern "C" fn oxidegl_create_context(
     depth_type: GLenum,
     stencil_format: GLenum,
     stencil_type: GLenum,
-) -> *mut OxideGLContext {
+) -> CtxRef {
     let ptr = NSViewPtr(unsafe { Id::new(view).unwrap() });
-    let b = unsafe { Box::new(OxideGLContext::new(ptr)) };
-    let p = Box::into_raw(b);
-    let ptr = unsafe { NonNull::new_unchecked(p) };
-    p
+    let this_id = COUNTER.fetch_add(1, std::sync::atomic::Ordering::AcqRel);
+    let ctx = unsafe { OxideGLContext::new(ptr) };
+    CTX_STORE
+        .get_or_init(|| DashMap::new())
+        .insert(CtxRef(this_id), ctx);
+    CtxRef(this_id)
 }

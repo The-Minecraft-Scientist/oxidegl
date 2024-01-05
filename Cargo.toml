@@ -29,3 +29,4 @@ icrate = { version = "0.0.3", features = [
     "CoreAnimation",
     "CoreAnimation_CALayer",
 ] }
+dashmap = "5.5.3"
