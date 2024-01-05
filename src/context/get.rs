@@ -433,7 +433,7 @@ impl OxideGLContext {
             }
         };
 
-        println!("{:x}", parameter_name);
+        println!("GLget asked for parameter {:x}, got:", parameter_name);
         dbg!(item)
     }
 
