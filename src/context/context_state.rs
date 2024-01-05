@@ -3,15 +3,20 @@ use std::cell::RefCell;
 
 use super::{get::OxideGLItemSingle, metal_view::ContextMetalComponents, NSViewPtr};
 
-///Marker trait for repr(u32) GLenum equivalents. Marked unsafe because implementing this for non-repr(u32) types is UB
-pub unsafe trait GlEnum: Copy {}
-impl<T: GlEnum> From<T> for OxideGLItemSingle {
-    #[inline]
-    fn from(val: T) -> Self {
-        let ret = unsafe { *std::mem::transmute::<&T, &u32>(&val) }.into();
-        ret
-    }
+macro_rules! impl_gl_enum {
+    ($e:ident) => {
+        impl From<$e> for OxideGLItemSingle {
+            #[inline]
+            fn from(val: $e) -> Self {
+                const _: () = assert!(std::mem::align_of::<$e>() == std::mem::align_of::<u32>());
+                const _: () = assert!(std::mem::size_of::<$e>() == std::mem::size_of::<u32>());
+                let ret = unsafe { std::mem::transmute::<$e, u32>(val) }.into();
+                ret
+            }
+        }
+    };
 }
+
 #[repr(u32)]
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum PolygonMode {
@@ -19,7 +24,7 @@ pub enum PolygonMode {
     Line = GL_LINE,
     Fill = GL_FILL,
 }
-unsafe impl GlEnum for PolygonMode {}
+impl_gl_enum!(PolygonMode);
 
 #[repr(u32)]
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -28,7 +33,8 @@ pub enum CullFaceMode {
     Back = GL_BACK,
     FrontAndBack = GL_FRONT_AND_BACK,
 }
-unsafe impl GlEnum for CullFaceMode {}
+impl_gl_enum!(CullFaceMode);
+
 #[derive(Debug)]
 pub struct OxideGLContextState {
     //BEGIN OxideGL context state
