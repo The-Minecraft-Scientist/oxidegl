@@ -3,12 +3,12 @@ use std::cell::RefCell;
 
 use super::{get::OxideGLItemSingle, metal_view::ContextMetalComponents, NSViewPtr};
 
-///Marker trait for repr(u32) GLenum equivalents
-pub unsafe trait GlEnum {}
+///Marker trait for repr(u32) GLenum equivalents. Marked unsafe because implementing this for non-repr(u32) types is UB
+pub unsafe trait GlEnum: Copy {}
 impl<T: GlEnum> From<T> for OxideGLItemSingle {
+    #[inline]
     fn from(val: T) -> Self {
-        let ret = unsafe { *(&val as *const T as *const u32) }.into();
-        std::mem::forget(val);
+        let ret = unsafe { *std::mem::transmute::<&T, &u32>(&val) }.into();
         ret
     }
 }

@@ -1,11 +1,15 @@
 use std::{
     ffi::{CStr, CString},
-    mem::MaybeUninit,
+    mem::{ManuallyDrop, MaybeUninit},
     rc::Rc,
 };
 
 use crate::{
-    enums::{GL_EXTENSIONS, GL_RENDERER, GL_SHADING_LANGUAGE_VERSION, GL_VENDOR, GL_VERSION},
+    enums::{
+        GL_CULL_FACE_MODE, GL_EXTENSIONS, GL_LINE_WIDTH, GL_LINE_WIDTH_GRANULARITY,
+        GL_LINE_WIDTH_RANGE, GL_POINT_SIZE, GL_POINT_SIZE_GRANULARITY, GL_POINT_SIZE_RANGE,
+        GL_POLYGON_MODE, GL_RENDERER, GL_SHADING_LANGUAGE_VERSION, GL_VENDOR, GL_VERSION,
+    },
     gl::gltypes::*,
 };
 
@@ -120,27 +124,32 @@ where
 {
     fn from(value: [T; N]) -> Self {
         let mut array = [MaybeUninit::<OxideGLItemSingle>::uninit(); N];
-        for i in 0..(N - 1) {
-            array[i] = MaybeUninit::new(value[i].into());
+        for (idx, val) in value.into_iter().enumerate() {
+            array[idx].write(val.into());
         }
-        let t = unsafe {
-            *(&mut array as *mut [MaybeUninit<OxideGLItemSingle>; N] as *mut [OxideGLItemSingle; N])
+
+        let mut m = ManuallyDrop::new(array);
+        let v = *unsafe {
+            std::mem::transmute::<
+                &mut [MaybeUninit<OxideGLItemSingle>; N],
+                &mut [OxideGLItemSingle; N],
+            >(&mut m)
         };
-        OxideGLItem::Array(Rc::new(t))
+        OxideGLItem::Array(Rc::new(v))
     }
 }
 
 impl OxideGLContext {
     fn get(&self, parameter_name: GLenum, idx: Option<GLint>) -> OxideGLItem {
         let item: OxideGLItem = match parameter_name {
-            0x0B11 => self.state.point_size.into(), // GL_POINT_SIZE
-            0x0B12 => self.state.characteristics.point_size_range.into(), // GL_POINT_SIZE_RANGE
-            0x0B13 => self.state.characteristics.point_size_granularity.into(), // GL_POINT_SIZE_GRANULARITY
-            0x0B21 => self.state.line_width.into(),                             // GL_LINE_WIDTH
-            0x0B22 => self.state.characteristics.line_width_range.into(), // GL_LINE_WIDTH_RANGE
-            0x0B23 => self.state.characteristics.line_width_granularity.into(), // GL_LINE_WIDTH_GRANULARITY
-            0x0B40 => self.state.polygon_mode.into(),                           // GL_POLYGON_MODE
-            0x0B45 => self.state.cull_face_mode.into(),                         // GL_CULL_FACE_MODE
+            GL_POINT_SIZE => self.state.point_size.into(), // GL_POINT_SIZE
+            GL_POINT_SIZE_RANGE => self.state.characteristics.point_size_range.into(), // GL_POINT_SIZE_RANGE
+            GL_POINT_SIZE_GRANULARITY => self.state.characteristics.point_size_granularity.into(), // GL_POINT_SIZE_GRANULARITY
+            GL_LINE_WIDTH => self.state.line_width.into(), // GL_LINE_WIDTH
+            GL_LINE_WIDTH_RANGE => self.state.characteristics.line_width_range.into(), // GL_LINE_WIDTH_RANGE
+            GL_LINE_WIDTH_GRANULARITY => self.state.characteristics.line_width_granularity.into(), // GL_LINE_WIDTH_GRANULARITY
+            GL_POLYGON_MODE => self.state.polygon_mode.into(), // GL_POLYGON_MODE
+            GL_CULL_FACE_MODE => self.state.cull_face_mode.into(), // GL_CULL_FACE_MODE
             // 0x0B46 => self.state.front_face.into(), // GL_FRONT_FACE
 
             // 0x0B70 => self.attribs.depth_range, 2.into(), // GL_DEPTH_RANGE
@@ -492,6 +501,7 @@ impl OxideGLContext {
         Self::get_string(name)
     }
     pub(crate) fn oxidegl_get_stringi(&mut self, name: GLenum, index: GLuint) -> *const GLubyte {
+        //TODO: this is probably wrong
         Self::get_string(name)
     }
     pub(crate) fn oxidegl_get_internalformativ(

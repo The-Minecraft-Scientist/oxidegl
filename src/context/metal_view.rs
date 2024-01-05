@@ -55,8 +55,6 @@ impl ContextMetalComponents {
         mem::forget(layer);
         //This function call is actually surprisingly safe
         unsafe { cast_view.set_layer(&cast_layer) };
-        dbg!(&cast_view);
-        dbg!(&cast_layer);
         Self { device }
     }
 }
