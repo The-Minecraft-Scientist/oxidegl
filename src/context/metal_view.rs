@@ -1,4 +1,4 @@
-use std::mem;
+use std::mem::{self, ManuallyDrop};
 
 use libc::c_void;
 use metal::{CAMetalLayer, Device, MTLDevice, MetalLayer, MetalLayerRef};
@@ -37,24 +37,23 @@ pub struct ContextMetalComponents {
     device: Device,
 }
 impl ContextMetalComponents {
-    //SAFETY: this is wildly unsafe. However, it seems to work
-    pub(crate) fn new(mut view: NSViewPtr) -> Self {
+    //TODO: hold a reference to the NSView
+    pub(crate) unsafe fn new(mut view: NSViewPtr) -> Self {
         let device = Device::system_default().unwrap();
-        let mut layer = MetalLayer::new();
+        // Avoid decrementing the refcount to this CALayer when MetalLayer is dropped
+        let mut layer = ManuallyDrop::new(MetalLayer::new());
+
         layer.set_device(&device);
-        // The amount of invariants that need to hold for this cast to be valid cannot be counted on two hands
+        // Caller must ensure that this is a pointer to an objective C NSView class with a retain count of 1
         let cast_view: Id<NSView> = unsafe { std::mem::transmute(view) };
-        let cast_layer = unsafe {
-            //Unspeakable horrors beyond mortal comprehension
+        let cast_layer = 
+            //Unspeakable horrors beyond mortal comprehension (this is essentially just casting one *mut c_void to another)
             Id::new(core::mem::transmute::<*mut MetalLayerRef, *mut CALayer>(
                 layer.as_mut(),
             ))
-            .unwrap()
-        };
-
-        mem::forget(layer);
-        //This function call is actually surprisingly safe
-        unsafe { cast_view.set_layer(&cast_layer) };
+            .unwrap();
+        //This function call is actually surprisingly safe compared to the rest
+        cast_view.set_layer(&cast_layer);
         Self { device }
     }
 }
