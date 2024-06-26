@@ -1,8 +1,8 @@
+use super::{platform::MetalComponents, NSViewPtr};
 use crate::{enums::*, gl::gltypes::GLenum};
+use item::{OxideGLItem, OxideGLItemSingle};
 use std::cell::RefCell;
-
-use super::{get::OxideGLItemSingle, metal_view::ContextMetalComponents, NSViewPtr};
-
+pub mod item;
 macro_rules! impl_gl_enum {
     ($e:ident) => {
         impl From<$e> for OxideGLItemSingle {
@@ -33,10 +33,7 @@ pub enum CullFaceMode {
 impl_gl_enum!(CullFaceMode);
 
 #[derive(Debug)]
-pub struct OxideGLContextState {
-    //BEGIN OxideGL context state
-    pub metal_components: ContextMetalComponents,
-    //BEGIN OpenGL context state.
+pub struct GLState {
     pub characteristics: Characteristics,
     pub point_size: f32,
     pub line_width: f32,
@@ -44,10 +41,9 @@ pub struct OxideGLContextState {
     pub cull_face_mode: CullFaceMode,
 }
 
-impl OxideGLContextState {
-    pub(crate) unsafe fn new(view: NSViewPtr) -> Self {
+impl GLState {
+    pub(crate) fn new() -> Self {
         Self {
-            metal_components: ContextMetalComponents::new(view),
             characteristics: Characteristics::new(),
             point_size: 1.0,
             line_width: 1.0,

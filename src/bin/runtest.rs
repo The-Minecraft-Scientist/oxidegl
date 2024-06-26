@@ -8,7 +8,7 @@ pub fn main() {
         .wait()
         .unwrap();
     let c = std::process::Command::new(format!(
-        "{}/oxidegl-glfw/build/examples/triangle-opengl.app/Contents/MacOS/triangle-opengl",
+        "{}/oxidegl-glfw/debug/examples/triangle-opengl.app/Contents/MacOS/triangle-opengl",
         dir
     ))
     .spawn()

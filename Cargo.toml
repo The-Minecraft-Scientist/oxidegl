@@ -30,3 +30,4 @@ icrate = { version = "0.0.3", features = [
     "CoreAnimation_CALayer",
 ] }
 dashmap = "5.5.3"
+log = "0.4.21"

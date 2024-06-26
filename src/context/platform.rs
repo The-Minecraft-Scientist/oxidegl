@@ -31,12 +31,15 @@ extern_methods!(
         pub unsafe fn set_layer(&self, layer: &CALayer);
     }
 );
-
+#[derive(Debug)]
+pub struct PlatformState {
+    pub metal: MetalComponents
+}
 #[derive(Debug, Clone)]
-pub struct ContextMetalComponents {
+pub struct MetalComponents {
     device: Device,
 }
-impl ContextMetalComponents {
+impl MetalComponents {
     //TODO: hold a reference to the NSView
     pub(crate) unsafe fn new(mut view: NSViewPtr) -> Self {
         let device = Device::system_default().unwrap();
