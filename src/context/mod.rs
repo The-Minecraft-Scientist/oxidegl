@@ -1,26 +1,26 @@
-use dashmap::DashMap;
-use objc2::mutability::IsMutable;
 use objc2::rc::Id;
+use objc2_app_kit::NSView;
 use platform::PlatformState;
-use std::borrow::BorrowMut;
-use std::cell::{Cell, OnceCell, RefCell, RefMut};
+use std::cell::Cell;
 use std::ops::{Deref, DerefMut};
 use std::os::raw::c_void;
 use std::pin::Pin;
 use std::ptr::NonNull;
-use std::sync::atomic::{AtomicBool, AtomicU32};
-use std::sync::{Mutex, MutexGuard};
 
 use crate::gl::gltypes::GLenum;
 
-use self::platform::{MetalComponents, NSView};
+use self::platform::MetalComponents;
 use self::state::GLState;
 
+#[allow(dead_code, unused_variables)]
 pub(crate) mod commands;
+
+#[allow(dead_code, unused_variables)]
+pub(crate) mod unimplemented;
+
 pub(crate) mod state;
 
 pub(crate) mod platform;
-pub(crate) mod unimplemented;
 
 thread_local! {
     static CTX: Cell<Option<CtxRef>> = const {Cell::new(None)};
@@ -33,7 +33,7 @@ pub struct OxideGLContext {
 }
 
 impl OxideGLContext {
-    pub(crate) unsafe fn new(view: NSViewPtr) -> Self {
+    pub(crate) fn new(view: Id<NSView>) -> Self {
         Self {
             gl_state: GLState::new(),
             platform_state: PlatformState {
@@ -76,8 +76,8 @@ unsafe extern "C" fn oxidegl_create_context(
     stencil_format: GLenum,
     stencil_type: GLenum,
 ) -> *mut c_void {
-    let ptr = NSViewPtr(unsafe { Id::new(view).unwrap() });
-    let ctx = unsafe { OxideGLContext::new(ptr) };
+    let ctx = unsafe { OxideGLContext::new(Id::new(view).unwrap()) };
+
     Box::into_raw(Box::new(ctx)).cast()
 }
 

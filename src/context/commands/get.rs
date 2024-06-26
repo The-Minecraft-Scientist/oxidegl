@@ -1,13 +1,8 @@
-use std::{
-    ffi::{CStr, CString},
-    mem::{ManuallyDrop, MaybeUninit},
-    rc::Rc,
-};
 
 use crate::{
     context::state::item::OxideGLItem,
     enums::{
-        GL_CULL_FACE_MODE, GL_EXTENSIONS, GL_LINE_WIDTH, GL_LINE_WIDTH_GRANULARITY,
+        GL_CULL_FACE_MODE, GL_LINE_WIDTH, GL_LINE_WIDTH_GRANULARITY,
         GL_LINE_WIDTH_RANGE, GL_POINT_SIZE, GL_POINT_SIZE_GRANULARITY, GL_POINT_SIZE_RANGE,
         GL_POLYGON_MODE, GL_RENDERER, GL_SHADING_LANGUAGE_VERSION, GL_VENDOR, GL_VERSION,
     },

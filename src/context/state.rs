@@ -1,7 +1,5 @@
-use super::{platform::MetalComponents, NSViewPtr};
 use crate::{enums::*, gl::gltypes::GLenum};
-use item::{OxideGLItem, OxideGLItemSingle};
-use std::cell::RefCell;
+use item::{OxideGLItemSingle};
 pub mod item;
 macro_rules! impl_gl_enum {
     ($e:ident) => {
