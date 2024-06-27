@@ -334,6 +334,7 @@ impl Context {
     }
     pub(crate) fn oxidegl_get_doublev(&mut self, pname: GLenum, mut data: *mut GLdouble) {
         for item in self.get(pname, None).arr() {
+            // SAFETY: see above
             unsafe {
                 *data = item.into_double();
                 data = data.add(1);
@@ -342,6 +343,7 @@ impl Context {
     }
     pub(crate) fn oxidegl_get_floatv(&mut self, pname: GLenum, mut data: *mut GLfloat) {
         for item in self.get(pname, None).arr() {
+            // SAFETY: see above
             unsafe {
                 *data = item.into_float();
                 data = data.add(1);
@@ -350,6 +352,7 @@ impl Context {
     }
     pub(crate) fn oxidegl_get_integerv(&mut self, pname: GLenum, mut data: *mut GLint) {
         for item in self.get(pname, None).arr() {
+            // SAFETY: see above
             unsafe {
                 *data = item.into_int();
                 data = data.add(1);

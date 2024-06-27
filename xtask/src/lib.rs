@@ -5,8 +5,8 @@ use std::{
 
 use roxmltree::{Attribute, Node};
 
-mod doc_parse;
-mod spec_parse;
+pub(crate) mod doc_parse;
+pub(crate) mod spec_parse;
 
 pub fn remove_multi(s: &str, m: &[&str]) -> String {
     let mut out = String::with_capacity(s.len());
