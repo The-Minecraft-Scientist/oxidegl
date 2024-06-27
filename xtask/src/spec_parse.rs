@@ -1,9 +1,6 @@
 #![allow(dead_code)]
 
-use std::{
-    collections::HashMap,
-    io::{Write},
-};
+use std::{collections::HashMap, io::Write};
 
 use roxmltree::{Children, Document, Node, ParsingOptions};
 
@@ -139,8 +136,10 @@ fn docbook_to_markdown<'a>(node: &'a Node<'a, '_>, builder: &mut MarkdownDocComm
                 env!("CARGO_MANIFEST_DIR")
             ))
             .unwrap();
-            let mut opts = ParsingOptions::default();
-            opts.allow_dtd = true;
+            let opts = ParsingOptions {
+                allow_dtd: true,
+                nodes_limit: u32::MAX,
+            };
             let d = Document::parse_with_options(&src, opts).unwrap();
             docbook_to_markdown(&d.root(), builder);
         }
@@ -457,24 +456,18 @@ fn get_all_entries<'a>(reg: &'a Document<'a>) -> HashMap<&'a str, GLAPIEntry<'a>
             "enums" => {
                 let _group_name = entry.attribute("group").unwrap_or("ungrouped");
                 for child in entry.children() {
-                    match child.tag_name().name() {
-                        "enum" => {
-                            let val = child.attribute("value").unwrap();
-                            let value;
-                            if val.starts_with("0x") {
-                                let vopt = u32::from_str_radix(&val[2..], 16);
-                                if vopt.is_err() {
-                                    continue;
-                                }
-                                value = vopt.unwrap();
-                            } else {
-                                value = i32::from_str_radix(val, 10).unwrap() as u32;
-                            }
-                            let name = child.attribute("name").unwrap();
-                            let _ = output.insert(name, GLAPIEntry::Enum { name, value });
+                    let val = child.attribute("value").unwrap();
+                    let value = if val.starts_with("0x") {
+                        let vopt = u32::from_str_radix(&child.attribute("value").unwrap()[2..], 16);
+                        if vopt.is_err() {
+                            continue;
                         }
-                        _ => {}
-                    }
+                        vopt.unwrap()
+                    } else {
+                        val.parse::<i32>().unwrap() as u32
+                    };
+                    let name = child.attribute("name").unwrap();
+                    let _ = output.insert(name, GLAPIEntry::Enum { name, value });
                 }
             }
             _ => {}
@@ -495,14 +488,12 @@ impl<'a> OrderedFeatureStorage<'a> {
             counter: 0,
         }
     }
-    fn insert(&mut self, v: Feature<'a>) -> bool {
+    fn insert(&mut self, v: Feature<'a>) {
         self.counter += 1;
         let _ = self.storage.insert(v, self.counter);
-        true
     }
-    fn remove(&mut self, v: &Feature<'a>) -> bool {
+    fn remove(&mut self, v: &Feature<'a>) {
         let _ = self.storage.remove(v);
-        true
     }
 }
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Hash)]
@@ -516,50 +507,48 @@ fn get_required_features_version<'a>(
     storage: &mut OrderedFeatureStorage<'a>,
 ) {
     for entry in reg.descendants() {
-        match entry.tag_name().name() {
-            "feature" => {
-                if let Some(ver) = entry.attribute("name") {
-                    if ver == format!("GL_VERSION_{}_{}", version.major, version.minor) {
-                        for child in entry.children() {
-                            match child.tag_name().name() {
-                                "require" => {
-                                    if let Some(p) = child.attribute("profile") {
-                                        if p != "core" {
-                                            continue;
-                                        }
-                                    }
-                                    for required in child.children() {
-                                        let _ = match required.tag_name().name() {
-                                            "enum" => storage.insert(Feature::Enum(
-                                                required.attribute("name").unwrap(),
-                                            )),
-                                            "command" => storage.insert(Feature::Command(
-                                                required.attribute("name").unwrap(),
-                                            )),
-                                            _ => false,
-                                        };
-                                    }
-                                }
-                                "remove" => {
-                                    for required in child.children() {
-                                        let _ = match required.tag_name().name() {
-                                            "enum" => storage.remove(&Feature::Enum(
-                                                required.attribute("name").unwrap(),
-                                            )),
-                                            "command" => storage.remove(&Feature::Command(
-                                                required.attribute("name").unwrap(),
-                                            )),
-                                            _ => false,
-                                        };
-                                    }
-                                }
-                                _ => {}
+        if entry.tag_name().name() != "feature" {
+            continue;
+        }
+        let Some(ver) = entry.attribute("name") else {
+            continue;
+        };
+        if ver != format!("GL_VERSION_{}_{}", version.major, version.minor) {
+            continue;
+        }
+        for child in entry.children() {
+            match child.tag_name().name() {
+                "require" => {
+                    if let Some(p) = child.attribute("profile") {
+                        if p != "core" {
+                            continue;
+                        }
+                    }
+                    for required in child.children() {
+                        match required.tag_name().name() {
+                            "enum" => {
+                                storage.insert(Feature::Enum(required.attribute("name").unwrap()))
                             }
+                            "command" => storage
+                                .insert(Feature::Command(required.attribute("name").unwrap())),
+                            _ => {}
+                        };
+                    }
+                }
+                "remove" => {
+                    for required in child.children() {
+                        match required.tag_name().name() {
+                            "enum" => {
+                                storage.remove(&Feature::Enum(required.attribute("name").unwrap()))
+                            }
+                            "command" => storage
+                                .remove(&Feature::Command(required.attribute("name").unwrap())),
+                            _ => {}
                         }
                     }
                 }
+                _ => {}
             }
-            _ => {}
         }
     }
 }
@@ -602,8 +591,6 @@ pub struct FnCollection<'a> {
 fn gen_funcs<'a>(spec: &'a Document<'a>) -> Vec<FnCollection<'a>> {
     let mut backing_strs = Vec::with_capacity(1000);
 
-    let specfile = include_str!("../OpenGL-Registry/xml/gl.xml");
-
     let elems = get_all_required_features(spec);
     let mut entries = get_all_entries(spec);
 
@@ -612,16 +599,12 @@ fn gen_funcs<'a>(spec: &'a Document<'a>) -> Vec<FnCollection<'a>> {
         env!("CARGO_MANIFEST_DIR")
     ))
     .unwrap()
+    .flatten()
     {
-        if let Ok(entry) = file {
-            let f = entry.file_name();
-            let s = f.to_str().unwrap();
-            if !s.starts_with("gl_") && s.starts_with("gl") {
-                backing_strs.push((
-                    s.to_string(),
-                    std::fs::read_to_string(entry.path()).unwrap(),
-                ));
-            }
+        let f = file.file_name();
+        let s = f.to_str().unwrap();
+        if !s.starts_with("gl_") && s.starts_with("gl") {
+            backing_strs.push((s.to_string(), std::fs::read_to_string(file.path()).unwrap()));
         }
     }
 
@@ -665,22 +648,19 @@ fn gen_funcs<'a>(spec: &'a Document<'a>) -> Vec<FnCollection<'a>> {
     let mut elems = elems.storage.into_iter().collect::<Vec<_>>();
     elems.sort_by(|lhs, rhs| lhs.1.cmp(&rhs.1));
     for (feature, _) in elems.into_iter() {
-        match feature {
-            Feature::Command(n) => {
-                let Some(g) = entries.remove(n) else {
-                    continue;
-                };
-                let Some(idx) = func_reverse_lookup.get(n) else {
-                    funcs.push(FnCollection {
-                        name: None,
-                        docs: None,
-                        entries: vec![g],
-                    });
-                    continue;
-                };
-                funcs[*idx].entries.push(g);
-            }
-            _ => {}
+        if let Feature::Command(n) = feature {
+            let Some(g) = entries.remove(n) else {
+                continue;
+            };
+            let Some(idx) = func_reverse_lookup.get(n) else {
+                funcs.push(FnCollection {
+                    name: None,
+                    docs: None,
+                    entries: vec![g],
+                });
+                continue;
+            };
+            funcs[*idx].entries.push(g);
         }
     }
     funcs
@@ -714,18 +694,15 @@ fn write_command_impl<T: Write>(w: &mut T, v: &[FnCollection<'_>]) {
 fn write_enum_impl<T: Write>(w: &mut T, v: &Vec<&GLAPIEntry<'_>>) {
     writeln!(w, "use crate::gl::gltypes::GLenum;").unwrap();
     for item in v {
-        match item {
-            GLAPIEntry::Enum { name, value } => {
-                writeln!(w, "{}", print_rust_enum_entry(name, *value)).unwrap();
-            }
-            _ => {}
+        if let GLAPIEntry::Enum { name, value } = item {
+            writeln!(w, "{}", print_rust_enum_entry(name, *value)).unwrap();
         }
     }
 }
 fn write_placeholder_impl<T: Write>(w: &mut T, v: &[FnCollection<'_>]) {
     writeln!(
         w,
-        "use super::OxideGLContext;\nuse crate::gl::gltypes::*;\n"
+        "use crate::context::Context;\nuse crate::gl::gltypes::*;\n"
     )
     .unwrap();
     let mut delay = Vec::new();
@@ -800,11 +777,7 @@ fn write_placeholder_impl<T: Write>(w: &mut T, v: &[FnCollection<'_>]) {
     }
 }
 
-fn print_placeholder_fn<'a>(
-    name: &'a str,
-    ret_type: GLTypes,
-    params: &Vec<Parameter<'a>>,
-) -> String {
+fn print_placeholder_fn<'a>(name: &'a str, ret_type: GLTypes, params: &[Parameter<'a>]) -> String {
     let body = format!(
         "{{\n    panic!(\"command {} not yet implemented\");\n}}",
         name
@@ -845,7 +818,7 @@ fn print_placeholder_fn<'a>(
     )
 }
 
-fn print_dispatch_fn<'a>(name: &'a str, ret_type: GLTypes, params: &Vec<Parameter<'a>>) -> String {
+fn print_dispatch_fn<'a>(name: &'a str, ret_type: GLTypes, params: &[Parameter<'a>]) -> String {
     let paramnl = params
         .iter()
         .map(|p| match p.name {
@@ -891,7 +864,7 @@ fn print_dispatch_fn<'a>(name: &'a str, ret_type: GLTypes, params: &Vec<Paramete
     )
 }
 
-fn print_abi_fn_type<'a>(_name: &'a str, ret_type: GLTypes, params: &Vec<Parameter<'a>>) -> String {
+fn print_abi_fn_type<'a>(_name: &'a str, ret_type: GLTypes, params: &[Parameter<'a>]) -> String {
     if params.is_empty() {
         return format!(
             "unsafe extern \"C\" fn(){}",
@@ -922,7 +895,7 @@ fn print_abi_fn_type<'a>(_name: &'a str, ret_type: GLTypes, params: &Vec<Paramet
 fn print_rust_enum_entry(name: &str, value: u32) -> String {
     format!("pub const {}: GLenum = {};", name, value)
 }
-
+#[allow(clippy::upper_case_acronyms)]
 #[derive(Clone, Debug, AsRefStr)]
 enum GLTypes {
     GLint,

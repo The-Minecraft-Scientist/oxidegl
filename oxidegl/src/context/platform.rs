@@ -1,4 +1,3 @@
-
 use objc2::rc::{Id, Retained};
 use objc2::runtime::ProtocolObject;
 use objc2_app_kit::{NSScreen, NSView};
@@ -17,7 +16,7 @@ pub struct MetalComponents {
 }
 
 impl MetalComponents {
-    pub(crate) fn new(view: Id<NSView>) -> Self {
+    pub(crate) fn new(view: &Id<NSView>) -> Self {
         let device = unsafe { Retained::retain(MTLCreateSystemDefaultDevice()) }.unwrap();
 
         let layer = unsafe { CAMetalLayer::new() };

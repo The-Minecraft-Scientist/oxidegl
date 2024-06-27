@@ -1487,3 +1487,4 @@
 /// and [`GL_MAX_VERTEX_ATTRIB_BINDINGS`](crate::enums::GL_MAX_VERTEX_ATTRIB_BINDINGS)
 /// are available only if the GL version is 4.3 or greater.
 pub mod get;
+pub mod unimplemented;

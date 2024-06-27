@@ -1,17 +1,17 @@
 #[allow(clippy::wildcard_imports)]
 use crate::{
     context::state::item::OxideGLItem,
+    dispatch::gltypes::*,
     enums::{
         GL_CULL_FACE_MODE, GL_LINE_WIDTH, GL_LINE_WIDTH_GRANULARITY, GL_LINE_WIDTH_RANGE,
         GL_POINT_SIZE, GL_POINT_SIZE_GRANULARITY, GL_POINT_SIZE_RANGE, GL_POLYGON_MODE,
         GL_RENDERER, GL_SHADING_LANGUAGE_VERSION, GL_VENDOR, GL_VERSION,
     },
-    gl::gltypes::*,
 };
 
-use crate::context::OxideGLContext;
+use crate::context::Context;
 
-impl OxideGLContext {
+impl Context {
     fn get(&self, parameter_name: GLenum, idx: Option<GLint>) -> OxideGLItem {
         let item: OxideGLItem = match parameter_name {
             GL_POINT_SIZE => self.gl_state.point_size.into(), // GL_POINT_SIZE
@@ -314,16 +314,16 @@ impl OxideGLContext {
             // 0x82D9 => self.state.max_vertex_attrib_relative_offset.into(), // GL_MAX_VERTEX_ATTRIB_RELATIVE_OFFSET
             // 0x82DA => self.state.max_vertex_attrib_bindings.into(), // GL_MAX_VERTEX_ATTRIB_BINDINGS
             u => {
-                panic!("unrecognized enum {:x}", u)
+                panic!("unrecognized enum {u:x}")
             }
         };
 
-        println!("GLget asked for parameter {:x}, got:", parameter_name);
+        println!("GLget asked for parameter {parameter_name:x}, got:");
         dbg!(item)
     }
 
     pub(crate) fn oxidegl_get_booleanv(&mut self, pname: GLenum, mut data: *mut GLboolean) {
-        for item in self.get(pname, None).arr().iter() {
+        for item in self.get(pname, None).arr() {
             // Safety: This is user-accessible UB. We have ZERO information about what is behind this pointer
             // Trusting the user like this kinda sucks but its just How The API Works™
             unsafe {
@@ -333,7 +333,7 @@ impl OxideGLContext {
         }
     }
     pub(crate) fn oxidegl_get_doublev(&mut self, pname: GLenum, mut data: *mut GLdouble) {
-        for item in self.get(pname, None).arr().iter() {
+        for item in self.get(pname, None).arr() {
             unsafe {
                 *data = item.into_double();
                 data = data.add(1);
@@ -341,7 +341,7 @@ impl OxideGLContext {
         }
     }
     pub(crate) fn oxidegl_get_floatv(&mut self, pname: GLenum, mut data: *mut GLfloat) {
-        for item in self.get(pname, None).arr().iter() {
+        for item in self.get(pname, None).arr() {
             unsafe {
                 *data = item.into_float();
                 data = data.add(1);
@@ -349,7 +349,7 @@ impl OxideGLContext {
         }
     }
     pub(crate) fn oxidegl_get_integerv(&mut self, pname: GLenum, mut data: *mut GLint) {
-        for item in self.get(pname, None).arr().iter() {
+        for item in self.get(pname, None).arr() {
             unsafe {
                 *data = item.into_int();
                 data = data.add(1);
@@ -375,14 +375,13 @@ impl OxideGLContext {
         panic!("command oxidegl_get_doublei_v not yet implemented");
     }
     fn get_string(name: GLenum) -> *const GLubyte {
-        const VENDOR: &'static [u8] = b"Charles Liske\0";
-        const RENDERER: &'static [u8] = b"OxideGL\0";
-        const VERSION: &'static [u8] = b"4.6.0\0";
+        const VENDOR: &[u8] = b"Charles Liske\0";
+        const RENDERER: &[u8] = b"OxideGL\0";
+        const VERSION: &[u8] = b"4.6.0\0";
         match name {
             GL_VENDOR => VENDOR.as_ptr(),
             GL_RENDERER => RENDERER.as_ptr(),
-            GL_VERSION => VERSION.as_ptr(),
-            GL_SHADING_LANGUAGE_VERSION => VERSION.as_ptr(),
+            GL_VERSION | GL_SHADING_LANGUAGE_VERSION => VERSION.as_ptr(),
             _ => {
                 panic!("unrecognized enum in gl get string")
             }
@@ -445,7 +444,7 @@ impl OxideGLContext {
 /// strings begin with a version number. The version number uses one of these
 /// forms:
 ///
-/// *major_number.minor_number* *major_number.minor_number.release_number*
+/// *`major_number.minor_number`* *`major_number.minor_number.release_number`*
 ///
 /// Vendor-specific information may follow the version number. Its format depends
 /// on the implementation, but a space always separates the version number
@@ -461,9 +460,9 @@ impl OxideGLContext {
 /// always returns a compatible version number. The release number always describes
 /// the server.
 pub mod get_string {
-    use crate::context::OxideGLContext;
-    use crate::gl::gltypes::*;
-    impl OxideGLContext {
+    use crate::context::Context;
+    use crate::dispatch::gltypes::{GLenum, GLubyte, GLuint};
+    impl Context {
         pub(crate) fn oxidegl_get_string(&mut self, name: GLenum) -> *const GLubyte {
             Self::get_string(name)
         }
@@ -887,9 +886,9 @@ pub mod get_string {
 /// The [`GL_CLEAR_TEXTURE`](crate::enums::GL_CLEAR_TEXTURE) token is accepted
 /// for `pname` only if the GL version is 4.4 or higher.
 pub mod get_internalformat {
-    use crate::context::OxideGLContext;
-    use crate::gl::gltypes::*;
-    impl OxideGLContext {
+    use crate::context::Context;
+    use crate::dispatch::gltypes::{GLenum, GLint, GLint64, GLsizei};
+    impl Context {
         pub(crate) fn oxidegl_get_internalformativ(
             &mut self,
             target: GLenum,

@@ -1,22 +1,27 @@
-use objc2::rc::Id;
+use objc2::rc::{Id, Retained};
 use objc2_app_kit::NSView;
 use platform::PlatformState;
 use std::cell::Cell;
+use std::mem::ManuallyDrop;
 use std::ops::{Deref, DerefMut};
 use std::os::raw::c_void;
 use std::pin::Pin;
 use std::ptr::NonNull;
 
-use crate::gl::gltypes::GLenum;
+use crate::dispatch::gltypes::GLenum;
 
 use self::platform::MetalComponents;
 use self::state::GLState;
 
-#[allow(dead_code, unused_variables)]
+#[allow(
+    dead_code,
+    unused_variables,
+    clippy::wildcard_imports,
+    clippy::too_many_arguments,
+    clippy::unused_self,
+    clippy::similar_names
+)]
 pub(crate) mod commands;
-
-#[allow(dead_code, unused_variables, clippy::wildcard_imports)]
-pub(crate) mod unimplemented;
 
 pub(crate) mod state;
 
@@ -27,13 +32,13 @@ thread_local! {
 }
 #[derive(Debug)]
 #[repr(C)]
-pub struct OxideGLContext {
+pub struct Context {
     gl_state: GLState,
     platform_state: PlatformState,
 }
 
-impl OxideGLContext {
-    pub(crate) fn new(view: Id<NSView>) -> Self {
+impl Context {
+    pub(crate) fn new(view: &Id<NSView>) -> Self {
         Self {
             gl_state: GLState::new(),
             platform_state: PlatformState {
@@ -42,9 +47,10 @@ impl OxideGLContext {
         }
     }
 }
-
+/// This function is only used by GL dispatch. It is always advantageous for it to be inlined
+#[allow(clippy::inline_always)]
 #[inline(always)]
-pub fn with_ctx<Ret, Func: for<'a> Fn(Pin<&'a mut OxideGLContext>) -> Ret>(f: Func) -> Ret {
+pub fn with_ctx<Ret, Func: for<'a> Fn(Pin<&'a mut Context>) -> Ret>(f: Func) -> Ret {
     let mut opt = CTX.take().expect("No context set");
     let p = Pin::new(&mut *opt);
     let ret = f(p);
@@ -58,13 +64,9 @@ unsafe extern "C" fn oxidegl_set_current_context(ctx: Option<CtxRef>) {
 }
 
 #[no_mangle]
-unsafe extern "C" fn oxidegl_swap_buffers(ctx: CtxRef) {
+unsafe extern "C" fn oxidegl_swap_buffers(_ctx: ManuallyDrop<CtxRef>) {
     println!("oxideGl swap buffers called");
 }
-
-#[derive(Debug, Clone)]
-#[repr(transparent)]
-pub(crate) struct NSViewPtr(Id<NSView>);
 
 #[no_mangle]
 unsafe extern "C" fn oxidegl_create_context(
@@ -76,24 +78,24 @@ unsafe extern "C" fn oxidegl_create_context(
     stencil_format: GLenum,
     stencil_type: GLenum,
 ) -> *mut c_void {
-    let ctx = unsafe { OxideGLContext::new(Id::new(view).unwrap()) };
+    let ctx = unsafe { Context::new(&Retained::from_raw(view).unwrap()) };
 
     Box::into_raw(Box::new(ctx)).cast()
 }
 
 #[repr(transparent)]
-pub struct CtxRef(NonNull<OxideGLContext>);
+pub struct CtxRef(NonNull<Context>);
 impl CtxRef {
     pub unsafe fn from_void(ptr: *mut c_void) -> Option<Self> {
         Some(Self(NonNull::new(ptr.cast())?))
     }
     #[must_use]
-    pub fn as_box(self) -> Box<OxideGLContext> {
+    pub fn as_box(self) -> Box<Context> {
         unsafe { Box::from_raw(self.0.as_ptr()) }
     }
 }
 impl Deref for CtxRef {
-    type Target = OxideGLContext;
+    type Target = Context;
     fn deref(&self) -> &Self::Target {
         unsafe { self.0.as_ref() }
     }

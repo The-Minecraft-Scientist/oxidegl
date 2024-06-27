@@ -36,9 +36,6 @@ impl<'a, 'input> NodeExt for Node<'a, 'input> {
         attrs.find(|attr| attr.name() == name)
     }
 }
-fn find_predicate<'a>(attr: &'a Attribute<'a, '_>, name: &'a str) -> bool {
-    attr.name() == name
-}
 fn snake_case_from_title_case(src: String) -> String {
     let new = src
         .chars()

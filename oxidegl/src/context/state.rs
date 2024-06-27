@@ -1,4 +1,10 @@
-use crate::{enums::{GL_BACK, GL_CONTEXT_CORE_PROFILE_BIT, GL_CONTEXT_FLAG_FORWARD_COMPATIBLE_BIT, GL_CONTEXT_FLAG_NO_ERROR_BIT, GL_FILL, GL_FRONT, GL_FRONT_AND_BACK, GL_LINE, GL_POINT}, gl::gltypes::GLenum};
+use crate::{
+    dispatch::gltypes::GLenum,
+    enums::{
+        GL_BACK, GL_CONTEXT_CORE_PROFILE_BIT, GL_CONTEXT_FLAG_FORWARD_COMPATIBLE_BIT,
+        GL_CONTEXT_FLAG_NO_ERROR_BIT, GL_FILL, GL_FRONT, GL_FRONT_AND_BACK, GL_LINE, GL_POINT,
+    },
+};
 use item::OxideGLItemSingle;
 pub mod item;
 macro_rules! impl_gl_enum {

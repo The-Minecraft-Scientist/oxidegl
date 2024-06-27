@@ -24,6 +24,11 @@ impl OxideGLItem {
         iter
     }
 }
+#[allow(
+    clippy::cast_possible_truncation,
+    clippy::cast_possible_wrap,
+    clippy::cast_precision_loss
+)]
 impl OxideGLItemSingle {
     #[inline]
     pub fn into_bool(self) -> bool {
@@ -79,6 +84,7 @@ impl From<bool> for OxideGLItemSingle {
         Self::Bool(value)
     }
 }
+#[allow(clippy::cast_possible_wrap)]
 impl From<u32> for OxideGLItemSingle {
     fn from(value: u32) -> Self {
         Self::Int(value as i32)
