@@ -1,4 +1,4 @@
-use libc::c_void;
+use std::ffi::c_void;
 
 pub type GLint = i32;
 pub type PtrToConstPtrToConstVoid = *mut *const c_void;

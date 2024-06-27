@@ -1,3 +1,8 @@
+use std::{
+    fs::File,
+    io::{BufWriter, Write},
+};
+
 use roxmltree::{Attribute, Node};
 
 mod doc_parse;

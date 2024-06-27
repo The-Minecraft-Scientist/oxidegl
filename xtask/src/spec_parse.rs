@@ -10,7 +10,7 @@ use roxmltree::{Attribute, Children, Document, Node, ParsingOptions};
 
 use strum_macros::AsRefStr;
 
-use crate::{open_file_writer, remove_multi};
+use crate::{open_file_writer, remove_multi, snake_case_from_title_case, NodeExt};
 
 #[derive(Clone, Copy, Debug)]
 struct GLVersion {
@@ -599,20 +599,11 @@ pub struct FnCollection<'a> {
     docs: Option<String>,
     entries: Vec<GLAPIEntry<'a>>,
 }
-fn main() {
-    //let mut commands = open_file_writer("src/gl/gl_core.rs");
-    let mut commands = open_file_writer("generated/gl_core.rs");
-    //let mut enums = open_file_writer("src/enums.rs");
-    //let mut dispatch = open_file_writer("src/context/dispatch_unused.rs");
-    let mut place = open_file_writer("generated/unimplemented.rs");
-    write_command_impl(&mut commands, &funcs);
-    //write_enum_impl(&mut enums, &out);
-    write_placeholder_impl(&mut place, &funcs);
-}
+
 fn gen_funcs<'a>(spec: &'a Document<'a>) -> Vec<FnCollection<'a>> {
     let mut backing_strs = Vec::with_capacity(1000);
 
-    let specfile = include_str!("../../OpenGL-Registry/xml/gl.xml");
+    let specfile = include_str!("../OpenGL-Registry/xml/gl.xml");
 
     let elems = get_all_required_features(spec);
     let mut entries = get_all_entries(spec);
@@ -693,6 +684,7 @@ fn gen_funcs<'a>(spec: &'a Document<'a>) -> Vec<FnCollection<'a>> {
             _ => {}
         }
     }
+    funcs
 }
 fn write_command_impl<'a, T: Write>(w: &mut T, v: &[FnCollection<'a>]) {
     writeln!(w, "// GL Commands").unwrap();
