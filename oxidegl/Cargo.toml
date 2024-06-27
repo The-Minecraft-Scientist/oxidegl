@@ -24,7 +24,6 @@ once_cell = "1.18.0"
 roxmltree = "0.20.0"
 strum = { version = "0.26.3", features = ["strum_macros"] }
 strum_macros = "0.26.3"
-state = { version = "0.6.0", features = ["tls"] }
 objc2-app-kit = { version = "0.2.2", features = [
     "NSView",
     "NSResponder",
