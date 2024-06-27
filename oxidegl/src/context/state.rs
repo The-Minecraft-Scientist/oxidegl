@@ -1,5 +1,5 @@
 use crate::{enums::*, gl::gltypes::GLenum};
-use item::{OxideGLItemSingle};
+use item::OxideGLItemSingle;
 pub mod item;
 macro_rules! impl_gl_enum {
     ($e:ident) => {
