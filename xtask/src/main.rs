@@ -29,9 +29,9 @@ enum Tasks {
         #[arg(short, long, default_value = "trace")]
         logging_level: String,
     },
-    /// Init GLFW git submodule
+    /// Init GLFW git submodule if it hasn't been already
     GetGLFW,
-    /// Build OxideGL GLFW
+    /// Build OxideGL GLFW (requires XCode command line tools for clang and cmake)
     BuildGLFW,
     /// Init OpenGL-Refpages and -Registry submodules (required to run codegen)
     GetKhronosStuff,
