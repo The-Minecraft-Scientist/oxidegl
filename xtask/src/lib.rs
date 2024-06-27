@@ -32,7 +32,7 @@ impl<'a, 'input> NodeExt for Node<'a, 'input> {
     }
 
     fn find_named_attribute<'b>(&'b self, name: &'b str) -> Option<Attribute<'b, '_>> {
-        let mut attrs = self.attributes().into_iter();
+        let mut attrs = self.attributes();
         attrs.find(|attr| attr.name() == name)
     }
 }
@@ -44,7 +44,7 @@ fn snake_case_from_title_case(src: String) -> String {
         .chars()
         .map(|c| {
             if c.is_uppercase() {
-                format!("_{}", c.to_lowercase().to_string())
+                format!("_{}", c.to_lowercase())
             } else {
                 c.to_string()
             }

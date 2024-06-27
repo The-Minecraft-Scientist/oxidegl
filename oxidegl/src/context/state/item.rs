@@ -16,7 +16,7 @@ pub enum OxideGLItem {
     Array(Rc<[OxideGLItemSingle]>),
 }
 impl OxideGLItem {
-    pub fn arr<'a>(&'a self) -> &'a [OxideGLItemSingle] {
+    pub fn arr(&self) -> &[OxideGLItemSingle] {
         let iter = match self {
             Self::Single(s) => std::slice::from_ref(s),
             Self::Array(a) => &**a,
@@ -52,7 +52,7 @@ impl OxideGLItemSingle {
     #[inline]
     pub fn into_int(self) -> i32 {
         match self {
-            Self::Bool(b) => b as i32,
+            Self::Bool(b) => i32::from(b),
             Self::Int(i) => i,
             Self::Float(i) => i as i32,
             Self::Double(d) => d as i32,
@@ -68,8 +68,8 @@ impl OxideGLItemSingle {
                     0.0
                 }
             }
-            Self::Int(i) => i as f64,
-            Self::Float(f) => f as f64,
+            Self::Int(i) => f64::from(i),
+            Self::Float(f) => f64::from(f),
             Self::Double(d) => d,
         }
     }

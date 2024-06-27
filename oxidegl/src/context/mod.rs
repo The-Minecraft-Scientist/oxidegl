@@ -15,7 +15,7 @@ use self::state::GLState;
 #[allow(dead_code, unused_variables)]
 pub(crate) mod commands;
 
-#[allow(dead_code, unused_variables)]
+#[allow(dead_code, unused_variables, clippy::wildcard_imports)]
 pub(crate) mod unimplemented;
 
 pub(crate) mod state;
@@ -46,7 +46,7 @@ impl OxideGLContext {
 #[inline(always)]
 pub fn with_ctx<Ret, Func: for<'a> Fn(Pin<&'a mut OxideGLContext>) -> Ret>(f: Func) -> Ret {
     let mut opt = CTX.take().expect("No context set");
-    let p = Pin::new(opt.deref_mut());
+    let p = Pin::new(&mut *opt);
     let ret = f(p);
     CTX.set(Some(opt));
     ret
@@ -87,6 +87,7 @@ impl CtxRef {
     pub unsafe fn from_void(ptr: *mut c_void) -> Option<Self> {
         Some(Self(NonNull::new(ptr.cast())?))
     }
+    #[must_use]
     pub fn as_box(self) -> Box<OxideGLContext> {
         unsafe { Box::from_raw(self.0.as_ptr()) }
     }

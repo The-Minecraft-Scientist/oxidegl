@@ -102,8 +102,8 @@ fn get_refpage_entry<'a>(reg: &'a Document<'a>) -> RefPageEntry {
     }
 }
 
-pub const CONSTANTS_PATH: &'static str = "crate::enums::";
-pub const CONTEXT_PATH: &'static str = "crate::context::OxideGLContext::";
+pub const CONSTANTS_PATH: &str = "crate::enums::";
+pub const CONTEXT_PATH: &str = "crate::context::OxideGLContext::";
 
 fn docbook_to_markdown_children<'a>(
     node: &'a Node<'a, '_>,
@@ -118,18 +118,18 @@ fn docbook_to_markdown<'a>(node: &'a Node<'a, '_>, builder: &mut MarkdownDocComm
     match node.tag_name().name() {
         "para" => {
             builder.write_to_body_escaping(node.text().unwrap_or(""));
-            docbook_to_markdown_children(&node, builder);
+            docbook_to_markdown_children(node, builder);
             builder.line_break();
         }
         "term" => {
             builder.write_to_body_escaping(node.text().unwrap_or(""));
-            docbook_to_markdown_children(&node, builder);
+            docbook_to_markdown_children(node, builder);
             builder.line_break();
         }
         "listitem" => {
             builder.indent();
             builder.write_to_body_escaping(node.text().unwrap_or(""));
-            docbook_to_markdown_children(&node, builder);
+            docbook_to_markdown_children(node, builder);
             builder.unindent();
         }
         "include" => {
@@ -145,7 +145,7 @@ fn docbook_to_markdown<'a>(node: &'a Node<'a, '_>, builder: &mut MarkdownDocComm
             docbook_to_markdown(&d.root(), builder);
         }
         "informaltable" | "table" => {
-            write_informaltable(&node, builder);
+            write_informaltable(node, builder);
         }
 
         "constant" => {
@@ -192,10 +192,10 @@ fn docbook_to_markdown<'a>(node: &'a Node<'a, '_>, builder: &mut MarkdownDocComm
         }
         "entry" => {
             builder.write_to_body(node.text().unwrap_or(""));
-            docbook_to_markdown_children(&node, builder);
+            docbook_to_markdown_children(node, builder);
         }
         _ => {
-            docbook_to_markdown_children(&node, builder);
+            docbook_to_markdown_children(node, builder);
         }
     }
 }
@@ -278,7 +278,7 @@ impl MarkdownDocCommentBuilder {
             self.current_line_len += word.len() + 1;
 
             if self.current_line_len > 70 && self.wrapping {
-                self.backing_string.push_str("\n");
+                self.backing_string.push('\n');
                 if idx != elen {
                     self.write_line_header();
                 }
@@ -290,12 +290,12 @@ impl MarkdownDocCommentBuilder {
     }
 
     fn write_line_header(&mut self) {
-        if !self.backing_string.ends_with('\n') && self.backing_string.len() > 0 {
+        if !self.backing_string.ends_with('\n') && !self.backing_string.is_empty() {
             self.backing_string.push('\n');
         }
         self.backing_string.push_str("/// ");
         self.backing_string.push_str(&self.current_prefix);
-        if self.current_prefix.len() > 0 {
+        if !self.current_prefix.is_empty() {
             self.backing_string.push(' ');
         }
     }
@@ -368,7 +368,7 @@ fn write_informaltable<'a>(node: &'a Node<'a, '_>, builder: &mut MarkdownDocComm
     builder.write_to_body("|");
     for width in widths.iter() {
         builder.backing_string.push_str(&"-".repeat(*width));
-        builder.backing_string.push_str("|");
+        builder.backing_string.push('|');
     }
 
     for row in tgroup
@@ -463,7 +463,7 @@ fn get_all_entries<'a>(reg: &'a Document<'a>) -> HashMap<&'a str, GLAPIEntry<'a>
                             let value;
                             if val.starts_with("0x") {
                                 let vopt = u32::from_str_radix(&val[2..], 16);
-                                if !vopt.is_ok() {
+                                if vopt.is_err() {
                                     continue;
                                 }
                                 value = vopt.unwrap();
@@ -588,7 +588,7 @@ const ALL_VERSIONS: [GLVersion; 19] = [
 fn get_all_required_features<'a>(reg: &'a Document<'a>) -> OrderedFeatureStorage<'a> {
     let mut feature_set = OrderedFeatureStorage::new();
     for version in ALL_VERSIONS {
-        get_required_features_version(&reg, version, &mut feature_set);
+        get_required_features_version(reg, version, &mut feature_set);
     }
     feature_set
 }
@@ -607,7 +607,7 @@ fn gen_funcs<'a>(spec: &'a Document<'a>) -> Vec<FnCollection<'a>> {
     let elems = get_all_required_features(spec);
     let mut entries = get_all_entries(spec);
 
-    for file in std::fs::read_dir(&format!(
+    for file in std::fs::read_dir(format!(
         "{}/OpenGL-Refpages/gl4",
         env!("CARGO_MANIFEST_DIR")
     ))
@@ -626,7 +626,7 @@ fn gen_funcs<'a>(spec: &'a Document<'a>) -> Vec<FnCollection<'a>> {
     }
 
     backing_strs.iter_mut().for_each(|a| {
-        let mut iter = a.1.split("\n");
+        let mut iter = a.1.split('\n');
         let _ = iter.next();
         a.1 = remove_multi(
             &iter.collect::<String>(),
@@ -647,7 +647,7 @@ fn gen_funcs<'a>(spec: &'a Document<'a>) -> Vec<FnCollection<'a>> {
         .map(|(filename, body)| {
             (
                 filename,
-                get_refpage_entry(&Document::parse_with_options(&body, opts).unwrap()),
+                get_refpage_entry(&Document::parse_with_options(body, opts).unwrap()),
             )
         })
         .enumerate()
@@ -685,7 +685,7 @@ fn gen_funcs<'a>(spec: &'a Document<'a>) -> Vec<FnCollection<'a>> {
     }
     funcs
 }
-fn write_command_impl<'a, T: Write>(w: &mut T, v: &[FnCollection<'a>]) {
+fn write_command_impl<T: Write>(w: &mut T, v: &[FnCollection<'_>]) {
     writeln!(w, "// GL Commands").unwrap();
     writeln!(
         w,
@@ -705,24 +705,24 @@ fn write_command_impl<'a, T: Write>(w: &mut T, v: &[FnCollection<'a>]) {
             writeln!(
                 w,
                 "{}",
-                print_dispatch_fn(name, return_type.clone(), &params)
+                print_dispatch_fn(name, return_type.clone(), params)
             )
             .unwrap();
         }
     }
 }
-fn write_enum_impl<'a, T: Write>(w: &mut T, v: &Vec<&GLAPIEntry<'a>>) {
+fn write_enum_impl<T: Write>(w: &mut T, v: &Vec<&GLAPIEntry<'_>>) {
     writeln!(w, "use crate::gl::gltypes::GLenum;").unwrap();
     for item in v {
         match item {
             GLAPIEntry::Enum { name, value } => {
-                writeln!(w, "{}", print_rust_enum_entry(*name, *value)).unwrap();
+                writeln!(w, "{}", print_rust_enum_entry(name, *value)).unwrap();
             }
             _ => {}
         }
     }
 }
-fn write_placeholder_impl<'a, T: Write>(w: &mut T, v: &[FnCollection<'a>]) {
+fn write_placeholder_impl<T: Write>(w: &mut T, v: &[FnCollection<'_>]) {
     writeln!(
         w,
         "use super::OxideGLContext;\nuse crate::gl::gltypes::*;\n"
@@ -771,7 +771,7 @@ fn write_placeholder_impl<'a, T: Write>(w: &mut T, v: &[FnCollection<'a>]) {
         writeln!(w, "\n}}\n}}").unwrap();
     }
 
-    if delay.len() > 0 {
+    if !delay.is_empty() {
         writeln!(w, "impl OxideGLContext {{").unwrap();
         for individual in delay {
             let Some(GLAPIEntry::Command {
@@ -809,7 +809,7 @@ fn print_placeholder_fn<'a>(
         "{{\n    panic!(\"command {} not yet implemented\");\n}}",
         name
     );
-    if params.len() == 0 {
+    if params.is_empty() {
         return format!(
             "pub fn {}(&mut self){} {}",
             name,
@@ -860,7 +860,7 @@ fn print_dispatch_fn<'a>(name: &'a str, ret_type: GLTypes, params: &Vec<Paramete
         snake_case_from_title_case(name.to_owned()),
         paramnl
     );
-    if params.len() == 0 {
+    if params.is_empty() {
         return format!(
             "#[no_mangle]\nunsafe extern \"C\" fn {}(){} {}",
             name,
@@ -892,7 +892,7 @@ fn print_dispatch_fn<'a>(name: &'a str, ret_type: GLTypes, params: &Vec<Paramete
 }
 
 fn print_abi_fn_type<'a>(_name: &'a str, ret_type: GLTypes, params: &Vec<Parameter<'a>>) -> String {
-    if params.len() == 0 {
+    if params.is_empty() {
         return format!(
             "unsafe extern \"C\" fn(){}",
             ret_type.to_rust_ret_type_str(),
@@ -919,8 +919,8 @@ fn print_abi_fn_type<'a>(_name: &'a str, ret_type: GLTypes, params: &Vec<Paramet
     )
 }
 
-fn print_rust_enum_entry<'a>(name: &'a str, value: u32) -> String {
-    format!("pub const {}: GLenum = {};", name, value.to_string())
+fn print_rust_enum_entry(name: &str, value: u32) -> String {
+    format!("pub const {}: GLenum = {};", name, value)
 }
 
 #[derive(Clone, Debug, AsRefStr)]

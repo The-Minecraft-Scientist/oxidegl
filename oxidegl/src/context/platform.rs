@@ -31,7 +31,7 @@ impl MetalComponents {
         };
 
         if let Some(l) = unsafe { view.layer() } {
-            l.addSublayer(&layer)
+            l.addSublayer(&layer);
         } else {
             unsafe { view.setLayer(Some(&layer)) };
         }
