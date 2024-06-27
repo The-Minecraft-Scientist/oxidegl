@@ -1,0 +1,51 @@
+[package]
+name = "oxidegl"
+version = "0.1.0"
+edition = "2021"
+[lib]
+crate-type = ["cdylib"]
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[profile.release]
+codegen-units = 1
+lto = "fat"
+panic = "abort"
+
+[profile.dev]
+opt-level = 1
+codegen-units = 256
+incremental = true
+lto = "thin"
+
+
+[dependencies]
+objc2 = "0.5.2"
+once_cell = "1.18.0"
+roxmltree = "0.20.0"
+strum = { version = "0.26.3", features = ["strum_macros"] }
+strum_macros = "0.26.3"
+state = { version = "0.6.0", features = ["tls"] }
+objc2-app-kit = { version = "0.2.2", features = [
+    "NSView",
+    "NSResponder",
+    "NSScreen",
+    "objc2-quartz-core",
+] }
+objc2-metal = { version = "0.2.2", features = ["all"] }
+objc2-quartz-core = { version = "0.2.2", features = [
+    "objc2-metal",
+    "CAMetalLayer",
+    "CALayer",
+] }
+objc2-foundation = "0.2.2"
+
+log = "0.4.21"
+
+
+[features]
+max_log_trace = ["log/max_level_trace"]
+max_log_debug = ["log/max_level_debug"]
+max_log_info = ["log/max_level_info"]
+max_log_warn = ["log/max_level_warn"]
+max_log_error = ["log/max_level_error"]
+max_log_off = ["log/max_level_off"]
