@@ -4,6 +4,6 @@
 [submodule "OpenGL-Registry"]
 	path = xtask/OpenGL-Registry
 	url = https://github.com/KhronosGroup/OpenGL-Registry
-[submodule "OpenGL-Refpages"]
+[submodule "xtask/OpenGL-Refpages"]
 	path = xtask/OpenGL-Refpages
-	url = https://github.com/KhronosGroup/OpenGL-Refpages.git
+	url = https://github.com/The-Minecraft-Scientist/OpenGL-Refpages

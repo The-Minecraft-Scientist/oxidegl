@@ -10,40 +10,50 @@ fn main() {
 struct Args {
     /// Subcommand to run
     #[command(subcommand)]
-    command: Commands,
+    command: Tasks,
 }
 #[derive(Subcommand, Clone)]
-enum Commands {
+enum Tasks {
     /// Build liboxidegl.dylib
     Build {
-        /// Whether to build OxideGL with or without debug assertions
-        #[arg(short, long)]
+        /// Build OxideGL with debug assertions
+        #[arg(short, long, default_value_t = true)]
         debug_assertions: bool,
-        /// Whether to build OxideGL with the "dev" or "release" profile
-        #[arg(short, long)]
+        /// Build OxideGL with the "release" profile instead of "dev"
+        #[arg(short, long, default_value_t = false)]
         release: bool,
-        /// Whether to build OxideGL targetting the current CPU
+        /// Build OxideGL targetting the current CPU's featureset instead of the more conservative default
+        #[arg(short, long, default_value_t = false)]
+        target_native_cpu: bool,
         /// Maximum logging level to compile OxideGL with (valid options are: "off", "error", "warn", "info", "debug", and "trace")
-        #[arg(short, long)]
-        logging_level: Option<String>,
+        #[arg(short, long, default_value = "trace")]
+        logging_level: String,
     },
-    /// Init GLFW git submodule
+    /// Init GLFW git submodule if it hasn't been already
     GetGLFW,
-    /// Build OxideGL GLFW
+    /// Build OxideGL GLFW (requires XCode command line tools for clang and cmake)
     BuildGLFW,
     /// Init OpenGL-Refpages and -Registry submodules (required to run codegen)
     GetKhronosStuff,
 
     Generate {
         /// Directory to place the generated .rs file in
-        output_dir: Option<PathBuf>,
+        #[arg(short, long, default_value = ".")]
+        output_dir: PathBuf,
         /// Whether to generate placeholder implementations (unimplemented.rs)
+        #[arg(short = 'p', long, default_value_t = true)]
         generate_placeholder: bool,
         /// Whether to generate dispatch implementations (gl_core.rs)
+        #[arg(short = 'd', long, default_value_t = true)]
         generate_dispatch: bool,
         /// Whether to generate enums (enums.rs)
+        #[arg(short = 'e', long, default_value_t = true)]
         generate_enums: bool,
     },
-    /// Runs a "test". A test is a binary
-    RunTest { test_name: Option<String> },
+    /// Run a "test". A test is a name=path_to_binary pair given in tests.txt.
+    /// Paths given are relative to the workspace root
+    RunTest {
+        #[arg(short, long, default_value = "glfw-triangle")]
+        test_name: String,
+    },
 }
