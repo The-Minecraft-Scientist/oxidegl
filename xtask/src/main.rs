@@ -10,10 +10,10 @@ fn main() {
 struct Args {
     /// Subcommand to run
     #[command(subcommand)]
-    command: Commands,
+    command: Tasks,
 }
 #[derive(Subcommand, Clone)]
-enum Commands {
+enum Tasks {
     /// Build liboxidegl.dylib
     Build {
         /// Build OxideGL with debug assertions
