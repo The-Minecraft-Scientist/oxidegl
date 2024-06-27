@@ -1,13 +1,10 @@
-use std::mem::{transmute, ManuallyDrop};
-use std::ptr::NonNull;
 
 use objc2::rc::{Id, Retained};
 use objc2::runtime::ProtocolObject;
-use objc2::{extern_protocol, ProtocolType};
 use objc2_app_kit::{NSScreen, NSView};
 use objc2_foundation::MainThreadMarker;
 use objc2_metal::{MTLCreateSystemDefaultDevice, MTLDevice};
-use objc2_quartz_core::{kCAFilterNearest, CALayer, CAMetalLayer};
+use objc2_quartz_core::{kCAFilterNearest, CAMetalLayer};
 
 #[derive(Debug)]
 pub struct PlatformState {

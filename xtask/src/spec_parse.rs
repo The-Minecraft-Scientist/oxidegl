@@ -2,15 +2,14 @@
 
 use std::{
     collections::HashMap,
-    fs::File,
-    io::{BufWriter, Write},
+    io::{Write},
 };
 
-use roxmltree::{Attribute, Children, Document, Node, ParsingOptions};
+use roxmltree::{Children, Document, Node, ParsingOptions};
 
 use strum_macros::AsRefStr;
 
-use crate::{open_file_writer, remove_multi, snake_case_from_title_case, NodeExt};
+use crate::{remove_multi, snake_case_from_title_case, NodeExt};
 
 #[derive(Clone, Copy, Debug)]
 struct GLVersion {

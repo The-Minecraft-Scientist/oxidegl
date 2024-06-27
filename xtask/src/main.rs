@@ -9,9 +9,10 @@ fn main() {
 #[command(version, about, long_about = None)]
 struct Args {
     /// Subcommand to run
+    #[command(subcommand)]
     command: Commands,
 }
-#[derive(Subcommand)]
+#[derive(Subcommand, Clone)]
 enum Commands {
     /// Build liboxidegl.dylib
     Build {
