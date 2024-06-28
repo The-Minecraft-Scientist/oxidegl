@@ -4,7 +4,7 @@ use std::{
 };
 
 #[derive(Clone, Copy, Debug)]
-pub enum OxideGLItemSingle {
+pub enum GLItemSingle {
     Bool(bool),
     Int(i32),
     Float(f32),
@@ -12,11 +12,11 @@ pub enum OxideGLItemSingle {
 }
 #[derive(Debug, Clone)]
 pub enum OxideGLItem {
-    Single(OxideGLItemSingle),
-    Array(Rc<[OxideGLItemSingle]>),
+    Single(GLItemSingle),
+    Array(Rc<[GLItemSingle]>),
 }
 impl OxideGLItem {
-    pub fn arr(&self) -> &[OxideGLItemSingle] {
+    pub fn arr(&self) -> &[GLItemSingle] {
         let iter = match self {
             Self::Single(s) => std::slice::from_ref(s),
             Self::Array(a) => &**a,
@@ -29,7 +29,7 @@ impl OxideGLItem {
     clippy::cast_possible_wrap,
     clippy::cast_precision_loss
 )]
-impl OxideGLItemSingle {
+impl GLItemSingle {
     #[inline]
     pub fn into_bool(self) -> bool {
         match self {
@@ -79,35 +79,35 @@ impl OxideGLItemSingle {
         }
     }
 }
-impl From<bool> for OxideGLItemSingle {
-    fn from(value: bool) -> Self {
-        Self::Bool(value)
-    }
+macro_rules! impl_item_from {
+    // If people want to misuse the GLGet API, they deserve to lose a bit of precision or have a value truncated
+    ($i:ident, $t:ty) => {
+        #[allow(
+            clippy::cast_possible_wrap,
+            clippy::cast_possible_truncation,
+            clippy::cast_precision_loss
+        )]
+        impl From<$t> for GLItemSingle {
+            fn from(value: $t) -> Self {
+                Self::$i(value)
+            }
+        }
+    };
 }
-#[allow(clippy::cast_possible_wrap)]
-impl From<u32> for OxideGLItemSingle {
+impl_item_from!(Bool, bool);
+impl_item_from!(Int, i32);
+impl_item_from!(Float, f32);
+impl_item_from!(Double, f64);
+impl From<u32> for GLItemSingle {
+    #[allow(clippy::cast_possible_wrap)]
     fn from(value: u32) -> Self {
         Self::Int(value as i32)
     }
 }
-impl From<i32> for OxideGLItemSingle {
-    fn from(value: i32) -> Self {
-        Self::Int(value)
-    }
-}
-impl From<f32> for OxideGLItemSingle {
-    fn from(value: f32) -> Self {
-        Self::Float(value)
-    }
-}
-impl From<f64> for OxideGLItemSingle {
-    fn from(value: f64) -> Self {
-        Self::Double(value)
-    }
-}
+
 impl<T> From<T> for OxideGLItem
 where
-    T: Into<OxideGLItemSingle>,
+    T: Into<GLItemSingle>,
 {
     fn from(value: T) -> Self {
         Self::Single(value.into())
@@ -115,20 +115,19 @@ where
 }
 impl<T, const N: usize> From<[T; N]> for OxideGLItem
 where
-    T: Into<OxideGLItemSingle> + Copy,
+    T: Into<GLItemSingle> + Copy,
 {
     fn from(value: [T; N]) -> Self {
-        let mut array = [MaybeUninit::<OxideGLItemSingle>::uninit(); N];
+        let mut array = [MaybeUninit::<GLItemSingle>::uninit(); N];
         for (idx, val) in value.into_iter().enumerate() {
             array[idx].write(val.into());
         }
 
         let mut m = ManuallyDrop::new(array);
         let v = *unsafe {
-            std::mem::transmute::<
-                &mut [MaybeUninit<OxideGLItemSingle>; N],
-                &mut [OxideGLItemSingle; N],
-            >(&mut m)
+            std::mem::transmute::<&mut [MaybeUninit<GLItemSingle>; N], &mut [GLItemSingle; N]>(
+                &mut m,
+            )
         };
         OxideGLItem::Array(Rc::new(v))
     }

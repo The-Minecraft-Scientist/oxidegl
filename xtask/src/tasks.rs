@@ -194,6 +194,7 @@ fn rustfmt_file(path: impl AsRef<Path>) -> Result<()> {
     }
     Ok(())
 }
+
 #[derive(clap::Args, Clone, Eq, PartialEq, Hash, Debug)]
 pub struct RunTest {
     #[arg(short, long, default_value = "glfw-triangle")]

@@ -1,6 +1,6 @@
 [workspace]
 resolver = "2"
-members = ["oxidegl", "xtask"]
+members = ["oxidegl", "oxidegl-macros", "xtask"]
 
 [profile.release]
 codegen-units = 1

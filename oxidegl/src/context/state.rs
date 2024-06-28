@@ -5,7 +5,7 @@ use crate::{
         GL_CONTEXT_FLAG_NO_ERROR_BIT, GL_FILL, GL_FRONT, GL_FRONT_AND_BACK, GL_LINE, GL_POINT,
     },
 };
-use item::OxideGLItemSingle;
+use item::GLItemSingle;
 pub mod item;
 macro_rules! impl_gl_enum {
     ($e:ident) => {
@@ -17,32 +17,11 @@ macro_rules! impl_gl_enum {
         }
     };
 }
-
-#[repr(u32)]
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-pub enum PolygonMode {
-    Point = GL_POINT,
-    Line = GL_LINE,
-    Fill = GL_FILL,
-}
-impl_gl_enum!(PolygonMode);
-
-#[repr(u32)]
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-pub enum CullFaceMode {
-    Front = GL_FRONT,
-    Back = GL_BACK,
-    FrontAndBack = GL_FRONT_AND_BACK,
-}
-impl_gl_enum!(CullFaceMode);
-
 #[derive(Debug)]
 pub struct GLState {
     pub characteristics: Characteristics,
     pub point_size: f32,
     pub line_width: f32,
-    pub polygon_mode: PolygonMode,
-    pub cull_face_mode: CullFaceMode,
 }
 
 impl GLState {
@@ -51,8 +30,6 @@ impl GLState {
             characteristics: Characteristics::new(),
             point_size: 1.0,
             line_width: 1.0,
-            polygon_mode: PolygonMode::Fill,
-            cull_face_mode: CullFaceMode::Back,
         }
     }
 }
