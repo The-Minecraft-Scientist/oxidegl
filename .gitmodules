@@ -2,8 +2,8 @@
 	path = oxidegl-glfw
 	url = https://github.com/The-Minecraft-Scientist/oxidegl-glfw.git
 [submodule "OpenGL-Registry"]
-	path = xtask/OpenGL-Registry
+	path = reference/OpenGL-Registry
 	url = https://github.com/KhronosGroup/OpenGL-Registry
 [submodule "xtask/OpenGL-Refpages"]
-	path = xtask/OpenGL-Refpages
+	path = reference/OpenGL-Refpages
 	url = https://github.com/The-Minecraft-Scientist/OpenGL-Refpages
