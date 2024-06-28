@@ -4,8 +4,8 @@ use std::{
     sync::{Arc, OnceLock},
 };
 
-use anyhow::{bail, Context, Result};
-use clap::{builder::Str, Args, Subcommand};
+use anyhow::{bail, Result};
+use clap::{Args, Subcommand};
 use dashmap::DashSet;
 use enum_dispatch::enum_dispatch;
 use log::{error, info};
