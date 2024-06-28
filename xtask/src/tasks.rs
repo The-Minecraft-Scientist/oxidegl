@@ -1,15 +1,14 @@
 use std::{
     path::PathBuf,
-    process::exit,
+    process::{self, exit},
     sync::{Arc, OnceLock},
 };
 
 use anyhow::{bail, Context, Result};
-use clap::{Args, Subcommand};
+use clap::{builder::Str, Args, Subcommand};
 use dashmap::DashSet;
-use devx_cmd::cmd;
 use enum_dispatch::enum_dispatch;
-use log::info;
+use log::{error, info};
 
 use crate::{
     open_file_writer,
@@ -141,14 +140,14 @@ pub struct GenerateBindings {
     #[arg(short, long, default_value = "xtask/generated")]
     output_dir: PathBuf,
     /// Whether to generate placeholder implementations (unimplemented.rs)
-    #[arg(short = 'p', long, default_value_t = true)]
-    generate_placeholder: bool,
+    #[arg(short, long, default_value_t = false)]
+    placeholder: bool,
     /// Whether to generate dispatch implementations (gl_core.rs)
-    #[arg(short = 'd', long, default_value_t = true)]
-    generate_dispatch: bool,
+    #[arg(short, long, default_value_t = false)]
+    dispatch: bool,
     /// Whether to generate enums (enums.rs)
-    #[arg(short = 'e', long, default_value_t = true)]
-    generate_enums: bool,
+    #[arg(short, long, default_value_t = false)]
+    enums: bool,
 }
 impl TaskTrait for GenerateBindings {
     fn dependencies(&self) -> Option<Box<[Task]>> {
@@ -161,16 +160,16 @@ impl TaskTrait for GenerateBindings {
         let spec = std::fs::read_to_string("reference/OpenGL-Registry/xml/gl.xml")?;
         let spec_doc = roxmltree::Document::parse(&spec)?;
         let (funcs, enums) = get_vals(&spec_doc)?;
-        if self.generate_placeholder | self.generate_dispatch | self.generate_enums {
-            if self.generate_placeholder {
+        if self.placeholder | self.dispatch | self.enums {
+            if self.placeholder {
                 let mut writer = open_file_writer(out_dir.join("unimplemented.rs"))?;
                 write_placeholder_impl(&mut writer, &funcs)?;
             }
-            if self.generate_dispatch {
+            if self.dispatch {
                 let mut writer = open_file_writer(out_dir.join("gl_core.rs"))?;
                 write_dispatch_impl(&mut writer, &funcs)?;
             }
-            if self.generate_enums {
+            if self.enums {
                 let mut writer = open_file_writer(out_dir.join("enums.rs"))?;
                 write_enum_impl(&mut writer, &enums)?;
             }
@@ -198,17 +197,7 @@ macro_rules! stub_arg {
 stub_arg!(GetGLFW);
 impl TaskTrait for GetGLFW {
     fn perform(&self) -> Result<()> {
-        cmd!(
-            "git",
-            "submodule",
-            "update",
-            "--init",
-            "--recursive",
-            "--",
-            "oxidegl-glfw"
-        )
-        .run()?;
-        Ok(())
+        submodule_init(&["oxidegl-glfw"])
     }
     fn dependencies(&self) -> Option<Box<[Task]>> {
         Some([GetXcodeCommandLineTools {}.into()].into())
@@ -217,19 +206,7 @@ impl TaskTrait for GetGLFW {
 stub_arg!(GetKhronosStuff);
 impl TaskTrait for GetKhronosStuff {
     fn perform(&self) -> Result<()> {
-        cmd!(
-            "git",
-            "submodule",
-            "update",
-            "--init",
-            "--recursive",
-            "--",
-            "xtask/OpenGL-Refpages",
-            "xtask/OpenGL-Registry"
-        )
-        .run()?;
-
-        Ok(())
+        submodule_init(&["xtask/OpenGL-Registry", "xtask/OpenGL-Refpages"])
     }
     fn dependencies(&self) -> Option<Box<[Task]>> {
         Some([GetXcodeCommandLineTools {}.into()].into())
@@ -238,18 +215,43 @@ impl TaskTrait for GetKhronosStuff {
 stub_arg!(GetXcodeCommandLineTools);
 impl TaskTrait for GetXcodeCommandLineTools {
     fn perform(&self) -> Result<()> {
-        let mut child = cmd!("xcode-select", "--install").spawn_piped().unwrap();
-        let line = child
-            .stdout_lines()
-            .next()
-            .context("xcode-select did not write to stdout!")?;
-        if line.contains("install requested") {
+        let out = std::process::Command::new("xcode-select")
+            .arg("--install")
+            .output()?;
+        let stderr = String::from_utf8(out.stderr)?;
+        if stderr.contains("already installed") {
+            return Ok(());
+        }
+        if !out.status.success() {
+            error!("xcode-select error: {stderr}");
+            bail!("error from xcode-select!");
+        }
+        let stdout = String::from_utf8(out.stdout)?;
+        if stdout.contains("install requested") {
             info!("Requested install of XCode command line tools.\nPlease confirm the installation and run this command again when it is finished.");
             exit(0);
-        } else if line.contains("already installed") {
-            return Ok(());
         } else {
-            bail!("xcode-select returned an unexpected value");
+            bail!("unexpected successful execution of xcode-select, output: {stdout}");
         }
     }
+}
+fn submodule_init(paths: &[&str]) -> Result<()> {
+    info!(
+        "initializing git submodule(s) at: {}",
+        paths
+            .iter()
+            .flat_map(|v| [*v, "\n"])
+            .scan(None, |state, item| { std::mem::replace(state, Some(item)) })
+            .collect::<String>()
+    );
+    if !process::Command::new("git")
+        .args(["submodule", "update", "--init", "--recursive", "--"])
+        .args(paths)
+        .spawn()?
+        .wait()?
+        .success()
+    {
+        bail!("git process errored while trying to update a submodule")
+    }
+    Ok(())
 }

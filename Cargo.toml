@@ -1,3 +1,14 @@
 [workspace]
 resolver = "2"
 members = ["oxidegl", "xtask"]
+
+[profile.release]
+codegen-units = 1
+lto = "fat"
+panic = "abort"
+
+[profile.dev]
+opt-level = 1
+codegen-units = 256
+incremental = true
+lto = "thin"
