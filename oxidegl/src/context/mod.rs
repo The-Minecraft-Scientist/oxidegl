@@ -19,7 +19,8 @@ use self::state::GLState;
     clippy::wildcard_imports,
     clippy::too_many_arguments,
     clippy::unused_self,
-    clippy::similar_names
+    clippy::similar_names,
+    clippy::missing_safety_doc
 )]
 pub(crate) mod commands;
 

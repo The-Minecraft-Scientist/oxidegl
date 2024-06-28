@@ -322,7 +322,7 @@ impl Context {
         dbg!(item)
     }
 
-    pub(crate) fn oxidegl_get_booleanv(&mut self, pname: GLenum, mut data: *mut GLboolean) {
+    pub unsafe fn oxidegl_get_booleanv(&mut self, pname: GLenum, mut data: *mut GLboolean) {
         for item in self.get(pname, None).arr() {
             // Safety: This is user-accessible UB. We have ZERO information about what is behind this pointer
             // Trusting the user like this kinda sucks but its just How The API Works™
@@ -332,7 +332,8 @@ impl Context {
             }
         }
     }
-    pub(crate) fn oxidegl_get_doublev(&mut self, pname: GLenum, mut data: *mut GLdouble) {
+
+    pub unsafe fn oxidegl_get_doublev(&mut self, pname: GLenum, mut data: *mut GLdouble) {
         for item in self.get(pname, None).arr() {
             // SAFETY: see above
             unsafe {
@@ -341,7 +342,8 @@ impl Context {
             }
         }
     }
-    pub(crate) fn oxidegl_get_floatv(&mut self, pname: GLenum, mut data: *mut GLfloat) {
+
+    pub unsafe fn oxidegl_get_floatv(&mut self, pname: GLenum, mut data: *mut GLfloat) {
         for item in self.get(pname, None).arr() {
             // SAFETY: see above
             unsafe {
@@ -350,7 +352,8 @@ impl Context {
             }
         }
     }
-    pub(crate) fn oxidegl_get_integerv(&mut self, pname: GLenum, mut data: *mut GLint) {
+
+    pub unsafe fn oxidegl_get_integerv(&mut self, pname: GLenum, mut data: *mut GLint) {
         for item in self.get(pname, None).arr() {
             // SAFETY: see above
             unsafe {
@@ -359,22 +362,52 @@ impl Context {
             }
         }
     }
-    pub fn oxidegl_get_booleani_v(&mut self, target: GLenum, index: GLuint, data: *mut GLboolean) {
+
+    pub unsafe fn oxidegl_get_booleani_v(
+        &mut self,
+        target: GLenum,
+        index: GLuint,
+        data: *mut GLboolean,
+    ) {
         panic!("command oxidegl_get_booleani_v not yet implemented");
     }
-    pub fn oxidegl_get_integeri_v(&mut self, target: GLenum, index: GLuint, data: *mut GLint) {
+
+    pub unsafe fn oxidegl_get_integeri_v(
+        &mut self,
+        target: GLenum,
+        index: GLuint,
+        data: *mut GLint,
+    ) {
         panic!("command oxidegl_get_integeri_v not yet implemented");
     }
-    pub fn oxidegl_get_integer64v(&mut self, pname: GLenum, data: *mut GLint64) {
+
+    pub unsafe fn oxidegl_get_integer64v(&mut self, pname: GLenum, data: *mut GLint64) {
         panic!("command oxidegl_get_integer64v not yet implemented");
     }
-    pub fn oxidegl_get_integer64i_v(&mut self, target: GLenum, index: GLuint, data: *mut GLint64) {
+    pub unsafe fn oxidegl_get_integer64i_v(
+        &mut self,
+        target: GLenum,
+        index: GLuint,
+        data: *mut GLint64,
+    ) {
         panic!("command oxidegl_get_integer64i_v not yet implemented");
     }
-    pub fn oxidegl_get_floati_v(&mut self, target: GLenum, index: GLuint, data: *mut GLfloat) {
+
+    pub unsafe fn oxidegl_get_floati_v(
+        &mut self,
+        target: GLenum,
+        index: GLuint,
+        data: *mut GLfloat,
+    ) {
         panic!("command oxidegl_get_floati_v not yet implemented");
     }
-    pub fn oxidegl_get_doublei_v(&mut self, target: GLenum, index: GLuint, data: *mut GLdouble) {
+
+    pub unsafe fn oxidegl_get_doublei_v(
+        &mut self,
+        target: GLenum,
+        index: GLuint,
+        data: *mut GLdouble,
+    ) {
         panic!("command oxidegl_get_doublei_v not yet implemented");
     }
     fn get_string(name: GLenum) -> *const GLubyte {
@@ -892,7 +925,7 @@ pub mod get_internalformat {
     use crate::context::Context;
     use crate::dispatch::gltypes::{GLenum, GLint, GLint64, GLsizei};
     impl Context {
-        pub(crate) fn oxidegl_get_internalformativ(
+        pub(crate) unsafe fn oxidegl_get_internalformativ(
             &mut self,
             target: GLenum,
             internalformat: GLenum,
@@ -902,7 +935,7 @@ pub mod get_internalformat {
         ) {
             panic!("command oxidegl_get_internalformativ not yet implemented");
         }
-        pub(crate) fn oxidegl_get_internalformati64v(
+        pub(crate) unsafe fn oxidegl_get_internalformati64v(
             &mut self,
             target: GLenum,
             internalformat: GLenum,
