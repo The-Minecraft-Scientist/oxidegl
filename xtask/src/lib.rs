@@ -6,8 +6,8 @@ use std::{
 
 use anyhow::Result;
 use roxmltree::{Attribute, Node};
+pub mod codegen;
 pub mod doc_parse;
-pub mod spec_parse;
 pub mod tasks;
 
 pub fn remove_multi(s: &str, m: &[&str]) -> String {

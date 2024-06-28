@@ -1,6 +1,12 @@
+use std::path::PathBuf;
+
+use const_format::concatcp;
 use roxmltree::{Children, Document, Node, ParsingOptions};
 
-use crate::{snake_case_from_title_case, NodeExt};
+use crate::{
+    codegen::{CONTEXT_STRUCT_PATH, ENUMS_PATH},
+    snake_case_from_title_case, NodeExt,
+};
 
 #[derive(Debug)]
 pub struct RefPageEntry {
@@ -38,28 +44,32 @@ pub fn get_refpage_entry<'a>(reg: &'a Document<'a>) -> RefPageEntry {
                 .children()
                 .filter(|n| n.tag_name().name() == "funcsynopsis")
             {
-                let name = synopsis
-                    .find_named_child("funcprototype")
-                    .unwrap()
-                    .find_named_child("funcdef")
-                    .unwrap()
-                    .find_named_child("function")
-                    .unwrap()
-                    .text()
-                    .unwrap();
-                dbg!(name);
-                funcs.push(name.to_string())
+                for prototype in synopsis
+                    .children()
+                    .filter(|n| n.tag_name().name() == "funcprototype")
+                {
+                    let name = prototype
+                        .find_named_child("funcdef")
+                        .unwrap()
+                        .find_named_child("function")
+                        .unwrap()
+                        .text()
+                        .unwrap();
+                    funcs.push(name.to_string())
+                }
             }
         }
     }
+    builder
+        .backing_string
+        .truncate(builder.backing_string.len() - 4);
     RefPageEntry {
         funcs,
         doc: builder.backing_string,
     }
 }
 
-pub const CONSTANTS_PATH: &str = "crate::enums::";
-pub const CONTEXT_PATH: &str = "crate::context::Context::";
+pub const CONTEXT_ASSOCFUNC_PATH: &str = concatcp!(CONTEXT_STRUCT_PATH, "::");
 
 fn docbook_to_markdown_children<'a>(
     node: &'a Node<'a, '_>,
@@ -90,10 +100,9 @@ fn docbook_to_markdown<'a>(node: &'a Node<'a, '_>, builder: &mut MarkdownDocComm
         }
         "include" => {
             let filename = node.find_named_attribute("href").unwrap().value().trim();
-            let src = std::fs::read_to_string(format!(
-                "{}../reference/OpenGL-Refpages/gl4/{filename}",
-                env!("CARGO_MANIFEST_DIR")
-            ))
+            let src = std::fs::read_to_string(
+                PathBuf::from("reference/OpenGL-Refpages/gl4").join(filename),
+            )
             .unwrap();
             let opts = ParsingOptions {
                 allow_dtd: true,
@@ -108,7 +117,7 @@ fn docbook_to_markdown<'a>(node: &'a Node<'a, '_>, builder: &mut MarkdownDocComm
 
         "constant" => {
             if let Some(t) = node.text() {
-                builder.write_to_body(&format!("[`{}`]({}{})", t, CONSTANTS_PATH, t));
+                builder.write_to_body(&format!("[`{}`]({}{})", t, ENUMS_PATH, t));
             }
             builder.write_to_body_escaping(node.tail().unwrap_or(""));
         }
@@ -125,7 +134,7 @@ fn docbook_to_markdown<'a>(node: &'a Node<'a, '_>, builder: &mut MarkdownDocComm
         "function" => {
             let funcname = node.text().unwrap_or("");
             builder.write_to_body(&format!(
-                "[**{funcname}**]({CONTEXT_PATH}oxide{})",
+                "[**{funcname}**]({CONTEXT_ASSOCFUNC_PATH}oxide{})",
                 snake_case_from_title_case(funcname.to_string())
             ));
 
@@ -138,7 +147,7 @@ fn docbook_to_markdown<'a>(node: &'a Node<'a, '_>, builder: &mut MarkdownDocComm
                 .text()
                 .unwrap();
             builder.write_to_body(&format!(
-                "[**{funcname}**]({CONTEXT_PATH}oxide{})",
+                "[**{funcname}**]({CONTEXT_ASSOCFUNC_PATH}oxide{})",
                 snake_case_from_title_case(funcname.to_string())
             ));
 

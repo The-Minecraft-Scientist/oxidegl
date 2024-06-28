@@ -1,16 +1,21 @@
 #![allow(dead_code)]
 
 use anyhow::{Context, Result};
+use const_format::concatcp;
 use roxmltree::{Document, Node, ParsingOptions};
-use std::{
-    collections::HashMap,
-    io::Write,
-    path::{PathBuf},
-};
+use std::{collections::HashMap, io::Write, path::PathBuf};
 
 use strum_macros::AsRefStr;
 
 use crate::{doc_parse::get_refpage_entry, remove_multi, snake_case_from_title_case, NodeExt};
+
+pub const CONTEXT_MOD_PATH: &str = "crate::context::";
+pub const CONTEXT_STRUCT_NAME: &str = "Context";
+pub const CONTEXT_STRUCT_PATH: &str = concatcp!(CONTEXT_MOD_PATH, CONTEXT_STRUCT_NAME);
+pub const CONTEXT_USE: &str = concatcp!("use ", CONTEXT_STRUCT_PATH, ";");
+pub const WITH_CTX_USE: &str = concatcp!("use ", CONTEXT_MOD_PATH, "with_ctx", ";");
+pub const TYPES_USE: &str = "use crate::dispatch::gltypes::*;";
+pub const ENUMS_PATH: &str = "crate::enums::";
 
 #[derive(Clone, Copy, Debug)]
 struct GLVersion {
@@ -91,7 +96,10 @@ fn get_all_entries<'a>(reg: &'a Document<'a>) -> HashMap<&'a str, GLAPIEntry<'a>
             }
             "enums" => {
                 let _group_name = entry.attribute("group").unwrap_or("ungrouped");
-                for child in entry.children() {
+                for child in entry
+                    .children()
+                    .filter(|entry| entry.has_attribute("value"))
+                {
                     let val = child.attribute("value").unwrap();
                     let value = if val.starts_with("0x") {
                         let vopt = u32::from_str_radix(&child.attribute("value").unwrap()[2..], 16);
@@ -237,8 +245,7 @@ pub fn get_vals<'a>(
 
     let elems = get_all_required_features(spec);
     let mut entries = get_all_entries(spec);
-    for file in
-        std::fs::read_dir(PathBuf::from("reference").join("OpenGL-Reference/gl4"))?.flatten()
+    for file in std::fs::read_dir(PathBuf::from("reference").join("OpenGL-Refpages/gl4"))?.flatten()
     {
         let f = file.file_name();
         let s = f.to_str().context("file name was not valid UTF8")?;
@@ -277,6 +284,9 @@ pub fn get_vals<'a>(
         for func in refpage.funcs.iter().cloned() {
             func_reverse_lookup.insert(func, idx);
         }
+        if name == "glGenerateMipmap.xml" {
+            dbg!(&refpage.funcs);
+        }
         funcs.push(FnCollection {
             name: Some(name.trim_end_matches(".xml").to_owned()),
             docs: Some(refpage.doc),
@@ -304,7 +314,10 @@ pub fn get_vals<'a>(
                 funcs[*idx].entries.push(g);
             }
             Feature::Enum(n) => {
-                enums.push(entries.remove(n).context("tried to get entry twice")?);
+                let Some(e) = entries.remove(n) else {
+                    continue;
+                };
+                enums.push(e);
             }
         }
     }
@@ -312,10 +325,7 @@ pub fn get_vals<'a>(
 }
 pub fn write_dispatch_impl<T: Write>(w: &mut T, v: &[FnCollection<'_>]) -> Result<()> {
     writeln!(w, "// GL Commands")?;
-    writeln!(
-        w,
-        "use super::gltypes::*;\nuse crate::context::{{with_ctx}};\n"
-    )?;
+    writeln!(w, "{TYPES_USE}\n{WITH_CTX_USE}\n")?;
     for item in v {
         for cmd in item.entries.iter() {
             let GLAPIEntry::Command {
@@ -336,7 +346,7 @@ pub fn write_dispatch_impl<T: Write>(w: &mut T, v: &[FnCollection<'_>]) -> Resul
     Ok(())
 }
 pub fn write_enum_impl<T: Write>(w: &mut T, v: &[GLAPIEntry<'_>]) -> Result<()> {
-    writeln!(w, "use crate::gl::gltypes::GLenum;")?;
+    writeln!(w, "{TYPES_USE}")?;
     for item in v {
         if let GLAPIEntry::Enum { name, value } = item {
             writeln!(w, "{}", print_rust_enum_entry(name, *value))?;
@@ -345,10 +355,7 @@ pub fn write_enum_impl<T: Write>(w: &mut T, v: &[GLAPIEntry<'_>]) -> Result<()> 
     Ok(())
 }
 pub fn write_placeholder_impl<T: Write>(w: &mut T, v: &[FnCollection<'_>]) -> Result<()> {
-    writeln!(
-        w,
-        "use crate::context::Context;\nuse crate::gl::gltypes::*;\n"
-    )?;
+    writeln!(w, "{CONTEXT_USE}\n{TYPES_USE}\n")?;
     let mut delay = Vec::new();
     for item in v {
         match item.entries.len() {
@@ -364,11 +371,15 @@ pub fn write_placeholder_impl<T: Write>(w: &mut T, v: &[FnCollection<'_>]) -> Re
         }
         writeln!(
             w,
-            "pub mod {} {{\nuse crate::context::OxideGLContext;\nuse crate::gl::gltypes::*;\nimpl OxideGLContext {{",
-            &snake_case_from_title_case(item.name.as_ref().context("item did not have name when it should have")?.to_owned())
-                .trim_start_matches("gl_")
-        )
-        ?;
+            "pub mod {} {{\n{CONTEXT_USE}\n{TYPES_USE}\nimpl {CONTEXT_STRUCT_NAME} {{",
+            &snake_case_from_title_case(
+                item.name
+                    .as_ref()
+                    .context("item did not have name when it should have")?
+                    .to_owned()
+            )
+            .trim_start_matches("gl_")
+        )?;
         for func in item.entries.iter() {
             let GLAPIEntry::Command {
                 return_type,
@@ -392,7 +403,7 @@ pub fn write_placeholder_impl<T: Write>(w: &mut T, v: &[FnCollection<'_>]) -> Re
     }
 
     if !delay.is_empty() {
-        writeln!(w, "impl OxideGLContext {{")?;
+        writeln!(w, "impl Context {{")?;
         for individual in delay {
             let Some(GLAPIEntry::Command {
                 return_type,

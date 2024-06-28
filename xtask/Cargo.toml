@@ -4,8 +4,9 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
-anyhow = "1.0.86"
+anyhow = { version = "1.0.86", features = ["backtrace"] }
 clap = { version = "4.5.7", features = ["derive"] }
+const_format = "0.2.32"
 dashmap = "6.0.1"
 enum_dispatch = "0.3.13"
 log = "0.4.22"

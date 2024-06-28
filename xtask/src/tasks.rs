@@ -1,6 +1,6 @@
 use std::{
-    path::PathBuf,
-    process::{self, exit},
+    path::{Path, PathBuf},
+    process::{self, exit, Command},
     sync::{Arc, OnceLock},
 };
 
@@ -11,8 +11,8 @@ use enum_dispatch::enum_dispatch;
 use log::{error, info};
 
 use crate::{
+    codegen::{get_vals, write_dispatch_impl, write_enum_impl, write_placeholder_impl},
     open_file_writer,
-    spec_parse::{get_vals, write_dispatch_impl, write_enum_impl, write_placeholder_impl},
 };
 
 static COMPLETED_TASKS: OnceLock<Arc<DashSet<Task>>> = OnceLock::new();
@@ -162,21 +162,37 @@ impl TaskTrait for GenerateBindings {
         let (funcs, enums) = get_vals(&spec_doc)?;
         if self.placeholder | self.dispatch | self.enums {
             if self.placeholder {
-                let mut writer = open_file_writer(out_dir.join("unimplemented.rs"))?;
+                let path_to_write = out_dir.join("unimplemented.rs");
+                let mut writer = open_file_writer(&path_to_write)?;
                 write_placeholder_impl(&mut writer, &funcs)?;
+                drop(writer);
+                rustfmt_file(path_to_write)?;
             }
             if self.dispatch {
-                let mut writer = open_file_writer(out_dir.join("gl_core.rs"))?;
+                let path_to_write = out_dir.join("gl_core.rs");
+                let mut writer = open_file_writer(&path_to_write)?;
                 write_dispatch_impl(&mut writer, &funcs)?;
+                drop(writer);
+                rustfmt_file(path_to_write)?;
             }
             if self.enums {
-                let mut writer = open_file_writer(out_dir.join("enums.rs"))?;
+                let path_to_write = out_dir.join("enums.rs");
+                let mut writer = open_file_writer(&path_to_write)?;
                 write_enum_impl(&mut writer, &enums)?;
+                drop(writer);
+                rustfmt_file(path_to_write)?;
             }
         }
 
         Ok(())
     }
+}
+fn rustfmt_file(path: impl AsRef<Path>) -> Result<()> {
+    let mut s = Command::new("rustfmt").arg(path.as_ref()).spawn()?;
+    if !s.wait()?.success() {
+        bail!("rustfmt did not exit successfully! this means we generated malformed code");
+    }
+    Ok(())
 }
 #[derive(clap::Args, Clone, Eq, PartialEq, Hash, Debug)]
 pub struct RunTest {
@@ -206,7 +222,7 @@ impl TaskTrait for GetGLFW {
 stub_arg!(GetKhronosStuff);
 impl TaskTrait for GetKhronosStuff {
     fn perform(&self) -> Result<()> {
-        submodule_init(&["xtask/OpenGL-Registry", "xtask/OpenGL-Refpages"])
+        submodule_init(&["reference/OpenGL-Registry", "reference/OpenGL-Refpages"])
     }
     fn dependencies(&self) -> Option<Box<[Task]>> {
         Some([GetXcodeCommandLineTools {}.into()].into())
