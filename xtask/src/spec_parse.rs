@@ -5,7 +5,7 @@ use roxmltree::{Document, Node, ParsingOptions};
 use std::{
     collections::HashMap,
     io::Write,
-    path::{Path, PathBuf},
+    path::{PathBuf},
 };
 
 use strum_macros::AsRefStr;

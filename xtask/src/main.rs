@@ -1,16 +1,7 @@
-use std::{
-    cell::OnceCell,
-    env::set_current_dir,
-    iter::Once,
-    path::{Path, PathBuf},
-    rc::Rc,
-    sync::{Arc, OnceLock, RwLock},
-};
+use std::{env::set_current_dir, path::PathBuf};
 
-use clap::{FromArgMatches, Parser, Subcommand};
-use dashmap::DashSet;
-use enum_dispatch::enum_dispatch;
-use xtask::tasks::{GetKhronosStuff, Task, TaskTrait};
+use clap::Parser;
+use xtask::tasks::TaskTrait;
 
 fn main() {
     let args = Args::parse();

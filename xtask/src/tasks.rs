@@ -1,5 +1,4 @@
 use std::{
-    array::IntoIter,
     path::PathBuf,
     process::exit,
     sync::{Arc, OnceLock},
