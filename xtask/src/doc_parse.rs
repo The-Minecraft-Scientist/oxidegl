@@ -91,7 +91,7 @@ fn docbook_to_markdown<'a>(node: &'a Node<'a, '_>, builder: &mut MarkdownDocComm
         "include" => {
             let filename = node.find_named_attribute("href").unwrap().value().trim();
             let src = std::fs::read_to_string(format!(
-                "{}/OpenGL-Refpages/gl4/{filename}",
+                "{}../reference/OpenGL-Refpages/gl4/{filename}",
                 env!("CARGO_MANIFEST_DIR")
             ))
             .unwrap();
@@ -288,6 +288,12 @@ impl MarkdownDocCommentBuilder {
     }
     pub fn prefix_bulletted_list(&mut self) {
         self.current_prefix.push('*')
+    }
+}
+
+impl Default for MarkdownDocCommentBuilder {
+    fn default() -> Self {
+        Self::new()
     }
 }
 fn write_informaltable<'a>(node: &'a Node<'a, '_>, builder: &mut MarkdownDocCommentBuilder) {

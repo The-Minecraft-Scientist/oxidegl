@@ -1,8 +1,12 @@
 #![allow(dead_code)]
 
-use std::{collections::HashMap, io::Write};
-
-use roxmltree::{Children, Document, Node, ParsingOptions};
+use anyhow::{Context, Result};
+use roxmltree::{Document, Node, ParsingOptions};
+use std::{
+    collections::HashMap,
+    io::Write,
+    path::{Path, PathBuf},
+};
 
 use strum_macros::AsRefStr;
 
@@ -26,13 +30,13 @@ impl Default for GLVersion {
     }
 }
 #[derive(Clone, Debug)]
-struct Parameter<'a> {
+pub struct Parameter<'a> {
     pub name: &'a str,
     pub parameter_type: GLTypes,
 }
 
 #[derive(Clone, Debug)]
-enum GLAPIEntry<'a> {
+pub enum GLAPIEntry<'a> {
     Enum {
         name: &'a str,
         value: u32,
@@ -128,6 +132,12 @@ impl<'a> OrderedFeatureStorage<'a> {
         let _ = self.storage.remove(v);
     }
 }
+
+impl<'a> Default for OrderedFeatureStorage<'a> {
+    fn default() -> Self {
+        Self::new()
+    }
+}
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Hash)]
 pub enum Feature<'a> {
     Command(&'a str),
@@ -220,23 +230,20 @@ pub struct FnCollection<'a> {
     entries: Vec<GLAPIEntry<'a>>,
 }
 
-fn gen_funcs<'a>(spec: &'a Document<'a>) -> Vec<FnCollection<'a>> {
+pub fn get_vals<'a>(
+    spec: &'a Document<'a>,
+) -> Result<(Vec<FnCollection<'a>>, Vec<GLAPIEntry<'a>>)> {
     let mut backing_strs = Vec::with_capacity(1000);
 
     let elems = get_all_required_features(spec);
     let mut entries = get_all_entries(spec);
-
-    for file in std::fs::read_dir(format!(
-        "{}/OpenGL-Refpages/gl4",
-        env!("CARGO_MANIFEST_DIR")
-    ))
-    .unwrap()
-    .flatten()
+    for file in
+        std::fs::read_dir(PathBuf::from("reference").join("OpenGL-Reference/gl4"))?.flatten()
     {
         let f = file.file_name();
-        let s = f.to_str().unwrap();
+        let s = f.to_str().context("file name was not valid UTF8")?;
         if !s.starts_with("gl_") && s.starts_with("gl") {
-            backing_strs.push((s.to_string(), std::fs::read_to_string(file.path()).unwrap()));
+            backing_strs.push((s.to_string(), std::fs::read_to_string(file.path())?));
         }
     }
 
@@ -278,32 +285,37 @@ fn gen_funcs<'a>(spec: &'a Document<'a>) -> Vec<FnCollection<'a>> {
     }
 
     let mut elems = elems.storage.into_iter().collect::<Vec<_>>();
+    let mut enums = Vec::with_capacity(elems.len() / 2);
     elems.sort_by(|lhs, rhs| lhs.1.cmp(&rhs.1));
     for (feature, _) in elems.into_iter() {
-        if let Feature::Command(n) = feature {
-            let Some(g) = entries.remove(n) else {
-                continue;
-            };
-            let Some(idx) = func_reverse_lookup.get(n) else {
-                funcs.push(FnCollection {
-                    name: None,
-                    docs: None,
-                    entries: vec![g],
-                });
-                continue;
-            };
-            funcs[*idx].entries.push(g);
+        match feature {
+            Feature::Command(n) => {
+                let Some(g) = entries.remove(n) else {
+                    continue;
+                };
+                let Some(idx) = func_reverse_lookup.get(n) else {
+                    funcs.push(FnCollection {
+                        name: None,
+                        docs: None,
+                        entries: vec![g],
+                    });
+                    continue;
+                };
+                funcs[*idx].entries.push(g);
+            }
+            Feature::Enum(n) => {
+                enums.push(entries.remove(n).context("tried to get entry twice")?);
+            }
         }
     }
-    funcs
+    Ok((funcs, enums))
 }
-fn write_command_impl<T: Write>(w: &mut T, v: &[FnCollection<'_>]) {
-    writeln!(w, "// GL Commands").unwrap();
+pub fn write_dispatch_impl<T: Write>(w: &mut T, v: &[FnCollection<'_>]) -> Result<()> {
+    writeln!(w, "// GL Commands")?;
     writeln!(
         w,
         "use super::gltypes::*;\nuse crate::context::{{with_ctx}};\n"
-    )
-    .unwrap();
+    )?;
     for item in v {
         for cmd in item.entries.iter() {
             let GLAPIEntry::Command {
@@ -318,25 +330,25 @@ fn write_command_impl<T: Write>(w: &mut T, v: &[FnCollection<'_>]) {
                 w,
                 "{}",
                 print_dispatch_fn(name, return_type.clone(), params)
-            )
-            .unwrap();
+            )?;
         }
     }
+    Ok(())
 }
-fn write_enum_impl<T: Write>(w: &mut T, v: &Vec<&GLAPIEntry<'_>>) {
-    writeln!(w, "use crate::gl::gltypes::GLenum;").unwrap();
+pub fn write_enum_impl<T: Write>(w: &mut T, v: &[GLAPIEntry<'_>]) -> Result<()> {
+    writeln!(w, "use crate::gl::gltypes::GLenum;")?;
     for item in v {
         if let GLAPIEntry::Enum { name, value } = item {
-            writeln!(w, "{}", print_rust_enum_entry(name, *value)).unwrap();
+            writeln!(w, "{}", print_rust_enum_entry(name, *value))?;
         }
     }
+    Ok(())
 }
-fn write_placeholder_impl<T: Write>(w: &mut T, v: &[FnCollection<'_>]) {
+pub fn write_placeholder_impl<T: Write>(w: &mut T, v: &[FnCollection<'_>]) -> Result<()> {
     writeln!(
         w,
         "use crate::context::Context;\nuse crate::gl::gltypes::*;\n"
-    )
-    .unwrap();
+    )?;
     let mut delay = Vec::new();
     for item in v {
         match item.entries.len() {
@@ -348,15 +360,15 @@ fn write_placeholder_impl<T: Write>(w: &mut T, v: &[FnCollection<'_>]) {
             _ => {}
         }
         if let Some(doc) = &item.docs {
-            write!(w, "{doc}").unwrap();
+            write!(w, "{doc}")?;
         }
         writeln!(
             w,
             "pub mod {} {{\nuse crate::context::OxideGLContext;\nuse crate::gl::gltypes::*;\nimpl OxideGLContext {{",
-            &snake_case_from_title_case(item.name.as_ref().unwrap().to_owned())
+            &snake_case_from_title_case(item.name.as_ref().context("item did not have name when it should have")?.to_owned())
                 .trim_start_matches("gl_")
         )
-        .unwrap();
+        ?;
         for func in item.entries.iter() {
             let GLAPIEntry::Command {
                 return_type,
@@ -374,14 +386,13 @@ fn write_placeholder_impl<T: Write>(w: &mut T, v: &[FnCollection<'_>]) {
                     return_type.clone(),
                     params
                 )
-            )
-            .unwrap();
+            )?;
         }
-        writeln!(w, "\n}}\n}}").unwrap();
+        writeln!(w, "\n}}\n}}")?;
     }
 
     if !delay.is_empty() {
-        writeln!(w, "impl OxideGLContext {{").unwrap();
+        writeln!(w, "impl OxideGLContext {{")?;
         for individual in delay {
             let Some(GLAPIEntry::Command {
                 return_type,
@@ -392,7 +403,7 @@ fn write_placeholder_impl<T: Write>(w: &mut T, v: &[FnCollection<'_>]) {
                 continue;
             };
             if let Some(doc) = &individual.docs {
-                writeln!(w, "{doc}").unwrap();
+                writeln!(w, "{doc}")?;
             }
             writeln!(
                 w,
@@ -402,21 +413,28 @@ fn write_placeholder_impl<T: Write>(w: &mut T, v: &[FnCollection<'_>]) {
                     return_type.clone(),
                     params
                 )
-            )
-            .unwrap();
+            )?;
         }
-        writeln!(w, "\n}}").unwrap();
+        writeln!(w, "\n}}")?;
     }
+    Ok(())
 }
 
 fn print_placeholder_fn<'a>(name: &'a str, ret_type: GLTypes, params: &[Parameter<'a>]) -> String {
+    // The only unsafe operation the GL API can expose us to is raw pointer reads and writes. If we don't take in any pointers then the function should be safe
+    let unsafe_marker = if params.iter().any(|v| v.parameter_type.is_pointer()) {
+        " unsafe"
+    } else {
+        ""
+    };
     let body = format!(
         "{{\n    panic!(\"command {} not yet implemented\");\n}}",
         name
     );
     if params.is_empty() {
+        // function cannot be unsafe if it has no parameters
         return format!(
-            "pub unsafe fn {}(&mut self){} {}",
+            "pub fn {}(&mut self){} {}",
             name,
             ret_type.to_rust_ret_type_str(),
             body
@@ -442,7 +460,8 @@ fn print_placeholder_fn<'a>(name: &'a str, ret_type: GLTypes, params: &[Paramete
         }
     }
     format!(
-        "pub unsafe fn {}(&mut self, {}){} {}",
+        "pub{} fn {}(&mut self, {}){} {}",
+        unsafe_marker,
         name,
         str,
         ret_type.to_rust_ret_type_str(),
@@ -451,6 +470,7 @@ fn print_placeholder_fn<'a>(name: &'a str, ret_type: GLTypes, params: &[Paramete
 }
 
 fn print_dispatch_fn<'a>(name: &'a str, ret_type: GLTypes, params: &[Parameter<'a>]) -> String {
+    let is_unsafe = params.iter().any(|p| p.parameter_type.is_pointer());
     let paramnl = params
         .iter()
         .map(|p| match p.name {
@@ -461,9 +481,11 @@ fn print_dispatch_fn<'a>(name: &'a str, ret_type: GLTypes, params: &[Parameter<'
         .collect::<Vec<String>>()
         .join("");
     let body = format!(
-        "{{\n    with_ctx(|mut state| unsafe {{ state.oxide{}({}) }})\n}}",
+        "{{\n    with_ctx(|mut state|{} state.oxide{}({}){})\n}}",
+        if is_unsafe { " unsafe {" } else { "" },
         snake_case_from_title_case(name.to_owned()),
-        paramnl
+        paramnl,
+        if is_unsafe { " }" } else { "" },
     );
     if params.is_empty() {
         return format!(
@@ -529,7 +551,7 @@ fn print_rust_enum_entry(name: &str, value: u32) -> String {
 }
 #[allow(clippy::upper_case_acronyms)]
 #[derive(Clone, Debug, AsRefStr)]
-enum GLTypes {
+pub enum GLTypes {
     GLint,
     GLuint64,
     GLuint,
@@ -611,6 +633,9 @@ impl GLTypes {
         let body = ret_node.text().unwrap();
         let tail = ret_node.tail().unwrap_or("");
         Self::from_c_type_str_prefix_suffix(prefix, body, tail)
+    }
+    fn is_pointer(&self) -> bool {
+        matches!(self, Self::ConstPtrTo(_) | Self::PtrTo(_))
     }
     fn to_rust_type_str(&self) -> String {
         match self {

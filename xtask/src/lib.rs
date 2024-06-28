@@ -1,12 +1,14 @@
 use std::{
     fs::File,
     io::{BufWriter, Write},
+    path::Path,
 };
 
+use anyhow::Result;
 use roxmltree::{Attribute, Node};
-
-pub(crate) mod doc_parse;
-pub(crate) mod spec_parse;
+pub mod doc_parse;
+pub mod spec_parse;
+pub mod tasks;
 
 pub fn remove_multi(s: &str, m: &[&str]) -> String {
     let mut out = String::with_capacity(s.len());
@@ -53,8 +55,8 @@ fn snake_case_from_title_case(src: String) -> String {
     }
     a
 }
-fn open_file_writer(path: &str) -> impl Write {
-    let _ = std::fs::remove_file(path);
-    let file = File::create(path).unwrap();
-    BufWriter::new(file)
+fn open_file_writer<P: AsRef<Path>>(path: P) -> Result<impl Write> {
+    let _ = std::fs::remove_file(&path);
+    let file = File::create(path)?;
+    Ok(BufWriter::new(file))
 }

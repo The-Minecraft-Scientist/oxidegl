@@ -1,5 +1,5 @@
 /target
-/generated
+generated
 
 /Cargo.lock
 *.DS_Store
