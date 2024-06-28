@@ -12,5 +12,3 @@ An open-source OpenGL 4.6 Core implementation atop Apple's Metal API, written in
  * Multithreading support
 ## Current State
  * Basically nothing is implemented :)
-
-/// test
