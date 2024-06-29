@@ -3,7 +3,7 @@
 use anyhow::{Context, Result};
 use const_format::concatcp;
 use roxmltree::{Document, Node, ParsingOptions};
-use std::{collections::HashMap, io::Write, path::PathBuf};
+use std::{collections::HashMap, io::Write, path::PathBuf, sync::atomic::compiler_fence};
 
 use strum_macros::AsRefStr;
 
@@ -38,12 +38,14 @@ impl Default for GLVersion {
 pub struct Parameter<'a> {
     pub name: &'a str,
     pub parameter_type: GLTypes,
+    pub group: String,
 }
 
 #[derive(Clone, Debug)]
 pub enum GLAPIEntry<'a> {
     Enum {
         name: &'a str,
+        groups: &'a str,
         value: u32,
     },
     Command {
@@ -71,12 +73,14 @@ fn get_all_entries<'a>(reg: &'a Document<'a>) -> HashMap<&'a str, GLAPIEntry<'a>
                                     Some(child.find_named_child("name").unwrap().text().unwrap());
                             }
                             "param" => {
+                                let param_group = child.find_named_attribute("group");
                                 let param_type = GLTypes::from_proto_node(child);
                                 let param_name =
                                     child.find_named_child("name").unwrap().text().unwrap();
                                 current_params.push(Parameter {
                                     name: param_name,
                                     parameter_type: param_type,
+                                    group: param_group.map(|a| a.value()).unwrap_or("").to_string(),
                                 });
                             }
                             _ => {}
@@ -95,12 +99,12 @@ fn get_all_entries<'a>(reg: &'a Document<'a>) -> HashMap<&'a str, GLAPIEntry<'a>
                 }
             }
             "enums" => {
-                let _group_name = entry.attribute("group").unwrap_or("ungrouped");
                 for child in entry
                     .children()
                     .filter(|entry| entry.has_attribute("value"))
                 {
                     let val = child.attribute("value").unwrap();
+                    let groups = child.attribute("group").unwrap_or("");
                     let value = if val.starts_with("0x") {
                         let vopt = u32::from_str_radix(&child.attribute("value").unwrap()[2..], 16);
                         if vopt.is_err() {
@@ -111,7 +115,14 @@ fn get_all_entries<'a>(reg: &'a Document<'a>) -> HashMap<&'a str, GLAPIEntry<'a>
                         val.parse::<i32>().unwrap() as u32
                     };
                     let name = child.attribute("name").unwrap();
-                    let _ = output.insert(name, GLAPIEntry::Enum { name, value });
+                    let _ = output.insert(
+                        name,
+                        GLAPIEntry::Enum {
+                            name,
+                            value,
+                            groups,
+                        },
+                    );
                 }
             }
             _ => {}
@@ -284,9 +295,7 @@ pub fn get_vals<'a>(
         for func in refpage.funcs.iter().cloned() {
             func_reverse_lookup.insert(func, idx);
         }
-        if name == "glGenerateMipmap.xml" {
-            dbg!(&refpage.funcs);
-        }
+
         funcs.push(FnCollection {
             name: Some(name.trim_end_matches(".xml").to_owned()),
             docs: Some(refpage.doc),
@@ -348,7 +357,7 @@ pub fn write_dispatch_impl<T: Write>(w: &mut T, v: &[FnCollection<'_>]) -> Resul
 pub fn write_enum_impl<T: Write>(w: &mut T, v: &[GLAPIEntry<'_>]) -> Result<()> {
     writeln!(w, "{TYPES_USE}")?;
     for item in v {
-        if let GLAPIEntry::Enum { name, value } = item {
+        if let GLAPIEntry::Enum { name, value, .. } = item {
             writeln!(w, "{}", print_rust_enum_entry(name, *value))?;
         }
     }
