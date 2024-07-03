@@ -14,7 +14,7 @@ pub struct MetalComponents {
     device: Retained<ProtocolObject<dyn MTLDevice>>,
     layer: Retained<CAMetalLayer>,
 }
-
+#[allow(clippy::undocumented_unsafe_blocks)]
 impl MetalComponents {
     pub(crate) fn new(view: &Id<NSView>) -> Self {
         let device = unsafe { Retained::retain(MTLCreateSystemDefaultDevice()) }.unwrap();

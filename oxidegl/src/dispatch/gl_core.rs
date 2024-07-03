@@ -1120,19 +1120,19 @@ unsafe extern "C" fn glGenVertexArrays(n: GLsizei, arrays: *mut GLuint) {
 }
 #[no_mangle]
 unsafe extern "C" fn glGetBooleanv(pname: GLenum, data: *mut GLboolean) {
-    with_ctx(|mut state| unsafe { state.oxidegl_get_booleanv(pname, data) });
+    with_ctx(|state| unsafe { state.oxidegl_get_booleanv(pname, data) });
 }
 #[no_mangle]
 unsafe extern "C" fn glGetDoublev(pname: GLenum, data: *mut GLdouble) {
-    with_ctx(|mut state| unsafe { state.oxidegl_get_doublev(pname, data) });
+    with_ctx(|state| unsafe { state.oxidegl_get_doublev(pname, data) });
 }
 #[no_mangle]
 unsafe extern "C" fn glGetFloatv(pname: GLenum, data: *mut GLfloat) {
-    with_ctx(|mut state| unsafe { state.oxidegl_get_floatv(pname, data) });
+    with_ctx(|state| unsafe { state.oxidegl_get_floatv(pname, data) });
 }
 #[no_mangle]
 unsafe extern "C" fn glGetIntegerv(pname: GLenum, data: *mut GLint) {
-    with_ctx(|mut state| unsafe { state.oxidegl_get_integerv(pname, data) });
+    with_ctx(|state| unsafe { state.oxidegl_get_integerv(pname, data) });
 }
 #[no_mangle]
 unsafe extern "C" fn glGetBooleani_v(target: GLenum, index: GLuint, data: *mut GLboolean) {

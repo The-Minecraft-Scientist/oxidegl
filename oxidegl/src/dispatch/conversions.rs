@@ -5,7 +5,7 @@ use super::gltypes::GLenum;
 pub trait UnsafeFromGLenum {
     unsafe fn unsafe_from_gl_enum(val: GLenum) -> Self;
 }
-/// Helper trait to convert from "raw" GLenums to wrappers around subsets of those that are valid for certain functions
+/// Helper trait to convert from "raw" `GLenums` to wrappers around subsets of those that are valid for certain functions
 pub trait GLenumExt<T> {
     unsafe fn into_enum(val: Self) -> T;
 }
@@ -101,10 +101,10 @@ impl<Dst: GlDstType> SrcType<Dst> for bool {
 }
 impl GlDstType for u32 {
     fn from_int(val: i32) -> Self {
-        val.abs() as Self
+        val.unsigned_abs()
     }
     fn from_long(val: i64) -> Self {
-        val.abs() as Self
+        val.unsigned_abs() as Self
     }
     fn from_uint(val: u32) -> Self {
         val
@@ -128,10 +128,10 @@ impl GlDstType for u32 {
 
 impl GlDstType for u64 {
     fn from_int(val: i32) -> Self {
-        val.abs() as Self
+        val.unsigned_abs() as Self
     }
     fn from_long(val: i64) -> Self {
-        val.abs() as Self
+        val.unsigned_abs()
     }
     fn from_uint(val: u32) -> Self {
         val as Self

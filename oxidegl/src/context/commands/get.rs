@@ -1,37 +1,22 @@
-use std::{marker::PhantomData, ptr};
-
 use log::trace;
 
 #[allow(clippy::wildcard_imports)]
 use crate::{
     //context::state::item::OxideGLItem,
     dispatch::gltypes::*,
-    enums::{
-        GL_CULL_FACE_MODE, GL_LINE_WIDTH, GL_LINE_WIDTH_GRANULARITY, GL_LINE_WIDTH_RANGE,
-        GL_POINT_SIZE, GL_POINT_SIZE_GRANULARITY, GL_POINT_SIZE_RANGE, GL_POLYGON_MODE,
-        GL_RENDERER, GL_SHADING_LANGUAGE_VERSION, GL_VENDOR, GL_VERSION,
-    },
+    enums::{GL_RENDERER, GL_SHADING_LANGUAGE_VERSION, GL_VENDOR, GL_VERSION},
 };
 
 use crate::{
     context::Context,
     dispatch::conversions::{GlDstType, StateQueryWrite},
-    enums::{GL_CONTEXT_FLAGS, GL_NUM_EXTENSIONS},
+    enums::{GL_CONTEXT_FLAGS, GL_CONTEXT_PROFILE_MASK, GL_NUM_EXTENSIONS},
 };
 
-macro_rules! state_impl {
-    ($fname:ident, $($id:ident : $e:expr),+) => {
-        fn get<T: GLPointerWriteable>(&self, parameter_name: GLenum) {}
-        match $pname {
-            $(
-                $id => {$e},
-            )+
-        }
-    };
-}
 impl Context {
     fn get<T: GlDstType>(&self, parameter_name: GLenum, ptr: *mut T, idx: Option<GLuint>) {
         trace!(target: "get", "glGet {:#0x}", parameter_name);
+        //Safety: Parameters are guaranteed to exist by GL and we are allowed to have UB if they aren't
         unsafe {
             match parameter_name {
                 // GL_POINT_SIZE => self.gl_state.point_size.into(), // GL_POINT_SIZE

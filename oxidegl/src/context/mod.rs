@@ -48,7 +48,7 @@ impl Context {
         }
     }
 }
-/// This function is only used by GL dispatch. It is always advantageous for it to be inlined
+/// This function is only used by GL dispatch. It is always advantageous for it to be inlined in that usage
 #[allow(clippy::inline_always)]
 #[inline(always)]
 pub fn with_ctx<Ret, Func: for<'a> Fn(Pin<&'a mut Context>) -> Ret>(f: Func) -> Ret {
@@ -79,7 +79,9 @@ unsafe extern "C" fn oxidegl_create_context(
     stencil_format: GLenum,
     stencil_type: GLenum,
 ) -> *mut c_void {
-    let ctx = unsafe { Context::new(&Retained::from_raw(view).unwrap()) };
+    // Safety: ptr is a pointer to a valid NSView.
+    // It is retained because we need onwership of it until we've injected our layer. (which happens in PlatformState::new)
+    let ctx = unsafe { Context::new(&Retained::retain(view).unwrap()) };
 
     Box::into_raw(Box::new(ctx)).cast()
 }
@@ -87,27 +89,31 @@ unsafe extern "C" fn oxidegl_create_context(
 #[repr(transparent)]
 pub struct CtxRef(NonNull<Context>);
 impl CtxRef {
-    pub unsafe fn from_void(ptr: *mut c_void) -> Option<Self> {
+    unsafe fn from_void(ptr: *mut c_void) -> Option<Self> {
         Some(Self(NonNull::new(ptr.cast())?))
     }
     #[must_use]
-    pub fn as_box(self) -> Box<Context> {
+    fn into_box(self) -> Box<Context> {
+        //Safety: CtxRef is not Copy or Clone. it holds its pointer exclusively and so can be safely consumed back into a Box<Context> at any time
         unsafe { Box::from_raw(self.0.as_ptr()) }
     }
 }
 impl Deref for CtxRef {
     type Target = Context;
     fn deref(&self) -> &Self::Target {
+        // Safety: we are basically a Box<Context>, so it's fine to share out (appropriately lifetimed) references to the inner value
         unsafe { self.0.as_ref() }
     }
 }
 impl DerefMut for CtxRef {
     fn deref_mut(&mut self) -> &mut Self::Target {
+        // Safety: we are basically a Box<Context>, so it's fine to share out (appropriately lifetimed) references to the inner value
         unsafe { self.0.as_mut() }
     }
 }
 impl Drop for CtxRef {
     fn drop(&mut self) {
+        // Safety: We are basically a Box, it's fine to recover the Box<Context> from this pointer (no to mention that this function diverges)
         let _ = unsafe { Box::from_raw(self.0.as_ptr()) };
         panic!("OxideGL just dropped your OpenGL Context!! This is really bad, time to quit!!")
     }
