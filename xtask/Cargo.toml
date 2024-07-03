@@ -14,3 +14,6 @@ roxmltree = "0.20.0"
 simple_logger = "5.0.0"
 strum = { version = "0.26.3", features = ["strum_macros"] }
 strum_macros = "0.26.3"
+
+[profile.dev.build-override]
+opt-level = 0

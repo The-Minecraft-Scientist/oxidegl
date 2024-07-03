@@ -38,7 +38,7 @@ impl<'a, 'input> NodeExt for Node<'a, 'input> {
         attrs.find(|attr| attr.name() == name)
     }
 }
-fn snake_case_from_title_case(src: String) -> String {
+fn snake_case_from_title_case(src: &str) -> String {
     let new = src
         .chars()
         .map(|c| {

@@ -5,18 +5,7 @@ use crate::{
         GL_CONTEXT_FLAG_NO_ERROR_BIT, GL_FILL, GL_FRONT, GL_FRONT_AND_BACK, GL_LINE, GL_POINT,
     },
 };
-use item::GLItemSingle;
-pub mod item;
-macro_rules! impl_gl_enum {
-    ($e:ident) => {
-        impl From<$e> for OxideGLItemSingle {
-            #[inline]
-            fn from(val: $e) -> Self {
-                (val as u32).into()
-            }
-        }
-    };
-}
+
 #[derive(Debug)]
 pub struct GLState {
     pub characteristics: Characteristics,

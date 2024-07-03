@@ -148,6 +148,9 @@ pub struct GenerateBindings {
     /// Whether to generate enums (enums.rs)
     #[arg(short, long, default_value_t = false)]
     enums: bool,
+    /// A list of OpenGL Reference page names whose functions will be omitted from the generated code
+    #[arg(short, long, default_value = "")]
+    exclude_modules: Vec<String>,
 }
 impl TaskTrait for GenerateBindings {
     fn dependencies(&self) -> Option<Box<[Task]>> {
@@ -159,7 +162,7 @@ impl TaskTrait for GenerateBindings {
         std::fs::create_dir_all(&out_dir)?;
         let spec = std::fs::read_to_string("reference/OpenGL-Registry/xml/gl.xml")?;
         let spec_doc = roxmltree::Document::parse(&spec)?;
-        let (funcs, enums) = get_vals(&spec_doc)?;
+        let (funcs, (enums, group)) = get_vals(&spec_doc, &self.exclude_modules)?;
         if self.placeholder | self.dispatch | self.enums {
             if self.placeholder {
                 let path_to_write = out_dir.join("unimplemented.rs");

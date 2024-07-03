@@ -135,7 +135,7 @@ fn docbook_to_markdown<'a>(node: &'a Node<'a, '_>, builder: &mut MarkdownDocComm
             let funcname = node.text().unwrap_or("");
             builder.write_to_body(&format!(
                 "[**{funcname}**]({CONTEXT_ASSOCFUNC_PATH}oxide{})",
-                snake_case_from_title_case(funcname.to_string())
+                snake_case_from_title_case(funcname)
             ));
 
             builder.write_to_body_escaping(node.tail().unwrap_or(""))
@@ -148,7 +148,7 @@ fn docbook_to_markdown<'a>(node: &'a Node<'a, '_>, builder: &mut MarkdownDocComm
                 .unwrap();
             builder.write_to_body(&format!(
                 "[**{funcname}**]({CONTEXT_ASSOCFUNC_PATH}oxide{})",
-                snake_case_from_title_case(funcname.to_string())
+                snake_case_from_title_case(funcname)
             ));
 
             builder.write_to_body_escaping(node.tail().unwrap_or(""))

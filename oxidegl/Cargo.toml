@@ -27,6 +27,7 @@ objc2-quartz-core = { version = "0.2.2", features = [
 objc2-foundation = "0.2.2"
 
 log = "0.4.21"
+sptr = "0.3.2"
 
 
 [features]
@@ -36,3 +37,5 @@ max_log_info = ["log/max_level_info"]
 max_log_warn = ["log/max_level_warn"]
 max_log_error = ["log/max_level_error"]
 max_log_off = ["log/max_level_off"]
+# asserts that all platforms this 
+assert_48_bit_virtaddr = []

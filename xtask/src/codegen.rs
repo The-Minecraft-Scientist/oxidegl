@@ -3,7 +3,7 @@
 use anyhow::{Context, Result};
 use const_format::concatcp;
 use roxmltree::{Document, Node, ParsingOptions};
-use std::{collections::HashMap, io::Write, path::PathBuf, sync::atomic::compiler_fence};
+use std::{collections::HashMap, io::Write, path::PathBuf};
 
 use strum_macros::AsRefStr;
 
@@ -248,10 +248,20 @@ pub struct FnCollection<'a> {
     docs: Option<String>,
     entries: Vec<GLAPIEntry<'a>>,
 }
+#[derive(Debug)]
+pub struct EnumGroup<'a> {
+    enum_members: Vec<GLAPIEntry<'a>>,
+    param_group_members: Vec<(String, u32)>,
+}
 
 pub fn get_vals<'a>(
     spec: &'a Document<'a>,
-) -> Result<(Vec<FnCollection<'a>>, Vec<GLAPIEntry<'a>>)> {
+    exclude_funcs: &[String],
+) -> Result<(
+    Vec<FnCollection<'a>>,
+    Vec<GLAPIEntry<'a>>,
+    HashMap<&'a str, EnumGroup<'a>>,
+)> {
     let mut backing_strs = Vec::with_capacity(1000);
 
     let elems = get_all_required_features(spec);
@@ -295,9 +305,12 @@ pub fn get_vals<'a>(
         for func in refpage.funcs.iter().cloned() {
             func_reverse_lookup.insert(func, idx);
         }
-
+        let name = snake_case_from_title_case(name.trim_end_matches(".xml"));
+        if exclude_funcs.contains(&name) {
+            continue;
+        };
         funcs.push(FnCollection {
-            name: Some(name.trim_end_matches(".xml").to_owned()),
+            name: Some(name),
             docs: Some(refpage.doc),
             entries: Vec::new(),
         });
@@ -330,7 +343,85 @@ pub fn get_vals<'a>(
             }
         }
     }
-    Ok((funcs, enums))
+
+    let mut groups_map = HashMap::with_capacity(100);
+
+    for enu in enums.iter() {
+        let GLAPIEntry::Enum { name, groups, .. } = enu else {
+            continue;
+        };
+
+        groups.split(',').map(|s| s.trim()).for_each(|group| {
+            match groups_map.entry(group) {
+                std::collections::hash_map::Entry::Vacant(v) => {
+                    v.insert(EnumGroup {
+                        enum_members: vec![enu.clone()],
+                        param_group_members: Vec::new(),
+                    });
+                }
+
+                std::collections::hash_map::Entry::Occupied(mut o) => {
+                    if !o.get().enum_members.iter().any(|v| {
+                        let GLAPIEntry::Enum { name: n, .. } = v else {
+                            return false;
+                        };
+                        n == name
+                    }) {
+                        o.get_mut().enum_members.push(enu.clone());
+                    };
+                }
+            };
+        });
+    }
+    {
+        funcs
+            .iter()
+            .flat_map(|n| n.entries.iter())
+            .map(|v| {
+                (v, {
+                    let GLAPIEntry::Command {
+                        return_type,
+                        name,
+                        params,
+                    } = v
+                    else {
+                        panic!()
+                    };
+                    params.iter().enumerate()
+                })
+            })
+            .for_each(|(cmd, param_iter)| {
+                for (pidx, param) in param_iter {
+                    for group in param.group.split(',') {
+                        let g2: &str = group;
+                        if groups_map.contains_key(g2) {
+                            let GLAPIEntry::Command { name, .. } = cmd else {
+                                panic!()
+                            };
+                            groups_map
+                                .get_mut(g2)
+                                .unwrap()
+                                .param_group_members
+                                .push((name.to_string(), pidx as u32));
+                        }
+                    }
+                }
+            });
+    }
+    let mut new_map = HashMap::new();
+    for (k, val) in groups_map.drain().filter(|(k, val)| {
+        (val.enum_members.len() + val.param_group_members.len() >= 3
+            && !val.param_group_members.is_empty()
+            && !k.contains("SGI")
+            && !k.contains("NV"))
+            || matches!(*k, "RenderbufferParameterName")
+    }) {
+        let name = k.trim_end_matches("ARB");
+        new_map.insert(name, val);
+        dbg!(name);
+    }
+
+    Ok((funcs, enums, new_map))
 }
 pub fn write_dispatch_impl<T: Write>(w: &mut T, v: &[FnCollection<'_>]) -> Result<()> {
     writeln!(w, "// GL Commands")?;
@@ -385,7 +476,6 @@ pub fn write_placeholder_impl<T: Write>(w: &mut T, v: &[FnCollection<'_>]) -> Re
                 item.name
                     .as_ref()
                     .context("item did not have name when it should have")?
-                    .to_owned()
             )
             .trim_start_matches("gl_")
         )?;
@@ -402,7 +492,7 @@ pub fn write_placeholder_impl<T: Write>(w: &mut T, v: &[FnCollection<'_>]) -> Re
                 w,
                 "{}",
                 print_placeholder_fn(
-                    &format!("oxide{}", snake_case_from_title_case(name.to_string())),
+                    &format!("oxide{}", snake_case_from_title_case(name)),
                     return_type.clone(),
                     params
                 )
@@ -429,7 +519,7 @@ pub fn write_placeholder_impl<T: Write>(w: &mut T, v: &[FnCollection<'_>]) -> Re
                 w,
                 "{}",
                 print_placeholder_fn(
-                    &format!("oxide{}", snake_case_from_title_case(name.to_string())),
+                    &format!("oxide{}", snake_case_from_title_case(name)),
                     return_type.clone(),
                     params
                 )
@@ -472,7 +562,7 @@ fn print_placeholder_fn<'a>(name: &'a str, ret_type: GLTypes, params: &[Paramete
         str = format!(
             "{}{}: {}",
             str,
-            snake_case_from_title_case(na.to_owned()),
+            snake_case_from_title_case(na),
             param.parameter_type.to_rust_type_str()
         );
         if i != (params.len() - 1) {
@@ -503,7 +593,7 @@ fn print_dispatch_fn<'a>(name: &'a str, ret_type: GLTypes, params: &[Parameter<'
     let body = format!(
         "{{\n    with_ctx(|mut state|{} state.oxide{}({}){})\n}}",
         if is_unsafe { " unsafe {" } else { "" },
-        snake_case_from_title_case(name.to_owned()),
+        snake_case_from_title_case(name),
         paramnl,
         if is_unsafe { " }" } else { "" },
     );
@@ -537,7 +627,76 @@ fn print_dispatch_fn<'a>(name: &'a str, ret_type: GLTypes, params: &[Parameter<'
         body
     )
 }
+fn print_enum_group<'a>(w: &mut impl Write, name: &'a str, group: &EnumGroup<'a>) -> Result<()> {
+    writeln!(
+        w,
+        "#[derive(Debug, Clone, Copy, PartialEq, Eq, ::strum::FromRepr]"
+    )?;
+    writeln!(w, "#[repr(u32)]")?;
+    writeln!(w, "pub enum {} {{", name)?;
+    for e in group.enum_members.iter() {
+        let GLAPIEntry::Enum {
+            name: enum_name, ..
+        } = e
+        else {
+            continue;
+        };
+        writeln!(
+            w,
+            "pub {} = {},",
+            constant_to_pascal_case(enum_name).replace("Gl", ""),
+            enum_name
+        )?;
+    }
+    writeln!(w, "}}")?;
 
+    writeln!(
+        w,
+        "impl UnsafeFromGLenum for {name} {{
+            unsafe fn unsafe_from(val: u32) -> Self {{
+                #[cfg(debug_assertions)]
+                let Some(ret) = <Self as ::strum::FromRepr>::from_repr(val) else {{
+                    panic!(\"Tried to create a {name} from a GLenum with value {{val}}\");
+                }};
+                #[cfg(not(debug_assertions))]
+                let ret = unsafe {{ std::mem::transmute(val) }};
+                ret
+            }}
+        }}",
+    )?;
+    writeln!(
+        w,
+        "impl Into<u32> for {name} {{
+            fn from(val: Self) -> u32 {{
+                val as u32
+            }}
+        }}",
+    )?;
+
+    Ok(())
+}
+fn constant_to_pascal_case(val: &str) -> String {
+    let mut s = String::with_capacity(val.len());
+    let mut upcase_flag = true;
+    for c in val.chars() {
+        match c {
+            '_' => {
+                upcase_flag = true;
+            }
+            mut c if c.is_ascii_alphabetic() => {
+                if upcase_flag {
+                    c = c.to_ascii_uppercase();
+                    upcase_flag = false;
+                } else {
+                    c = c.to_ascii_lowercase();
+                }
+                s.push(c);
+            }
+            c => s.push(c),
+        }
+    }
+    s
+}
 fn print_abi_fn_type<'a>(_name: &'a str, ret_type: GLTypes, params: &[Parameter<'a>]) -> String {
     if params.is_empty() {
         return format!(
