@@ -7,7 +7,7 @@ An open-source OpenGL 4.6 Core implementation atop Apple's Metal API, written in
  * Have decent performance
  * Automate as much tedium as possible by leveraging OpenGL's machine-readable spec and reference
 
-## Non-Goals
+## Current Non-Goals
  * Full OpenGL 4.6 compliance
  * Multithreading support
 ## Current State
