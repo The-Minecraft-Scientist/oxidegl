@@ -3,19 +3,22 @@ use log::trace;
 #[allow(clippy::wildcard_imports)]
 use crate::{
     //context::state::item::OxideGLItem,
-    dispatch::gltypes::*,
+    dispatch::gl_types::*,
     enums::{GL_RENDERER, GL_SHADING_LANGUAGE_VERSION, GL_VENDOR, GL_VERSION},
 };
 
 use crate::{
     context::Context,
     dispatch::conversions::{GlDstType, StateQueryWrite},
-    enums::{GL_CONTEXT_FLAGS, GL_CONTEXT_PROFILE_MASK, GL_NUM_EXTENSIONS},
+    enums::{
+        GetPName::{self, *},
+        StringName, GL_CONTEXT_FLAGS, GL_CONTEXT_PROFILE_MASK, GL_NUM_EXTENSIONS,
+    },
 };
 
 impl Context {
-    fn get<T: GlDstType>(&self, parameter_name: GLenum, ptr: *mut T, idx: Option<GLuint>) {
-        trace!(target: "get", "glGet {:#0x}", parameter_name);
+    fn get<T: GlDstType>(&self, parameter_name: GetPName, ptr: *mut T, idx: Option<GLuint>) {
+        trace!(target: "get", "glGet {:#0x}", parameter_name as u32);
         //Safety: Parameters are guaranteed to exist by GL and we are allowed to have UB if they aren't
         unsafe {
             match parameter_name {
@@ -210,12 +213,12 @@ impl Context {
                 // 0x88EF => self.state.pixel_unpack_buffer_binding.into(), // GL_PIXEL_UNPACK_BUFFER_BINDING
                 // 0x821B => self.state.major_version.into(), // GL_MAJOR_VERSION
                 // 0x821C => self.state.minor_version.into(), // GL_MINOR_VERSION
-                GL_NUM_EXTENSIONS => self
+                NumExtensions => self
                     .gl_state
                     .characteristics
                     .num_extensions
                     .write_out(idx, ptr),
-                GL_CONTEXT_FLAGS => self
+                ContextFlags => self
                     .gl_state
                     .characteristics
                     .context_flags
@@ -254,7 +257,7 @@ impl Context {
                 // 0x9123 => self.state.max_geometry_input_components.into(), // GL_MAX_GEOMETRY_INPUT_COMPONENTS
                 // 0x9124 => self.state.max_geometry_output_components.into(), // GL_MAX_GEOMETRY_OUTPUT_COMPONENTS
                 // 0x9125 => self.state.max_fragment_input_components.into(), // GL_MAX_FRAGMENT_INPUT_COMPONENTS
-                GL_CONTEXT_PROFILE_MASK => self
+                ContextProfileMask => self
                     .gl_state
                     .characteristics
                     .context_profile_mask
@@ -330,31 +333,31 @@ impl Context {
                 // 0x82D9 => self.state.max_vertex_attrib_relative_offset.into(), // GL_MAX_VERTEX_ATTRIB_RELATIVE_OFFSET
                 // 0x82DA => self.state.max_vertex_attrib_bindings.into(), // GL_MAX_VERTEX_ATTRIB_BINDINGS
                 u => {
-                    panic!("unrecognized enum {u:x}")
+                    panic!("unrecognized enum {:x}", u as u32)
                 }
             };
         }
     }
 
-    pub unsafe fn oxidegl_get_booleanv(&self, pname: GLenum, data: *mut GLboolean) {
+    pub unsafe fn oxidegl_get_booleanv(&self, pname: GetPName, data: *mut GLboolean) {
         self.get(pname, data, None);
     }
 
-    pub unsafe fn oxidegl_get_doublev(&self, pname: GLenum, data: *mut GLdouble) {
+    pub unsafe fn oxidegl_get_doublev(&self, pname: GetPName, data: *mut GLdouble) {
         self.get(pname, data, None);
     }
 
-    pub unsafe fn oxidegl_get_floatv(&self, pname: GLenum, data: *mut GLfloat) {
+    pub unsafe fn oxidegl_get_floatv(&self, pname: GetPName, data: *mut GLfloat) {
         self.get(pname, data, None);
     }
 
-    pub unsafe fn oxidegl_get_integerv(&self, pname: GLenum, data: *mut GLint) {
+    pub unsafe fn oxidegl_get_integerv(&self, pname: GetPName, data: *mut GLint) {
         self.get(pname, data, None);
     }
 
     pub unsafe fn oxidegl_get_booleani_v(
         &mut self,
-        target: GLenum,
+        target: GetPName,
         index: GLuint,
         data: *mut GLboolean,
     ) {
@@ -363,19 +366,19 @@ impl Context {
 
     pub unsafe fn oxidegl_get_integeri_v(
         &mut self,
-        target: GLenum,
+        target: GetPName,
         index: GLuint,
         data: *mut GLint,
     ) {
         panic!("command oxidegl_get_integeri_v not yet implemented");
     }
 
-    pub unsafe fn oxidegl_get_integer64v(&mut self, pname: GLenum, data: *mut GLint64) {
+    pub unsafe fn oxidegl_get_integer64v(&mut self, pname: GetPName, data: *mut GLint64) {
         panic!("command oxidegl_get_integer64v not yet implemented");
     }
     pub unsafe fn oxidegl_get_integer64i_v(
         &mut self,
-        target: GLenum,
+        target: GetPName,
         index: GLuint,
         data: *mut GLint64,
     ) {
@@ -384,7 +387,7 @@ impl Context {
 
     pub unsafe fn oxidegl_get_floati_v(
         &mut self,
-        target: GLenum,
+        target: GetPName,
         index: GLuint,
         data: *mut GLfloat,
     ) {
@@ -393,22 +396,22 @@ impl Context {
 
     pub unsafe fn oxidegl_get_doublei_v(
         &mut self,
-        target: GLenum,
+        target: GetPName,
         index: GLuint,
         data: *mut GLdouble,
     ) {
         panic!("command oxidegl_get_doublei_v not yet implemented");
     }
-    fn get_string(name: GLenum) -> *const GLubyte {
+    fn get_string(name: StringName) -> *const GLubyte {
         const VENDOR: &[u8] = b"Charles Liske\0";
         const RENDERER: &[u8] = b"OxideGL\0";
         const VERSION: &[u8] = b"4.6.0\0";
         match name {
-            GL_VENDOR => VENDOR.as_ptr(),
-            GL_RENDERER => RENDERER.as_ptr(),
-            GL_VERSION | GL_SHADING_LANGUAGE_VERSION => VERSION.as_ptr(),
+            StringName::Vendor => VENDOR.as_ptr(),
+            StringName::Renderer => RENDERER.as_ptr(),
+            StringName::Version | StringName::ShadingLanguageVersion => VERSION.as_ptr(),
             _ => {
-                panic!("unrecognized enum in gl get string")
+                panic!("unrecognized StringName")
             }
         }
     }
@@ -486,453 +489,19 @@ impl Context {
 /// the server.
 pub mod get_string {
     use crate::context::Context;
-    use crate::dispatch::gltypes::{GLenum, GLubyte, GLuint};
+    use crate::dispatch::gl_types::{GLenum, GLubyte, GLuint};
+    use crate::enums::StringName;
     impl Context {
-        pub(crate) fn oxidegl_get_string(&mut self, name: GLenum) -> *const GLubyte {
+        pub(crate) fn oxidegl_get_string(&mut self, name: StringName) -> *const GLubyte {
             Self::get_string(name)
         }
         pub(crate) fn oxidegl_get_stringi(
             &mut self,
-            name: GLenum,
+            name: StringName,
             index: GLuint,
         ) -> *const GLubyte {
             //TODO: this is probably wrong
             Self::get_string(name)
-        }
-    }
-}
-
-/// ### Parameters
-/// `target`
-///
-/// > Indicates the usage of the internal format. `target` must be [`GL_TEXTURE_1D`](crate::enums::GL_TEXTURE_1D),
-/// > [`GL_TEXTURE_1D_ARRAY`](crate::enums::GL_TEXTURE_1D_ARRAY), [`GL_TEXTURE_2D`](crate::enums::GL_TEXTURE_2D),
-/// > [`GL_TEXTURE_2D_ARRAY`](crate::enums::GL_TEXTURE_2D_ARRAY), [`GL_TEXTURE_3D`](crate::enums::GL_TEXTURE_3D),
-/// > [`GL_TEXTURE_CUBE_MAP`](crate::enums::GL_TEXTURE_CUBE_MAP), [`GL_TEXTURE_CUBE_MAP_ARRAY`](crate::enums::GL_TEXTURE_CUBE_MAP_ARRAY),
-/// > [`GL_TEXTURE_RECTANGLE`](crate::enums::GL_TEXTURE_RECTANGLE), [`GL_TEXTURE_BUFFER`](crate::enums::GL_TEXTURE_BUFFER),
-/// > [`GL_RENDERBUFFER`](crate::enums::GL_RENDERBUFFER), [`GL_TEXTURE_2D_MULTISAMPLE`](crate::enums::GL_TEXTURE_2D_MULTISAMPLE)
-/// > or [`GL_TEXTURE_2D_MULTISAMPLE_ARRAY`](crate::enums::GL_TEXTURE_2D_MULTISAMPLE_ARRAY).
-///
-/// `internalformat`
-///
-/// > Specifies the internal format about which to retrieve information.
-///
-/// `pname`
-///
-/// > Specifies the type of information to query.
-///
-/// `bufSize`
-///
-/// > Specifies the maximum number of integers of the specified width that may
-/// > be written to `params` by the function.
-///
-/// `params`
-///
-/// > Specifies the address of a variable into which to write the retrieved information.
-///
-/// ### Description
-/// [**glGetInternalformativ**](crate::context::OxideGLContext::oxidegl_get_internalformativ)
-/// and [**glGetInternalformati64v**](crate::context::OxideGLContext::oxidegl_get_internalformati64v)
-/// retrieve information about implementation-dependent support for internal
-/// formats. `target` indicates the target with which the internal format will
-/// be used and must be one of [`GL_RENDERBUFFER`](crate::enums::GL_RENDERBUFFER),
-/// [`GL_TEXTURE_2D_MULTISAMPLE`](crate::enums::GL_TEXTURE_2D_MULTISAMPLE),
-/// or [`GL_TEXTURE_2D_MULTISAMPLE_ARRAY`](crate::enums::GL_TEXTURE_2D_MULTISAMPLE_ARRAY),
-/// corresponding to usage as a renderbuffer, two-dimensional multisample
-/// texture or two-dimensional multisample array texture, respectively.
-///
-/// `internalformat` specifies the internal format about which to retrieve
-/// information and must be a color-renderable, depth-renderable or stencil-renderable
-/// format.
-///
-/// The information retrieved will be written to memory addressed by the pointer
-/// specified in `params`. No more than `bufSize` integers will be written
-/// to this memory.
-///
-/// If `pname` is [`GL_NUM_SAMPLE_COUNTS`](crate::enums::GL_NUM_SAMPLE_COUNTS),
-/// the number of sample counts that would be returned by querying [`GL_SAMPLES`](crate::enums::GL_SAMPLES)
-/// will be returned in `params`.
-///
-/// If `pname` is [`GL_SAMPLES`](crate::enums::GL_SAMPLES), the sample counts
-/// supported for `internalformat` and `target` are written into `params` in
-/// descending numeric order. Only positive values are returned. Querying [`GL_SAMPLES`](crate::enums::GL_SAMPLES)
-/// with `bufSize` of one will return just the maximum supported number of
-/// samples for this format. The maximum value in [`GL_SAMPLES`](crate::enums::GL_SAMPLES)
-/// is guaranteed to be at least the lowest of the following: The value of
-/// > [`GL_MAX_INTEGER_SAMPLES`](crate::enums::GL_MAX_INTEGER_SAMPLES) if `internalformat`
-/// > is a signed or unsigned integer format.
-///
-/// > The value of [`GL_MAX_DEPTH_TEXTURE_SAMPLES`](crate::enums::GL_MAX_DEPTH_TEXTURE_SAMPLES)
-/// > if `internalformat` is a depth- or stencil-renderable format and `target`
-/// > is [`GL_TEXTURE_2D_MULTISAMPLE`](crate::enums::GL_TEXTURE_2D_MULTISAMPLE),
-/// > [`GL_TEXTURE_2D_MULTISAMPLE_ARRAY`](crate::enums::GL_TEXTURE_2D_MULTISAMPLE_ARRAY).
-///
-/// > The value of [`GL_MAX_COLOR_TEXTURE_SAMPLES`](crate::enums::GL_MAX_COLOR_TEXTURE_SAMPLES)
-/// > if `internalformat` is a color-renderable format and `target` is [`GL_TEXTURE_2D_MULTISAMPLE`](crate::enums::GL_TEXTURE_2D_MULTISAMPLE)
-/// > or [`GL_TEXTURE_2D_MULTISAMPLE_ARRAY`](crate::enums::GL_TEXTURE_2D_MULTISAMPLE_ARRAY).
-///
-/// > The value of [`GL_MAX_SAMPLES`](crate::enums::GL_MAX_SAMPLES).
-///
-///
-/// If `pname` is [`GL_INTERNALFORMAT_SUPPORTED`](crate::enums::GL_INTERNALFORMAT_SUPPORTED),
-/// `params` is set to [`GL_TRUE`](crate::enums::GL_TRUE) if `internalformat`
-/// is a supported internal format for `target` and to [`GL_FALSE`](crate::enums::GL_FALSE)
-/// otherwise.
-///
-/// If `pname` is [`GL_INTERNALFORMAT_PREFERRED`](crate::enums::GL_INTERNALFORMAT_PREFERRED),
-/// `params` is set to [`GL_TRUE`](crate::enums::GL_TRUE) if `internalformat`
-/// is an format for `target` that is preferred by the implementation and to
-/// [`GL_FALSE`](crate::enums::GL_FALSE) otherwise.
-///
-/// If `pname` is [`GL_INTERNALFORMAT_RED_SIZE`](crate::enums::GL_INTERNALFORMAT_RED_SIZE),
-/// [`GL_INTERNALFORMAT_GREEN_SIZE`](crate::enums::GL_INTERNALFORMAT_GREEN_SIZE),
-/// [`GL_INTERNALFORMAT_BLUE_SIZE`](crate::enums::GL_INTERNALFORMAT_BLUE_SIZE),
-/// [`GL_INTERNALFORMAT_ALPHA_SIZE`](crate::enums::GL_INTERNALFORMAT_ALPHA_SIZE),
-/// [`GL_INTERNALFORMAT_DEPTH_SIZE`](crate::enums::GL_INTERNALFORMAT_DEPTH_SIZE),
-/// [`GL_INTERNALFORMAT_STENCIL_SIZE`](crate::enums::GL_INTERNALFORMAT_STENCIL_SIZE),
-/// or [`GL_INTERNALFORMAT_SHARED_SIZE`](crate::enums::GL_INTERNALFORMAT_SHARED_SIZE)
-/// then `params` is set to the actual resolutions that would be used for storing
-/// image array components for the resource for the red, green, blue, alpha,
-/// depth, stencil and shared channels respectively. If `internalformat` is
-/// a compressed internal format, then `params` is set to the component resolution
-/// of an uncompressed internal format that produces an image of roughly the
-/// same quality as the compressed algorithm. If the internal format is unsupported,
-/// or if a particular component is not present in the format, 0 is written
-/// to `params`.
-///
-/// If `pname` is [`GL_INTERNALFORMAT_RED_TYPE`](crate::enums::GL_INTERNALFORMAT_RED_TYPE),
-/// [`GL_INTERNALFORMAT_GREEN_TYPE`](crate::enums::GL_INTERNALFORMAT_GREEN_TYPE),
-/// [`GL_INTERNALFORMAT_BLUE_TYPE`](crate::enums::GL_INTERNALFORMAT_BLUE_TYPE),
-/// [`GL_INTERNALFORMAT_ALPHA_TYPE`](crate::enums::GL_INTERNALFORMAT_ALPHA_TYPE),
-/// [`GL_INTERNALFORMAT_DEPTH_TYPE`](crate::enums::GL_INTERNALFORMAT_DEPTH_TYPE),
-/// or [`GL_INTERNALFORMAT_STENCIL_TYPE`](crate::enums::GL_INTERNALFORMAT_STENCIL_TYPE)
-/// then `params` is set to a token identifying the data type used to store
-/// the respective component. If the `internalformat` represents a compressed
-/// internal format then the types returned specify how components are interpreted
-/// after decompression.
-///
-/// If `pname` is [`GL_MAX_WIDTH`](crate::enums::GL_MAX_WIDTH), [`GL_MAX_HEIGHT`](crate::enums::GL_MAX_HEIGHT),
-/// [`GL_MAX_DEPTH`](crate::enums::GL_MAX_DEPTH), or [`GL_MAX_LAYERS`](crate::enums::GL_MAX_LAYERS)
-/// then `pname` is filled with the maximum width, height, depth or layer count
-/// for textures with internal format `internalformat`, respectively. If `pname`
-/// is [`GL_MAX_COMBINED_DIMENSIONS`](crate::enums::GL_MAX_COMBINED_DIMENSIONS)
-/// then `pname` is filled with the maximum combined dimensions of a texture
-/// of the specified internal format.
-///
-/// If `pname` is [`GL_COLOR_COMPONENTS`](crate::enums::GL_COLOR_COMPONENTS)
-/// then `params` is set to the value [`GL_TRUE`](crate::enums::GL_TRUE) if
-/// the internal format contains any color component (i.e., red, green, blue
-/// or alpha) and to [`GL_FALSE`](crate::enums::GL_FALSE) otherwise. If `pname`
-/// is [`GL_DEPTH_COMPONENTS`](crate::enums::GL_DEPTH_COMPONENTS) or [`GL_STENCIL_COMPONENTS`](crate::enums::GL_STENCIL_COMPONENTS)
-/// then `params` is set to [`GL_TRUE`](crate::enums::GL_TRUE) if the internal
-/// format contains a depth or stencil component, respectively, and to [`GL_FALSE`](crate::enums::GL_FALSE)
-/// otherwise.
-///
-/// If `pname` is [`GL_COLOR_RENDERABLE`](crate::enums::GL_COLOR_RENDERABLE),
-/// [`GL_DEPTH_RENDERABLE`](crate::enums::GL_DEPTH_RENDERABLE) or [`GL_STENCIL_RENDERABLE`](crate::enums::GL_STENCIL_RENDERABLE)
-/// then `params` is set to [`GL_TRUE`](crate::enums::GL_TRUE) if the specified
-/// internal format is color, depth or stencil renderable, respectively, and
-/// to [`GL_FALSE`](crate::enums::GL_FALSE) otherwise.
-///
-/// If `pname` is [`GL_FRAMEBUFFER_RENDERABLE`](crate::enums::GL_FRAMEBUFFER_RENDERABLE)
-/// or [`GL_FRAMEBUFFER_RENDERABLE_LAYERED`](crate::enums::GL_FRAMEBUFFER_RENDERABLE_LAYERED)
-/// then `params` is set to one of [`GL_FULL_SUPPORT`](crate::enums::GL_FULL_SUPPORT),
-/// [`GL_CAVEAT_SUPPORT`](crate::enums::GL_CAVEAT_SUPPORT) or [`GL_NONE`](crate::enums::GL_NONE)
-/// to indicate that framebuffer attachments (layered attachments in the case
-/// of [`GL_FRAMEBUFFER_RENDERABLE_LAYERED`](crate::enums::GL_FRAMEBUFFER_RENDERABLE_LAYERED))
-/// with that internal format are either renderable with no restrictions,
-/// renderable with some restrictions or not renderable at all.
-///
-/// If `pname` is [`GL_FRAMEBUFFER_BLEND`](crate::enums::GL_FRAMEBUFFER_BLEND),
-/// `params` is set to [`GL_TRUE`](crate::enums::GL_TRUE) to indicate that
-/// the internal format is supported for blending operations when attached
-/// to a framebuffer, and to [`GL_FALSE`](crate::enums::GL_FALSE) otherwise.
-///
-/// If `pname` is [`GL_READ_PIXELS`](crate::enums::GL_READ_PIXELS) then `params`
-/// is set to [`GL_FULL_SUPPORT`](crate::enums::GL_FULL_SUPPORT), [`GL_CAVEAT_SUPPORT`](crate::enums::GL_CAVEAT_SUPPORT)
-/// or [`GL_NONE`](crate::enums::GL_NONE) to that either full support, limited
-/// support or no support at all is supplied for reading pixels from framebuffer
-/// attachments in the specified internal format.
-///
-/// If `pname` is [`GL_READ_PIXELS_FORMAT`](crate::enums::GL_READ_PIXELS_FORMAT)
-/// or [`GL_READ_PIXELS_TYPE`](crate::enums::GL_READ_PIXELS_TYPE) then `params`
-/// is filled with the format or type, respectively, most recommended to obtain
-/// the highest image quality and performance. For [`GL_READ_PIXELS_FORMAT`](crate::enums::GL_READ_PIXELS_FORMAT),
-/// the value returned in `params` is a token that is accepted for the `format`
-/// argument to [**glReadPixels**](crate::context::OxideGLContext::oxidegl_read_pixels).
-/// For [`GL_READ_PIXELS_TYPE`](crate::enums::GL_READ_PIXELS_TYPE), the value
-/// returned in `params` is a token that is accepted for the `type` argument
-/// to [**glReadPixels**](crate::context::OxideGLContext::oxidegl_read_pixels).
-///
-/// If `pname` is [`GL_TEXTURE_IMAGE_FORMAT`](crate::enums::GL_TEXTURE_IMAGE_FORMAT)
-/// or [`GL_TEXTURE_IMAGE_TYPE`](crate::enums::GL_TEXTURE_IMAGE_TYPE) then
-/// `params` is filled with the implementation-recommended format or type to
-/// be used in calls to [**glTexImage2D**](crate::context::OxideGLContext::oxidegl_tex_image2_d)
-/// and other similar functions. For [`GL_TEXTURE_IMAGE_FORMAT`](crate::enums::GL_TEXTURE_IMAGE_FORMAT),
-/// `params` is filled with a token suitable for use as the `format` argument
-/// to [**glTexImage2D**](crate::context::OxideGLContext::oxidegl_tex_image2_d).
-/// For [`GL_TEXTURE_IMAGE_TYPE`](crate::enums::GL_TEXTURE_IMAGE_TYPE), `params`
-/// is filled with a token suitable for use as the `type` argument to [**glTexImage2D**](crate::context::OxideGLContext::oxidegl_tex_image2_d).
-///
-/// If `pname` is [`GL_GET_TEXTURE_IMAGE_FORMAT`](crate::enums::GL_GET_TEXTURE_IMAGE_FORMAT)
-/// or [`GL_GET_TEXTURE_IMAGE_TYPE`](crate::enums::GL_GET_TEXTURE_IMAGE_TYPE)
-/// then `params` is filled with the implementation-recommended format or type
-/// to be used in calls to [**glGetTexImage**](crate::context::OxideGLContext::oxidegl_get_tex_image)
-/// and other similar functions. For [`GL_GET_TEXTURE_IMAGE_FORMAT`](crate::enums::GL_GET_TEXTURE_IMAGE_FORMAT),
-/// `params` is filled with a token suitable for use as the `format` argument
-/// to [**glGetTexImage**](crate::context::OxideGLContext::oxidegl_get_tex_image).
-/// For [`GL_GET_TEXTURE_IMAGE_TYPE`](crate::enums::GL_GET_TEXTURE_IMAGE_TYPE),
-/// `params` is filled with a token suitable for use as the `type` argument
-/// to [**glGetTexImage**](crate::context::OxideGLContext::oxidegl_get_tex_image).
-///
-/// If `pname` is [`GL_MIPMAP`](crate::enums::GL_MIPMAP) then `pname` is set
-/// to [`GL_TRUE`](crate::enums::GL_TRUE) to indicate that the specified internal
-/// format supports mipmaps and to [`GL_FALSE`](crate::enums::GL_FALSE) otherwise.
-///
-/// If `pname` is [`GL_GENERATE_MIPMAP`](crate::enums::GL_GENERATE_MIPMAP)
-/// or [`GL_AUTO_GENERATE_MIPMAP`](crate::enums::GL_AUTO_GENERATE_MIPMAP) then
-/// `params` is indicates the level of support for manual or automatic mipmap
-/// generation for the specified internal format, respectively. Returned values
-/// may be one of [`GL_FULL_SUPPORT`](crate::enums::GL_FULL_SUPPORT), [`GL_CAVEAT_SUPPORT`](crate::enums::GL_CAVEAT_SUPPORT)
-/// and [`GL_NONE`](crate::enums::GL_NONE) to indicate either full support,
-/// limited support or no support at all.
-///
-/// If `pname` is [`GL_COLOR_ENCODING`](crate::enums::GL_COLOR_ENCODING) then
-/// the color encoding for the resource is returned in `params`. Possible values
-/// for color buffers are [`GL_LINEAR`](crate::enums::GL_LINEAR) or [`GL_SRGB`](crate::enums::GL_SRGB),
-/// for linear or sRGB-encoded color components, respectively. For non-color
-/// formats (such as depth or stencil), or for unsupported resources, the value
-/// [`GL_NONE`](crate::enums::GL_NONE) is returned.
-///
-/// If `pname` is [`GL_SRGB_READ`](crate::enums::GL_SRGB_READ), or [`GL_SRGB_WRITE`](crate::enums::GL_SRGB_WRITE)
-/// then `params` indicates the level of support for reading and writing to
-/// sRGB encoded images, respectively. For [`GL_SRGB_READ`](crate::enums::GL_SRGB_READ),
-/// support for converting from sRGB colorspace on read operations is returned
-/// in `params` and for [`GL_SRGB_WRITE`](crate::enums::GL_SRGB_WRITE), support
-/// for converting to sRGB colorspace on write operations to the resource is
-/// returned in `params`. `params` may be set to [`GL_FULL_SUPPORT`](crate::enums::GL_FULL_SUPPORT),
-/// [`GL_CAVEAT_SUPPORT`](crate::enums::GL_CAVEAT_SUPPORT), or [`GL_NONE`](crate::enums::GL_NONE)
-/// to indicate full support, limited support or no support at all, respecitively.
-///
-/// If `pname` is [`GL_FILTER`](crate::enums::GL_FILTER) the `params` is set
-/// to either [`GL_TRUE`](crate::enums::GL_TRUE) or [`GL_FALSE`](crate::enums::GL_FALSE)
-/// to indicate support or lack thereof for filter modes other than [`GL_NEAREST`](crate::enums::GL_NEAREST)
-/// or [`GL_NEAREST_MIPMAP`](crate::enums::GL_NEAREST_MIPMAP) for the specified
-/// internal format.
-///
-/// If `pname` is [`GL_VERTEX_TEXTURE`](crate::enums::GL_VERTEX_TEXTURE), [`GL_TESS_CONTROL_TEXTURE`](crate::enums::GL_TESS_CONTROL_TEXTURE),
-/// [`GL_TESS_EVALUATION_TEXTURE`](crate::enums::GL_TESS_EVALUATION_TEXTURE),
-/// [`GL_GEOMETRY_TEXTURE`](crate::enums::GL_GEOMETRY_TEXTURE), [`GL_FRAGMENT_TEXTURE`](crate::enums::GL_FRAGMENT_TEXTURE),
-/// or [`GL_COMPUTE_TEXTURE`](crate::enums::GL_COMPUTE_TEXTURE), then the
-/// value written to `params` indicates support for use of the resource as
-/// a source of texturing in the vertex, tessellation control, tessellation
-/// evaluation, geometry, fragment and compute shader stages, respectively.
-/// `params` may be set to [`GL_FULL_SUPPORT`](crate::enums::GL_FULL_SUPPORT),
-/// [`GL_CAVEAT_SUPPORT`](crate::enums::GL_CAVEAT_SUPPORT) or [`GL_NONE`](crate::enums::GL_NONE)
-/// to indicate full support, limited support or no support at all, respectively.
-///
-/// If `pname` is [`GL_TEXTURE_SHADOW`](crate::enums::GL_TEXTURE_SHADOW), [`GL_TEXTURE_GATHER`](crate::enums::GL_TEXTURE_GATHER)
-/// or [`GL_TEXTURE_GATHER_SHADOW`](crate::enums::GL_TEXTURE_GATHER_SHADOW)
-/// then the value written to `params` indicates the level of support for using
-/// the resource with a shadow sampler, in gather operations or as a shadow
-/// sampler in gather operations, respectively. Returned values may be [`GL_FULL_SUPPORT`](crate::enums::GL_FULL_SUPPORT),
-/// [`GL_CAVEAT_SUPPORT`](crate::enums::GL_CAVEAT_SUPPORT) or [`GL_NONE`](crate::enums::GL_NONE)
-/// to indicate full support, limited support or no support at all, respectively.
-///
-/// If `pname` is [`GL_SHADER_IMAGE_LOAD`](crate::enums::GL_SHADER_IMAGE_LOAD),
-/// [`GL_SHADER_IMAGE_STORE`](crate::enums::GL_SHADER_IMAGE_STORE) or [`GL_SHADER_IMAGE_ATOMIC`](crate::enums::GL_SHADER_IMAGE_ATOMIC)
-/// then the value returned in `params` indicates the level of support for
-/// image loads, stores and atomics for resources of the specified internal
-/// format. Returned values may be [`GL_FULL_SUPPORT`](crate::enums::GL_FULL_SUPPORT),
-/// [`GL_CAVEAT_SUPPORT`](crate::enums::GL_CAVEAT_SUPPORT) or [`GL_NONE`](crate::enums::GL_NONE)
-/// to indicate full support, limited support or no support at all, respectively.
-///
-/// If `pname` is [`GL_IMAGE_TEXEL_SIZE`](crate::enums::GL_IMAGE_TEXEL_SIZE)
-/// then the size of a texel when the resource when used as an image texture
-/// is returned in `params`. If the resource is not supported for image textures
-/// zero is returned.
-///
-/// If `pname` is [`GL_IMAGE_COMPATIBILITY_CLASS`](crate::enums::GL_IMAGE_COMPATIBILITY_CLASS)
-/// then the compatibility class of the resource when used as an image texture
-/// is returned in `params`. The possible values returned are [`GL_IMAGE_CLASS_4_X_32`](crate::enums::GL_IMAGE_CLASS_4_X_32),
-/// [`GL_IMAGE_CLASS_2_X_32`](crate::enums::GL_IMAGE_CLASS_2_X_32), [`GL_IMAGE_CLASS_1_X_32`](crate::enums::GL_IMAGE_CLASS_1_X_32),
-/// [`GL_IMAGE_CLASS_4_X_16`](crate::enums::GL_IMAGE_CLASS_4_X_16), [`GL_IMAGE_CLASS_2_X_16`](crate::enums::GL_IMAGE_CLASS_2_X_16),
-/// [`GL_IMAGE_CLASS_1_X_16`](crate::enums::GL_IMAGE_CLASS_1_X_16), [`GL_IMAGE_CLASS_4_X_8`](crate::enums::GL_IMAGE_CLASS_4_X_8),
-/// [`GL_IMAGE_CLASS_2_X_8`](crate::enums::GL_IMAGE_CLASS_2_X_8), [`GL_IMAGE_CLASS_1_X_8`](crate::enums::GL_IMAGE_CLASS_1_X_8),
-/// [`GL_IMAGE_CLASS_11_11_10`](crate::enums::GL_IMAGE_CLASS_11_11_10), and
-/// [`GL_IMAGE_CLASS_10_10_10_2`](crate::enums::GL_IMAGE_CLASS_10_10_10_2),
-/// which correspond to the 4x32, 2x32, 1x32, 4x16, 2x16, 1x16, 4x8, 2x8,
-/// 1x8, the class (a) 11/11/10 packed floating-point format, and the class
-/// (b) 10/10/10/2 packed formats, respectively. If the resource is not supported
-/// for image textures, [`GL_NONE`](crate::enums::GL_NONE) is returned.
-///
-/// If `pname` is [`GL_IMAGE_PIXEL_FORMAT`](crate::enums::GL_IMAGE_PIXEL_FORMAT)
-/// or [`GL_IMAGE_PIXEL_TYPE`](crate::enums::GL_IMAGE_PIXEL_TYPE) then the
-/// pixel format or type of the resource when used as an image texture is returned
-/// in `params`, respectively. In either case, the resource is not supported
-/// for image textures [`GL_NONE`](crate::enums::GL_NONE) is returned.
-///
-/// If `pname` is [`GL_IMAGE_FORMAT_COMPATIBILITY_TYPE`](crate::enums::GL_IMAGE_FORMAT_COMPATIBILITY_TYPE),
-/// the matching criteria use for the resource when used as an image textures
-/// is returned in `params`. Possible values returned in `params` are [`GL_IMAGE_FORMAT_COMPATIBILITY_BY_SIZE`](crate::enums::GL_IMAGE_FORMAT_COMPATIBILITY_BY_SIZE)
-/// or [`GL_IMAGE_FORMAT_COMPATIBILITY_BY_CLASS`](crate::enums::GL_IMAGE_FORMAT_COMPATIBILITY_BY_CLASS).
-/// If the resource is not supported for image textures, [`GL_NONE`](crate::enums::GL_NONE)
-/// is returned.
-///
-/// If `pname` is [`GL_SIMULTANEOUS_TEXTURE_AND_DEPTH_TEST`](crate::enums::GL_SIMULTANEOUS_TEXTURE_AND_DEPTH_TEST)
-/// or [`GL_SIMULTANEOUS_TEXTURE_AND_STENCIL_TEST`](crate::enums::GL_SIMULTANEOUS_TEXTURE_AND_STENCIL_TEST),
-/// support for using the resource both as a source for texture sampling while
-/// it is bound as a buffer for depth or stencil test, respectively, is written
-/// to `params`. Possible values returned are [`GL_FULL_SUPPORT`](crate::enums::GL_FULL_SUPPORT),
-/// [`GL_CAVEAT_SUPPORT`](crate::enums::GL_CAVEAT_SUPPORT), or [`GL_NONE`](crate::enums::GL_NONE)
-/// to indicate full support, limited support or no support at all. If the
-/// resource or operation is not supported, [`GL_NONE`](crate::enums::GL_NONE)
-/// is returned.
-///
-/// If `pname` is [`GL_SIMULTANEOUS_TEXTURE_AND_DEPTH_WRITE`](crate::enums::GL_SIMULTANEOUS_TEXTURE_AND_DEPTH_WRITE)
-/// or [`GL_SIMULTANEOUS_TEXTURE_AND_STENCIL_WRITE`](crate::enums::GL_SIMULTANEOUS_TEXTURE_AND_STENCIL_WRITE),
-/// support for using the resource both as a source for texture sampling while
-/// performing depth or stencil writes to the resources, respectively, is written
-/// to `params`. Possible values returned are [`GL_FULL_SUPPORT`](crate::enums::GL_FULL_SUPPORT),
-/// [`GL_CAVEAT_SUPPORT`](crate::enums::GL_CAVEAT_SUPPORT), or [`GL_NONE`](crate::enums::GL_NONE)
-/// to indicate full support, limited support or no support at all. If the
-/// resource or operation is not supported, [`GL_NONE`](crate::enums::GL_NONE)
-/// is returned.
-///
-/// If `pname` is [`GL_TEXTURE_COMPRESSED`](crate::enums::GL_TEXTURE_COMPRESSED)
-/// then [`GL_TRUE`](crate::enums::GL_TRUE) is returned in `params` if `internalformat`
-/// is a compressed internal format. [`GL_FALSE`](crate::enums::GL_FALSE) is
-/// returned in `params` otherwise.
-///
-/// If `pname` is [`GL_TEXTURE_COMPRESSED_BLOCK_WIDTH`](crate::enums::GL_TEXTURE_COMPRESSED_BLOCK_WIDTH),
-/// [`GL_TEXTURE_COMPRESSED_BLOCK_HEIGHT`](crate::enums::GL_TEXTURE_COMPRESSED_BLOCK_HEIGHT)
-/// or [`GL_TEXTURE_COMPRESSED_BLOCK_SIZE`](crate::enums::GL_TEXTURE_COMPRESSED_BLOCK_SIZE)
-/// then the width, height or total size, respectively of a block (in basic
-/// machine units) is returned in `params`. If the internal format is not compressed,
-/// or the resource is not supported, 0 is returned.
-///
-/// If `pname` is [`GL_CLEAR_BUFFER`](crate::enums::GL_CLEAR_BUFFER), the level
-/// of support for using the resource with [**glClearBufferData**](crate::context::OxideGLContext::oxidegl_clear_buffer_data)
-/// and [**glClearBufferSubData**](crate::context::OxideGLContext::oxidegl_clear_buffer_sub_data)
-/// is returned in `params`. Possible values returned are [`GL_FULL_SUPPORT`](crate::enums::GL_FULL_SUPPORT),
-/// [`GL_CAVEAT_SUPPORT`](crate::enums::GL_CAVEAT_SUPPORT), or [`GL_NONE`](crate::enums::GL_NONE)
-/// to indicate full support, limited support or no support at all, respectively.
-/// If the resource or operation is not supported, [`GL_NONE`](crate::enums::GL_NONE)
-/// is returned.
-///
-/// If `pname` is [`GL_TEXTURE_VIEW`](crate::enums::GL_TEXTURE_VIEW), the level
-/// of support for using the resource with the [**glTextureView**](crate::context::OxideGLContext::oxidegl_texture_view)
-/// command is returned in `params`. Possible values returned are [`GL_FULL_SUPPORT`](crate::enums::GL_FULL_SUPPORT),
-/// [`GL_CAVEAT_SUPPORT`](crate::enums::GL_CAVEAT_SUPPORT), or [`GL_NONE`](crate::enums::GL_NONE)
-/// to indicate full support, limited support or no support at all, respectively.
-/// If the resource or operation is not supported, [`GL_NONE`](crate::enums::GL_NONE)
-/// is returned.
-///
-/// If `pname` is [`GL_VIEW_COMPATIBILITY_CLASS`](crate::enums::GL_VIEW_COMPATIBILITY_CLASS)
-/// then the compatibility class of the resource when used as a texture view
-/// is returned in `params`. The possible values returned are [`GL_VIEW_CLASS_128_BITS`](crate::enums::GL_VIEW_CLASS_128_BITS),
-/// [`GL_VIEW_CLASS_96_BITS`](crate::enums::GL_VIEW_CLASS_96_BITS), [`GL_VIEW_CLASS_64_BITS`](crate::enums::GL_VIEW_CLASS_64_BITS),
-/// [`GL_VIEW_CLASS_48_BITS`](crate::enums::GL_VIEW_CLASS_48_BITS), [`GL_VIEW_CLASS_32_BITS`](crate::enums::GL_VIEW_CLASS_32_BITS),
-/// [`GL_VIEW_CLASS_24_BITS`](crate::enums::GL_VIEW_CLASS_24_BITS), [`GL_VIEW_CLASS_16_BITS`](crate::enums::GL_VIEW_CLASS_16_BITS),
-/// [`GL_VIEW_CLASS_8_BITS`](crate::enums::GL_VIEW_CLASS_8_BITS), [`GL_VIEW_CLASS_S3TC_DXT1_RGB`](crate::enums::GL_VIEW_CLASS_S3TC_DXT1_RGB),
-/// [`GL_VIEW_CLASS_S3TC_DXT1_RGBA`](crate::enums::GL_VIEW_CLASS_S3TC_DXT1_RGBA),
-/// [`GL_VIEW_CLASS_S3TC_DXT3_RGBA`](crate::enums::GL_VIEW_CLASS_S3TC_DXT3_RGBA),
-/// [`GL_VIEW_CLASS_S3TC_DXT5_RGBA`](crate::enums::GL_VIEW_CLASS_S3TC_DXT5_RGBA),
-/// [`GL_VIEW_CLASS_RGTC1_RED`](crate::enums::GL_VIEW_CLASS_RGTC1_RED), [`GL_VIEW_CLASS_RGTC2_RG`](crate::enums::GL_VIEW_CLASS_RGTC2_RG),
-/// [`GL_VIEW_CLASS_BPTC_UNORM`](crate::enums::GL_VIEW_CLASS_BPTC_UNORM), and
-/// [`GL_VIEW_CLASS_BPTC_FLOAT`](crate::enums::GL_VIEW_CLASS_BPTC_FLOAT).
-///
-/// If `pname` is [`GL_CLEAR_TEXTURE`](crate::enums::GL_CLEAR_TEXTURE) then
-/// the presence of support for using the [**glClearTexImage**](crate::context::OxideGLContext::oxidegl_clear_tex_image)
-/// and [**glClearTexSubImage**](crate::context::OxideGLContext::oxidegl_clear_tex_sub_image)
-/// commands with the resource is written to `params`. Possible values written
-/// are [`GL_FULL_SUPPORT`](crate::enums::GL_FULL_SUPPORT), [`GL_CAVEAT_SUPPORT`](crate::enums::GL_CAVEAT_SUPPORT),
-/// or [`GL_NONE`](crate::enums::GL_NONE) to indicate full support, limited
-/// support or no support at all, respectively. If the resource or operation
-/// is not supported, [`GL_NONE`](crate::enums::GL_NONE) is returned.
-///
-/// ### Notes
-/// [**glGetInternalformativ**](crate::context::OxideGLContext::oxidegl_get_internalformativ)
-/// is available only if the GL version is 4.2 or higher.
-///
-/// The tokens [`GL_INTERNALFORMAT_SUPPORTED`](crate::enums::GL_INTERNALFORMAT_SUPPORTED),
-/// [`GL_INTERNALFORMAT_PREFERRED`](crate::enums::GL_INTERNALFORMAT_PREFERRED),
-/// [`GL_INTERNALFORMAT_RED_SIZE`](crate::enums::GL_INTERNALFORMAT_RED_SIZE),
-/// [`GL_INTERNALFORMAT_GREEN_SIZE`](crate::enums::GL_INTERNALFORMAT_GREEN_SIZE),
-/// [`GL_INTERNALFORMAT_BLUE_SIZE`](crate::enums::GL_INTERNALFORMAT_BLUE_SIZE),
-/// [`GL_INTERNALFORMAT_ALPHA_SIZE`](crate::enums::GL_INTERNALFORMAT_ALPHA_SIZE),
-/// [`GL_INTERNALFORMAT_DEPTH_SIZE`](crate::enums::GL_INTERNALFORMAT_DEPTH_SIZE),
-/// [`GL_INTERNALFORMAT_STENCIL_SIZE`](crate::enums::GL_INTERNALFORMAT_STENCIL_SIZE),
-/// [`GL_INTERNALFORMAT_SHARED_SIZE`](crate::enums::GL_INTERNALFORMAT_SHARED_SIZE),
-/// [`GL_INTERNALFORMAT_RED_TYPE`](crate::enums::GL_INTERNALFORMAT_RED_TYPE),
-/// [`GL_INTERNALFORMAT_GREEN_TYPE`](crate::enums::GL_INTERNALFORMAT_GREEN_TYPE),
-/// [`GL_INTERNALFORMAT_BLUE_TYPE`](crate::enums::GL_INTERNALFORMAT_BLUE_TYPE),
-/// [`GL_INTERNALFORMAT_ALPHA_TYPE`](crate::enums::GL_INTERNALFORMAT_ALPHA_TYPE),
-/// [`GL_INTERNALFORMAT_DEPTH_TYPE`](crate::enums::GL_INTERNALFORMAT_DEPTH_TYPE),
-/// [`GL_INTERNALFORMAT_STENCIL_TYPE`](crate::enums::GL_INTERNALFORMAT_STENCIL_TYPE),
-/// [`GL_MAX_WIDTH`](crate::enums::GL_MAX_WIDTH), [`GL_MAX_HEIGHT`](crate::enums::GL_MAX_HEIGHT),
-/// [`GL_MAX_DEPTH`](crate::enums::GL_MAX_DEPTH), [`GL_MAX_LAYERS`](crate::enums::GL_MAX_LAYERS),
-/// [`GL_MAX_COMBINED_DIMENSIONS`](crate::enums::GL_MAX_COMBINED_DIMENSIONS),
-/// [`GL_COLOR_COMPONENTS`](crate::enums::GL_COLOR_COMPONENTS), [`GL_DEPTH_COMPONENTS`](crate::enums::GL_DEPTH_COMPONENTS),
-/// [`GL_STENCIL_COMPONENTS`](crate::enums::GL_STENCIL_COMPONENTS), [`GL_COLOR_RENDERABLE`](crate::enums::GL_COLOR_RENDERABLE),
-/// [`GL_DEPTH_RENDERABLE`](crate::enums::GL_DEPTH_RENDERABLE), [`GL_STENCIL_RENDERABLE`](crate::enums::GL_STENCIL_RENDERABLE),
-/// [`GL_FRAMEBUFFER_RENDERABLE`](crate::enums::GL_FRAMEBUFFER_RENDERABLE),
-/// [`GL_FRAMEBUFFER_RENDERABLE_LAYERED`](crate::enums::GL_FRAMEBUFFER_RENDERABLE_LAYERED),
-/// [`GL_FRAMEBUFFER_BLEND`](crate::enums::GL_FRAMEBUFFER_BLEND), [`GL_READ_PIXELS`](crate::enums::GL_READ_PIXELS),
-/// [`GL_READ_PIXELS_FORMAT`](crate::enums::GL_READ_PIXELS_FORMAT), [`GL_READ_PIXELS_TYPE`](crate::enums::GL_READ_PIXELS_TYPE),
-/// [`GL_TEXTURE_IMAGE_FORMAT`](crate::enums::GL_TEXTURE_IMAGE_FORMAT), [`GL_TEXTURE_IMAGE_TYPE`](crate::enums::GL_TEXTURE_IMAGE_TYPE),
-/// [`GL_GET_TEXTURE_IMAGE_FORMAT`](crate::enums::GL_GET_TEXTURE_IMAGE_FORMAT),
-/// [`GL_GET_TEXTURE_IMAGE_TYPE`](crate::enums::GL_GET_TEXTURE_IMAGE_TYPE),
-/// [`GL_MIPMAP`](crate::enums::GL_MIPMAP), [`GL_GENERATE_MIPMAP`](crate::enums::GL_GENERATE_MIPMAP),
-/// [`GL_AUTO_GENERATE_MIPMAP`](crate::enums::GL_AUTO_GENERATE_MIPMAP), [`GL_COLOR_ENCODING`](crate::enums::GL_COLOR_ENCODING),
-/// [`GL_SRGB_READ`](crate::enums::GL_SRGB_READ), [`GL_SRGB_WRITE`](crate::enums::GL_SRGB_WRITE),
-/// [`GL_SRGB_DECODE_ARB`](crate::enums::GL_SRGB_DECODE_ARB), [`GL_FILTER`](crate::enums::GL_FILTER),
-/// [`GL_VERTEX_TEXTURE`](crate::enums::GL_VERTEX_TEXTURE), [`GL_TESS_CONTROL_TEXTURE`](crate::enums::GL_TESS_CONTROL_TEXTURE),
-/// [`GL_TESS_EVALUATION_TEXTURE`](crate::enums::GL_TESS_EVALUATION_TEXTURE),
-/// [`GL_GEOMETRY_TEXTURE`](crate::enums::GL_GEOMETRY_TEXTURE), [`GL_FRAGMENT_TEXTURE`](crate::enums::GL_FRAGMENT_TEXTURE),
-/// [`GL_COMPUTE_TEXTURE`](crate::enums::GL_COMPUTE_TEXTURE), [`GL_TEXTURE_SHADOW`](crate::enums::GL_TEXTURE_SHADOW),
-/// [`GL_TEXTURE_GATHER`](crate::enums::GL_TEXTURE_GATHER), [`GL_TEXTURE_GATHER_SHADOW`](crate::enums::GL_TEXTURE_GATHER_SHADOW),
-/// [`GL_SHADER_IMAGE_LOAD`](crate::enums::GL_SHADER_IMAGE_LOAD), [`GL_SHADER_IMAGE_STORE`](crate::enums::GL_SHADER_IMAGE_STORE),
-/// [`GL_SHADER_IMAGE_ATOMIC`](crate::enums::GL_SHADER_IMAGE_ATOMIC), [`GL_IMAGE_TEXEL_SIZE`](crate::enums::GL_IMAGE_TEXEL_SIZE),
-/// [`GL_IMAGE_COMPATIBILITY_CLASS`](crate::enums::GL_IMAGE_COMPATIBILITY_CLASS),
-/// [`GL_IMAGE_PIXEL_FORMAT`](crate::enums::GL_IMAGE_PIXEL_FORMAT), [`GL_IMAGE_PIXEL_TYPE`](crate::enums::GL_IMAGE_PIXEL_TYPE),
-/// [`GL_IMAGE_FORMAT_COMPATIBILITY_TYPE`](crate::enums::GL_IMAGE_FORMAT_COMPATIBILITY_TYPE),
-/// [`GL_SIMULTANEOUS_TEXTURE_AND_DEPTH_TEST`](crate::enums::GL_SIMULTANEOUS_TEXTURE_AND_DEPTH_TEST),
-/// [`GL_SIMULTANEOUS_TEXTURE_AND_STENCIL_TEST`](crate::enums::GL_SIMULTANEOUS_TEXTURE_AND_STENCIL_TEST),
-/// [`GL_SIMULTANEOUS_TEXTURE_AND_DEPTH_WRITE`](crate::enums::GL_SIMULTANEOUS_TEXTURE_AND_DEPTH_WRITE),
-/// [`GL_SIMULTANEOUS_TEXTURE_AND_STENCIL_WRITE`](crate::enums::GL_SIMULTANEOUS_TEXTURE_AND_STENCIL_WRITE),
-/// [`GL_TEXTURE_COMPRESSED`](crate::enums::GL_TEXTURE_COMPRESSED), [`GL_TEXTURE_COMPRESSED_BLOCK_WIDTH`](crate::enums::GL_TEXTURE_COMPRESSED_BLOCK_WIDTH),
-/// [`GL_TEXTURE_COMPRESSED_BLOCK_HEIGHT`](crate::enums::GL_TEXTURE_COMPRESSED_BLOCK_HEIGHT),
-/// [`GL_TEXTURE_COMPRESSED_BLOCK_SIZE`](crate::enums::GL_TEXTURE_COMPRESSED_BLOCK_SIZE),
-/// [`GL_CLEAR_BUFFER`](crate::enums::GL_CLEAR_BUFFER), [`GL_TEXTURE_VIEW`](crate::enums::GL_TEXTURE_VIEW),
-/// and [`GL_VIEW_COMPATIBILITY_CLASS`](crate::enums::GL_VIEW_COMPATIBILITY_CLASS)
-/// are supported only if the GL version is 4.3 or higher.
-///
-/// The [`GL_CLEAR_TEXTURE`](crate::enums::GL_CLEAR_TEXTURE) token is accepted
-/// for `pname` only if the GL version is 4.4 or higher.
-pub mod get_internalformat {
-    use crate::context::Context;
-    use crate::dispatch::gltypes::{GLenum, GLint, GLint64, GLsizei};
-    impl Context {
-        pub(crate) unsafe fn oxidegl_get_internalformativ(
-            &mut self,
-            target: GLenum,
-            internalformat: GLenum,
-            pname: GLenum,
-            count: GLsizei,
-            params: *mut GLint,
-        ) {
-            panic!("command oxidegl_get_internalformativ not yet implemented");
-        }
-        pub(crate) unsafe fn oxidegl_get_internalformati64v(
-            &mut self,
-            target: GLenum,
-            internalformat: GLenum,
-            pname: GLenum,
-            count: GLsizei,
-            params: *mut GLint64,
-        ) {
-            panic!("command oxidegl_get_internalformati64v not yet implemented");
         }
     }
 }

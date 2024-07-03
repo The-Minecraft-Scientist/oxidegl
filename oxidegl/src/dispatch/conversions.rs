@@ -1,21 +1,21 @@
 use std::ptr;
 
-use super::gltypes::GLenum;
+use super::gl_types::GLenum;
 
 pub trait UnsafeFromGLenum {
     unsafe fn unsafe_from_gl_enum(val: GLenum) -> Self;
 }
 /// Helper trait to convert from "raw" `GLenums` to wrappers around subsets of those that are valid for certain functions
 pub trait GLenumExt<T> {
-    unsafe fn into_enum(val: Self) -> T;
+    unsafe fn into_enum(self) -> T;
 }
 
 impl<T> GLenumExt<T> for GLenum
 where
     T: UnsafeFromGLenum,
 {
-    unsafe fn into_enum(val: u32) -> T {
-        unsafe { T::unsafe_from_gl_enum(val) }
+    unsafe fn into_enum(self) -> T {
+        unsafe { T::unsafe_from_gl_enum(self) }
     }
 }
 

@@ -21,4 +21,4 @@ pub mod gl_core;
     non_upper_case_globals,
     clippy::upper_case_acronyms
 )]
-pub mod gltypes;
+pub mod gl_types;

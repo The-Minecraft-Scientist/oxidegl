@@ -8,7 +8,7 @@ use std::os::raw::c_void;
 use std::pin::Pin;
 use std::ptr::NonNull;
 
-use crate::dispatch::gltypes::GLenum;
+use crate::dispatch::gl_types::GLenum;
 
 use self::platform::MetalComponents;
 use self::state::GLState;

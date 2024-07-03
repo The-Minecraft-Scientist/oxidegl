@@ -3,7 +3,12 @@
 use anyhow::{Context, Result};
 use const_format::concatcp;
 use roxmltree::{Document, Node, ParsingOptions};
-use std::{collections::HashMap, io::Write, path::PathBuf};
+use std::{
+    collections::{HashMap, HashSet, VecDeque},
+    hash::Hash,
+    io::Write,
+    path::PathBuf,
+};
 
 use strum_macros::AsRefStr;
 
@@ -14,7 +19,10 @@ pub const CONTEXT_STRUCT_NAME: &str = "Context";
 pub const CONTEXT_STRUCT_PATH: &str = concatcp!(CONTEXT_MOD_PATH, CONTEXT_STRUCT_NAME);
 pub const CONTEXT_USE: &str = concatcp!("use ", CONTEXT_STRUCT_PATH, ";");
 pub const WITH_CTX_USE: &str = concatcp!("use ", CONTEXT_MOD_PATH, "with_ctx", ";");
-pub const TYPES_USE: &str = "use crate::dispatch::gltypes::*;";
+pub const TYPES_USE: &str = "use crate::dispatch::gl_types::*;";
+pub const ENUM_UTILS_USE: &str =
+    "use crate::dispatch::conversions::{GLenumExt, GlDstType, SrcType, UnsafeFromGLenum};";
+
 pub const ENUMS_PATH: &str = "crate::enums::";
 
 #[derive(Clone, Copy, Debug)]
@@ -253,7 +261,7 @@ pub struct EnumGroup<'a> {
     enum_members: Vec<GLAPIEntry<'a>>,
     param_group_members: Vec<(String, u32)>,
 }
-
+#[allow(clippy::type_complexity)]
 pub fn get_vals<'a>(
     spec: &'a Document<'a>,
     exclude_funcs: &[String],
@@ -306,9 +314,6 @@ pub fn get_vals<'a>(
             func_reverse_lookup.insert(func, idx);
         }
         let name = snake_case_from_title_case(name.trim_end_matches(".xml"));
-        if exclude_funcs.contains(&name) {
-            continue;
-        };
         funcs.push(FnCollection {
             name: Some(name),
             docs: Some(refpage.doc),
@@ -347,7 +352,12 @@ pub fn get_vals<'a>(
     let mut groups_map = HashMap::with_capacity(100);
 
     for enu in enums.iter() {
-        let GLAPIEntry::Enum { name, groups, .. } = enu else {
+        let GLAPIEntry::Enum {
+            name,
+            groups,
+            value,
+        } = enu
+        else {
             continue;
         };
 
@@ -366,6 +376,11 @@ pub fn get_vals<'a>(
                             return false;
                         };
                         n == name
+                    }) && !o.get_mut().enum_members.iter().any(|v| {
+                        let GLAPIEntry::Enum { value: val, .. } = v else {
+                            panic!()
+                        };
+                        val == value
                     }) {
                         o.get_mut().enum_members.push(enu.clone());
                     };
@@ -379,12 +394,7 @@ pub fn get_vals<'a>(
             .flat_map(|n| n.entries.iter())
             .map(|v| {
                 (v, {
-                    let GLAPIEntry::Command {
-                        return_type,
-                        name,
-                        params,
-                    } = v
-                    else {
+                    let GLAPIEntry::Command { params, .. } = v else {
                         panic!()
                     };
                     params.iter().enumerate()
@@ -408,6 +418,9 @@ pub fn get_vals<'a>(
                 }
             });
     }
+    funcs.retain(|val: &FnCollection| {
+        val.name.as_ref().map(|n| (exclude_funcs.contains(n))) != Some(true)
+    });
     let mut new_map = HashMap::new();
     for (k, val) in groups_map.drain().filter(|(k, val)| {
         (val.enum_members.len() + val.param_group_members.len() >= 3
@@ -417,9 +430,27 @@ pub fn get_vals<'a>(
             || matches!(*k, "RenderbufferParameterName")
     }) {
         let name = k.trim_end_matches("ARB");
+        if name.is_empty() {
+            continue;
+        }
         new_map.insert(name, val);
-        dbg!(name);
     }
+    funcs
+        .iter_mut()
+        .flat_map(|c| c.entries.iter_mut())
+        .for_each(|cmd| {
+            let GLAPIEntry::Command { params, .. } = cmd else {
+                panic!()
+            };
+            for param in params {
+                for group in param.group.split(',') {
+                    let g2: &str = group;
+                    if new_map.contains_key(g2) {
+                        param.parameter_type = GLTypes::EnumWrapped(g2.to_string());
+                    }
+                }
+            }
+        });
 
     Ok((funcs, enums, new_map))
 }
@@ -445,17 +476,24 @@ pub fn write_dispatch_impl<T: Write>(w: &mut T, v: &[FnCollection<'_>]) -> Resul
     }
     Ok(())
 }
-pub fn write_enum_impl<T: Write>(w: &mut T, v: &[GLAPIEntry<'_>]) -> Result<()> {
+pub fn write_enum_impl<T: Write>(
+    w: &mut T,
+    v: &[GLAPIEntry<'_>],
+    groups: &HashMap<&'_ str, EnumGroup<'_>>,
+) -> Result<()> {
     writeln!(w, "{TYPES_USE}")?;
+    writeln!(w, "{ENUM_UTILS_USE}")?;
     for item in v {
         if let GLAPIEntry::Enum { name, value, .. } = item {
             writeln!(w, "{}", print_rust_enum_entry(name, *value))?;
         }
     }
+    for (name, group) in groups.iter() {
+        print_enum_group(w, name, group)?;
+    }
     Ok(())
 }
 pub fn write_placeholder_impl<T: Write>(w: &mut T, v: &[FnCollection<'_>]) -> Result<()> {
-    writeln!(w, "{CONTEXT_USE}\n{TYPES_USE}\n")?;
     let mut delay = Vec::new();
     for item in v {
         match item.entries.len() {
@@ -469,9 +507,31 @@ pub fn write_placeholder_impl<T: Write>(w: &mut T, v: &[FnCollection<'_>]) -> Re
         if let Some(doc) = &item.docs {
             write!(w, "{doc}")?;
         }
+        let mut seen = HashSet::new();
+        let enum_uses = item
+            .entries
+            .iter()
+            .flat_map(|e| {
+                let GLAPIEntry::Command { params, .. } = e else {
+                    panic!()
+                };
+                params.iter()
+            })
+            .filter_map(|p| {
+                let GLTypes::EnumWrapped(ref s) = p.parameter_type else {
+                    return None;
+                };
+                if seen.insert(s) {
+                    Some(s.to_owned())
+                } else {
+                    None
+                }
+            })
+            .collect::<Vec<String>>()
+            .join(",");
         writeln!(
             w,
-            "pub mod {} {{\n{CONTEXT_USE}\n{TYPES_USE}\nimpl {CONTEXT_STRUCT_NAME} {{",
+            "pub mod {} {{\n{CONTEXT_USE}\n{TYPES_USE}\nuse {ENUMS_PATH}{{{enum_uses}}};\nimpl {CONTEXT_STRUCT_NAME} {{",
             &snake_case_from_title_case(
                 item.name
                     .as_ref()
@@ -502,7 +562,29 @@ pub fn write_placeholder_impl<T: Write>(w: &mut T, v: &[FnCollection<'_>]) -> Re
     }
 
     if !delay.is_empty() {
-        writeln!(w, "impl Context {{")?;
+        let mut seen = HashSet::new();
+        let enum_uses = delay
+            .iter()
+            .flat_map(|i| i.entries.iter())
+            .flat_map(|e| {
+                let GLAPIEntry::Command { params, .. } = e else {
+                    panic!()
+                };
+                params.iter()
+            })
+            .filter_map(|p| {
+                let GLTypes::EnumWrapped(ref s) = p.parameter_type else {
+                    return None;
+                };
+                if seen.insert(s) {
+                    Some(s.to_owned())
+                } else {
+                    None
+                }
+            })
+            .collect::<Vec<String>>()
+            .join(",");
+        writeln!(w, "\n{CONTEXT_USE}\n{TYPES_USE}\nuse {ENUMS_PATH}{{{enum_uses}}};\nimpl {CONTEXT_STRUCT_NAME} {{")?;
         for individual in delay {
             let Some(GLAPIEntry::Command {
                 return_type,
@@ -583,10 +665,17 @@ fn print_dispatch_fn<'a>(name: &'a str, ret_type: GLTypes, params: &[Parameter<'
     let is_unsafe = params.iter().any(|p| p.parameter_type.is_pointer());
     let paramnl = params
         .iter()
-        .map(|p| match p.name {
-            "type" => "r#type, ".to_owned(),
-            "ref" => "r#ref, ".to_owned(),
-            _ => format!("{}, ", p.name),
+        .map(|p| {
+            let pname = match p.name {
+                "type" => "r#type".to_owned(),
+                "ref" => "r#ref".to_owned(),
+                _ => p.name.to_owned(),
+            };
+            if let GLTypes::EnumWrapped(_) = p.parameter_type {
+                format!("unsafe {{ {pname}.into_enum() }},")
+            } else {
+                format!("{pname}, ")
+            }
         })
         .collect::<Vec<String>>()
         .join("");
@@ -607,12 +696,16 @@ fn print_dispatch_fn<'a>(name: &'a str, ret_type: GLTypes, params: &[Parameter<'
     }
     let mut str = "".to_owned();
     for i in 0..(params.len()) {
-        let param = params[i].clone();
+        let mut param = params[i].clone();
         let na = match param.name {
             "type" => "r#type",
             "ref" => "r#ref",
             s => s,
         };
+        if let GLTypes::EnumWrapped(_) = param.parameter_type {
+            param.parameter_type = GLTypes::GLenum;
+        };
+
         str = format!("{}{}: {}", str, na, param.parameter_type.to_rust_type_str());
         if i != (params.len() - 1) {
             str = format!("{}, ", str)
@@ -630,10 +723,10 @@ fn print_dispatch_fn<'a>(name: &'a str, ret_type: GLTypes, params: &[Parameter<'
 fn print_enum_group<'a>(w: &mut impl Write, name: &'a str, group: &EnumGroup<'a>) -> Result<()> {
     writeln!(
         w,
-        "#[derive(Debug, Clone, Copy, PartialEq, Eq, ::strum::FromRepr]"
+        "#[derive(Debug, Clone, Copy, PartialEq, Eq, ::strum_macros::FromRepr)]"
     )?;
     writeln!(w, "#[repr(u32)]")?;
-    writeln!(w, "pub enum {} {{", name)?;
+    writeln!(w, "pub enum {name} {{")?;
     for e in group.enum_members.iter() {
         let GLAPIEntry::Enum {
             name: enum_name, ..
@@ -653,22 +746,25 @@ fn print_enum_group<'a>(w: &mut impl Write, name: &'a str, group: &EnumGroup<'a>
     writeln!(
         w,
         "impl UnsafeFromGLenum for {name} {{
-            unsafe fn unsafe_from(val: u32) -> Self {{
+            unsafe fn unsafe_from_gl_enum(val: u32) -> Self {{
                 #[cfg(debug_assertions)]
-                let Some(ret) = <Self as ::strum::FromRepr>::from_repr(val) else {{
-                    panic!(\"Tried to create a {name} from a GLenum with value {{val}}\");
+                let Some(ret) = {name}::from_repr(val) else {{
+                    println!(\"Tried to create a {name} from a GLenum with invalid value {{:#X}}\", val);
+                    panic!();
                 }};
                 #[cfg(not(debug_assertions))]
                 let ret = unsafe {{ std::mem::transmute(val) }};
                 ret
             }}
-        }}",
-    )?;
-    writeln!(
-        w,
-        "impl Into<u32> for {name} {{
-            fn from(val: Self) -> u32 {{
-                val as u32
+        }}
+        impl From<{name}> for u32 {{
+            fn from(value: {name}) -> u32 {{
+                value as u32
+            }}
+        }}
+        impl<Dst: GlDstType> SrcType<Dst> for {name} {{
+            fn cast(self) -> Dst {{
+                Dst::from_uint(self as u32)
             }}
         }}",
     )?;
@@ -726,7 +822,11 @@ fn print_abi_fn_type<'a>(_name: &'a str, ret_type: GLTypes, params: &[Parameter<
 }
 
 fn print_rust_enum_entry(name: &str, value: u32) -> String {
-    format!("pub const {}: GLenum = {};", name, value)
+    if name.to_ascii_lowercase().contains("bit") {
+        format!("pub const {}: GLenum = {:#X};", name, value)
+    } else {
+        format!("pub const {}: GLenum = {};", name, value)
+    }
 }
 #[allow(clippy::upper_case_acronyms)]
 #[derive(Clone, Debug, AsRefStr)]
@@ -753,6 +853,7 @@ pub enum GLTypes {
     GLvoid,
     PtrTo(Box<Self>),
     ConstPtrTo(Box<Self>),
+    EnumWrapped(String),
     DontCare,
 }
 impl GLTypes {
@@ -824,6 +925,7 @@ impl GLTypes {
             Self::ConstPtrTo(p) => {
                 format!("*const {}", p.to_rust_type_str())
             }
+            Self::EnumWrapped(s) => s.clone(),
             Self::DontCare => {
                 panic!("Unknown Type Used")
             }

@@ -1,5 +1,5 @@
 use crate::{
-    dispatch::gltypes::GLenum,
+    dispatch::gl_types::GLenum,
     enums::{
         GL_CONTEXT_CORE_PROFILE_BIT, GL_CONTEXT_FLAG_FORWARD_COMPATIBLE_BIT,
         GL_CONTEXT_FLAG_NO_ERROR_BIT,
