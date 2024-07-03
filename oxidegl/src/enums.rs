@@ -1,5 +1,5 @@
 use crate::dispatch::conversions::{GLenumExt, GlDstType, SrcType, UnsafeFromGLenum};
-use crate::dispatch::gl_types::*;
+use crate::dispatch::gl_types::GLenum;
 pub const GL_DEPTH_BUFFER_BIT: GLenum = 0x100;
 pub const GL_STENCIL_BUFFER_BIT: GLenum = 0x400;
 pub const GL_COLOR_BUFFER_BIT: GLenum = 0x4000;
@@ -718,7 +718,7 @@ pub const GL_UNIFORM_BLOCK_ACTIVE_UNIFORM_INDICES: GLenum = 35395;
 pub const GL_UNIFORM_BLOCK_REFERENCED_BY_VERTEX_SHADER: GLenum = 35396;
 pub const GL_UNIFORM_BLOCK_REFERENCED_BY_GEOMETRY_SHADER: GLenum = 35397;
 pub const GL_UNIFORM_BLOCK_REFERENCED_BY_FRAGMENT_SHADER: GLenum = 35398;
-pub const GL_INVALID_INDEX: GLenum = 4294967295;
+pub const GL_INVALID_INDEX: GLenum = 4_294_967_295;
 pub const GL_CONTEXT_CORE_PROFILE_BIT: GLenum = 0x1;
 pub const GL_CONTEXT_COMPATIBILITY_PROFILE_BIT: GLenum = 0x2;
 pub const GL_LINES_ADJACENCY: GLenum = 10;
@@ -897,7 +897,7 @@ pub const GL_FRAGMENT_SHADER_BIT: GLenum = 0x2;
 pub const GL_GEOMETRY_SHADER_BIT: GLenum = 0x4;
 pub const GL_TESS_CONTROL_SHADER_BIT: GLenum = 0x8;
 pub const GL_TESS_EVALUATION_SHADER_BIT: GLenum = 0x10;
-pub const GL_ALL_SHADER_BITS: GLenum = 0xFFFFFFFF;
+pub const GL_ALL_SHADER_BITS: GLenum = 0xFFFF_FFFF;
 pub const GL_PROGRAM_SEPARABLE: GLenum = 33368;
 pub const GL_ACTIVE_PROGRAM: GLenum = 33369;
 pub const GL_PROGRAM_PIPELINE_BINDING: GLenum = 33370;
@@ -962,7 +962,7 @@ pub const GL_BUFFER_UPDATE_BARRIER_BIT: GLenum = 0x200;
 pub const GL_FRAMEBUFFER_BARRIER_BIT: GLenum = 0x400;
 pub const GL_TRANSFORM_FEEDBACK_BARRIER_BIT: GLenum = 0x800;
 pub const GL_ATOMIC_COUNTER_BARRIER_BIT: GLenum = 0x1000;
-pub const GL_ALL_BARRIER_BITS: GLenum = 0xFFFFFFFF;
+pub const GL_ALL_BARRIER_BITS: GLenum = 0xFFFF_FFFF;
 pub const GL_MAX_IMAGE_UNITS: GLenum = 36664;
 pub const GL_MAX_COMBINED_IMAGE_UNITS_AND_FRAGMENT_OUTPUTS: GLenum = 36665;
 pub const GL_IMAGE_BINDING_NAME: GLenum = 36666;
@@ -1381,8 +1381,7 @@ impl UnsafeFromGLenum for ShaderType {
         #[cfg(debug_assertions)]
         let Some(ret) = ShaderType::from_repr(val) else {
             println!(
-                "Tried to create a ShaderType from a GLenum with invalid value {:#X}",
-                val
+                "Tried to create a ShaderType from a GLenum with invalid value {val:#X}"
             );
             panic!();
         };
@@ -1415,8 +1414,7 @@ impl UnsafeFromGLenum for BlendEquationModeEXT {
         #[cfg(debug_assertions)]
         let Some(ret) = BlendEquationModeEXT::from_repr(val) else {
             println!(
-                "Tried to create a BlendEquationModeEXT from a GLenum with invalid value {:#X}",
-                val
+                "Tried to create a BlendEquationModeEXT from a GLenum with invalid value {val:#X}"
             );
             panic!();
         };
@@ -1445,8 +1443,7 @@ impl UnsafeFromGLenum for RenderbufferTarget {
         #[cfg(debug_assertions)]
         let Some(ret) = RenderbufferTarget::from_repr(val) else {
             println!(
-                "Tried to create a RenderbufferTarget from a GLenum with invalid value {:#X}",
-                val
+                "Tried to create a RenderbufferTarget from a GLenum with invalid value {val:#X}"
             );
             panic!();
         };
@@ -1476,8 +1473,7 @@ impl UnsafeFromGLenum for BlitFramebufferFilter {
         #[cfg(debug_assertions)]
         let Some(ret) = BlitFramebufferFilter::from_repr(val) else {
             println!(
-                "Tried to create a BlitFramebufferFilter from a GLenum with invalid value {:#X}",
-                val
+                "Tried to create a BlitFramebufferFilter from a GLenum with invalid value {val:#X}"
             );
             panic!();
         };
@@ -1547,8 +1543,7 @@ impl UnsafeFromGLenum for ColorBuffer {
         #[cfg(debug_assertions)]
         let Some(ret) = ColorBuffer::from_repr(val) else {
             println!(
-                "Tried to create a ColorBuffer from a GLenum with invalid value {:#X}",
-                val
+                "Tried to create a ColorBuffer from a GLenum with invalid value {val:#X}"
             );
             panic!();
         };
@@ -1578,8 +1573,7 @@ impl UnsafeFromGLenum for QueryParameterName {
         #[cfg(debug_assertions)]
         let Some(ret) = QueryParameterName::from_repr(val) else {
             println!(
-                "Tried to create a QueryParameterName from a GLenum with invalid value {:#X}",
-                val
+                "Tried to create a QueryParameterName from a GLenum with invalid value {val:#X}"
             );
             panic!();
         };
@@ -1632,8 +1626,7 @@ impl UnsafeFromGLenum for ReadBufferMode {
         #[cfg(debug_assertions)]
         let Some(ret) = ReadBufferMode::from_repr(val) else {
             println!(
-                "Tried to create a ReadBufferMode from a GLenum with invalid value {:#X}",
-                val
+                "Tried to create a ReadBufferMode from a GLenum with invalid value {val:#X}"
             );
             panic!();
         };
@@ -1664,8 +1657,7 @@ impl UnsafeFromGLenum for FramebufferTarget {
         #[cfg(debug_assertions)]
         let Some(ret) = FramebufferTarget::from_repr(val) else {
             println!(
-                "Tried to create a FramebufferTarget from a GLenum with invalid value {:#X}",
-                val
+                "Tried to create a FramebufferTarget from a GLenum with invalid value {val:#X}"
             );
             panic!();
         };
@@ -1697,8 +1689,7 @@ impl UnsafeFromGLenum for SyncParameterName {
         #[cfg(debug_assertions)]
         let Some(ret) = SyncParameterName::from_repr(val) else {
             println!(
-                "Tried to create a SyncParameterName from a GLenum with invalid value {:#X}",
-                val
+                "Tried to create a SyncParameterName from a GLenum with invalid value {val:#X}"
             );
             panic!();
         };
@@ -1729,8 +1720,7 @@ impl UnsafeFromGLenum for Buffer {
         #[cfg(debug_assertions)]
         let Some(ret) = Buffer::from_repr(val) else {
             println!(
-                "Tried to create a Buffer from a GLenum with invalid value {:#X}",
-                val
+                "Tried to create a Buffer from a GLenum with invalid value {val:#X}"
             );
             panic!();
         };
@@ -1769,8 +1759,7 @@ impl UnsafeFromGLenum for GetFramebufferParameter {
         #[cfg(debug_assertions)]
         let Some(ret) = GetFramebufferParameter::from_repr(val) else {
             println!(
-                "Tried to create a GetFramebufferParameter from a GLenum with invalid value {:#X}",
-                val
+                "Tried to create a GetFramebufferParameter from a GLenum with invalid value {val:#X}"
             );
             panic!();
         };
@@ -1800,8 +1789,7 @@ impl UnsafeFromGLenum for VertexProvokingMode {
         #[cfg(debug_assertions)]
         let Some(ret) = VertexProvokingMode::from_repr(val) else {
             println!(
-                "Tried to create a VertexProvokingMode from a GLenum with invalid value {:#X}",
-                val
+                "Tried to create a VertexProvokingMode from a GLenum with invalid value {val:#X}"
             );
             panic!();
         };
@@ -1837,8 +1825,7 @@ impl UnsafeFromGLenum for DepthFunction {
         #[cfg(debug_assertions)]
         let Some(ret) = DepthFunction::from_repr(val) else {
             println!(
-                "Tried to create a DepthFunction from a GLenum with invalid value {:#X}",
-                val
+                "Tried to create a DepthFunction from a GLenum with invalid value {val:#X}"
             );
             panic!();
         };
@@ -1868,8 +1855,7 @@ impl UnsafeFromGLenum for ClipControlOrigin {
         #[cfg(debug_assertions)]
         let Some(ret) = ClipControlOrigin::from_repr(val) else {
             println!(
-                "Tried to create a ClipControlOrigin from a GLenum with invalid value {:#X}",
-                val
+                "Tried to create a ClipControlOrigin from a GLenum with invalid value {val:#X}"
             );
             panic!();
         };
@@ -1899,8 +1885,7 @@ impl UnsafeFromGLenum for ClipControlDepth {
         #[cfg(debug_assertions)]
         let Some(ret) = ClipControlDepth::from_repr(val) else {
             println!(
-                "Tried to create a ClipControlDepth from a GLenum with invalid value {:#X}",
-                val
+                "Tried to create a ClipControlDepth from a GLenum with invalid value {val:#X}"
             );
             panic!();
         };
@@ -1948,8 +1933,7 @@ impl UnsafeFromGLenum for ProgramInterface {
         #[cfg(debug_assertions)]
         let Some(ret) = ProgramInterface::from_repr(val) else {
             println!(
-                "Tried to create a ProgramInterface from a GLenum with invalid value {:#X}",
-                val
+                "Tried to create a ProgramInterface from a GLenum with invalid value {val:#X}"
             );
             panic!();
         };
@@ -1994,8 +1978,7 @@ impl UnsafeFromGLenum for AtomicCounterBufferPName {
         #[cfg(debug_assertions)]
         let Some(ret) = AtomicCounterBufferPName::from_repr(val) else {
             println!(
-                "Tried to create a AtomicCounterBufferPName from a GLenum with invalid value {:#X}",
-                val
+                "Tried to create a AtomicCounterBufferPName from a GLenum with invalid value {val:#X}"
             );
             panic!();
         };
@@ -2047,8 +2030,7 @@ impl UnsafeFromGLenum for PixelType {
         #[cfg(debug_assertions)]
         let Some(ret) = PixelType::from_repr(val) else {
             println!(
-                "Tried to create a PixelType from a GLenum with invalid value {:#X}",
-                val
+                "Tried to create a PixelType from a GLenum with invalid value {val:#X}"
             );
             panic!();
         };
@@ -2080,8 +2062,7 @@ impl UnsafeFromGLenum for ProgramInterfacePName {
         #[cfg(debug_assertions)]
         let Some(ret) = ProgramInterfacePName::from_repr(val) else {
             println!(
-                "Tried to create a ProgramInterfacePName from a GLenum with invalid value {:#X}",
-                val
+                "Tried to create a ProgramInterfacePName from a GLenum with invalid value {val:#X}"
             );
             panic!();
         };
@@ -2179,8 +2160,7 @@ impl UnsafeFromGLenum for InternalFormatPName {
         #[cfg(debug_assertions)]
         let Some(ret) = InternalFormatPName::from_repr(val) else {
             println!(
-                "Tried to create a InternalFormatPName from a GLenum with invalid value {:#X}",
-                val
+                "Tried to create a InternalFormatPName from a GLenum with invalid value {val:#X}"
             );
             panic!();
         };
@@ -2209,8 +2189,7 @@ impl UnsafeFromGLenum for VertexAttribLType {
         #[cfg(debug_assertions)]
         let Some(ret) = VertexAttribLType::from_repr(val) else {
             println!(
-                "Tried to create a VertexAttribLType from a GLenum with invalid value {:#X}",
-                val
+                "Tried to create a VertexAttribLType from a GLenum with invalid value {val:#X}"
             );
             panic!();
         };
@@ -2258,8 +2237,7 @@ impl UnsafeFromGLenum for ProgramProperty {
         #[cfg(debug_assertions)]
         let Some(ret) = ProgramProperty::from_repr(val) else {
             println!(
-                "Tried to create a ProgramProperty from a GLenum with invalid value {:#X}",
-                val
+                "Tried to create a ProgramProperty from a GLenum with invalid value {val:#X}"
             );
             panic!();
         };
@@ -2306,8 +2284,7 @@ impl UnsafeFromGLenum for BlendingFactor {
         #[cfg(debug_assertions)]
         let Some(ret) = BlendingFactor::from_repr(val) else {
             println!(
-                "Tried to create a BlendingFactor from a GLenum with invalid value {:#X}",
-                val
+                "Tried to create a BlendingFactor from a GLenum with invalid value {val:#X}"
             );
             panic!();
         };
@@ -2341,8 +2318,7 @@ impl UnsafeFromGLenum for BufferStorageMask {
         #[cfg(debug_assertions)]
         let Some(ret) = BufferStorageMask::from_repr(val) else {
             println!(
-                "Tried to create a BufferStorageMask from a GLenum with invalid value {:#X}",
-                val
+                "Tried to create a BufferStorageMask from a GLenum with invalid value {val:#X}"
             );
             panic!();
         };
@@ -2386,8 +2362,7 @@ impl UnsafeFromGLenum for MemoryBarrierMask {
         #[cfg(debug_assertions)]
         let Some(ret) = MemoryBarrierMask::from_repr(val) else {
             println!(
-                "Tried to create a MemoryBarrierMask from a GLenum with invalid value {:#X}",
-                val
+                "Tried to create a MemoryBarrierMask from a GLenum with invalid value {val:#X}"
             );
             panic!();
         };
@@ -2420,8 +2395,7 @@ impl UnsafeFromGLenum for FramebufferParameterName {
         #[cfg(debug_assertions)]
         let Some(ret) = FramebufferParameterName::from_repr(val) else {
             println!(
-                "Tried to create a FramebufferParameterName from a GLenum with invalid value {:#X}",
-                val
+                "Tried to create a FramebufferParameterName from a GLenum with invalid value {val:#X}"
             );
             panic!();
         };
@@ -2458,8 +2432,7 @@ impl UnsafeFromGLenum for VertexBufferObjectUsage {
         #[cfg(debug_assertions)]
         let Some(ret) = VertexBufferObjectUsage::from_repr(val) else {
             println!(
-                "Tried to create a VertexBufferObjectUsage from a GLenum with invalid value {:#X}",
-                val
+                "Tried to create a VertexBufferObjectUsage from a GLenum with invalid value {val:#X}"
             );
             panic!();
         };
@@ -2488,8 +2461,7 @@ impl UnsafeFromGLenum for PointParameterName {
         #[cfg(debug_assertions)]
         let Some(ret) = PointParameterName::from_repr(val) else {
             println!(
-                "Tried to create a PointParameterName from a GLenum with invalid value {:#X}",
-                val
+                "Tried to create a PointParameterName from a GLenum with invalid value {val:#X}"
             );
             panic!();
         };
@@ -2518,8 +2490,7 @@ impl UnsafeFromGLenum for BufferPointerName {
         #[cfg(debug_assertions)]
         let Some(ret) = BufferPointerName::from_repr(val) else {
             println!(
-                "Tried to create a BufferPointerName from a GLenum with invalid value {:#X}",
-                val
+                "Tried to create a BufferPointerName from a GLenum with invalid value {val:#X}"
             );
             panic!();
         };
@@ -2575,8 +2546,7 @@ impl UnsafeFromGLenum for TextureTarget {
         #[cfg(debug_assertions)]
         let Some(ret) = TextureTarget::from_repr(val) else {
             println!(
-                "Tried to create a TextureTarget from a GLenum with invalid value {:#X}",
-                val
+                "Tried to create a TextureTarget from a GLenum with invalid value {val:#X}"
             );
             panic!();
         };
@@ -2613,8 +2583,7 @@ impl UnsafeFromGLenum for VertexArrayPName {
         #[cfg(debug_assertions)]
         let Some(ret) = VertexArrayPName::from_repr(val) else {
             println!(
-                "Tried to create a VertexArrayPName from a GLenum with invalid value {:#X}",
-                val
+                "Tried to create a VertexArrayPName from a GLenum with invalid value {val:#X}"
             );
             panic!();
         };
@@ -2644,8 +2613,7 @@ impl UnsafeFromGLenum for FrontFaceDirection {
         #[cfg(debug_assertions)]
         let Some(ret) = FrontFaceDirection::from_repr(val) else {
             println!(
-                "Tried to create a FrontFaceDirection from a GLenum with invalid value {:#X}",
-                val
+                "Tried to create a FrontFaceDirection from a GLenum with invalid value {val:#X}"
             );
             panic!();
         };
@@ -2683,8 +2651,7 @@ impl UnsafeFromGLenum for DebugType {
         #[cfg(debug_assertions)]
         let Some(ret) = DebugType::from_repr(val) else {
             println!(
-                "Tried to create a DebugType from a GLenum with invalid value {:#X}",
-                val
+                "Tried to create a DebugType from a GLenum with invalid value {val:#X}"
             );
             panic!();
         };
@@ -2720,8 +2687,7 @@ impl UnsafeFromGLenum for StencilFunction {
         #[cfg(debug_assertions)]
         let Some(ret) = StencilFunction::from_repr(val) else {
             println!(
-                "Tried to create a StencilFunction from a GLenum with invalid value {:#X}",
-                val
+                "Tried to create a StencilFunction from a GLenum with invalid value {val:#X}"
             );
             panic!();
         };
@@ -2758,8 +2724,7 @@ impl UnsafeFromGLenum for VertexAttribEnum {
         #[cfg(debug_assertions)]
         let Some(ret) = VertexAttribEnum::from_repr(val) else {
             println!(
-                "Tried to create a VertexAttribEnum from a GLenum with invalid value {:#X}",
-                val
+                "Tried to create a VertexAttribEnum from a GLenum with invalid value {val:#X}"
             );
             panic!();
         };
@@ -2792,8 +2757,7 @@ impl UnsafeFromGLenum for SamplerParameterF {
         #[cfg(debug_assertions)]
         let Some(ret) = SamplerParameterF::from_repr(val) else {
             println!(
-                "Tried to create a SamplerParameterF from a GLenum with invalid value {:#X}",
-                val
+                "Tried to create a SamplerParameterF from a GLenum with invalid value {val:#X}"
             );
             panic!();
         };
@@ -2930,8 +2894,7 @@ impl UnsafeFromGLenum for AttributeType {
         #[cfg(debug_assertions)]
         let Some(ret) = AttributeType::from_repr(val) else {
             println!(
-                "Tried to create a AttributeType from a GLenum with invalid value {:#X}",
-                val
+                "Tried to create a AttributeType from a GLenum with invalid value {val:#X}"
             );
             panic!();
         };
@@ -2966,8 +2929,7 @@ impl UnsafeFromGLenum for SamplerParameterI {
         #[cfg(debug_assertions)]
         let Some(ret) = SamplerParameterI::from_repr(val) else {
             println!(
-                "Tried to create a SamplerParameterI from a GLenum with invalid value {:#X}",
-                val
+                "Tried to create a SamplerParameterI from a GLenum with invalid value {val:#X}"
             );
             panic!();
         };
@@ -3037,8 +2999,7 @@ impl UnsafeFromGLenum for DrawBufferMode {
         #[cfg(debug_assertions)]
         let Some(ret) = DrawBufferMode::from_repr(val) else {
             println!(
-                "Tried to create a DrawBufferMode from a GLenum with invalid value {:#X}",
-                val
+                "Tried to create a DrawBufferMode from a GLenum with invalid value {val:#X}"
             );
             panic!();
         };
@@ -3082,8 +3043,7 @@ impl UnsafeFromGLenum for PixelStoreParameter {
         #[cfg(debug_assertions)]
         let Some(ret) = PixelStoreParameter::from_repr(val) else {
             println!(
-                "Tried to create a PixelStoreParameter from a GLenum with invalid value {:#X}",
-                val
+                "Tried to create a PixelStoreParameter from a GLenum with invalid value {val:#X}"
             );
             panic!();
         };
@@ -3117,8 +3077,7 @@ impl UnsafeFromGLenum for VertexAttribIType {
         #[cfg(debug_assertions)]
         let Some(ret) = VertexAttribIType::from_repr(val) else {
             println!(
-                "Tried to create a VertexAttribIType from a GLenum with invalid value {:#X}",
-                val
+                "Tried to create a VertexAttribIType from a GLenum with invalid value {val:#X}"
             );
             panic!();
         };
@@ -3158,8 +3117,7 @@ impl UnsafeFromGLenum for UniformBlockPName {
         #[cfg(debug_assertions)]
         let Some(ret) = UniformBlockPName::from_repr(val) else {
             println!(
-                "Tried to create a UniformBlockPName from a GLenum with invalid value {:#X}",
-                val
+                "Tried to create a UniformBlockPName from a GLenum with invalid value {val:#X}"
             );
             panic!();
         };
@@ -3265,8 +3223,7 @@ impl UnsafeFromGLenum for UniformType {
         #[cfg(debug_assertions)]
         let Some(ret) = UniformType::from_repr(val) else {
             println!(
-                "Tried to create a UniformType from a GLenum with invalid value {:#X}",
-                val
+                "Tried to create a UniformType from a GLenum with invalid value {val:#X}"
             );
             panic!();
         };
@@ -3295,7 +3252,7 @@ impl UnsafeFromGLenum for TransformFeedbackBufferMode {
     unsafe fn unsafe_from_gl_enum(val: u32) -> Self {
         #[cfg(debug_assertions)]
         let Some(ret) = TransformFeedbackBufferMode::from_repr(val) else {
-            println!("Tried to create a TransformFeedbackBufferMode from a GLenum with invalid value {:#X}", val);
+            println!("Tried to create a TransformFeedbackBufferMode from a GLenum with invalid value {val:#X}");
             panic!();
         };
         #[cfg(not(debug_assertions))]
@@ -3328,8 +3285,7 @@ impl UnsafeFromGLenum for PrecisionType {
         #[cfg(debug_assertions)]
         let Some(ret) = PrecisionType::from_repr(val) else {
             println!(
-                "Tried to create a PrecisionType from a GLenum with invalid value {:#X}",
-                val
+                "Tried to create a PrecisionType from a GLenum with invalid value {val:#X}"
             );
             panic!();
         };
@@ -3362,8 +3318,7 @@ impl UnsafeFromGLenum for DebugSeverity {
         #[cfg(debug_assertions)]
         let Some(ret) = DebugSeverity::from_repr(val) else {
             println!(
-                "Tried to create a DebugSeverity from a GLenum with invalid value {:#X}",
-                val
+                "Tried to create a DebugSeverity from a GLenum with invalid value {val:#X}"
             );
             panic!();
         };
@@ -3393,8 +3348,7 @@ impl UnsafeFromGLenum for GetPointervPName {
         #[cfg(debug_assertions)]
         let Some(ret) = GetPointervPName::from_repr(val) else {
             println!(
-                "Tried to create a GetPointervPName from a GLenum with invalid value {:#X}",
-                val
+                "Tried to create a GetPointervPName from a GLenum with invalid value {val:#X}"
             );
             panic!();
         };
@@ -3444,8 +3398,7 @@ impl UnsafeFromGLenum for PixelFormat {
         #[cfg(debug_assertions)]
         let Some(ret) = PixelFormat::from_repr(val) else {
             println!(
-                "Tried to create a PixelFormat from a GLenum with invalid value {:#X}",
-                val
+                "Tried to create a PixelFormat from a GLenum with invalid value {val:#X}"
             );
             panic!();
         };
@@ -3476,8 +3429,7 @@ impl UnsafeFromGLenum for HintMode {
         #[cfg(debug_assertions)]
         let Some(ret) = HintMode::from_repr(val) else {
             println!(
-                "Tried to create a HintMode from a GLenum with invalid value {:#X}",
-                val
+                "Tried to create a HintMode from a GLenum with invalid value {val:#X}"
             );
             panic!();
         };
@@ -3513,8 +3465,7 @@ impl UnsafeFromGLenum for StencilOp {
         #[cfg(debug_assertions)]
         let Some(ret) = StencilOp::from_repr(val) else {
             println!(
-                "Tried to create a StencilOp from a GLenum with invalid value {:#X}",
-                val
+                "Tried to create a StencilOp from a GLenum with invalid value {val:#X}"
             );
             panic!();
         };
@@ -3555,8 +3506,7 @@ impl UnsafeFromGLenum for PrimitiveType {
         #[cfg(debug_assertions)]
         let Some(ret) = PrimitiveType::from_repr(val) else {
             println!(
-                "Tried to create a PrimitiveType from a GLenum with invalid value {:#X}",
-                val
+                "Tried to create a PrimitiveType from a GLenum with invalid value {val:#X}"
             );
             panic!();
         };
@@ -3593,8 +3543,7 @@ impl UnsafeFromGLenum for UniformPName {
         #[cfg(debug_assertions)]
         let Some(ret) = UniformPName::from_repr(val) else {
             println!(
-                "Tried to create a UniformPName from a GLenum with invalid value {:#X}",
-                val
+                "Tried to create a UniformPName from a GLenum with invalid value {val:#X}"
             );
             panic!();
         };
@@ -3658,7 +3607,7 @@ impl UnsafeFromGLenum for InvalidateFramebufferAttachment {
     unsafe fn unsafe_from_gl_enum(val: u32) -> Self {
         #[cfg(debug_assertions)]
         let Some(ret) = InvalidateFramebufferAttachment::from_repr(val) else {
-            println!("Tried to create a InvalidateFramebufferAttachment from a GLenum with invalid value {:#X}", val);
+            println!("Tried to create a InvalidateFramebufferAttachment from a GLenum with invalid value {val:#X}");
             panic!();
         };
         #[cfg(not(debug_assertions))]
@@ -3694,7 +3643,7 @@ impl UnsafeFromGLenum for RenderbufferParameterName {
     unsafe fn unsafe_from_gl_enum(val: u32) -> Self {
         #[cfg(debug_assertions)]
         let Some(ret) = RenderbufferParameterName::from_repr(val) else {
-            println!("Tried to create a RenderbufferParameterName from a GLenum with invalid value {:#X}", val);
+            println!("Tried to create a RenderbufferParameterName from a GLenum with invalid value {val:#X}");
             panic!();
         };
         #[cfg(not(debug_assertions))]
@@ -3724,8 +3673,7 @@ impl UnsafeFromGLenum for PolygonMode {
         #[cfg(debug_assertions)]
         let Some(ret) = PolygonMode::from_repr(val) else {
             println!(
-                "Tried to create a PolygonMode from a GLenum with invalid value {:#X}",
-                val
+                "Tried to create a PolygonMode from a GLenum with invalid value {val:#X}"
             );
             panic!();
         };
@@ -3758,8 +3706,7 @@ impl UnsafeFromGLenum for ProgramStagePName {
         #[cfg(debug_assertions)]
         let Some(ret) = ProgramStagePName::from_repr(val) else {
             println!(
-                "Tried to create a ProgramStagePName from a GLenum with invalid value {:#X}",
-                val
+                "Tried to create a ProgramStagePName from a GLenum with invalid value {val:#X}"
             );
             panic!();
         };
@@ -3797,8 +3744,7 @@ impl UnsafeFromGLenum for QueryTarget {
         #[cfg(debug_assertions)]
         let Some(ret) = QueryTarget::from_repr(val) else {
             println!(
-                "Tried to create a QueryTarget from a GLenum with invalid value {:#X}",
-                val
+                "Tried to create a QueryTarget from a GLenum with invalid value {val:#X}"
             );
             panic!();
         };
@@ -3858,8 +3804,7 @@ impl UnsafeFromGLenum for TextureUnit {
         #[cfg(debug_assertions)]
         let Some(ret) = TextureUnit::from_repr(val) else {
             println!(
-                "Tried to create a TextureUnit from a GLenum with invalid value {:#X}",
-                val
+                "Tried to create a TextureUnit from a GLenum with invalid value {val:#X}"
             );
             panic!();
         };
@@ -3891,8 +3836,7 @@ impl UnsafeFromGLenum for SubroutineParameterName {
         #[cfg(debug_assertions)]
         let Some(ret) = SubroutineParameterName::from_repr(val) else {
             println!(
-                "Tried to create a SubroutineParameterName from a GLenum with invalid value {:#X}",
-                val
+                "Tried to create a SubroutineParameterName from a GLenum with invalid value {val:#X}"
             );
             panic!();
         };
@@ -3927,8 +3871,7 @@ impl UnsafeFromGLenum for DebugSource {
         #[cfg(debug_assertions)]
         let Some(ret) = DebugSource::from_repr(val) else {
             println!(
-                "Tried to create a DebugSource from a GLenum with invalid value {:#X}",
-                val
+                "Tried to create a DebugSource from a GLenum with invalid value {val:#X}"
             );
             panic!();
         };
@@ -3959,8 +3902,7 @@ impl UnsafeFromGLenum for ClampColorMode {
         #[cfg(debug_assertions)]
         let Some(ret) = ClampColorMode::from_repr(val) else {
             println!(
-                "Tried to create a ClampColorMode from a GLenum with invalid value {:#X}",
-                val
+                "Tried to create a ClampColorMode from a GLenum with invalid value {val:#X}"
             );
             panic!();
         };
@@ -4001,8 +3943,7 @@ impl UnsafeFromGLenum for VertexAttribType {
         #[cfg(debug_assertions)]
         let Some(ret) = VertexAttribType::from_repr(val) else {
             println!(
-                "Tried to create a VertexAttribType from a GLenum with invalid value {:#X}",
-                val
+                "Tried to create a VertexAttribType from a GLenum with invalid value {val:#X}"
             );
             panic!();
         };
@@ -4033,8 +3974,7 @@ impl UnsafeFromGLenum for BufferAccess {
         #[cfg(debug_assertions)]
         let Some(ret) = BufferAccess::from_repr(val) else {
             println!(
-                "Tried to create a BufferAccess from a GLenum with invalid value {:#X}",
-                val
+                "Tried to create a BufferAccess from a GLenum with invalid value {val:#X}"
             );
             panic!();
         };
@@ -4076,8 +4016,7 @@ impl UnsafeFromGLenum for CopyBufferSubDataTarget {
         #[cfg(debug_assertions)]
         let Some(ret) = CopyBufferSubDataTarget::from_repr(val) else {
             println!(
-                "Tried to create a CopyBufferSubDataTarget from a GLenum with invalid value {:#X}",
-                val
+                "Tried to create a CopyBufferSubDataTarget from a GLenum with invalid value {val:#X}"
             );
             panic!();
         };
@@ -4197,8 +4136,7 @@ impl UnsafeFromGLenum for SizedInternalFormat {
         #[cfg(debug_assertions)]
         let Some(ret) = SizedInternalFormat::from_repr(val) else {
             println!(
-                "Tried to create a SizedInternalFormat from a GLenum with invalid value {:#X}",
-                val
+                "Tried to create a SizedInternalFormat from a GLenum with invalid value {val:#X}"
             );
             panic!();
         };
@@ -4231,8 +4169,7 @@ impl UnsafeFromGLenum for ShaderParameterName {
         #[cfg(debug_assertions)]
         let Some(ret) = ShaderParameterName::from_repr(val) else {
             println!(
-                "Tried to create a ShaderParameterName from a GLenum with invalid value {:#X}",
-                val
+                "Tried to create a ShaderParameterName from a GLenum with invalid value {val:#X}"
             );
             panic!();
         };
@@ -4267,8 +4204,7 @@ impl UnsafeFromGLenum for PipelineParameterName {
         #[cfg(debug_assertions)]
         let Some(ret) = PipelineParameterName::from_repr(val) else {
             println!(
-                "Tried to create a PipelineParameterName from a GLenum with invalid value {:#X}",
-                val
+                "Tried to create a PipelineParameterName from a GLenum with invalid value {val:#X}"
             );
             panic!();
         };
@@ -4298,8 +4234,7 @@ impl UnsafeFromGLenum for ProgramParameterPName {
         #[cfg(debug_assertions)]
         let Some(ret) = ProgramParameterPName::from_repr(val) else {
             println!(
-                "Tried to create a ProgramParameterPName from a GLenum with invalid value {:#X}",
-                val
+                "Tried to create a ProgramParameterPName from a GLenum with invalid value {val:#X}"
             );
             panic!();
         };
@@ -4331,8 +4266,7 @@ impl UnsafeFromGLenum for QueryObjectParameterName {
         #[cfg(debug_assertions)]
         let Some(ret) = QueryObjectParameterName::from_repr(val) else {
             println!(
-                "Tried to create a QueryObjectParameterName from a GLenum with invalid value {:#X}",
-                val
+                "Tried to create a QueryObjectParameterName from a GLenum with invalid value {val:#X}"
             );
             panic!();
         };
@@ -4369,8 +4303,7 @@ impl UnsafeFromGLenum for BufferUsage {
         #[cfg(debug_assertions)]
         let Some(ret) = BufferUsage::from_repr(val) else {
             println!(
-                "Tried to create a BufferUsage from a GLenum with invalid value {:#X}",
-                val
+                "Tried to create a BufferUsage from a GLenum with invalid value {val:#X}"
             );
             panic!();
         };
@@ -4410,8 +4343,7 @@ impl UnsafeFromGLenum for GetTextureParameter {
         #[cfg(debug_assertions)]
         let Some(ret) = GetTextureParameter::from_repr(val) else {
             println!(
-                "Tried to create a GetTextureParameter from a GLenum with invalid value {:#X}",
-                val
+                "Tried to create a GetTextureParameter from a GLenum with invalid value {val:#X}"
             );
             panic!();
         };
@@ -4450,8 +4382,7 @@ impl UnsafeFromGLenum for CopyImageSubDataTarget {
         #[cfg(debug_assertions)]
         let Some(ret) = CopyImageSubDataTarget::from_repr(val) else {
             println!(
-                "Tried to create a CopyImageSubDataTarget from a GLenum with invalid value {:#X}",
-                val
+                "Tried to create a CopyImageSubDataTarget from a GLenum with invalid value {val:#X}"
             );
             panic!();
         };
@@ -4494,8 +4425,7 @@ impl UnsafeFromGLenum for BufferTarget {
         #[cfg(debug_assertions)]
         let Some(ret) = BufferTarget::from_repr(val) else {
             println!(
-                "Tried to create a BufferTarget from a GLenum with invalid value {:#X}",
-                val
+                "Tried to create a BufferTarget from a GLenum with invalid value {val:#X}"
             );
             panic!();
         };
@@ -4630,8 +4560,7 @@ impl UnsafeFromGLenum for InternalFormat {
         #[cfg(debug_assertions)]
         let Some(ret) = InternalFormat::from_repr(val) else {
             println!(
-                "Tried to create a InternalFormat from a GLenum with invalid value {:#X}",
-                val
+                "Tried to create a InternalFormat from a GLenum with invalid value {val:#X}"
             );
             panic!();
         };
@@ -4664,8 +4593,7 @@ impl UnsafeFromGLenum for TransformFeedbackPName {
         #[cfg(debug_assertions)]
         let Some(ret) = TransformFeedbackPName::from_repr(val) else {
             println!(
-                "Tried to create a TransformFeedbackPName from a GLenum with invalid value {:#X}",
-                val
+                "Tried to create a TransformFeedbackPName from a GLenum with invalid value {val:#X}"
             );
             panic!();
         };
@@ -4696,8 +4624,7 @@ impl UnsafeFromGLenum for ClearBufferMask {
         #[cfg(debug_assertions)]
         let Some(ret) = ClearBufferMask::from_repr(val) else {
             println!(
-                "Tried to create a ClearBufferMask from a GLenum with invalid value {:#X}",
-                val
+                "Tried to create a ClearBufferMask from a GLenum with invalid value {val:#X}"
             );
             panic!();
         };
@@ -4726,8 +4653,7 @@ impl UnsafeFromGLenum for SyncBehaviorFlags {
         #[cfg(debug_assertions)]
         let Some(ret) = SyncBehaviorFlags::from_repr(val) else {
             println!(
-                "Tried to create a SyncBehaviorFlags from a GLenum with invalid value {:#X}",
-                val
+                "Tried to create a SyncBehaviorFlags from a GLenum with invalid value {val:#X}"
             );
             panic!();
         };
@@ -4760,8 +4686,7 @@ impl UnsafeFromGLenum for HintTarget {
         #[cfg(debug_assertions)]
         let Some(ret) = HintTarget::from_repr(val) else {
             println!(
-                "Tried to create a HintTarget from a GLenum with invalid value {:#X}",
-                val
+                "Tried to create a HintTarget from a GLenum with invalid value {val:#X}"
             );
             panic!();
         };
@@ -4797,8 +4722,7 @@ impl UnsafeFromGLenum for ConditionalRenderMode {
         #[cfg(debug_assertions)]
         let Some(ret) = ConditionalRenderMode::from_repr(val) else {
             println!(
-                "Tried to create a ConditionalRenderMode from a GLenum with invalid value {:#X}",
-                val
+                "Tried to create a ConditionalRenderMode from a GLenum with invalid value {val:#X}"
             );
             panic!();
         };
@@ -4861,8 +4785,7 @@ impl UnsafeFromGLenum for FramebufferAttachment {
         #[cfg(debug_assertions)]
         let Some(ret) = FramebufferAttachment::from_repr(val) else {
             println!(
-                "Tried to create a FramebufferAttachment from a GLenum with invalid value {:#X}",
-                val
+                "Tried to create a FramebufferAttachment from a GLenum with invalid value {val:#X}"
             );
             panic!();
         };
@@ -4903,8 +4826,7 @@ impl UnsafeFromGLenum for VertexAttribPointerType {
         #[cfg(debug_assertions)]
         let Some(ret) = VertexAttribPointerType::from_repr(val) else {
             println!(
-                "Tried to create a VertexAttribPointerType from a GLenum with invalid value {:#X}",
-                val
+                "Tried to create a VertexAttribPointerType from a GLenum with invalid value {val:#X}"
             );
             panic!();
         };
@@ -4940,8 +4862,7 @@ impl UnsafeFromGLenum for MapBufferAccessMask {
         #[cfg(debug_assertions)]
         let Some(ret) = MapBufferAccessMask::from_repr(val) else {
             println!(
-                "Tried to create a MapBufferAccessMask from a GLenum with invalid value {:#X}",
-                val
+                "Tried to create a MapBufferAccessMask from a GLenum with invalid value {val:#X}"
             );
             panic!();
         };
@@ -5204,8 +5125,7 @@ impl UnsafeFromGLenum for GetPName {
         #[cfg(debug_assertions)]
         let Some(ret) = GetPName::from_repr(val) else {
             println!(
-                "Tried to create a GetPName from a GLenum with invalid value {:#X}",
-                val
+                "Tried to create a GetPName from a GLenum with invalid value {val:#X}"
             );
             panic!();
         };
@@ -5238,8 +5158,7 @@ impl UnsafeFromGLenum for StringName {
         #[cfg(debug_assertions)]
         let Some(ret) = StringName::from_repr(val) else {
             println!(
-                "Tried to create a StringName from a GLenum with invalid value {:#X}",
-                val
+                "Tried to create a StringName from a GLenum with invalid value {val:#X}"
             );
             panic!();
         };
@@ -5281,8 +5200,7 @@ impl UnsafeFromGLenum for BufferStorageTarget {
         #[cfg(debug_assertions)]
         let Some(ret) = BufferStorageTarget::from_repr(val) else {
             println!(
-                "Tried to create a BufferStorageTarget from a GLenum with invalid value {:#X}",
-                val
+                "Tried to create a BufferStorageTarget from a GLenum with invalid value {val:#X}"
             );
             panic!();
         };
@@ -5313,8 +5231,7 @@ impl UnsafeFromGLenum for PatchParameterName {
         #[cfg(debug_assertions)]
         let Some(ret) = PatchParameterName::from_repr(val) else {
             println!(
-                "Tried to create a PatchParameterName from a GLenum with invalid value {:#X}",
-                val
+                "Tried to create a PatchParameterName from a GLenum with invalid value {val:#X}"
             );
             panic!();
         };
@@ -5372,8 +5289,7 @@ impl UnsafeFromGLenum for ProgramResourceProperty {
         #[cfg(debug_assertions)]
         let Some(ret) = ProgramResourceProperty::from_repr(val) else {
             println!(
-                "Tried to create a ProgramResourceProperty from a GLenum with invalid value {:#X}",
-                val
+                "Tried to create a ProgramResourceProperty from a GLenum with invalid value {val:#X}"
             );
             panic!();
         };
@@ -5404,8 +5320,7 @@ impl UnsafeFromGLenum for TriangleFace {
         #[cfg(debug_assertions)]
         let Some(ret) = TriangleFace::from_repr(val) else {
             println!(
-                "Tried to create a TriangleFace from a GLenum with invalid value {:#X}",
-                val
+                "Tried to create a TriangleFace from a GLenum with invalid value {val:#X}"
             );
             panic!();
         };
@@ -5449,8 +5364,7 @@ impl UnsafeFromGLenum for LogicOp {
         #[cfg(debug_assertions)]
         let Some(ret) = LogicOp::from_repr(val) else {
             println!(
-                "Tried to create a LogicOp from a GLenum with invalid value {:#X}",
-                val
+                "Tried to create a LogicOp from a GLenum with invalid value {val:#X}"
             );
             panic!();
         };
@@ -5518,8 +5432,7 @@ impl UnsafeFromGLenum for EnableCap {
         #[cfg(debug_assertions)]
         let Some(ret) = EnableCap::from_repr(val) else {
             println!(
-                "Tried to create a EnableCap from a GLenum with invalid value {:#X}",
-                val
+                "Tried to create a EnableCap from a GLenum with invalid value {val:#X}"
             );
             panic!();
         };
@@ -5550,8 +5463,7 @@ impl UnsafeFromGLenum for DrawElementsType {
         #[cfg(debug_assertions)]
         let Some(ret) = DrawElementsType::from_repr(val) else {
             println!(
-                "Tried to create a DrawElementsType from a GLenum with invalid value {:#X}",
-                val
+                "Tried to create a DrawElementsType from a GLenum with invalid value {val:#X}"
             );
             panic!();
         };
@@ -5588,8 +5500,7 @@ impl UnsafeFromGLenum for BufferPName {
         #[cfg(debug_assertions)]
         let Some(ret) = BufferPName::from_repr(val) else {
             println!(
-                "Tried to create a BufferPName from a GLenum with invalid value {:#X}",
-                val
+                "Tried to create a BufferPName from a GLenum with invalid value {val:#X}"
             );
             panic!();
         };
@@ -5629,8 +5540,7 @@ impl UnsafeFromGLenum for VertexAttribProperty {
         #[cfg(debug_assertions)]
         let Some(ret) = VertexAttribProperty::from_repr(val) else {
             println!(
-                "Tried to create a VertexAttribProperty from a GLenum with invalid value {:#X}",
-                val
+                "Tried to create a VertexAttribProperty from a GLenum with invalid value {val:#X}"
             );
             panic!();
         };
@@ -5671,7 +5581,7 @@ impl UnsafeFromGLenum for FramebufferAttachmentParameterName {
     unsafe fn unsafe_from_gl_enum(val: u32) -> Self {
         #[cfg(debug_assertions)]
         let Some(ret) = FramebufferAttachmentParameterName::from_repr(val) else {
-            println!("Tried to create a FramebufferAttachmentParameterName from a GLenum with invalid value {:#X}", val);
+            println!("Tried to create a FramebufferAttachmentParameterName from a GLenum with invalid value {val:#X}");
             panic!();
         };
         #[cfg(not(debug_assertions))]
@@ -5725,8 +5635,7 @@ impl UnsafeFromGLenum for TextureParameterName {
         #[cfg(debug_assertions)]
         let Some(ret) = TextureParameterName::from_repr(val) else {
             println!(
-                "Tried to create a TextureParameterName from a GLenum with invalid value {:#X}",
-                val
+                "Tried to create a TextureParameterName from a GLenum with invalid value {val:#X}"
             );
             panic!();
         };
@@ -5765,8 +5674,7 @@ impl UnsafeFromGLenum for ObjectIdentifier {
         #[cfg(debug_assertions)]
         let Some(ret) = ObjectIdentifier::from_repr(val) else {
             println!(
-                "Tried to create a ObjectIdentifier from a GLenum with invalid value {:#X}",
-                val
+                "Tried to create a ObjectIdentifier from a GLenum with invalid value {val:#X}"
             );
             panic!();
         };
@@ -5801,8 +5709,7 @@ impl UnsafeFromGLenum for UseProgramStageMask {
         #[cfg(debug_assertions)]
         let Some(ret) = UseProgramStageMask::from_repr(val) else {
             println!(
-                "Tried to create a UseProgramStageMask from a GLenum with invalid value {:#X}",
-                val
+                "Tried to create a UseProgramStageMask from a GLenum with invalid value {val:#X}"
             );
             panic!();
         };

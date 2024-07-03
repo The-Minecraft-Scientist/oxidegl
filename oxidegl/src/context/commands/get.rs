@@ -4,15 +4,14 @@ use log::trace;
 use crate::{
     //context::state::item::OxideGLItem,
     dispatch::gl_types::*,
-    enums::{GL_RENDERER, GL_SHADING_LANGUAGE_VERSION, GL_VENDOR, GL_VERSION},
 };
 
 use crate::{
     context::Context,
     dispatch::conversions::{GlDstType, StateQueryWrite},
     enums::{
-        GetPName::{self, *},
-        StringName, GL_CONTEXT_FLAGS, GL_CONTEXT_PROFILE_MASK, GL_NUM_EXTENSIONS,
+        GetPName::{self, ContextFlags, ContextProfileMask, NumExtensions},
+        StringName,
     },
 };
 
@@ -410,7 +409,7 @@ impl Context {
             StringName::Vendor => VENDOR.as_ptr(),
             StringName::Renderer => RENDERER.as_ptr(),
             StringName::Version | StringName::ShadingLanguageVersion => VERSION.as_ptr(),
-            _ => {
+            StringName::Extensions => {
                 panic!("unrecognized StringName")
             }
         }
@@ -489,7 +488,7 @@ impl Context {
 /// the server.
 pub mod get_string {
     use crate::context::Context;
-    use crate::dispatch::gl_types::{GLenum, GLubyte, GLuint};
+    use crate::dispatch::gl_types::{GLubyte, GLuint};
     use crate::enums::StringName;
     impl Context {
         pub(crate) fn oxidegl_get_string(&mut self, name: StringName) -> *const GLubyte {

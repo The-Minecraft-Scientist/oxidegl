@@ -4,7 +4,7 @@ use anyhow::{Context, Result};
 use const_format::concatcp;
 use roxmltree::{Document, Node, ParsingOptions};
 use std::{
-    collections::{HashMap, HashSet, VecDeque},
+    collections::{HashMap, HashSet},
     hash::Hash,
     io::Write,
     path::PathBuf,
@@ -672,7 +672,11 @@ fn print_dispatch_fn<'a>(name: &'a str, ret_type: GLTypes, params: &[Parameter<'
                 _ => p.name.to_owned(),
             };
             if let GLTypes::EnumWrapped(_) = p.parameter_type {
-                format!("unsafe {{ {pname}.into_enum() }},")
+                format!(
+                    "{} {pname}.into_enum() {},",
+                    if !is_unsafe { "unsafe {" } else { "" },
+                    if !is_unsafe { "}" } else { "" }
+                )
             } else {
                 format!("{pname}, ")
             }

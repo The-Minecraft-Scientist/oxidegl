@@ -399,7 +399,7 @@ pub mod begin_query_indexed {
 /// primtive modes are available only if the GL version is 3.2 or greater.
 pub mod begin_transform_feedback {
     use crate::context::Context;
-    use crate::dispatch::gl_types::*;
+
     use crate::enums::PrimitiveType;
     impl Context {
         pub fn oxidegl_begin_transform_feedback(&mut self, primitive_mode: PrimitiveType) {
@@ -2112,9 +2112,9 @@ pub mod clear_buffer_sub_data {
 /// are clamped to the range `[inlineq]`
 ///
 /// ### Notes
-/// The type of the `depth` parameter was changed from GLclampf to GLfloat
+/// The type of the `depth` parameter was changed from `GLclampf` to `GLfloat`
 /// for [**glClearDepthf**](crate::context::Context::oxidegl_clear_depthf)
-/// and from GLclampd to GLdouble for [**glClearDepth**](crate::context::Context::oxidegl_clear_depth).
+/// and from `GLclampd` to `GLdouble` for [**glClearDepth**](crate::context::Context::oxidegl_clear_depth).
 /// This change is transparent to user code and is described in detail on
 /// the [**removedTypes**](crate::context::Context::oxideremoved_types) page.
 ///
@@ -2995,9 +2995,9 @@ pub mod copy_tex_sub_image3_d {
 /// It is not necessary that `nearVal` be less than `farVal`. Reverse mappings
 /// such as `[inlineq]` `[inlineq]`
 ///
-/// The type of the `nearVal` and `farVal` parameters was changed from GLclampf
-/// to GLfloat for [**glDepthRangef**](crate::context::Context::oxidegl_depth_rangef)
-/// and from GLclampd to GLdouble for [**glDepthRange**](crate::context::Context::oxidegl_depth_range).
+/// The type of the `nearVal` and `farVal` parameters was changed from `GLclampf`
+/// to `GLfloat` for [**glDepthRangef**](crate::context::Context::oxidegl_depth_rangef)
+/// and from `GLclampd` to `GLdouble` for [**glDepthRange**](crate::context::Context::oxidegl_depth_range).
 /// This change is transparent to user code and is described in detail on
 /// the [**removedTypes**](crate::context::Context::oxideremoved_types) page.
 ///
@@ -3919,7 +3919,7 @@ pub mod framebuffer_renderbuffer {
 ///
 /// If `textarget` is [`GL_TEXTURE_3D`](crate::enums::GL_TEXTURE_3D), then
 /// `level` must be greater than or equal to zero and less than or equal to
-/// $log_2$ of the value of [`GL_MAX_3D_TEXTURE_SIZE`](crate::enums::GL_MAX_3D_TEXTURE_SIZE).
+/// $`log_2`$ of the value of [`GL_MAX_3D_TEXTURE_SIZE`](crate::enums::GL_MAX_3D_TEXTURE_SIZE).
 ///
 /// If `textarget` is one of [`GL_TEXTURE_CUBE_MAP_POSITIVE_X`](crate::enums::GL_TEXTURE_CUBE_MAP_POSITIVE_X),
 /// [`GL_TEXTURE_CUBE_MAP_POSITIVE_Y`](crate::enums::GL_TEXTURE_CUBE_MAP_POSITIVE_Y),
@@ -3928,10 +3928,10 @@ pub mod framebuffer_renderbuffer {
 /// [`GL_TEXTURE_CUBE_MAP_NEGATIVE_Y`](crate::enums::GL_TEXTURE_CUBE_MAP_NEGATIVE_Y),
 /// or [`GL_TEXTURE_CUBE_MAP_NEGATIVE_Z`](crate::enums::GL_TEXTURE_CUBE_MAP_NEGATIVE_Z),
 /// then `level` must be greater than or equal to zero and less than or equal
-/// to $log_2$ of the value of [`GL_MAX_CUBE_MAP_TEXTURE_SIZE`](crate::enums::GL_MAX_CUBE_MAP_TEXTURE_SIZE).
+/// to $`log_2`$ of the value of [`GL_MAX_CUBE_MAP_TEXTURE_SIZE`](crate::enums::GL_MAX_CUBE_MAP_TEXTURE_SIZE).
 ///
 /// For all other values of `textarget`, `level` must be greater than or equal
-/// to zero and less than or equal to $log_2$ of the value of [`GL_MAX_TEXTURE_SIZE`](crate::enums::GL_MAX_TEXTURE_SIZE).
+/// to zero and less than or equal to $`log_2`$ of the value of [`GL_MAX_TEXTURE_SIZE`](crate::enums::GL_MAX_TEXTURE_SIZE).
 ///
 /// `layer` specifies the layer of a 2-dimensional image within a 3-dimensional
 /// texture.
@@ -4067,11 +4067,11 @@ pub mod framebuffer_texture {
 /// multisample array, one- or two-dimensional array, or cube map array texture.
 ///
 /// If `texture` is a three-dimensional texture, then `level` must be greater
-/// than or equal to zero and less than or equal to $log_2$ of the value of
+/// than or equal to zero and less than or equal to $`log_2`$ of the value of
 /// [`GL_MAX_3D_TEXTURE_SIZE`](crate::enums::GL_MAX_3D_TEXTURE_SIZE).
 ///
 /// If `texture` is a two-dimensional array texture, then `level` must be greater
-/// than or equal to zero and less than or equal to $log_2$ of the value of
+/// than or equal to zero and less than or equal to $`log_2`$ of the value of
 /// [`GL_MAX_TEXTURE_SIZE`](crate::enums::GL_MAX_TEXTURE_SIZE).
 ///
 /// For cube map textures, `layer` is translated into a cube map face according
@@ -5834,12 +5834,12 @@ pub mod get_sampler_parameter {
 ///
 /// | Layer number        | Cube Map Face        |
 /// |---------------------|----------------------|
-/// | 0                   | GL_TEXTURE_CUBE_MAP_POSITIVE_X |
-/// | 1                   | GL_TEXTURE_CUBE_MAP_NEGATIVE_X |
-/// | 2                   | GL_TEXTURE_CUBE_MAP_POSITIVE_Y |
-/// | 3                   | GL_TEXTURE_CUBE_MAP_NEGATIVE_Y |
-/// | 4                   | GL_TEXTURE_CUBE_MAP_POSITIVE_Z |
-/// | 5                   | GL_TEXTURE_CUBE_MAP_NEGATIVE_Z |
+/// | 0                   | `GL_TEXTURE_CUBE_MAP_POSITIVE_X` |
+/// | 1                   | `GL_TEXTURE_CUBE_MAP_NEGATIVE_X` |
+/// | 2                   | `GL_TEXTURE_CUBE_MAP_POSITIVE_Y` |
+/// | 3                   | `GL_TEXTURE_CUBE_MAP_NEGATIVE_Y` |
+/// | 4                   | `GL_TEXTURE_CUBE_MAP_POSITIVE_Z` |
+/// | 5                   | `GL_TEXTURE_CUBE_MAP_NEGATIVE_Z` |
 ///
 /// ### Notes
 /// If an error is generated, no change is made to the contents of `pixels`.
@@ -6457,8 +6457,8 @@ pub mod get_tex_parameter {
 /// > undergoing;( [`GL_TRANSFORM_FEEDBACK_ACTIVE`](crate::enums::GL_TRANSFORM_FEEDBACK_ACTIVE))
 ///
 ///
-/// The latter class, which includes [**glGetTransformFeedbacki_v**](crate::context::Context::oxidegl_get_transform_feedbacki_v)
-/// and [**glGetTransformFeedbacki64_v**](crate::context::Context::oxidegl_get_transform_feedbacki64_v)
+/// The latter class, which includes [**`glGetTransformFeedbacki_v`**](crate::context::Context::oxidegl_get_transform_feedbacki_v)
+/// and [**`glGetTransformFeedbacki64_v`**](crate::context::Context::oxidegl_get_transform_feedbacki64_v)
 /// functions, can be used to check what the current configuration of each
 /// of the buffer object regions bound to Transform Feedback Buffer binding
 /// points is. This allows you to query for the following information:
@@ -7779,7 +7779,7 @@ pub mod map_buffer_range {
 /// is available only if the GL version is 4.4 or higher.
 pub mod memory_barrier {
     use crate::context::Context;
-    use crate::dispatch::gl_types::*;
+
     use crate::enums::MemoryBarrierMask;
     impl Context {
         pub fn oxidegl_memory_barrier(&mut self, barriers: MemoryBarrierMask) {
@@ -7931,7 +7931,7 @@ pub mod patch_parameter {
 ///
 /// > If greater than 0, [`GL_PACK_IMAGE_HEIGHT`](crate::enums::GL_PACK_IMAGE_HEIGHT)
 /// > defines the number of pixels in an image three-dimensional texture volume,
-/// > where ``image'' is defined by all pixels sharing the same third dimension
+/// > where ``image`` is defined by all pixels sharing the same third dimension
 /// > index. If the first pixel of a row is placed at location `[inlineq]`
 ///
 ///
@@ -8018,7 +8018,7 @@ pub mod patch_parameter {
 ///
 /// > If greater than 0, [`GL_UNPACK_IMAGE_HEIGHT`](crate::enums::GL_UNPACK_IMAGE_HEIGHT)
 /// > defines the number of pixels in an image of a three-dimensional texture
-/// > volume. Where ``image'' is defined by all pixel sharing the same third
+/// > volume. Where ``image`` is defined by all pixel sharing the same third
 /// > dimension index. If the first pixel of a row is placed at location `[inlineq]`
 ///
 ///
@@ -14180,7 +14180,7 @@ impl Context {
     ///
     /// ### Notes
     /// The type of the `red`, `green`, `blue`, and `alpha` parameters was changed
-    /// from GLclampf to GLfloat. This change is transparent to user code and is
+    /// from `GLclampf` to `GLfloat`. This change is transparent to user code and is
     /// described in detail on the [**removedTypes**](crate::context::Context::oxideremoved_types)
     /// page.
     ///
@@ -14297,7 +14297,7 @@ impl Context {
     ///
     /// ### Notes
     /// The type of the `red`, `green`, `blue`, and `alpha` parameters was changed
-    /// from GLclampf to GLfloat. This change is transparent to user code and is
+    /// from `GLclampf` to `GLfloat`. This change is transparent to user code and is
     /// described in detail on the [**removedTypes**](crate::context::Context::oxideremoved_types)
     /// page.
     ///
@@ -14583,20 +14583,20 @@ impl Context {
     /// the clipping volume behavior and the clip coordinate to window coordinate
     /// transformation behavior.
     ///
-    /// The view volume is defined by $$z_{min} \leq z_c \leq w_c$$ where $z_{min}
-    ///= -w_c$ when `depth` is [`GL_NEGATIVE_ONE_TO_ONE`](crate::enums::GL_NEGATIVE_ONE_TO_ONE),
+    /// The view volume is defined by $$z_{min} \leq `z_c` \leq `w_c`$$ where $z_{min}
+    ///= -`w_c`$ when `depth` is [`GL_NEGATIVE_ONE_TO_ONE`](crate::enums::GL_NEGATIVE_ONE_TO_ONE),
     /// and $z_{min}= 0$ when `depth` is [`GL_ZERO_TO_ONE`](crate::enums::GL_ZERO_TO_ONE).
     ///
-    /// The normalized device coordinate $y_d$ is given by $$y_d={{ f \times y_c
-    ///} \over w_c }$$ where $f= 1$ when `origin` is [`GL_LOWER_LEFT`](crate::enums::GL_LOWER_LEFT),
+    /// The normalized device coordinate $`y_d`$ is given by $$`y_d`={{ f \times `y_c`
+    ///} \over `w_c` }$$ where $f= 1$ when `origin` is [`GL_LOWER_LEFT`](crate::enums::GL_LOWER_LEFT),
     /// and $f= -1$ when `origin` is [`GL_UPPER_LEFT`](crate::enums::GL_UPPER_LEFT).
     ///
-    /// The window coordinate $z_w$ is given by $$z_w= s \times z_d+ b$$ where
+    /// The window coordinate $`z_w`$ is given by $$`z_w`= s \times `z_d`+ b$$ where
     /// $s={{ f- n} \over 2 }$ and $b={ {n+ f} \over 2 }$ when `depth` is [`GL_NEGATIVE_ONE_TO_ONE`](crate::enums::GL_NEGATIVE_ONE_TO_ONE),
     /// and $s= f- n$ and $b= n$ when `depth` is [`GL_ZERO_TO_ONE`](crate::enums::GL_ZERO_TO_ONE).
     /// $n$ and $f$ are the near and far depth range values set with [**glDepthRange**](crate::context::Context::oxidegl_depth_range).
     ///
-    /// Finally, the polygon area computation defined by [**gl_FrontFacing**](crate::context::Context::oxidegl__front_facing)
+    /// Finally, the polygon area computation defined by [**`gl_FrontFacing`**](crate::context::Context::oxidegl__front_facing)
     /// to determine if a polygon is front- or back-facing has its sign negated
     /// when `origin` is [`GL_UPPER_LEFT`](crate::enums::GL_UPPER_LEFT).
     ///
@@ -14605,7 +14605,7 @@ impl Context {
     /// and a `depth` of [`GL_NEGATIVE_ONE_TO_ONE`](crate::enums::GL_NEGATIVE_ONE_TO_ONE).
     ///
     /// An `origin` of [`GL_UPPER_LEFT`](crate::enums::GL_UPPER_LEFT) and a `depth`
-    /// of [`GL_ZERO_TO_ONE`](crate::enums::GL_ZERO_TO_ONE) corresponds to Direct3D's
+    /// of [`GL_ZERO_TO_ONE`](crate::enums::GL_ZERO_TO_ONE) corresponds to `Direct3D`'s
     /// clip volume definition.
     ///
     /// An `origin` of [`GL_UPPER_LEFT`](crate::enums::GL_UPPER_LEFT) and a `depth`
@@ -15119,7 +15119,7 @@ impl Context {
     /// to another. [**glCopyImageSubData**](crate::context::Context::oxidegl_copy_image_sub_data)
     /// does not perform general-purpose conversions such as scaling, resizing,
     /// blending, color-space, or format conversions. It should be considered to
-    /// operate in a manner similar to a CPU memcpy. CopyImageSubData can copy
+    /// operate in a manner similar to a CPU memcpy. `CopyImageSubData` can copy
     /// between images with different internal formats, provided the formats are
     /// compatible.
     ///
@@ -15171,7 +15171,7 @@ impl Context {
     /// of slices to be copied with `srcDepth`. Cubemap textures always have six
     /// faces which are selected by a zero-based face index.
     ///
-    /// For the purposes of CopyImageSubData, two internal formats are considered
+    /// For the purposes of `CopyImageSubData`, two internal formats are considered
     /// compatible if any of the following conditions are met: the formats are
     /// > the same,
     ///
@@ -16471,7 +16471,7 @@ impl Context {
     /// It is not necessary that the near plane distance be less than the far plane
     /// distance. Reverse mappings such as `[inlineq]` `[inlineq]`
     ///
-    /// The type of the `v` parameter was changed from GLclampd to GLdouble. This
+    /// The type of the `v` parameter was changed from `GLclampd` to `GLdouble`. This
     /// change is transparent to user code and is described in detail on the [**removedTypes**](crate::context::Context::oxideremoved_types)
     /// page.
     ///
@@ -16521,8 +16521,8 @@ impl Context {
     /// It is not necessary that the near plane distance be less than the far plane
     /// distance. Reverse mappings such as `[inlineq]` `[inlineq]`
     ///
-    /// The type of the `nearVal` and `farVal` parameters was changed from GLclampd
-    /// to GLdouble. This change is transparent to user code and is described in
+    /// The type of the `nearVal` and `farVal` parameters was changed from `GLclampd`
+    /// to `GLdouble`. This change is transparent to user code and is described in
     /// detail on the [**removedTypes**](crate::context::Context::oxideremoved_types)
     /// page.
     ///
@@ -18424,7 +18424,7 @@ impl Context {
     /// | [`GL_INT_VEC2`](crate::enums::GL_INT_VEC2)                  | [`ivec2`](crate::enums::ivec2)                     |
     /// | [`GL_INT_VEC3`](crate::enums::GL_INT_VEC3)                  | [`ivec3`](crate::enums::ivec3)                     |
     /// | [`GL_INT_VEC4`](crate::enums::GL_INT_VEC4)                  | [`ivec4`](crate::enums::ivec4)                     |
-    /// | [`GL_UNSIGNED_INT`](crate::enums::GL_UNSIGNED_INT)          | [`unsigned int`](crate::enums::unsigned int)       |
+    /// | [`GL_UNSIGNED_INT`](crate::enums::GL_UNSIGNED_INT)          | [`unsigned int`](`crate::enums::unsigned` int)       |
     /// | [`GL_UNSIGNED_INT_VEC2`](crate::enums::GL_UNSIGNED_INT_VEC2) | [`uvec2`](crate::enums::uvec2)                    |
     /// | [`GL_UNSIGNED_INT_VEC3`](crate::enums::GL_UNSIGNED_INT_VEC3) | [`uvec3`](crate::enums::uvec3)                    |
     /// | [`GL_UNSIGNED_INT_VEC4`](crate::enums::GL_UNSIGNED_INT_VEC4) | [`uvec4`](crate::enums::uvec4)                    |
@@ -18866,7 +18866,7 @@ impl Context {
     /// | [`GL_INT_VEC2`](crate::enums::GL_INT_VEC2)                  | [`ivec2`](crate::enums::ivec2)                     |
     /// | [`GL_INT_VEC3`](crate::enums::GL_INT_VEC3)                  | [`ivec3`](crate::enums::ivec3)                     |
     /// | [`GL_INT_VEC4`](crate::enums::GL_INT_VEC4)                  | [`ivec4`](crate::enums::ivec4)                     |
-    /// | [`GL_UNSIGNED_INT`](crate::enums::GL_UNSIGNED_INT)          | [`unsigned int`](crate::enums::unsigned int)       |
+    /// | [`GL_UNSIGNED_INT`](crate::enums::GL_UNSIGNED_INT)          | [`unsigned int`](`crate::enums::unsigned` int)       |
     /// | [`GL_UNSIGNED_INT_VEC2`](crate::enums::GL_UNSIGNED_INT_VEC2) | [`uvec2`](crate::enums::uvec2)                    |
     /// | [`GL_UNSIGNED_INT_VEC3`](crate::enums::GL_UNSIGNED_INT_VEC3) | [`uvec3`](crate::enums::uvec3)                    |
     /// | [`GL_UNSIGNED_INT_VEC4`](crate::enums::GL_UNSIGNED_INT_VEC4) | [`uvec4`](crate::enums::uvec4)                    |
@@ -19486,7 +19486,7 @@ impl Context {
     /// repeatedly returned, the context may be in the process of resetting.
     ///
     /// Reset notification behavior is determined at context creation time, and
-    /// may be queried by calling [**GetIntegerv**](crate::context::Context::oxide_get_integerv)
+    /// may be queried by calling [**`GetIntegerv`**](crate::context::Context::oxide_get_integerv)
     /// with the symbolic constant [`GL_RESET_NOTIFICATION_STRATEGY`](crate::enums::GL_RESET_NOTIFICATION_STRATEGY).
     ///
     /// If the reset notification behavior is [`GL_NO_RESET_NOTIFICATION`](crate::enums::GL_NO_RESET_NOTIFICATION),
@@ -20291,7 +20291,7 @@ impl Context {
     /// |---------------|---------------------------------------------------|
     /// | [`GL_NAME_LENGTH`](crate::enums::GL_NAME_LENGTH) | Any except [`GL_ATOMIC_COUNTER_BUFFER`](crate::enums::GL_ATOMIC_COUNTER_BUFFER) and [`GL_TRANSFORM_FEEDBACK_BUFFER`](crate::enums::GL_TRANSFORM_FEEDBACK_BUFFER) |
     /// | [`GL_TYPE`](crate::enums::GL_TYPE) | [`GL_UNIFORM`](crate::enums::GL_UNIFORM), [`GL_PROGRAM_INPUT`](crate::enums::GL_PROGRAM_INPUT), [`GL_PROGRAM_OUTPUT`](crate::enums::GL_PROGRAM_OUTPUT), [`GL_TRANSFORM_FEEDBACK_VARYING`](crate::enums::GL_TRANSFORM_FEEDBACK_VARYING), [`GL_BUFFER_VARIABLE`](crate::enums::GL_BUFFER_VARIABLE) |
-    /// | [`GL_ARRAY_SIZE`](crate::enums::GL_ARRAY_SIZE) | [`GL_UNIFORM`](crate::enums::GL_UNIFORM), [`GL_BUFFER_VARIABLE`](crate::enums::GL_BUFFER_VARIABLE), [`GL_PROGRAM_INPUT`](crate::enums::GL_PROGRAM_INPUT), [`GL_PROGRAM_OUTPUT, VERTEX_SUBROUTINE_UNIFORM`](crate::enums::GL_PROGRAM_OUTPUT, VERTEX_SUBROUTINE_UNIFORM), [`GL_TESS_CONTROL_SUBROUTINE_UNIFORM`](crate::enums::GL_TESS_CONTROL_SUBROUTINE_UNIFORM), [`GL_TESS_EVALUATION_SUBROUTINE_UNIFORM`](crate::enums::GL_TESS_EVALUATION_SUBROUTINE_UNIFORM), [`GL_GEOMETRY_SUBROUTINE_UNIFORM`](crate::enums::GL_GEOMETRY_SUBROUTINE_UNIFORM), [`GL_FRAGMENT_SUBROUTINE_UNIFORM`](crate::enums::GL_FRAGMENT_SUBROUTINE_UNIFORM), [`GL_COMPUTE_SUBROUTINE_UNIFORM`](crate::enums::GL_COMPUTE_SUBROUTINE_UNIFORM), [`GL_TRANSFORM_FEEDBACK_VARYING`](crate::enums::GL_TRANSFORM_FEEDBACK_VARYING) |
+    /// | [`GL_ARRAY_SIZE`](crate::enums::GL_ARRAY_SIZE) | [`GL_UNIFORM`](crate::enums::GL_UNIFORM), [`GL_BUFFER_VARIABLE`](crate::enums::GL_BUFFER_VARIABLE), [`GL_PROGRAM_INPUT`](crate::enums::GL_PROGRAM_INPUT), [`GL_PROGRAM_OUTPUT, VERTEX_SUBROUTINE_UNIFORM`](`crate::enums::GL_PROGRAM_OUTPUT`, `VERTEX_SUBROUTINE_UNIFORM`), [`GL_TESS_CONTROL_SUBROUTINE_UNIFORM`](crate::enums::GL_TESS_CONTROL_SUBROUTINE_UNIFORM), [`GL_TESS_EVALUATION_SUBROUTINE_UNIFORM`](crate::enums::GL_TESS_EVALUATION_SUBROUTINE_UNIFORM), [`GL_GEOMETRY_SUBROUTINE_UNIFORM`](crate::enums::GL_GEOMETRY_SUBROUTINE_UNIFORM), [`GL_FRAGMENT_SUBROUTINE_UNIFORM`](crate::enums::GL_FRAGMENT_SUBROUTINE_UNIFORM), [`GL_COMPUTE_SUBROUTINE_UNIFORM`](crate::enums::GL_COMPUTE_SUBROUTINE_UNIFORM), [`GL_TRANSFORM_FEEDBACK_VARYING`](crate::enums::GL_TRANSFORM_FEEDBACK_VARYING) |
     /// | [`GL_OFFSET`](crate::enums::GL_OFFSET) | [`GL_UNIFORM`](crate::enums::GL_UNIFORM), [`GL_BUFFER_VARIABLE`](crate::enums::GL_BUFFER_VARIABLE), [`GL_TRANSFORM_FEEDBACK_VARYING`](crate::enums::GL_TRANSFORM_FEEDBACK_VARYING) |
     /// | [`GL_BLOCK_INDEX`](crate::enums::GL_BLOCK_INDEX) | [`GL_UNIFORM`](crate::enums::GL_UNIFORM), [`GL_BUFFER_VARIABLE`](crate::enums::GL_BUFFER_VARIABLE) |
     /// | [`GL_ARRAY_STRIDE`](crate::enums::GL_ARRAY_STRIDE) | [`GL_UNIFORM`](crate::enums::GL_UNIFORM), [`GL_BUFFER_VARIABLE`](crate::enums::GL_BUFFER_VARIABLE) |
@@ -21483,7 +21483,7 @@ impl Context {
     /// `format`, `type` and `pixels` have the same meaning as for [**glGetTexImage**](crate::context::Context::oxidegl_get_tex_image).
     /// `bufSize` is the size of the buffer to receive the retrieved pixel data.
     ///
-    /// For cube map textures, the behavior is as though [**GetTextureImage**](crate::context::Context::oxide_get_texture_image)
+    /// For cube map textures, the behavior is as though [**`GetTextureImage`**](crate::context::Context::oxide_get_texture_image)
     /// were called, but only texels from the requested cube map faces (selected
     /// by `zoffset` and `depth`, as described below) were returned.
     ///
@@ -21506,12 +21506,12 @@ impl Context {
     ///
     /// | Layer number        | Cube Map Face        |
     /// |---------------------|----------------------|
-    /// | 0                   | GL_TEXTURE_CUBE_MAP_POSITIVE_X |
-    /// | 1                   | GL_TEXTURE_CUBE_MAP_NEGATIVE_X |
-    /// | 2                   | GL_TEXTURE_CUBE_MAP_POSITIVE_Y |
-    /// | 3                   | GL_TEXTURE_CUBE_MAP_NEGATIVE_Y |
-    /// | 4                   | GL_TEXTURE_CUBE_MAP_POSITIVE_Z |
-    /// | 5                   | GL_TEXTURE_CUBE_MAP_NEGATIVE_Z |
+    /// | 0                   | `GL_TEXTURE_CUBE_MAP_POSITIVE_X` |
+    /// | 1                   | `GL_TEXTURE_CUBE_MAP_NEGATIVE_X` |
+    /// | 2                   | `GL_TEXTURE_CUBE_MAP_POSITIVE_Y` |
+    /// | 3                   | `GL_TEXTURE_CUBE_MAP_NEGATIVE_Y` |
+    /// | 4                   | `GL_TEXTURE_CUBE_MAP_POSITIVE_Z` |
+    /// | 5                   | `GL_TEXTURE_CUBE_MAP_NEGATIVE_Z` |
     ///
     ///
     /// For cube map array textures, `zoffset` is the first layer-face to access,
@@ -22746,7 +22746,7 @@ impl Context {
     /// fragment's samples is implementation dependent.
     ///
     /// ### Notes
-    /// The type of the `value` parameter was changed from GLclampf to GLfloat.
+    /// The type of the `value` parameter was changed from `GLclampf` to `GLfloat`.
     /// This change is transparent to user code and is described in detail on the
     /// [**removedTypes**](crate::context::Context::oxideremoved_types) page.
     ///
@@ -23642,7 +23642,7 @@ impl Context {
     /// allowing those operations to be performed on each sample.
     ///
     /// ### Notes
-    /// The type of the `value` parameter was changed from GLclampf to GLfloat.
+    /// The type of the `value` parameter was changed from `GLclampf` to `GLfloat`.
     /// This change is transparent to user code and is described in detail on the
     /// [**removedTypes**](crate::context::Context::oxideremoved_types) page.
     ///
@@ -23980,8 +23980,8 @@ impl Context {
     /// `func` is a symbolic constant that determines the stencil comparison function.
     /// It accepts one of eight values, shown in the following list. `ref` is an
     /// integer reference value that is used in the stencil comparison. It is clamped
-    /// to the range `[inlineq]` `[inlineq]` `mask` is bitwise ANDed with both
-    /// the reference value and the stored stencil value, with the ANDed values
+    /// to the range `[inlineq]` `[inlineq]` `mask` is bitwise `ANDed` with both
+    /// the reference value and the stored stencil value, with the `ANDed` values
     /// participating in the comparison.
     ///
     /// If *stencil* represents the value stored in the corresponding stencil buffer
@@ -24096,8 +24096,8 @@ impl Context {
     /// `func` is a symbolic constant that determines the stencil comparison function.
     /// It accepts one of eight values, shown in the following list. `ref` is an
     /// integer reference value that is used in the stencil comparison. It is clamped
-    /// to the range `[inlineq]` `[inlineq]` `mask` is bitwise ANDed with both
-    /// the reference value and the stored stencil value, with the ANDed values
+    /// to the range `[inlineq]` `[inlineq]` `mask` is bitwise `ANDed` with both
+    /// the reference value and the stored stencil value, with the `ANDed` values
     /// participating in the comparison.
     ///
     /// If *stencil* represents the value stored in the corresponding stencil buffer
