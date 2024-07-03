@@ -1,4 +1,10 @@
 #[allow(
+    clippy::cast_lossless,
+    clippy::cast_possible_truncation,
+    clippy::cast_sign_loss
+)]
+pub mod conversions;
+#[allow(
     unused_variables,
     non_snake_case,
     dead_code,
