@@ -19,7 +19,7 @@ where
     }
 }
 
-/// Trait that describes a type that may be returned from a gl*Get function.
+/// Trait that describes a type that may be returned from a glGet* function.
 pub(crate) trait GlDstType: Copy {
     fn from_uint(val: u32) -> Self;
     fn from_ulong(val: u64) -> Self;
@@ -41,6 +41,7 @@ pub trait StateQueryWrite<Dst: GlDstType> {
 
 impl<It: SrcType<Dst>, Dst: GlDstType> StateQueryWrite<Dst> for [It] {
     type It = It;
+    #[inline]
     unsafe fn write_out(&self, idx: Option<u32>, mut ptr: *mut Dst) {
         for item in self {
             // Safety: Caller ensures that self is the correct length for the allocation being written to,
@@ -53,6 +54,7 @@ impl<It: SrcType<Dst>, Dst: GlDstType> StateQueryWrite<Dst> for [It] {
 
 impl<It: SrcType<Dst>, Dst: GlDstType> StateQueryWrite<Dst> for It {
     type It = Self;
+    #[inline]
     unsafe fn write_out(&self, idx: Option<u32>, ptr: *mut Dst) {
         debug_assert!(
             idx.is_none() || idx.map(|v| v == 0) == Some(true),
@@ -65,214 +67,270 @@ impl<It: SrcType<Dst>, Dst: GlDstType> StateQueryWrite<Dst> for It {
 
 //TODO: wrap all of this in a macro
 impl<Dst: GlDstType> SrcType<Dst> for u32 {
+    #[inline]
     fn cast(self) -> Dst {
         Dst::from_uint(self)
     }
 }
 impl<Dst: GlDstType> SrcType<Dst> for i32 {
+    #[inline]
     fn cast(self) -> Dst {
         Dst::from_int(self)
     }
 }
 impl<Dst: GlDstType> SrcType<Dst> for u64 {
+    #[inline]
     fn cast(self) -> Dst {
         Dst::from_ulong(self)
     }
 }
 impl<Dst: GlDstType> SrcType<Dst> for i64 {
+    #[inline]
     fn cast(self) -> Dst {
         Dst::from_long(self)
     }
 }
 impl<Dst: GlDstType> SrcType<Dst> for f32 {
+    #[inline]
     fn cast(self) -> Dst {
         Dst::from_float(self)
     }
 }
 impl<Dst: GlDstType> SrcType<Dst> for f64 {
+    #[inline]
     fn cast(self) -> Dst {
         Dst::from_double(self)
     }
 }
 impl<Dst: GlDstType> SrcType<Dst> for bool {
+    #[inline]
     fn cast(self) -> Dst {
         Dst::from_bool(self)
     }
 }
 impl GlDstType for u32 {
+    #[inline]
     fn from_int(val: i32) -> Self {
         val.unsigned_abs()
     }
+    #[inline]
     fn from_long(val: i64) -> Self {
         val.unsigned_abs() as Self
     }
+    #[inline]
     fn from_uint(val: u32) -> Self {
         val
     }
+    #[inline]
     fn from_ulong(val: u64) -> Self {
         val as Self
     }
 
+    #[inline]
     fn from_float(val: f32) -> Self {
         val.round() as Self
     }
 
+    #[inline]
     fn from_double(val: f64) -> Self {
         val.round() as Self
     }
 
+    #[inline]
     fn from_bool(val: bool) -> Self {
         val as Self
     }
 }
 
 impl GlDstType for u64 {
+    #[inline]
     fn from_int(val: i32) -> Self {
         val.unsigned_abs() as Self
     }
+    #[inline]
     fn from_long(val: i64) -> Self {
         val.unsigned_abs()
     }
+    #[inline]
     fn from_uint(val: u32) -> Self {
         val as Self
     }
+    #[inline]
     fn from_ulong(val: u64) -> Self {
         val
     }
 
+    #[inline]
     fn from_float(val: f32) -> Self {
         val.round() as Self
     }
 
+    #[inline]
     fn from_double(val: f64) -> Self {
         val.round() as Self
     }
 
+    #[inline]
     fn from_bool(val: bool) -> Self {
         val as Self
     }
 }
 impl GlDstType for i32 {
+    #[inline]
     fn from_int(val: i32) -> Self {
         val
     }
+    #[inline]
     fn from_long(val: i64) -> Self {
         val as Self
     }
+    #[inline]
     fn from_uint(val: u32) -> Self {
         val as Self
     }
+    #[inline]
     fn from_ulong(val: u64) -> Self {
         val as Self
     }
 
+    #[inline]
     fn from_float(val: f32) -> Self {
         val.round() as Self
     }
 
+    #[inline]
     fn from_double(val: f64) -> Self {
         val.round() as Self
     }
 
+    #[inline]
     fn from_bool(val: bool) -> Self {
         val as Self
     }
 }
 
 impl GlDstType for i64 {
+    #[inline]
     fn from_int(val: i32) -> Self {
         val as Self
     }
+    #[inline]
     fn from_long(val: i64) -> Self {
         val
     }
+    #[inline]
     fn from_uint(val: u32) -> Self {
         val as Self
     }
+    #[inline]
     fn from_ulong(val: u64) -> Self {
         val as Self
     }
+    #[inline]
     fn from_float(val: f32) -> Self {
         val.round() as Self
     }
+    #[inline]
     fn from_double(val: f64) -> Self {
         val.round() as Self
     }
+    #[inline]
     fn from_bool(val: bool) -> Self {
         val as Self
     }
 }
 impl GlDstType for f32 {
+    #[inline]
     fn from_int(val: i32) -> Self {
         val as Self
     }
+    #[inline]
     fn from_long(val: i64) -> Self {
         val as Self
     }
+    #[inline]
     fn from_uint(val: u32) -> Self {
         val as Self
     }
+    #[inline]
     fn from_ulong(val: u64) -> Self {
         val as Self
     }
+    #[inline]
     fn from_float(val: f32) -> Self {
         val
     }
+    #[inline]
     fn from_double(val: f64) -> Self {
         val as Self
     }
+    #[inline]
     fn from_bool(val: bool) -> Self {
         val as u8 as Self
     }
 }
 impl GlDstType for f64 {
+    #[inline]
     fn from_int(val: i32) -> Self {
         val as Self
     }
+    #[inline]
     fn from_long(val: i64) -> Self {
         val as Self
     }
+    #[inline]
     fn from_uint(val: u32) -> Self {
         val as Self
     }
+    #[inline]
     fn from_ulong(val: u64) -> Self {
         val as Self
     }
+    #[inline]
     fn from_float(val: f32) -> Self {
         val as Self
     }
+    #[inline]
     fn from_double(val: f64) -> Self {
         val
     }
+    #[inline]
     fn from_bool(val: bool) -> Self {
         val as u8 as Self
     }
 }
 impl GlDstType for bool {
+    #[inline]
     fn from_uint(val: u32) -> Self {
         val != 0
     }
 
+    #[inline]
     fn from_ulong(val: u64) -> Self {
         val != 0
     }
 
+    #[inline]
     fn from_int(val: i32) -> Self {
         val != 0
     }
 
+    #[inline]
     fn from_long(val: i64) -> Self {
         val != 0
     }
 
+    #[inline]
     fn from_float(val: f32) -> Self {
         val != 0.0
     }
 
+    #[inline]
     fn from_double(val: f64) -> Self {
         val != 0.0
     }
 
+    #[inline]
     fn from_bool(val: bool) -> Self {
         val
     }
