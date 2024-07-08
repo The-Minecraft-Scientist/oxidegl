@@ -33,7 +33,8 @@ pub(crate) trait GlDstType: Copy {
 pub trait SrcType<Dst: GlDstType>: Copy {
     fn cast(self) -> Dst;
 }
-/// Trait that allows converting a value to an inferred Dst type and unsafely writing it to foreign memory
+/// Trait that allows converting a value to an inferred Dst type according to the conversion rules given by the GL Spec
+/// and unsafely writing it to a type-erased allocation
 pub trait StateQueryWrite<Dst: GlDstType> {
     type It: SrcType<Dst>;
     unsafe fn write_out(&self, idx: Option<u32>, ptr: *mut Dst);
@@ -57,10 +58,9 @@ impl<It: SrcType<Dst>, Dst: GlDstType> StateQueryWrite<Dst> for [It] {
             unsafe { ptr::write(ptr, self.get_unchecked(i as usize).cast()) }
         }
         for item in self {
-            // Safety: Caller ensures that self is the correct length for the allocation being written to,
-            // and that Dst is the correct type for the allocation being written to
+            // Safety: Caller ensures that ptr points to an allocation with the same size and alignment as this array.
             unsafe { ptr::write(ptr, item.cast()) }
-            //Safety: Caller ensures the length of the allocation is equal to the length of the array
+            //Safety: Caller ensures the length of the allocation is equal to the length of this array
             unsafe { ptr = ptr.add(1) }
         }
     }
