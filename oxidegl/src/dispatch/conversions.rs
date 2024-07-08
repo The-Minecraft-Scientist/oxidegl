@@ -43,10 +43,24 @@ impl<It: SrcType<Dst>, Dst: GlDstType> StateQueryWrite<Dst> for [It] {
     type It = It;
     #[inline]
     unsafe fn write_out(&self, idx: Option<u32>, mut ptr: *mut Dst) {
+        debug_assert!(
+            ptr.is_aligned(),
+            "Destination pointer passed to write_out should have been aligned correctly!"
+        );
+        if let Some(i) = idx {
+            debug_assert!(
+                (i as usize) < self.len(),
+                "Tried to read outside the bounds of a single item"
+            );
+            // Safety: Caller ensures ptr points to an allocation with the correct size and alignment to store a
+            // single value of type Dst
+            unsafe { ptr::write(ptr, self.get_unchecked(i as usize).cast()) }
+        }
         for item in self {
             // Safety: Caller ensures that self is the correct length for the allocation being written to,
             // and that Dst is the correct type for the allocation being written to
             unsafe { ptr::write(ptr, item.cast()) }
+            //Safety: Caller ensures the length of the allocation is equal to the length of the array
             unsafe { ptr = ptr.add(1) }
         }
     }
@@ -59,6 +73,10 @@ impl<It: SrcType<Dst>, Dst: GlDstType> StateQueryWrite<Dst> for It {
         debug_assert!(
             idx.is_none() || idx.map(|v| v == 0) == Some(true),
             "Tried to write outside the bounds of a single item"
+        );
+        debug_assert!(
+            ptr.is_aligned(),
+            "Destination pointer passed to write_out should have been aligned correctly!"
         );
         // Safety: caller ensures that Dst is the correct type for the allocation being written to
         unsafe { ptr::write(ptr, self.cast()) }
