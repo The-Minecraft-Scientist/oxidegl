@@ -1,6 +1,7 @@
 use std::{
+    fs::{create_dir, read_dir},
     path::{Path, PathBuf},
-    process::{self, exit, Command},
+    process::{self, exit, Command, Stdio},
     sync::{Arc, OnceLock},
 };
 
@@ -31,21 +32,28 @@ fn complete_task(t: Task) {
 pub enum Task {
     /// Build liboxidegl.dylib
     BuildOxideGL,
-    /// Init GLFW git submodule if it hasn't been already
-    GetGLFW,
-    /// Trigger a download of the XCode command line tools if they aren't present
-    GetXcodeCommandLineTools,
-    /// Init OpenGL-Refpages and -Registry submodules (required to run codegen)
-    GetKhronosStuff,
-    /// Generates a GLFW build folder in oxidegl-glfw/build
-    GenGLFWBuild,
+
     /// Build OxideGL GLFW (requires XCode command line tools for clang, cmake and make)
     BuildGLFW,
+
     /// Generate OxideGL rust GL bindings/placeholder impls
     GenerateBindings,
-    /// Run a "test". A test is a name=path_to_binary pair given in tests.txt.
+
+    /// Run a "test". A test is a name=relative_path_to_binary pair given in tests.txt.
     /// Paths given are relative to the workspace root.
     RunTest,
+
+    /// Init GLFW git submodule if it hasn't been already
+    GetGLFW,
+
+    /// Trigger a download of the XCode command line tools if they aren't present
+    GetXcodeCommandLineTools,
+
+    /// Init OpenGL-Refpages and -Registry submodules (required to run codegen)
+    GetKhronosStuff,
+
+    /// Generates a GLFW build folder in oxidegl-glfw/build
+    GenGLFWBuild,
 }
 #[enum_dispatch(Task)]
 pub trait TaskTrait: Sized {
@@ -110,11 +118,36 @@ pub struct GenGLFWBuild {
 }
 impl TaskTrait for GenGLFWBuild {
     fn dependencies(&self) -> Option<Box<[Task]>> {
-        None
+        Some(Box::new([GetGLFW {}.into()]))
     }
 
     fn perform(&self) -> Result<()> {
-        todo!()
+        let p = PathBuf::from("oxidegl-glfw").join(if self.release { "release" } else { "debug" });
+        let _ = create_dir(&p);
+        if read_dir(&p).is_err() {
+            bail!(
+                "could not confirm creation or presence of GLFW build directory: {}",
+                &p.as_os_str().to_str().unwrap()
+            )
+        }
+        let mut c = Command::new("cmake");
+        c.args(["-S", "oxidegl-glfw", "-B"])
+            .arg(&p)
+            .arg("-D")
+            .stderr(Stdio::inherit());
+        if self.release {
+            c.arg("CMAKE_BUILD_TYPE=Release")
+        } else {
+            c.arg("CMAKE_BUILD_TYPE=Debug")
+        };
+        let out = c.output()?;
+        if !out.status.success() {
+            bail!(
+                "CMake errored while generating a build directory for GLFW at {}",
+                p.as_os_str().to_str().unwrap()
+            )
+        }
+        Ok(())
     }
 }
 
@@ -126,11 +159,27 @@ pub struct BuildGLFW {
 }
 impl TaskTrait for BuildGLFW {
     fn dependencies(&self) -> Option<Box<[Task]>> {
-        None
+        Some(Box::new([GenGLFWBuild {
+            release: self.release,
+        }
+        .into()]))
     }
 
     fn perform(&self) -> Result<()> {
-        todo!()
+        let out = Command::new("make")
+            .arg("-j")
+            .arg("4")
+            .current_dir(PathBuf::from("oxidegl-glfw").join(if self.release {
+                "release"
+            } else {
+                "debug"
+            }))
+            .stderr(Stdio::inherit())
+            .output()?;
+        if !out.status.success() {
+            bail!("error from make");
+        }
+        Ok(())
     }
 }
 
