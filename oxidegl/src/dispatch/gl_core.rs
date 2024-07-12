@@ -7,7 +7,7 @@ use crate::dispatch::gl_types::{
 };
 
 #[no_mangle]
-unsafe extern "C" fn glActiveShaderProgram(pipeline: GLuint, program: GLuint) {
+pub unsafe extern "C" fn glActiveShaderProgram(pipeline: GLuint, program: GLuint) {
     ::log::trace!(
         "glActiveShaderProgram called, parameters: pipeline: {:?}, program: {:?} ",
         pipeline,
@@ -16,7 +16,7 @@ unsafe extern "C" fn glActiveShaderProgram(pipeline: GLuint, program: GLuint) {
     with_ctx(|mut state| state.oxidegl_active_shader_program(pipeline, program));
 }
 #[no_mangle]
-unsafe extern "C" fn glActiveTexture(texture: GLenum) {
+pub unsafe extern "C" fn glActiveTexture(texture: GLenum) {
     ::log::trace!(
         "glActiveTexture called, parameters: texture: {:?} ",
         texture
@@ -24,7 +24,7 @@ unsafe extern "C" fn glActiveTexture(texture: GLenum) {
     with_ctx(|mut state| state.oxidegl_active_texture(unsafe { texture.into_enum() }));
 }
 #[no_mangle]
-unsafe extern "C" fn glAttachShader(program: GLuint, shader: GLuint) {
+pub unsafe extern "C" fn glAttachShader(program: GLuint, shader: GLuint) {
     ::log::trace!(
         "glAttachShader called, parameters: program: {:?}, shader: {:?} ",
         program,
@@ -33,7 +33,7 @@ unsafe extern "C" fn glAttachShader(program: GLuint, shader: GLuint) {
     with_ctx(|mut state| state.oxidegl_attach_shader(program, shader));
 }
 #[no_mangle]
-unsafe extern "C" fn glBeginConditionalRender(id: GLuint, mode: GLenum) {
+pub unsafe extern "C" fn glBeginConditionalRender(id: GLuint, mode: GLenum) {
     ::log::trace!(
         "glBeginConditionalRender called, parameters: id: {:?}, mode: {:?} ",
         id,
@@ -42,12 +42,12 @@ unsafe extern "C" fn glBeginConditionalRender(id: GLuint, mode: GLenum) {
     with_ctx(|mut state| state.oxidegl_begin_conditional_render(id, unsafe { mode.into_enum() }));
 }
 #[no_mangle]
-unsafe extern "C" fn glEndConditionalRender() {
+pub unsafe extern "C" fn glEndConditionalRender() {
     ::log::trace!("glEndConditionalRender called, parameters:  ",);
     with_ctx(|mut state| state.oxidegl_end_conditional_render());
 }
 #[no_mangle]
-unsafe extern "C" fn glBeginQuery(target: GLenum, id: GLuint) {
+pub unsafe extern "C" fn glBeginQuery(target: GLenum, id: GLuint) {
     ::log::trace!(
         "glBeginQuery called, parameters: target: {:?}, id: {:?} ",
         target,
@@ -56,12 +56,12 @@ unsafe extern "C" fn glBeginQuery(target: GLenum, id: GLuint) {
     with_ctx(|mut state| state.oxidegl_begin_query(unsafe { target.into_enum() }, id));
 }
 #[no_mangle]
-unsafe extern "C" fn glEndQuery(target: GLenum) {
+pub unsafe extern "C" fn glEndQuery(target: GLenum) {
     ::log::trace!("glEndQuery called, parameters: target: {:?} ", target);
     with_ctx(|mut state| state.oxidegl_end_query(unsafe { target.into_enum() }));
 }
 #[no_mangle]
-unsafe extern "C" fn glBeginQueryIndexed(target: GLenum, index: GLuint, id: GLuint) {
+pub unsafe extern "C" fn glBeginQueryIndexed(target: GLenum, index: GLuint, id: GLuint) {
     ::log::trace!(
         "glBeginQueryIndexed called, parameters: target: {:?}, index: {:?}, id: {:?} ",
         target,
@@ -73,7 +73,7 @@ unsafe extern "C" fn glBeginQueryIndexed(target: GLenum, index: GLuint, id: GLui
     });
 }
 #[no_mangle]
-unsafe extern "C" fn glEndQueryIndexed(target: GLenum, index: GLuint) {
+pub unsafe extern "C" fn glEndQueryIndexed(target: GLenum, index: GLuint) {
     ::log::trace!(
         "glEndQueryIndexed called, parameters: target: {:?}, index: {:?} ",
         target,
@@ -82,7 +82,7 @@ unsafe extern "C" fn glEndQueryIndexed(target: GLenum, index: GLuint) {
     with_ctx(|mut state| state.oxidegl_end_query_indexed(unsafe { target.into_enum() }, index));
 }
 #[no_mangle]
-unsafe extern "C" fn glBeginTransformFeedback(primitiveMode: GLenum) {
+pub unsafe extern "C" fn glBeginTransformFeedback(primitiveMode: GLenum) {
     ::log::trace!(
         "glBeginTransformFeedback called, parameters: primitiveMode: {:?} ",
         primitiveMode
@@ -92,12 +92,12 @@ unsafe extern "C" fn glBeginTransformFeedback(primitiveMode: GLenum) {
     });
 }
 #[no_mangle]
-unsafe extern "C" fn glEndTransformFeedback() {
+pub unsafe extern "C" fn glEndTransformFeedback() {
     ::log::trace!("glEndTransformFeedback called, parameters:  ",);
     with_ctx(|mut state| state.oxidegl_end_transform_feedback());
 }
 #[no_mangle]
-unsafe extern "C" fn glBindAttribLocation(program: GLuint, index: GLuint, name: *const GLchar) {
+pub unsafe extern "C" fn glBindAttribLocation(program: GLuint, index: GLuint, name: *const GLchar) {
     ::log::trace!(
         "glBindAttribLocation called, parameters: program: {:?}, index: {:?}, name: {:?} ",
         program,
@@ -107,7 +107,7 @@ unsafe extern "C" fn glBindAttribLocation(program: GLuint, index: GLuint, name: 
     with_ctx(|mut state| unsafe { state.oxidegl_bind_attrib_location(program, index, name) });
 }
 #[no_mangle]
-unsafe extern "C" fn glBindBuffer(target: GLenum, buffer: GLuint) {
+pub unsafe extern "C" fn glBindBuffer(target: GLenum, buffer: GLuint) {
     ::log::trace!(
         "glBindBuffer called, parameters: target: {:?}, buffer: {:?} ",
         target,
@@ -116,7 +116,7 @@ unsafe extern "C" fn glBindBuffer(target: GLenum, buffer: GLuint) {
     with_ctx(|mut state| state.oxidegl_bind_buffer(target, buffer));
 }
 #[no_mangle]
-unsafe extern "C" fn glBindBufferBase(target: GLenum, index: GLuint, buffer: GLuint) {
+pub unsafe extern "C" fn glBindBufferBase(target: GLenum, index: GLuint, buffer: GLuint) {
     ::log::trace!(
         "glBindBufferBase called, parameters: target: {:?}, index: {:?}, buffer: {:?} ",
         target,
@@ -126,7 +126,7 @@ unsafe extern "C" fn glBindBufferBase(target: GLenum, index: GLuint, buffer: GLu
     with_ctx(|mut state| state.oxidegl_bind_buffer_base(target, index, buffer));
 }
 #[no_mangle]
-unsafe extern "C" fn glBindBufferRange(
+pub unsafe extern "C" fn glBindBufferRange(
     target: GLenum,
     index: GLuint,
     buffer: GLuint,
@@ -137,7 +137,7 @@ unsafe extern "C" fn glBindBufferRange(
     with_ctx(|mut state| state.oxidegl_bind_buffer_range(target, index, buffer, offset, size));
 }
 #[no_mangle]
-unsafe extern "C" fn glBindBuffersBase(
+pub unsafe extern "C" fn glBindBuffersBase(
     target: GLenum,
     first: GLuint,
     count: GLsizei,
@@ -147,7 +147,7 @@ unsafe extern "C" fn glBindBuffersBase(
     with_ctx(|mut state| unsafe { state.oxidegl_bind_buffers_base(target, first, count, buffers) });
 }
 #[no_mangle]
-unsafe extern "C" fn glBindBuffersRange(
+pub unsafe extern "C" fn glBindBuffersRange(
     target: GLenum,
     first: GLuint,
     count: GLsizei,
@@ -161,7 +161,11 @@ unsafe extern "C" fn glBindBuffersRange(
     });
 }
 #[no_mangle]
-unsafe extern "C" fn glBindFragDataLocation(program: GLuint, color: GLuint, name: *const GLchar) {
+pub unsafe extern "C" fn glBindFragDataLocation(
+    program: GLuint,
+    color: GLuint,
+    name: *const GLchar,
+) {
     ::log::trace!(
         "glBindFragDataLocation called, parameters: program: {:?}, color: {:?}, name: {:?} ",
         program,
@@ -171,7 +175,7 @@ unsafe extern "C" fn glBindFragDataLocation(program: GLuint, color: GLuint, name
     with_ctx(|mut state| unsafe { state.oxidegl_bind_frag_data_location(program, color, name) });
 }
 #[no_mangle]
-unsafe extern "C" fn glBindFragDataLocationIndexed(
+pub unsafe extern "C" fn glBindFragDataLocationIndexed(
     program: GLuint,
     colorNumber: GLuint,
     index: GLuint,
@@ -183,7 +187,7 @@ unsafe extern "C" fn glBindFragDataLocationIndexed(
     });
 }
 #[no_mangle]
-unsafe extern "C" fn glBindFramebuffer(target: GLenum, framebuffer: GLuint) {
+pub unsafe extern "C" fn glBindFramebuffer(target: GLenum, framebuffer: GLuint) {
     ::log::trace!(
         "glBindFramebuffer called, parameters: target: {:?}, framebuffer: {:?} ",
         target,
@@ -194,7 +198,7 @@ unsafe extern "C" fn glBindFramebuffer(target: GLenum, framebuffer: GLuint) {
     });
 }
 #[no_mangle]
-unsafe extern "C" fn glBindImageTexture(
+pub unsafe extern "C" fn glBindImageTexture(
     unit: GLuint,
     texture: GLuint,
     level: GLint,
@@ -211,7 +215,11 @@ unsafe extern "C" fn glBindImageTexture(
     });
 }
 #[no_mangle]
-unsafe extern "C" fn glBindImageTextures(first: GLuint, count: GLsizei, textures: *const GLuint) {
+pub unsafe extern "C" fn glBindImageTextures(
+    first: GLuint,
+    count: GLsizei,
+    textures: *const GLuint,
+) {
     ::log::trace!(
         "glBindImageTextures called, parameters: first: {:?}, count: {:?}, textures: {:?} ",
         first,
@@ -221,7 +229,7 @@ unsafe extern "C" fn glBindImageTextures(first: GLuint, count: GLsizei, textures
     with_ctx(|mut state| unsafe { state.oxidegl_bind_image_textures(first, count, textures) });
 }
 #[no_mangle]
-unsafe extern "C" fn glBindProgramPipeline(pipeline: GLuint) {
+pub unsafe extern "C" fn glBindProgramPipeline(pipeline: GLuint) {
     ::log::trace!(
         "glBindProgramPipeline called, parameters: pipeline: {:?} ",
         pipeline
@@ -229,7 +237,7 @@ unsafe extern "C" fn glBindProgramPipeline(pipeline: GLuint) {
     with_ctx(|mut state| state.oxidegl_bind_program_pipeline(pipeline));
 }
 #[no_mangle]
-unsafe extern "C" fn glBindRenderbuffer(target: GLenum, renderbuffer: GLuint) {
+pub unsafe extern "C" fn glBindRenderbuffer(target: GLenum, renderbuffer: GLuint) {
     ::log::trace!(
         "glBindRenderbuffer called, parameters: target: {:?}, renderbuffer: {:?} ",
         target,
@@ -240,7 +248,7 @@ unsafe extern "C" fn glBindRenderbuffer(target: GLenum, renderbuffer: GLuint) {
     });
 }
 #[no_mangle]
-unsafe extern "C" fn glBindSampler(unit: GLuint, sampler: GLuint) {
+pub unsafe extern "C" fn glBindSampler(unit: GLuint, sampler: GLuint) {
     ::log::trace!(
         "glBindSampler called, parameters: unit: {:?}, sampler: {:?} ",
         unit,
@@ -249,7 +257,7 @@ unsafe extern "C" fn glBindSampler(unit: GLuint, sampler: GLuint) {
     with_ctx(|mut state| state.oxidegl_bind_sampler(unit, sampler));
 }
 #[no_mangle]
-unsafe extern "C" fn glBindSamplers(first: GLuint, count: GLsizei, samplers: *const GLuint) {
+pub unsafe extern "C" fn glBindSamplers(first: GLuint, count: GLsizei, samplers: *const GLuint) {
     ::log::trace!(
         "glBindSamplers called, parameters: first: {:?}, count: {:?}, samplers: {:?} ",
         first,
@@ -259,7 +267,7 @@ unsafe extern "C" fn glBindSamplers(first: GLuint, count: GLsizei, samplers: *co
     with_ctx(|mut state| unsafe { state.oxidegl_bind_samplers(first, count, samplers) });
 }
 #[no_mangle]
-unsafe extern "C" fn glBindTexture(target: GLenum, texture: GLuint) {
+pub unsafe extern "C" fn glBindTexture(target: GLenum, texture: GLuint) {
     ::log::trace!(
         "glBindTexture called, parameters: target: {:?}, texture: {:?} ",
         target,
@@ -268,7 +276,7 @@ unsafe extern "C" fn glBindTexture(target: GLenum, texture: GLuint) {
     with_ctx(|mut state| state.oxidegl_bind_texture(unsafe { target.into_enum() }, texture));
 }
 #[no_mangle]
-unsafe extern "C" fn glBindTextures(first: GLuint, count: GLsizei, textures: *const GLuint) {
+pub unsafe extern "C" fn glBindTextures(first: GLuint, count: GLsizei, textures: *const GLuint) {
     ::log::trace!(
         "glBindTextures called, parameters: first: {:?}, count: {:?}, textures: {:?} ",
         first,
@@ -278,7 +286,7 @@ unsafe extern "C" fn glBindTextures(first: GLuint, count: GLsizei, textures: *co
     with_ctx(|mut state| unsafe { state.oxidegl_bind_textures(first, count, textures) });
 }
 #[no_mangle]
-unsafe extern "C" fn glBindTextureUnit(unit: GLuint, texture: GLuint) {
+pub unsafe extern "C" fn glBindTextureUnit(unit: GLuint, texture: GLuint) {
     ::log::trace!(
         "glBindTextureUnit called, parameters: unit: {:?}, texture: {:?} ",
         unit,
@@ -287,7 +295,7 @@ unsafe extern "C" fn glBindTextureUnit(unit: GLuint, texture: GLuint) {
     with_ctx(|mut state| state.oxidegl_bind_texture_unit(unit, texture));
 }
 #[no_mangle]
-unsafe extern "C" fn glBindTransformFeedback(target: GLenum, id: GLuint) {
+pub unsafe extern "C" fn glBindTransformFeedback(target: GLenum, id: GLuint) {
     ::log::trace!(
         "glBindTransformFeedback called, parameters: target: {:?}, id: {:?} ",
         target,
@@ -296,12 +304,12 @@ unsafe extern "C" fn glBindTransformFeedback(target: GLenum, id: GLuint) {
     with_ctx(|mut state| state.oxidegl_bind_transform_feedback(target, id));
 }
 #[no_mangle]
-unsafe extern "C" fn glBindVertexArray(array: GLuint) {
+pub unsafe extern "C" fn glBindVertexArray(array: GLuint) {
     ::log::trace!("glBindVertexArray called, parameters: array: {:?} ", array);
     with_ctx(|mut state| state.oxidegl_bind_vertex_array(array));
 }
 #[no_mangle]
-unsafe extern "C" fn glBindVertexBuffer(
+pub unsafe extern "C" fn glBindVertexBuffer(
     bindingindex: GLuint,
     buffer: GLuint,
     offset: GLintptr,
@@ -311,7 +319,7 @@ unsafe extern "C" fn glBindVertexBuffer(
     with_ctx(|mut state| state.oxidegl_bind_vertex_buffer(bindingindex, buffer, offset, stride));
 }
 #[no_mangle]
-unsafe extern "C" fn glVertexArrayVertexBuffer(
+pub unsafe extern "C" fn glVertexArrayVertexBuffer(
     vaobj: GLuint,
     bindingindex: GLuint,
     buffer: GLuint,
@@ -324,7 +332,7 @@ unsafe extern "C" fn glVertexArrayVertexBuffer(
     });
 }
 #[no_mangle]
-unsafe extern "C" fn glBindVertexBuffers(
+pub unsafe extern "C" fn glBindVertexBuffers(
     first: GLuint,
     count: GLsizei,
     buffers: *const GLuint,
@@ -337,7 +345,7 @@ unsafe extern "C" fn glBindVertexBuffers(
     });
 }
 #[no_mangle]
-unsafe extern "C" fn glVertexArrayVertexBuffers(
+pub unsafe extern "C" fn glVertexArrayVertexBuffers(
     vaobj: GLuint,
     first: GLuint,
     count: GLsizei,
@@ -351,7 +359,7 @@ unsafe extern "C" fn glVertexArrayVertexBuffers(
     });
 }
 #[no_mangle]
-unsafe extern "C" fn glBlendColor(red: GLfloat, green: GLfloat, blue: GLfloat, alpha: GLfloat) {
+pub unsafe extern "C" fn glBlendColor(red: GLfloat, green: GLfloat, blue: GLfloat, alpha: GLfloat) {
     ::log::trace!(
         "glBlendColor called, parameters: red: {:?}, green: {:?}, blue: {:?}, alpha: {:?} ",
         red,
@@ -362,12 +370,12 @@ unsafe extern "C" fn glBlendColor(red: GLfloat, green: GLfloat, blue: GLfloat, a
     with_ctx(|mut state| state.oxidegl_blend_color(red, green, blue, alpha));
 }
 #[no_mangle]
-unsafe extern "C" fn glBlendEquation(mode: GLenum) {
+pub unsafe extern "C" fn glBlendEquation(mode: GLenum) {
     ::log::trace!("glBlendEquation called, parameters: mode: {:?} ", mode);
     with_ctx(|mut state| state.oxidegl_blend_equation(unsafe { mode.into_enum() }));
 }
 #[no_mangle]
-unsafe extern "C" fn glBlendEquationi(buf: GLuint, mode: GLenum) {
+pub unsafe extern "C" fn glBlendEquationi(buf: GLuint, mode: GLenum) {
     ::log::trace!(
         "glBlendEquationi called, parameters: buf: {:?}, mode: {:?} ",
         buf,
@@ -376,7 +384,7 @@ unsafe extern "C" fn glBlendEquationi(buf: GLuint, mode: GLenum) {
     with_ctx(|mut state| state.oxidegl_blend_equationi(buf, unsafe { mode.into_enum() }));
 }
 #[no_mangle]
-unsafe extern "C" fn glBlendEquationSeparate(modeRGB: GLenum, modeAlpha: GLenum) {
+pub unsafe extern "C" fn glBlendEquationSeparate(modeRGB: GLenum, modeAlpha: GLenum) {
     ::log::trace!(
         "glBlendEquationSeparate called, parameters: modeRGB: {:?}, modeAlpha: {:?} ",
         modeRGB,
@@ -389,7 +397,7 @@ unsafe extern "C" fn glBlendEquationSeparate(modeRGB: GLenum, modeAlpha: GLenum)
     });
 }
 #[no_mangle]
-unsafe extern "C" fn glBlendEquationSeparatei(buf: GLuint, modeRGB: GLenum, modeAlpha: GLenum) {
+pub unsafe extern "C" fn glBlendEquationSeparatei(buf: GLuint, modeRGB: GLenum, modeAlpha: GLenum) {
     ::log::trace!(
         "glBlendEquationSeparatei called, parameters: buf: {:?}, modeRGB: {:?}, modeAlpha: {:?} ",
         buf,
@@ -403,7 +411,7 @@ unsafe extern "C" fn glBlendEquationSeparatei(buf: GLuint, modeRGB: GLenum, mode
     });
 }
 #[no_mangle]
-unsafe extern "C" fn glBlendFunc(sfactor: GLenum, dfactor: GLenum) {
+pub unsafe extern "C" fn glBlendFunc(sfactor: GLenum, dfactor: GLenum) {
     ::log::trace!(
         "glBlendFunc called, parameters: sfactor: {:?}, dfactor: {:?} ",
         sfactor,
@@ -416,7 +424,7 @@ unsafe extern "C" fn glBlendFunc(sfactor: GLenum, dfactor: GLenum) {
     });
 }
 #[no_mangle]
-unsafe extern "C" fn glBlendFunci(buf: GLuint, src: GLenum, dst: GLenum) {
+pub unsafe extern "C" fn glBlendFunci(buf: GLuint, src: GLenum, dst: GLenum) {
     ::log::trace!(
         "glBlendFunci called, parameters: buf: {:?}, src: {:?}, dst: {:?} ",
         buf,
@@ -428,7 +436,7 @@ unsafe extern "C" fn glBlendFunci(buf: GLuint, src: GLenum, dst: GLenum) {
     });
 }
 #[no_mangle]
-unsafe extern "C" fn glBlendFuncSeparate(
+pub unsafe extern "C" fn glBlendFuncSeparate(
     sfactorRGB: GLenum,
     dfactorRGB: GLenum,
     sfactorAlpha: GLenum,
@@ -445,7 +453,7 @@ unsafe extern "C" fn glBlendFuncSeparate(
     });
 }
 #[no_mangle]
-unsafe extern "C" fn glBlendFuncSeparatei(
+pub unsafe extern "C" fn glBlendFuncSeparatei(
     buf: GLuint,
     srcRGB: GLenum,
     dstRGB: GLenum,
@@ -464,7 +472,7 @@ unsafe extern "C" fn glBlendFuncSeparatei(
     });
 }
 #[no_mangle]
-unsafe extern "C" fn glBlitFramebuffer(
+pub unsafe extern "C" fn glBlitFramebuffer(
     srcX0: GLint,
     srcY0: GLint,
     srcX1: GLint,
@@ -493,7 +501,7 @@ unsafe extern "C" fn glBlitFramebuffer(
     });
 }
 #[no_mangle]
-unsafe extern "C" fn glBlitNamedFramebuffer(
+pub unsafe extern "C" fn glBlitNamedFramebuffer(
     readFramebuffer: GLuint,
     drawFramebuffer: GLuint,
     srcX0: GLint,
@@ -526,7 +534,7 @@ unsafe extern "C" fn glBlitNamedFramebuffer(
     });
 }
 #[no_mangle]
-unsafe extern "C" fn glBufferData(
+pub unsafe extern "C" fn glBufferData(
     target: GLenum,
     size: GLsizeiptr,
     data: *const GLvoid,
@@ -542,7 +550,7 @@ unsafe extern "C" fn glBufferData(
     with_ctx(|mut state| unsafe { state.oxidegl_buffer_data(target, size, data, usage) });
 }
 #[no_mangle]
-unsafe extern "C" fn glNamedBufferData(
+pub unsafe extern "C" fn glNamedBufferData(
     buffer: GLuint,
     size: GLsizeiptr,
     data: *const GLvoid,
@@ -560,7 +568,7 @@ unsafe extern "C" fn glNamedBufferData(
     });
 }
 #[no_mangle]
-unsafe extern "C" fn glBufferStorage(
+pub unsafe extern "C" fn glBufferStorage(
     target: GLenum,
     size: GLsizeiptr,
     data: *const GLvoid,
@@ -578,7 +586,7 @@ unsafe extern "C" fn glBufferStorage(
     });
 }
 #[no_mangle]
-unsafe extern "C" fn glNamedBufferStorage(
+pub unsafe extern "C" fn glNamedBufferStorage(
     buffer: GLuint,
     size: GLsizeiptr,
     data: *const GLvoid,
@@ -590,7 +598,7 @@ unsafe extern "C" fn glNamedBufferStorage(
     });
 }
 #[no_mangle]
-unsafe extern "C" fn glBufferSubData(
+pub unsafe extern "C" fn glBufferSubData(
     target: GLenum,
     offset: GLintptr,
     size: GLsizeiptr,
@@ -606,7 +614,7 @@ unsafe extern "C" fn glBufferSubData(
     with_ctx(|mut state| unsafe { state.oxidegl_buffer_sub_data(target, offset, size, data) });
 }
 #[no_mangle]
-unsafe extern "C" fn glNamedBufferSubData(
+pub unsafe extern "C" fn glNamedBufferSubData(
     buffer: GLuint,
     offset: GLintptr,
     size: GLsizeiptr,
@@ -618,7 +626,7 @@ unsafe extern "C" fn glNamedBufferSubData(
     });
 }
 #[no_mangle]
-unsafe extern "C" fn glCheckFramebufferStatus(target: GLenum) -> GLenum {
+pub unsafe extern "C" fn glCheckFramebufferStatus(target: GLenum) -> GLenum {
     ::log::trace!(
         "glCheckFramebufferStatus called, parameters: target: {:?} ",
         target
@@ -626,7 +634,10 @@ unsafe extern "C" fn glCheckFramebufferStatus(target: GLenum) -> GLenum {
     with_ctx(|mut state| state.oxidegl_check_framebuffer_status(unsafe { target.into_enum() }))
 }
 #[no_mangle]
-unsafe extern "C" fn glCheckNamedFramebufferStatus(framebuffer: GLuint, target: GLenum) -> GLenum {
+pub unsafe extern "C" fn glCheckNamedFramebufferStatus(
+    framebuffer: GLuint,
+    target: GLenum,
+) -> GLenum {
     ::log::trace!(
         "glCheckNamedFramebufferStatus called, parameters: framebuffer: {:?}, target: {:?} ",
         framebuffer,
@@ -637,7 +648,7 @@ unsafe extern "C" fn glCheckNamedFramebufferStatus(framebuffer: GLuint, target: 
     })
 }
 #[no_mangle]
-unsafe extern "C" fn glClampColor(target: GLenum, clamp: GLenum) {
+pub unsafe extern "C" fn glClampColor(target: GLenum, clamp: GLenum) {
     ::log::trace!(
         "glClampColor called, parameters: target: {:?}, clamp: {:?} ",
         target,
@@ -646,12 +657,12 @@ unsafe extern "C" fn glClampColor(target: GLenum, clamp: GLenum) {
     with_ctx(|mut state| state.oxidegl_clamp_color(target, clamp));
 }
 #[no_mangle]
-unsafe extern "C" fn glClear(mask: GLenum) {
+pub unsafe extern "C" fn glClear(mask: GLenum) {
     ::log::trace!("glClear called, parameters: mask: {:?} ", mask);
     with_ctx(|mut state| state.oxidegl_clear(unsafe { mask.into_enum() }));
 }
 #[no_mangle]
-unsafe extern "C" fn glClearBufferiv(buffer: GLenum, drawbuffer: GLint, value: *const GLint) {
+pub unsafe extern "C" fn glClearBufferiv(buffer: GLenum, drawbuffer: GLint, value: *const GLint) {
     ::log::trace!(
         "glClearBufferiv called, parameters: buffer: {:?}, drawbuffer: {:?}, value: {:?} ",
         buffer,
@@ -663,7 +674,7 @@ unsafe extern "C" fn glClearBufferiv(buffer: GLenum, drawbuffer: GLint, value: *
     });
 }
 #[no_mangle]
-unsafe extern "C" fn glClearBufferuiv(buffer: GLenum, drawbuffer: GLint, value: *const GLuint) {
+pub unsafe extern "C" fn glClearBufferuiv(buffer: GLenum, drawbuffer: GLint, value: *const GLuint) {
     ::log::trace!(
         "glClearBufferuiv called, parameters: buffer: {:?}, drawbuffer: {:?}, value: {:?} ",
         buffer,
@@ -675,7 +686,7 @@ unsafe extern "C" fn glClearBufferuiv(buffer: GLenum, drawbuffer: GLint, value: 
     });
 }
 #[no_mangle]
-unsafe extern "C" fn glClearBufferfv(buffer: GLenum, drawbuffer: GLint, value: *const GLfloat) {
+pub unsafe extern "C" fn glClearBufferfv(buffer: GLenum, drawbuffer: GLint, value: *const GLfloat) {
     ::log::trace!(
         "glClearBufferfv called, parameters: buffer: {:?}, drawbuffer: {:?}, value: {:?} ",
         buffer,
@@ -687,7 +698,7 @@ unsafe extern "C" fn glClearBufferfv(buffer: GLenum, drawbuffer: GLint, value: *
     });
 }
 #[no_mangle]
-unsafe extern "C" fn glClearBufferfi(
+pub unsafe extern "C" fn glClearBufferfi(
     buffer: GLenum,
     drawbuffer: GLint,
     depth: GLfloat,
@@ -699,7 +710,7 @@ unsafe extern "C" fn glClearBufferfi(
     });
 }
 #[no_mangle]
-unsafe extern "C" fn glClearNamedFramebufferiv(
+pub unsafe extern "C" fn glClearNamedFramebufferiv(
     framebuffer: GLuint,
     buffer: GLenum,
     drawbuffer: GLint,
@@ -711,7 +722,7 @@ unsafe extern "C" fn glClearNamedFramebufferiv(
     });
 }
 #[no_mangle]
-unsafe extern "C" fn glClearNamedFramebufferuiv(
+pub unsafe extern "C" fn glClearNamedFramebufferuiv(
     framebuffer: GLuint,
     buffer: GLenum,
     drawbuffer: GLint,
@@ -728,7 +739,7 @@ unsafe extern "C" fn glClearNamedFramebufferuiv(
     });
 }
 #[no_mangle]
-unsafe extern "C" fn glClearNamedFramebufferfv(
+pub unsafe extern "C" fn glClearNamedFramebufferfv(
     framebuffer: GLuint,
     buffer: GLenum,
     drawbuffer: GLint,
@@ -740,7 +751,7 @@ unsafe extern "C" fn glClearNamedFramebufferfv(
     });
 }
 #[no_mangle]
-unsafe extern "C" fn glClearNamedFramebufferfi(
+pub unsafe extern "C" fn glClearNamedFramebufferfi(
     framebuffer: GLuint,
     buffer: GLenum,
     drawbuffer: GLint,
@@ -759,7 +770,7 @@ unsafe extern "C" fn glClearNamedFramebufferfi(
     });
 }
 #[no_mangle]
-unsafe extern "C" fn glClearBufferData(
+pub unsafe extern "C" fn glClearBufferData(
     target: GLenum,
     internalformat: GLenum,
     format: GLenum,
@@ -778,7 +789,7 @@ unsafe extern "C" fn glClearBufferData(
     });
 }
 #[no_mangle]
-unsafe extern "C" fn glClearNamedBufferData(
+pub unsafe extern "C" fn glClearNamedBufferData(
     buffer: GLuint,
     internalformat: GLenum,
     format: GLenum,
@@ -797,7 +808,7 @@ unsafe extern "C" fn glClearNamedBufferData(
     });
 }
 #[no_mangle]
-unsafe extern "C" fn glClearBufferSubData(
+pub unsafe extern "C" fn glClearBufferSubData(
     target: GLenum,
     internalformat: GLenum,
     offset: GLintptr,
@@ -820,7 +831,7 @@ unsafe extern "C" fn glClearBufferSubData(
     });
 }
 #[no_mangle]
-unsafe extern "C" fn glClearNamedBufferSubData(
+pub unsafe extern "C" fn glClearNamedBufferSubData(
     buffer: GLuint,
     internalformat: GLenum,
     offset: GLintptr,
@@ -843,7 +854,7 @@ unsafe extern "C" fn glClearNamedBufferSubData(
     });
 }
 #[no_mangle]
-unsafe extern "C" fn glClearColor(red: GLfloat, green: GLfloat, blue: GLfloat, alpha: GLfloat) {
+pub unsafe extern "C" fn glClearColor(red: GLfloat, green: GLfloat, blue: GLfloat, alpha: GLfloat) {
     ::log::trace!(
         "glClearColor called, parameters: red: {:?}, green: {:?}, blue: {:?}, alpha: {:?} ",
         red,
@@ -854,22 +865,22 @@ unsafe extern "C" fn glClearColor(red: GLfloat, green: GLfloat, blue: GLfloat, a
     with_ctx(|mut state| state.oxidegl_clear_color(red, green, blue, alpha));
 }
 #[no_mangle]
-unsafe extern "C" fn glClearDepth(depth: GLdouble) {
+pub unsafe extern "C" fn glClearDepth(depth: GLdouble) {
     ::log::trace!("glClearDepth called, parameters: depth: {:?} ", depth);
     with_ctx(|mut state| state.oxidegl_clear_depth(depth));
 }
 #[no_mangle]
-unsafe extern "C" fn glClearDepthf(d: GLfloat) {
+pub unsafe extern "C" fn glClearDepthf(d: GLfloat) {
     ::log::trace!("glClearDepthf called, parameters: d: {:?} ", d);
     with_ctx(|mut state| state.oxidegl_clear_depthf(d));
 }
 #[no_mangle]
-unsafe extern "C" fn glClearStencil(s: GLint) {
+pub unsafe extern "C" fn glClearStencil(s: GLint) {
     ::log::trace!("glClearStencil called, parameters: s: {:?} ", s);
     with_ctx(|mut state| state.oxidegl_clear_stencil(s));
 }
 #[no_mangle]
-unsafe extern "C" fn glClearTexImage(
+pub unsafe extern "C" fn glClearTexImage(
     texture: GLuint,
     level: GLint,
     format: GLenum,
@@ -882,7 +893,7 @@ unsafe extern "C" fn glClearTexImage(
     });
 }
 #[no_mangle]
-unsafe extern "C" fn glClearTexSubImage(
+pub unsafe extern "C" fn glClearTexSubImage(
     texture: GLuint,
     level: GLint,
     xoffset: GLint,
@@ -913,7 +924,7 @@ unsafe extern "C" fn glClearTexSubImage(
     });
 }
 #[no_mangle]
-unsafe extern "C" fn glClientWaitSync(
+pub unsafe extern "C" fn glClientWaitSync(
     sync: GLsync,
     flags: GLbitfield,
     timeout: GLuint64,
@@ -927,7 +938,7 @@ unsafe extern "C" fn glClientWaitSync(
     with_ctx(|mut state| state.oxidegl_client_wait_sync(sync, flags, timeout))
 }
 #[no_mangle]
-unsafe extern "C" fn glClipControl(origin: GLenum, depth: GLenum) {
+pub unsafe extern "C" fn glClipControl(origin: GLenum, depth: GLenum) {
     ::log::trace!(
         "glClipControl called, parameters: origin: {:?}, depth: {:?} ",
         origin,
@@ -938,7 +949,7 @@ unsafe extern "C" fn glClipControl(origin: GLenum, depth: GLenum) {
     });
 }
 #[no_mangle]
-unsafe extern "C" fn glColorMask(
+pub unsafe extern "C" fn glColorMask(
     red: GLboolean,
     green: GLboolean,
     blue: GLboolean,
@@ -954,7 +965,7 @@ unsafe extern "C" fn glColorMask(
     with_ctx(|mut state| state.oxidegl_color_mask(red, green, blue, alpha));
 }
 #[no_mangle]
-unsafe extern "C" fn glColorMaski(
+pub unsafe extern "C" fn glColorMaski(
     index: GLuint,
     r: GLboolean,
     g: GLboolean,
@@ -972,12 +983,12 @@ unsafe extern "C" fn glColorMaski(
     with_ctx(|mut state| state.oxidegl_color_maski(index, r, g, b, a));
 }
 #[no_mangle]
-unsafe extern "C" fn glCompileShader(shader: GLuint) {
+pub unsafe extern "C" fn glCompileShader(shader: GLuint) {
     ::log::trace!("glCompileShader called, parameters: shader: {:?} ", shader);
     with_ctx(|mut state| state.oxidegl_compile_shader(shader));
 }
 #[no_mangle]
-unsafe extern "C" fn glCompressedTexImage1D(
+pub unsafe extern "C" fn glCompressedTexImage1D(
     target: GLenum,
     level: GLint,
     internalformat: GLenum,
@@ -1000,7 +1011,7 @@ unsafe extern "C" fn glCompressedTexImage1D(
     });
 }
 #[no_mangle]
-unsafe extern "C" fn glCompressedTexImage2D(
+pub unsafe extern "C" fn glCompressedTexImage2D(
     target: GLenum,
     level: GLint,
     internalformat: GLenum,
@@ -1025,7 +1036,7 @@ unsafe extern "C" fn glCompressedTexImage2D(
     });
 }
 #[no_mangle]
-unsafe extern "C" fn glCompressedTexImage3D(
+pub unsafe extern "C" fn glCompressedTexImage3D(
     target: GLenum,
     level: GLint,
     internalformat: GLenum,
@@ -1052,7 +1063,7 @@ unsafe extern "C" fn glCompressedTexImage3D(
     });
 }
 #[no_mangle]
-unsafe extern "C" fn glCompressedTexSubImage1D(
+pub unsafe extern "C" fn glCompressedTexSubImage1D(
     target: GLenum,
     level: GLint,
     xoffset: GLint,
@@ -1075,7 +1086,7 @@ unsafe extern "C" fn glCompressedTexSubImage1D(
     });
 }
 #[no_mangle]
-unsafe extern "C" fn glCompressedTextureSubImage1D(
+pub unsafe extern "C" fn glCompressedTextureSubImage1D(
     texture: GLuint,
     level: GLint,
     xoffset: GLint,
@@ -1098,7 +1109,7 @@ unsafe extern "C" fn glCompressedTextureSubImage1D(
     });
 }
 #[no_mangle]
-unsafe extern "C" fn glCompressedTexSubImage2D(
+pub unsafe extern "C" fn glCompressedTexSubImage2D(
     target: GLenum,
     level: GLint,
     xoffset: GLint,
@@ -1125,7 +1136,7 @@ unsafe extern "C" fn glCompressedTexSubImage2D(
     });
 }
 #[no_mangle]
-unsafe extern "C" fn glCompressedTextureSubImage2D(
+pub unsafe extern "C" fn glCompressedTextureSubImage2D(
     texture: GLuint,
     level: GLint,
     xoffset: GLint,
@@ -1152,7 +1163,7 @@ unsafe extern "C" fn glCompressedTextureSubImage2D(
     });
 }
 #[no_mangle]
-unsafe extern "C" fn glCompressedTexSubImage3D(
+pub unsafe extern "C" fn glCompressedTexSubImage3D(
     target: GLenum,
     level: GLint,
     xoffset: GLint,
@@ -1183,7 +1194,7 @@ unsafe extern "C" fn glCompressedTexSubImage3D(
     });
 }
 #[no_mangle]
-unsafe extern "C" fn glCompressedTextureSubImage3D(
+pub unsafe extern "C" fn glCompressedTextureSubImage3D(
     texture: GLuint,
     level: GLint,
     xoffset: GLint,
@@ -1214,7 +1225,7 @@ unsafe extern "C" fn glCompressedTextureSubImage3D(
     });
 }
 #[no_mangle]
-unsafe extern "C" fn glCopyBufferSubData(
+pub unsafe extern "C" fn glCopyBufferSubData(
     readTarget: GLenum,
     writeTarget: GLenum,
     readOffset: GLintptr,
@@ -1233,7 +1244,7 @@ unsafe extern "C" fn glCopyBufferSubData(
     });
 }
 #[no_mangle]
-unsafe extern "C" fn glCopyNamedBufferSubData(
+pub unsafe extern "C" fn glCopyNamedBufferSubData(
     readBuffer: GLuint,
     writeBuffer: GLuint,
     readOffset: GLintptr,
@@ -1252,7 +1263,7 @@ unsafe extern "C" fn glCopyNamedBufferSubData(
     });
 }
 #[no_mangle]
-unsafe extern "C" fn glCopyImageSubData(
+pub unsafe extern "C" fn glCopyImageSubData(
     srcName: GLuint,
     srcTarget: GLenum,
     srcLevel: GLint,
@@ -1291,7 +1302,7 @@ unsafe extern "C" fn glCopyImageSubData(
     });
 }
 #[no_mangle]
-unsafe extern "C" fn glCopyTexImage1D(
+pub unsafe extern "C" fn glCopyTexImage1D(
     target: GLenum,
     level: GLint,
     internalformat: GLenum,
@@ -1314,7 +1325,7 @@ unsafe extern "C" fn glCopyTexImage1D(
     });
 }
 #[no_mangle]
-unsafe extern "C" fn glCopyTexImage2D(
+pub unsafe extern "C" fn glCopyTexImage2D(
     target: GLenum,
     level: GLint,
     internalformat: GLenum,
@@ -1339,7 +1350,7 @@ unsafe extern "C" fn glCopyTexImage2D(
     });
 }
 #[no_mangle]
-unsafe extern "C" fn glCopyTexSubImage1D(
+pub unsafe extern "C" fn glCopyTexSubImage1D(
     target: GLenum,
     level: GLint,
     xoffset: GLint,
@@ -1360,7 +1371,7 @@ unsafe extern "C" fn glCopyTexSubImage1D(
     });
 }
 #[no_mangle]
-unsafe extern "C" fn glCopyTextureSubImage1D(
+pub unsafe extern "C" fn glCopyTextureSubImage1D(
     texture: GLuint,
     level: GLint,
     xoffset: GLint,
@@ -1374,7 +1385,7 @@ unsafe extern "C" fn glCopyTextureSubImage1D(
     });
 }
 #[no_mangle]
-unsafe extern "C" fn glCopyTexSubImage2D(
+pub unsafe extern "C" fn glCopyTexSubImage2D(
     target: GLenum,
     level: GLint,
     xoffset: GLint,
@@ -1399,7 +1410,7 @@ unsafe extern "C" fn glCopyTexSubImage2D(
     });
 }
 #[no_mangle]
-unsafe extern "C" fn glCopyTextureSubImage2D(
+pub unsafe extern "C" fn glCopyTextureSubImage2D(
     texture: GLuint,
     level: GLint,
     xoffset: GLint,
@@ -1417,7 +1428,7 @@ unsafe extern "C" fn glCopyTextureSubImage2D(
     });
 }
 #[no_mangle]
-unsafe extern "C" fn glCopyTexSubImage3D(
+pub unsafe extern "C" fn glCopyTexSubImage3D(
     target: GLenum,
     level: GLint,
     xoffset: GLint,
@@ -1444,7 +1455,7 @@ unsafe extern "C" fn glCopyTexSubImage3D(
     });
 }
 #[no_mangle]
-unsafe extern "C" fn glCopyTextureSubImage3D(
+pub unsafe extern "C" fn glCopyTextureSubImage3D(
     texture: GLuint,
     level: GLint,
     xoffset: GLint,
@@ -1463,7 +1474,7 @@ unsafe extern "C" fn glCopyTextureSubImage3D(
     });
 }
 #[no_mangle]
-unsafe extern "C" fn glCreateBuffers(n: GLsizei, buffers: *mut GLuint) {
+pub unsafe extern "C" fn glCreateBuffers(n: GLsizei, buffers: *mut GLuint) {
     ::log::trace!(
         "glCreateBuffers called, parameters: n: {:?}, buffers: {:?} ",
         n,
@@ -1472,7 +1483,7 @@ unsafe extern "C" fn glCreateBuffers(n: GLsizei, buffers: *mut GLuint) {
     with_ctx(|mut state| unsafe { state.oxidegl_create_buffers(n, buffers) });
 }
 #[no_mangle]
-unsafe extern "C" fn glCreateFramebuffers(n: GLsizei, framebuffers: *mut GLuint) {
+pub unsafe extern "C" fn glCreateFramebuffers(n: GLsizei, framebuffers: *mut GLuint) {
     ::log::trace!(
         "glCreateFramebuffers called, parameters: n: {:?}, framebuffers: {:?} ",
         n,
@@ -1481,12 +1492,12 @@ unsafe extern "C" fn glCreateFramebuffers(n: GLsizei, framebuffers: *mut GLuint)
     with_ctx(|mut state| unsafe { state.oxidegl_create_framebuffers(n, framebuffers) });
 }
 #[no_mangle]
-unsafe extern "C" fn glCreateProgram() -> GLuint {
+pub unsafe extern "C" fn glCreateProgram() -> GLuint {
     ::log::trace!("glCreateProgram called, parameters:  ",);
     with_ctx(|mut state| state.oxidegl_create_program())
 }
 #[no_mangle]
-unsafe extern "C" fn glCreateProgramPipelines(n: GLsizei, pipelines: *mut GLuint) {
+pub unsafe extern "C" fn glCreateProgramPipelines(n: GLsizei, pipelines: *mut GLuint) {
     ::log::trace!(
         "glCreateProgramPipelines called, parameters: n: {:?}, pipelines: {:?} ",
         n,
@@ -1495,7 +1506,7 @@ unsafe extern "C" fn glCreateProgramPipelines(n: GLsizei, pipelines: *mut GLuint
     with_ctx(|mut state| unsafe { state.oxidegl_create_program_pipelines(n, pipelines) });
 }
 #[no_mangle]
-unsafe extern "C" fn glCreateQueries(target: GLenum, n: GLsizei, ids: *mut GLuint) {
+pub unsafe extern "C" fn glCreateQueries(target: GLenum, n: GLsizei, ids: *mut GLuint) {
     ::log::trace!(
         "glCreateQueries called, parameters: target: {:?}, n: {:?}, ids: {:?} ",
         target,
@@ -1505,7 +1516,7 @@ unsafe extern "C" fn glCreateQueries(target: GLenum, n: GLsizei, ids: *mut GLuin
     with_ctx(|mut state| unsafe { state.oxidegl_create_queries(target.into_enum(), n, ids) });
 }
 #[no_mangle]
-unsafe extern "C" fn glCreateRenderbuffers(n: GLsizei, renderbuffers: *mut GLuint) {
+pub unsafe extern "C" fn glCreateRenderbuffers(n: GLsizei, renderbuffers: *mut GLuint) {
     ::log::trace!(
         "glCreateRenderbuffers called, parameters: n: {:?}, renderbuffers: {:?} ",
         n,
@@ -1514,7 +1525,7 @@ unsafe extern "C" fn glCreateRenderbuffers(n: GLsizei, renderbuffers: *mut GLuin
     with_ctx(|mut state| unsafe { state.oxidegl_create_renderbuffers(n, renderbuffers) });
 }
 #[no_mangle]
-unsafe extern "C" fn glCreateSamplers(n: GLsizei, samplers: *mut GLuint) {
+pub unsafe extern "C" fn glCreateSamplers(n: GLsizei, samplers: *mut GLuint) {
     ::log::trace!(
         "glCreateSamplers called, parameters: n: {:?}, samplers: {:?} ",
         n,
@@ -1523,12 +1534,12 @@ unsafe extern "C" fn glCreateSamplers(n: GLsizei, samplers: *mut GLuint) {
     with_ctx(|mut state| unsafe { state.oxidegl_create_samplers(n, samplers) });
 }
 #[no_mangle]
-unsafe extern "C" fn glCreateShader(r#type: GLenum) -> GLuint {
+pub unsafe extern "C" fn glCreateShader(r#type: GLenum) -> GLuint {
     ::log::trace!("glCreateShader called, parameters: r#type: {:?} ", r#type);
     with_ctx(|mut state| state.oxidegl_create_shader(unsafe { r#type.into_enum() }))
 }
 #[no_mangle]
-unsafe extern "C" fn glCreateShaderProgramv(
+pub unsafe extern "C" fn glCreateShaderProgramv(
     r#type: GLenum,
     count: GLsizei,
     strings: GLchar,
@@ -1544,7 +1555,7 @@ unsafe extern "C" fn glCreateShaderProgramv(
     })
 }
 #[no_mangle]
-unsafe extern "C" fn glCreateTextures(target: GLenum, n: GLsizei, textures: *mut GLuint) {
+pub unsafe extern "C" fn glCreateTextures(target: GLenum, n: GLsizei, textures: *mut GLuint) {
     ::log::trace!(
         "glCreateTextures called, parameters: target: {:?}, n: {:?}, textures: {:?} ",
         target,
@@ -1554,7 +1565,7 @@ unsafe extern "C" fn glCreateTextures(target: GLenum, n: GLsizei, textures: *mut
     with_ctx(|mut state| unsafe { state.oxidegl_create_textures(target.into_enum(), n, textures) });
 }
 #[no_mangle]
-unsafe extern "C" fn glCreateTransformFeedbacks(n: GLsizei, ids: *mut GLuint) {
+pub unsafe extern "C" fn glCreateTransformFeedbacks(n: GLsizei, ids: *mut GLuint) {
     ::log::trace!(
         "glCreateTransformFeedbacks called, parameters: n: {:?}, ids: {:?} ",
         n,
@@ -1563,7 +1574,7 @@ unsafe extern "C" fn glCreateTransformFeedbacks(n: GLsizei, ids: *mut GLuint) {
     with_ctx(|mut state| unsafe { state.oxidegl_create_transform_feedbacks(n, ids) });
 }
 #[no_mangle]
-unsafe extern "C" fn glCreateVertexArrays(n: GLsizei, arrays: *mut GLuint) {
+pub unsafe extern "C" fn glCreateVertexArrays(n: GLsizei, arrays: *mut GLuint) {
     ::log::trace!(
         "glCreateVertexArrays called, parameters: n: {:?}, arrays: {:?} ",
         n,
@@ -1572,12 +1583,12 @@ unsafe extern "C" fn glCreateVertexArrays(n: GLsizei, arrays: *mut GLuint) {
     with_ctx(|mut state| unsafe { state.oxidegl_create_vertex_arrays(n, arrays) });
 }
 #[no_mangle]
-unsafe extern "C" fn glCullFace(mode: GLenum) {
+pub unsafe extern "C" fn glCullFace(mode: GLenum) {
     ::log::trace!("glCullFace called, parameters: mode: {:?} ", mode);
     with_ctx(|mut state| state.oxidegl_cull_face(unsafe { mode.into_enum() }));
 }
 #[no_mangle]
-unsafe extern "C" fn glDebugMessageCallback(callback: GLDEBUGPROC, userParam: *const GLvoid) {
+pub unsafe extern "C" fn glDebugMessageCallback(callback: GLDEBUGPROC, userParam: *const GLvoid) {
     ::log::trace!(
         "glDebugMessageCallback called, parameters: callback: {:?}, userParam: {:?} ",
         callback,
@@ -1586,7 +1597,7 @@ unsafe extern "C" fn glDebugMessageCallback(callback: GLDEBUGPROC, userParam: *c
     with_ctx(|mut state| unsafe { state.oxidegl_debug_message_callback(callback, userParam) });
 }
 #[no_mangle]
-unsafe extern "C" fn glDebugMessageControl(
+pub unsafe extern "C" fn glDebugMessageControl(
     source: GLenum,
     r#type: GLenum,
     severity: GLenum,
@@ -1607,7 +1618,7 @@ unsafe extern "C" fn glDebugMessageControl(
     });
 }
 #[no_mangle]
-unsafe extern "C" fn glDebugMessageInsert(
+pub unsafe extern "C" fn glDebugMessageInsert(
     source: GLenum,
     r#type: GLenum,
     id: GLuint,
@@ -1628,7 +1639,7 @@ unsafe extern "C" fn glDebugMessageInsert(
     });
 }
 #[no_mangle]
-unsafe extern "C" fn glDeleteBuffers(n: GLsizei, buffers: *const GLuint) {
+pub unsafe extern "C" fn glDeleteBuffers(n: GLsizei, buffers: *const GLuint) {
     ::log::trace!(
         "glDeleteBuffers called, parameters: n: {:?}, buffers: {:?} ",
         n,
@@ -1637,7 +1648,7 @@ unsafe extern "C" fn glDeleteBuffers(n: GLsizei, buffers: *const GLuint) {
     with_ctx(|mut state| unsafe { state.oxidegl_delete_buffers(n, buffers) });
 }
 #[no_mangle]
-unsafe extern "C" fn glDeleteFramebuffers(n: GLsizei, framebuffers: *const GLuint) {
+pub unsafe extern "C" fn glDeleteFramebuffers(n: GLsizei, framebuffers: *const GLuint) {
     ::log::trace!(
         "glDeleteFramebuffers called, parameters: n: {:?}, framebuffers: {:?} ",
         n,
@@ -1646,7 +1657,7 @@ unsafe extern "C" fn glDeleteFramebuffers(n: GLsizei, framebuffers: *const GLuin
     with_ctx(|mut state| unsafe { state.oxidegl_delete_framebuffers(n, framebuffers) });
 }
 #[no_mangle]
-unsafe extern "C" fn glDeleteProgram(program: GLuint) {
+pub unsafe extern "C" fn glDeleteProgram(program: GLuint) {
     ::log::trace!(
         "glDeleteProgram called, parameters: program: {:?} ",
         program
@@ -1654,7 +1665,7 @@ unsafe extern "C" fn glDeleteProgram(program: GLuint) {
     with_ctx(|mut state| state.oxidegl_delete_program(program));
 }
 #[no_mangle]
-unsafe extern "C" fn glDeleteProgramPipelines(n: GLsizei, pipelines: *const GLuint) {
+pub unsafe extern "C" fn glDeleteProgramPipelines(n: GLsizei, pipelines: *const GLuint) {
     ::log::trace!(
         "glDeleteProgramPipelines called, parameters: n: {:?}, pipelines: {:?} ",
         n,
@@ -1663,7 +1674,7 @@ unsafe extern "C" fn glDeleteProgramPipelines(n: GLsizei, pipelines: *const GLui
     with_ctx(|mut state| unsafe { state.oxidegl_delete_program_pipelines(n, pipelines) });
 }
 #[no_mangle]
-unsafe extern "C" fn glDeleteQueries(n: GLsizei, ids: *const GLuint) {
+pub unsafe extern "C" fn glDeleteQueries(n: GLsizei, ids: *const GLuint) {
     ::log::trace!(
         "glDeleteQueries called, parameters: n: {:?}, ids: {:?} ",
         n,
@@ -1672,7 +1683,7 @@ unsafe extern "C" fn glDeleteQueries(n: GLsizei, ids: *const GLuint) {
     with_ctx(|mut state| unsafe { state.oxidegl_delete_queries(n, ids) });
 }
 #[no_mangle]
-unsafe extern "C" fn glDeleteRenderbuffers(n: GLsizei, renderbuffers: *const GLuint) {
+pub unsafe extern "C" fn glDeleteRenderbuffers(n: GLsizei, renderbuffers: *const GLuint) {
     ::log::trace!(
         "glDeleteRenderbuffers called, parameters: n: {:?}, renderbuffers: {:?} ",
         n,
@@ -1681,7 +1692,7 @@ unsafe extern "C" fn glDeleteRenderbuffers(n: GLsizei, renderbuffers: *const GLu
     with_ctx(|mut state| unsafe { state.oxidegl_delete_renderbuffers(n, renderbuffers) });
 }
 #[no_mangle]
-unsafe extern "C" fn glDeleteSamplers(count: GLsizei, samplers: *const GLuint) {
+pub unsafe extern "C" fn glDeleteSamplers(count: GLsizei, samplers: *const GLuint) {
     ::log::trace!(
         "glDeleteSamplers called, parameters: count: {:?}, samplers: {:?} ",
         count,
@@ -1690,17 +1701,17 @@ unsafe extern "C" fn glDeleteSamplers(count: GLsizei, samplers: *const GLuint) {
     with_ctx(|mut state| unsafe { state.oxidegl_delete_samplers(count, samplers) });
 }
 #[no_mangle]
-unsafe extern "C" fn glDeleteShader(shader: GLuint) {
+pub unsafe extern "C" fn glDeleteShader(shader: GLuint) {
     ::log::trace!("glDeleteShader called, parameters: shader: {:?} ", shader);
     with_ctx(|mut state| state.oxidegl_delete_shader(shader));
 }
 #[no_mangle]
-unsafe extern "C" fn glDeleteSync(sync: GLsync) {
+pub unsafe extern "C" fn glDeleteSync(sync: GLsync) {
     ::log::trace!("glDeleteSync called, parameters: sync: {:?} ", sync);
     with_ctx(|mut state| state.oxidegl_delete_sync(sync));
 }
 #[no_mangle]
-unsafe extern "C" fn glDeleteTextures(n: GLsizei, textures: *const GLuint) {
+pub unsafe extern "C" fn glDeleteTextures(n: GLsizei, textures: *const GLuint) {
     ::log::trace!(
         "glDeleteTextures called, parameters: n: {:?}, textures: {:?} ",
         n,
@@ -1709,7 +1720,7 @@ unsafe extern "C" fn glDeleteTextures(n: GLsizei, textures: *const GLuint) {
     with_ctx(|mut state| unsafe { state.oxidegl_delete_textures(n, textures) });
 }
 #[no_mangle]
-unsafe extern "C" fn glDeleteTransformFeedbacks(n: GLsizei, ids: *const GLuint) {
+pub unsafe extern "C" fn glDeleteTransformFeedbacks(n: GLsizei, ids: *const GLuint) {
     ::log::trace!(
         "glDeleteTransformFeedbacks called, parameters: n: {:?}, ids: {:?} ",
         n,
@@ -1718,7 +1729,7 @@ unsafe extern "C" fn glDeleteTransformFeedbacks(n: GLsizei, ids: *const GLuint) 
     with_ctx(|mut state| unsafe { state.oxidegl_delete_transform_feedbacks(n, ids) });
 }
 #[no_mangle]
-unsafe extern "C" fn glDeleteVertexArrays(n: GLsizei, arrays: *const GLuint) {
+pub unsafe extern "C" fn glDeleteVertexArrays(n: GLsizei, arrays: *const GLuint) {
     ::log::trace!(
         "glDeleteVertexArrays called, parameters: n: {:?}, arrays: {:?} ",
         n,
@@ -1727,27 +1738,27 @@ unsafe extern "C" fn glDeleteVertexArrays(n: GLsizei, arrays: *const GLuint) {
     with_ctx(|mut state| unsafe { state.oxidegl_delete_vertex_arrays(n, arrays) });
 }
 #[no_mangle]
-unsafe extern "C" fn glDepthFunc(func: GLenum) {
+pub unsafe extern "C" fn glDepthFunc(func: GLenum) {
     ::log::trace!("glDepthFunc called, parameters: func: {:?} ", func);
     with_ctx(|mut state| state.oxidegl_depth_func(unsafe { func.into_enum() }));
 }
 #[no_mangle]
-unsafe extern "C" fn glDepthMask(flag: GLboolean) {
+pub unsafe extern "C" fn glDepthMask(flag: GLboolean) {
     ::log::trace!("glDepthMask called, parameters: flag: {:?} ", flag);
     with_ctx(|mut state| state.oxidegl_depth_mask(flag));
 }
 #[no_mangle]
-unsafe extern "C" fn glDepthRange(n: GLdouble, f: GLdouble) {
+pub unsafe extern "C" fn glDepthRange(n: GLdouble, f: GLdouble) {
     ::log::trace!("glDepthRange called, parameters: n: {:?}, f: {:?} ", n, f);
     with_ctx(|mut state| state.oxidegl_depth_range(n, f));
 }
 #[no_mangle]
-unsafe extern "C" fn glDepthRangef(n: GLfloat, f: GLfloat) {
+pub unsafe extern "C" fn glDepthRangef(n: GLfloat, f: GLfloat) {
     ::log::trace!("glDepthRangef called, parameters: n: {:?}, f: {:?} ", n, f);
     with_ctx(|mut state| state.oxidegl_depth_rangef(n, f));
 }
 #[no_mangle]
-unsafe extern "C" fn glDepthRangeArrayv(first: GLuint, count: GLsizei, v: *const GLdouble) {
+pub unsafe extern "C" fn glDepthRangeArrayv(first: GLuint, count: GLsizei, v: *const GLdouble) {
     ::log::trace!(
         "glDepthRangeArrayv called, parameters: first: {:?}, count: {:?}, v: {:?} ",
         first,
@@ -1757,7 +1768,7 @@ unsafe extern "C" fn glDepthRangeArrayv(first: GLuint, count: GLsizei, v: *const
     with_ctx(|mut state| unsafe { state.oxidegl_depth_range_arrayv(first, count, v) });
 }
 #[no_mangle]
-unsafe extern "C" fn glDepthRangeIndexed(index: GLuint, n: GLdouble, f: GLdouble) {
+pub unsafe extern "C" fn glDepthRangeIndexed(index: GLuint, n: GLdouble, f: GLdouble) {
     ::log::trace!(
         "glDepthRangeIndexed called, parameters: index: {:?}, n: {:?}, f: {:?} ",
         index,
@@ -1767,7 +1778,7 @@ unsafe extern "C" fn glDepthRangeIndexed(index: GLuint, n: GLdouble, f: GLdouble
     with_ctx(|mut state| state.oxidegl_depth_range_indexed(index, n, f));
 }
 #[no_mangle]
-unsafe extern "C" fn glDetachShader(program: GLuint, shader: GLuint) {
+pub unsafe extern "C" fn glDetachShader(program: GLuint, shader: GLuint) {
     ::log::trace!(
         "glDetachShader called, parameters: program: {:?}, shader: {:?} ",
         program,
@@ -1776,7 +1787,7 @@ unsafe extern "C" fn glDetachShader(program: GLuint, shader: GLuint) {
     with_ctx(|mut state| state.oxidegl_detach_shader(program, shader));
 }
 #[no_mangle]
-unsafe extern "C" fn glDispatchCompute(
+pub unsafe extern "C" fn glDispatchCompute(
     num_groups_x: GLuint,
     num_groups_y: GLuint,
     num_groups_z: GLuint,
@@ -1785,7 +1796,7 @@ unsafe extern "C" fn glDispatchCompute(
     with_ctx(|mut state| state.oxidegl_dispatch_compute(num_groups_x, num_groups_y, num_groups_z));
 }
 #[no_mangle]
-unsafe extern "C" fn glDispatchComputeIndirect(indirect: GLintptr) {
+pub unsafe extern "C" fn glDispatchComputeIndirect(indirect: GLintptr) {
     ::log::trace!(
         "glDispatchComputeIndirect called, parameters: indirect: {:?} ",
         indirect
@@ -1793,7 +1804,7 @@ unsafe extern "C" fn glDispatchComputeIndirect(indirect: GLintptr) {
     with_ctx(|mut state| state.oxidegl_dispatch_compute_indirect(indirect));
 }
 #[no_mangle]
-unsafe extern "C" fn glDrawArrays(mode: GLenum, first: GLint, count: GLsizei) {
+pub unsafe extern "C" fn glDrawArrays(mode: GLenum, first: GLint, count: GLsizei) {
     ::log::trace!(
         "glDrawArrays called, parameters: mode: {:?}, first: {:?}, count: {:?} ",
         mode,
@@ -1803,7 +1814,7 @@ unsafe extern "C" fn glDrawArrays(mode: GLenum, first: GLint, count: GLsizei) {
     with_ctx(|mut state| state.oxidegl_draw_arrays(unsafe { mode.into_enum() }, first, count));
 }
 #[no_mangle]
-unsafe extern "C" fn glDrawArraysIndirect(mode: GLenum, indirect: *const GLvoid) {
+pub unsafe extern "C" fn glDrawArraysIndirect(mode: GLenum, indirect: *const GLvoid) {
     ::log::trace!(
         "glDrawArraysIndirect called, parameters: mode: {:?}, indirect: {:?} ",
         mode,
@@ -1812,7 +1823,7 @@ unsafe extern "C" fn glDrawArraysIndirect(mode: GLenum, indirect: *const GLvoid)
     with_ctx(|mut state| unsafe { state.oxidegl_draw_arrays_indirect(mode.into_enum(), indirect) });
 }
 #[no_mangle]
-unsafe extern "C" fn glDrawArraysInstanced(
+pub unsafe extern "C" fn glDrawArraysInstanced(
     mode: GLenum,
     first: GLint,
     count: GLsizei,
@@ -1829,7 +1840,7 @@ unsafe extern "C" fn glDrawArraysInstanced(
     });
 }
 #[no_mangle]
-unsafe extern "C" fn glDrawArraysInstancedBaseInstance(
+pub unsafe extern "C" fn glDrawArraysInstancedBaseInstance(
     mode: GLenum,
     first: GLint,
     count: GLsizei,
@@ -1848,12 +1859,12 @@ unsafe extern "C" fn glDrawArraysInstancedBaseInstance(
     });
 }
 #[no_mangle]
-unsafe extern "C" fn glDrawBuffer(buf: GLenum) {
+pub unsafe extern "C" fn glDrawBuffer(buf: GLenum) {
     ::log::trace!("glDrawBuffer called, parameters: buf: {:?} ", buf);
     with_ctx(|mut state| state.oxidegl_draw_buffer(unsafe { buf.into_enum() }));
 }
 #[no_mangle]
-unsafe extern "C" fn glNamedFramebufferDrawBuffer(framebuffer: GLuint, buf: GLenum) {
+pub unsafe extern "C" fn glNamedFramebufferDrawBuffer(framebuffer: GLuint, buf: GLenum) {
     ::log::trace!(
         "glNamedFramebufferDrawBuffer called, parameters: framebuffer: {:?}, buf: {:?} ",
         framebuffer,
@@ -1864,7 +1875,7 @@ unsafe extern "C" fn glNamedFramebufferDrawBuffer(framebuffer: GLuint, buf: GLen
     });
 }
 #[no_mangle]
-unsafe extern "C" fn glDrawBuffers(n: GLsizei, bufs: GLenum) {
+pub unsafe extern "C" fn glDrawBuffers(n: GLsizei, bufs: GLenum) {
     ::log::trace!(
         "glDrawBuffers called, parameters: n: {:?}, bufs: {:?} ",
         n,
@@ -1873,7 +1884,11 @@ unsafe extern "C" fn glDrawBuffers(n: GLsizei, bufs: GLenum) {
     with_ctx(|mut state| state.oxidegl_draw_buffers(n, unsafe { bufs.into_enum() }));
 }
 #[no_mangle]
-unsafe extern "C" fn glNamedFramebufferDrawBuffers(framebuffer: GLuint, n: GLsizei, bufs: GLenum) {
+pub unsafe extern "C" fn glNamedFramebufferDrawBuffers(
+    framebuffer: GLuint,
+    n: GLsizei,
+    bufs: GLenum,
+) {
     ::log::trace!(
         "glNamedFramebufferDrawBuffers called, parameters: framebuffer: {:?}, n: {:?}, bufs: {:?} ",
         framebuffer,
@@ -1885,7 +1900,7 @@ unsafe extern "C" fn glNamedFramebufferDrawBuffers(framebuffer: GLuint, n: GLsiz
     });
 }
 #[no_mangle]
-unsafe extern "C" fn glDrawElements(
+pub unsafe extern "C" fn glDrawElements(
     mode: GLenum,
     count: GLsizei,
     r#type: GLenum,
@@ -1903,7 +1918,7 @@ unsafe extern "C" fn glDrawElements(
     });
 }
 #[no_mangle]
-unsafe extern "C" fn glDrawElementsBaseVertex(
+pub unsafe extern "C" fn glDrawElementsBaseVertex(
     mode: GLenum,
     count: GLsizei,
     r#type: GLenum,
@@ -1922,7 +1937,11 @@ unsafe extern "C" fn glDrawElementsBaseVertex(
     });
 }
 #[no_mangle]
-unsafe extern "C" fn glDrawElementsIndirect(mode: GLenum, r#type: GLenum, indirect: *const GLvoid) {
+pub unsafe extern "C" fn glDrawElementsIndirect(
+    mode: GLenum,
+    r#type: GLenum,
+    indirect: *const GLvoid,
+) {
     ::log::trace!(
         "glDrawElementsIndirect called, parameters: mode: {:?}, r#type: {:?}, indirect: {:?} ",
         mode,
@@ -1934,7 +1953,7 @@ unsafe extern "C" fn glDrawElementsIndirect(mode: GLenum, r#type: GLenum, indire
     });
 }
 #[no_mangle]
-unsafe extern "C" fn glDrawElementsInstanced(
+pub unsafe extern "C" fn glDrawElementsInstanced(
     mode: GLenum,
     count: GLsizei,
     r#type: GLenum,
@@ -1953,7 +1972,7 @@ unsafe extern "C" fn glDrawElementsInstanced(
     });
 }
 #[no_mangle]
-unsafe extern "C" fn glDrawElementsInstancedBaseInstance(
+pub unsafe extern "C" fn glDrawElementsInstancedBaseInstance(
     mode: GLenum,
     count: GLsizei,
     r#type: GLenum,
@@ -1974,7 +1993,7 @@ unsafe extern "C" fn glDrawElementsInstancedBaseInstance(
     });
 }
 #[no_mangle]
-unsafe extern "C" fn glDrawElementsInstancedBaseVertex(
+pub unsafe extern "C" fn glDrawElementsInstancedBaseVertex(
     mode: GLenum,
     count: GLsizei,
     r#type: GLenum,
@@ -1995,7 +2014,7 @@ unsafe extern "C" fn glDrawElementsInstancedBaseVertex(
     });
 }
 #[no_mangle]
-unsafe extern "C" fn glDrawElementsInstancedBaseVertexBaseInstance(
+pub unsafe extern "C" fn glDrawElementsInstancedBaseVertexBaseInstance(
     mode: GLenum,
     count: GLsizei,
     r#type: GLenum,
@@ -2018,7 +2037,7 @@ unsafe extern "C" fn glDrawElementsInstancedBaseVertexBaseInstance(
     });
 }
 #[no_mangle]
-unsafe extern "C" fn glDrawRangeElements(
+pub unsafe extern "C" fn glDrawRangeElements(
     mode: GLenum,
     start: GLuint,
     end: GLuint,
@@ -2039,7 +2058,7 @@ unsafe extern "C" fn glDrawRangeElements(
     });
 }
 #[no_mangle]
-unsafe extern "C" fn glDrawRangeElementsBaseVertex(
+pub unsafe extern "C" fn glDrawRangeElementsBaseVertex(
     mode: GLenum,
     start: GLuint,
     end: GLuint,
@@ -2062,7 +2081,7 @@ unsafe extern "C" fn glDrawRangeElementsBaseVertex(
     });
 }
 #[no_mangle]
-unsafe extern "C" fn glDrawTransformFeedback(mode: GLenum, id: GLuint) {
+pub unsafe extern "C" fn glDrawTransformFeedback(mode: GLenum, id: GLuint) {
     ::log::trace!(
         "glDrawTransformFeedback called, parameters: mode: {:?}, id: {:?} ",
         mode,
@@ -2071,7 +2090,7 @@ unsafe extern "C" fn glDrawTransformFeedback(mode: GLenum, id: GLuint) {
     with_ctx(|mut state| state.oxidegl_draw_transform_feedback(unsafe { mode.into_enum() }, id));
 }
 #[no_mangle]
-unsafe extern "C" fn glDrawTransformFeedbackInstanced(
+pub unsafe extern "C" fn glDrawTransformFeedbackInstanced(
     mode: GLenum,
     id: GLuint,
     instancecount: GLsizei,
@@ -2086,7 +2105,7 @@ unsafe extern "C" fn glDrawTransformFeedbackInstanced(
     });
 }
 #[no_mangle]
-unsafe extern "C" fn glDrawTransformFeedbackStream(mode: GLenum, id: GLuint, stream: GLuint) {
+pub unsafe extern "C" fn glDrawTransformFeedbackStream(mode: GLenum, id: GLuint, stream: GLuint) {
     ::log::trace!(
         "glDrawTransformFeedbackStream called, parameters: mode: {:?}, id: {:?}, stream: {:?} ",
         mode,
@@ -2098,7 +2117,7 @@ unsafe extern "C" fn glDrawTransformFeedbackStream(mode: GLenum, id: GLuint, str
     });
 }
 #[no_mangle]
-unsafe extern "C" fn glDrawTransformFeedbackStreamInstanced(
+pub unsafe extern "C" fn glDrawTransformFeedbackStreamInstanced(
     mode: GLenum,
     id: GLuint,
     stream: GLuint,
@@ -2115,17 +2134,17 @@ unsafe extern "C" fn glDrawTransformFeedbackStreamInstanced(
     });
 }
 #[no_mangle]
-unsafe extern "C" fn glDisable(cap: GLenum) {
+pub unsafe extern "C" fn glDisable(cap: GLenum) {
     ::log::trace!("glDisable called, parameters: cap: {:?} ", cap);
     with_ctx(|mut state| state.oxidegl_disable(unsafe { cap.into_enum() }));
 }
 #[no_mangle]
-unsafe extern "C" fn glEnable(cap: GLenum) {
+pub unsafe extern "C" fn glEnable(cap: GLenum) {
     ::log::trace!("glEnable called, parameters: cap: {:?} ", cap);
     with_ctx(|mut state| state.oxidegl_enable(unsafe { cap.into_enum() }));
 }
 #[no_mangle]
-unsafe extern "C" fn glEnablei(target: GLenum, index: GLuint) {
+pub unsafe extern "C" fn glEnablei(target: GLenum, index: GLuint) {
     ::log::trace!(
         "glEnablei called, parameters: target: {:?}, index: {:?} ",
         target,
@@ -2134,7 +2153,7 @@ unsafe extern "C" fn glEnablei(target: GLenum, index: GLuint) {
     with_ctx(|mut state| state.oxidegl_enablei(unsafe { target.into_enum() }, index));
 }
 #[no_mangle]
-unsafe extern "C" fn glDisablei(target: GLenum, index: GLuint) {
+pub unsafe extern "C" fn glDisablei(target: GLenum, index: GLuint) {
     ::log::trace!(
         "glDisablei called, parameters: target: {:?}, index: {:?} ",
         target,
@@ -2143,7 +2162,7 @@ unsafe extern "C" fn glDisablei(target: GLenum, index: GLuint) {
     with_ctx(|mut state| state.oxidegl_disablei(unsafe { target.into_enum() }, index));
 }
 #[no_mangle]
-unsafe extern "C" fn glDisableVertexAttribArray(index: GLuint) {
+pub unsafe extern "C" fn glDisableVertexAttribArray(index: GLuint) {
     ::log::trace!(
         "glDisableVertexAttribArray called, parameters: index: {:?} ",
         index
@@ -2151,7 +2170,7 @@ unsafe extern "C" fn glDisableVertexAttribArray(index: GLuint) {
     with_ctx(|mut state| state.oxidegl_disable_vertex_attrib_array(index));
 }
 #[no_mangle]
-unsafe extern "C" fn glEnableVertexAttribArray(index: GLuint) {
+pub unsafe extern "C" fn glEnableVertexAttribArray(index: GLuint) {
     ::log::trace!(
         "glEnableVertexAttribArray called, parameters: index: {:?} ",
         index
@@ -2159,7 +2178,7 @@ unsafe extern "C" fn glEnableVertexAttribArray(index: GLuint) {
     with_ctx(|mut state| state.oxidegl_enable_vertex_attrib_array(index));
 }
 #[no_mangle]
-unsafe extern "C" fn glDisableVertexArrayAttrib(vaobj: GLuint, index: GLuint) {
+pub unsafe extern "C" fn glDisableVertexArrayAttrib(vaobj: GLuint, index: GLuint) {
     ::log::trace!(
         "glDisableVertexArrayAttrib called, parameters: vaobj: {:?}, index: {:?} ",
         vaobj,
@@ -2168,7 +2187,7 @@ unsafe extern "C" fn glDisableVertexArrayAttrib(vaobj: GLuint, index: GLuint) {
     with_ctx(|mut state| state.oxidegl_disable_vertex_array_attrib(vaobj, index));
 }
 #[no_mangle]
-unsafe extern "C" fn glEnableVertexArrayAttrib(vaobj: GLuint, index: GLuint) {
+pub unsafe extern "C" fn glEnableVertexArrayAttrib(vaobj: GLuint, index: GLuint) {
     ::log::trace!(
         "glEnableVertexArrayAttrib called, parameters: vaobj: {:?}, index: {:?} ",
         vaobj,
@@ -2177,7 +2196,7 @@ unsafe extern "C" fn glEnableVertexArrayAttrib(vaobj: GLuint, index: GLuint) {
     with_ctx(|mut state| state.oxidegl_enable_vertex_array_attrib(vaobj, index));
 }
 #[no_mangle]
-unsafe extern "C" fn glFenceSync(condition: GLenum, flags: GLenum) -> GLsync {
+pub unsafe extern "C" fn glFenceSync(condition: GLenum, flags: GLenum) -> GLsync {
     ::log::trace!(
         "glFenceSync called, parameters: condition: {:?}, flags: {:?} ",
         condition,
@@ -2186,17 +2205,17 @@ unsafe extern "C" fn glFenceSync(condition: GLenum, flags: GLenum) -> GLsync {
     with_ctx(|mut state| state.oxidegl_fence_sync(condition, unsafe { flags.into_enum() }))
 }
 #[no_mangle]
-unsafe extern "C" fn glFinish() {
+pub unsafe extern "C" fn glFinish() {
     ::log::trace!("glFinish called, parameters:  ",);
     with_ctx(|mut state| state.oxidegl_finish());
 }
 #[no_mangle]
-unsafe extern "C" fn glFlush() {
+pub unsafe extern "C" fn glFlush() {
     ::log::trace!("glFlush called, parameters:  ",);
     with_ctx(|mut state| state.oxidegl_flush());
 }
 #[no_mangle]
-unsafe extern "C" fn glFlushMappedBufferRange(
+pub unsafe extern "C" fn glFlushMappedBufferRange(
     target: GLenum,
     offset: GLintptr,
     length: GLsizeiptr,
@@ -2210,7 +2229,7 @@ unsafe extern "C" fn glFlushMappedBufferRange(
     with_ctx(|mut state| state.oxidegl_flush_mapped_buffer_range(target, offset, length));
 }
 #[no_mangle]
-unsafe extern "C" fn glFlushMappedNamedBufferRange(
+pub unsafe extern "C" fn glFlushMappedNamedBufferRange(
     buffer: GLuint,
     offset: GLintptr,
     length: GLsizeiptr,
@@ -2219,7 +2238,7 @@ unsafe extern "C" fn glFlushMappedNamedBufferRange(
     with_ctx(|mut state| state.oxidegl_flush_mapped_named_buffer_range(buffer, offset, length));
 }
 #[no_mangle]
-unsafe extern "C" fn glFramebufferParameteri(target: GLenum, pname: GLenum, param: GLint) {
+pub unsafe extern "C" fn glFramebufferParameteri(target: GLenum, pname: GLenum, param: GLint) {
     ::log::trace!(
         "glFramebufferParameteri called, parameters: target: {:?}, pname: {:?}, param: {:?} ",
         target,
@@ -2235,7 +2254,7 @@ unsafe extern "C" fn glFramebufferParameteri(target: GLenum, pname: GLenum, para
     });
 }
 #[no_mangle]
-unsafe extern "C" fn glNamedFramebufferParameteri(
+pub unsafe extern "C" fn glNamedFramebufferParameteri(
     framebuffer: GLuint,
     pname: GLenum,
     param: GLint,
@@ -2250,7 +2269,7 @@ unsafe extern "C" fn glNamedFramebufferParameteri(
     });
 }
 #[no_mangle]
-unsafe extern "C" fn glFramebufferRenderbuffer(
+pub unsafe extern "C" fn glFramebufferRenderbuffer(
     target: GLenum,
     attachment: GLenum,
     renderbuffertarget: GLenum,
@@ -2267,7 +2286,7 @@ unsafe extern "C" fn glFramebufferRenderbuffer(
     });
 }
 #[no_mangle]
-unsafe extern "C" fn glNamedFramebufferRenderbuffer(
+pub unsafe extern "C" fn glNamedFramebufferRenderbuffer(
     framebuffer: GLuint,
     attachment: GLenum,
     renderbuffertarget: GLenum,
@@ -2284,7 +2303,7 @@ unsafe extern "C" fn glNamedFramebufferRenderbuffer(
     });
 }
 #[no_mangle]
-unsafe extern "C" fn glFramebufferTexture1D(
+pub unsafe extern "C" fn glFramebufferTexture1D(
     target: GLenum,
     attachment: GLenum,
     textarget: GLenum,
@@ -2303,7 +2322,7 @@ unsafe extern "C" fn glFramebufferTexture1D(
     });
 }
 #[no_mangle]
-unsafe extern "C" fn glFramebufferTexture2D(
+pub unsafe extern "C" fn glFramebufferTexture2D(
     target: GLenum,
     attachment: GLenum,
     textarget: GLenum,
@@ -2322,7 +2341,7 @@ unsafe extern "C" fn glFramebufferTexture2D(
     });
 }
 #[no_mangle]
-unsafe extern "C" fn glFramebufferTexture3D(
+pub unsafe extern "C" fn glFramebufferTexture3D(
     target: GLenum,
     attachment: GLenum,
     textarget: GLenum,
@@ -2343,7 +2362,7 @@ unsafe extern "C" fn glFramebufferTexture3D(
     });
 }
 #[no_mangle]
-unsafe extern "C" fn glFramebufferTexture(
+pub unsafe extern "C" fn glFramebufferTexture(
     target: GLenum,
     attachment: GLenum,
     texture: GLuint,
@@ -2360,7 +2379,7 @@ unsafe extern "C" fn glFramebufferTexture(
     });
 }
 #[no_mangle]
-unsafe extern "C" fn glNamedFramebufferTexture(
+pub unsafe extern "C" fn glNamedFramebufferTexture(
     framebuffer: GLuint,
     attachment: GLenum,
     texture: GLuint,
@@ -2377,7 +2396,7 @@ unsafe extern "C" fn glNamedFramebufferTexture(
     });
 }
 #[no_mangle]
-unsafe extern "C" fn glFramebufferTextureLayer(
+pub unsafe extern "C" fn glFramebufferTextureLayer(
     target: GLenum,
     attachment: GLenum,
     texture: GLuint,
@@ -2396,7 +2415,7 @@ unsafe extern "C" fn glFramebufferTextureLayer(
     });
 }
 #[no_mangle]
-unsafe extern "C" fn glNamedFramebufferTextureLayer(
+pub unsafe extern "C" fn glNamedFramebufferTextureLayer(
     framebuffer: GLuint,
     attachment: GLenum,
     texture: GLuint,
@@ -2415,12 +2434,12 @@ unsafe extern "C" fn glNamedFramebufferTextureLayer(
     });
 }
 #[no_mangle]
-unsafe extern "C" fn glFrontFace(mode: GLenum) {
+pub unsafe extern "C" fn glFrontFace(mode: GLenum) {
     ::log::trace!("glFrontFace called, parameters: mode: {:?} ", mode);
     with_ctx(|mut state| state.oxidegl_front_face(unsafe { mode.into_enum() }));
 }
 #[no_mangle]
-unsafe extern "C" fn glGenBuffers(n: GLsizei, buffers: *mut GLuint) {
+pub unsafe extern "C" fn glGenBuffers(n: GLsizei, buffers: *mut GLuint) {
     ::log::trace!(
         "glGenBuffers called, parameters: n: {:?}, buffers: {:?} ",
         n,
@@ -2429,12 +2448,12 @@ unsafe extern "C" fn glGenBuffers(n: GLsizei, buffers: *mut GLuint) {
     with_ctx(|mut state| unsafe { state.oxidegl_gen_buffers(n, buffers) });
 }
 #[no_mangle]
-unsafe extern "C" fn glGenerateMipmap(target: GLenum) {
+pub unsafe extern "C" fn glGenerateMipmap(target: GLenum) {
     ::log::trace!("glGenerateMipmap called, parameters: target: {:?} ", target);
     with_ctx(|mut state| state.oxidegl_generate_mipmap(unsafe { target.into_enum() }));
 }
 #[no_mangle]
-unsafe extern "C" fn glGenerateTextureMipmap(texture: GLuint) {
+pub unsafe extern "C" fn glGenerateTextureMipmap(texture: GLuint) {
     ::log::trace!(
         "glGenerateTextureMipmap called, parameters: texture: {:?} ",
         texture
@@ -2442,7 +2461,7 @@ unsafe extern "C" fn glGenerateTextureMipmap(texture: GLuint) {
     with_ctx(|mut state| state.oxidegl_generate_texture_mipmap(texture));
 }
 #[no_mangle]
-unsafe extern "C" fn glGenFramebuffers(n: GLsizei, framebuffers: *mut GLuint) {
+pub unsafe extern "C" fn glGenFramebuffers(n: GLsizei, framebuffers: *mut GLuint) {
     ::log::trace!(
         "glGenFramebuffers called, parameters: n: {:?}, framebuffers: {:?} ",
         n,
@@ -2451,7 +2470,7 @@ unsafe extern "C" fn glGenFramebuffers(n: GLsizei, framebuffers: *mut GLuint) {
     with_ctx(|mut state| unsafe { state.oxidegl_gen_framebuffers(n, framebuffers) });
 }
 #[no_mangle]
-unsafe extern "C" fn glGenProgramPipelines(n: GLsizei, pipelines: *mut GLuint) {
+pub unsafe extern "C" fn glGenProgramPipelines(n: GLsizei, pipelines: *mut GLuint) {
     ::log::trace!(
         "glGenProgramPipelines called, parameters: n: {:?}, pipelines: {:?} ",
         n,
@@ -2460,7 +2479,7 @@ unsafe extern "C" fn glGenProgramPipelines(n: GLsizei, pipelines: *mut GLuint) {
     with_ctx(|mut state| unsafe { state.oxidegl_gen_program_pipelines(n, pipelines) });
 }
 #[no_mangle]
-unsafe extern "C" fn glGenQueries(n: GLsizei, ids: *mut GLuint) {
+pub unsafe extern "C" fn glGenQueries(n: GLsizei, ids: *mut GLuint) {
     ::log::trace!(
         "glGenQueries called, parameters: n: {:?}, ids: {:?} ",
         n,
@@ -2469,7 +2488,7 @@ unsafe extern "C" fn glGenQueries(n: GLsizei, ids: *mut GLuint) {
     with_ctx(|mut state| unsafe { state.oxidegl_gen_queries(n, ids) });
 }
 #[no_mangle]
-unsafe extern "C" fn glGenRenderbuffers(n: GLsizei, renderbuffers: *mut GLuint) {
+pub unsafe extern "C" fn glGenRenderbuffers(n: GLsizei, renderbuffers: *mut GLuint) {
     ::log::trace!(
         "glGenRenderbuffers called, parameters: n: {:?}, renderbuffers: {:?} ",
         n,
@@ -2478,7 +2497,7 @@ unsafe extern "C" fn glGenRenderbuffers(n: GLsizei, renderbuffers: *mut GLuint) 
     with_ctx(|mut state| unsafe { state.oxidegl_gen_renderbuffers(n, renderbuffers) });
 }
 #[no_mangle]
-unsafe extern "C" fn glGenSamplers(count: GLsizei, samplers: *mut GLuint) {
+pub unsafe extern "C" fn glGenSamplers(count: GLsizei, samplers: *mut GLuint) {
     ::log::trace!(
         "glGenSamplers called, parameters: count: {:?}, samplers: {:?} ",
         count,
@@ -2487,7 +2506,7 @@ unsafe extern "C" fn glGenSamplers(count: GLsizei, samplers: *mut GLuint) {
     with_ctx(|mut state| unsafe { state.oxidegl_gen_samplers(count, samplers) });
 }
 #[no_mangle]
-unsafe extern "C" fn glGenTextures(n: GLsizei, textures: *mut GLuint) {
+pub unsafe extern "C" fn glGenTextures(n: GLsizei, textures: *mut GLuint) {
     ::log::trace!(
         "glGenTextures called, parameters: n: {:?}, textures: {:?} ",
         n,
@@ -2496,7 +2515,7 @@ unsafe extern "C" fn glGenTextures(n: GLsizei, textures: *mut GLuint) {
     with_ctx(|mut state| unsafe { state.oxidegl_gen_textures(n, textures) });
 }
 #[no_mangle]
-unsafe extern "C" fn glGenTransformFeedbacks(n: GLsizei, ids: *mut GLuint) {
+pub unsafe extern "C" fn glGenTransformFeedbacks(n: GLsizei, ids: *mut GLuint) {
     ::log::trace!(
         "glGenTransformFeedbacks called, parameters: n: {:?}, ids: {:?} ",
         n,
@@ -2505,7 +2524,7 @@ unsafe extern "C" fn glGenTransformFeedbacks(n: GLsizei, ids: *mut GLuint) {
     with_ctx(|mut state| unsafe { state.oxidegl_gen_transform_feedbacks(n, ids) });
 }
 #[no_mangle]
-unsafe extern "C" fn glGenVertexArrays(n: GLsizei, arrays: *mut GLuint) {
+pub unsafe extern "C" fn glGenVertexArrays(n: GLsizei, arrays: *mut GLuint) {
     ::log::trace!(
         "glGenVertexArrays called, parameters: n: {:?}, arrays: {:?} ",
         n,
@@ -2514,7 +2533,7 @@ unsafe extern "C" fn glGenVertexArrays(n: GLsizei, arrays: *mut GLuint) {
     with_ctx(|mut state| unsafe { state.oxidegl_gen_vertex_arrays(n, arrays) });
 }
 #[no_mangle]
-unsafe extern "C" fn glGetBooleanv(pname: GLenum, data: *mut GLboolean) {
+pub unsafe extern "C" fn glGetBooleanv(pname: GLenum, data: *mut GLboolean) {
     ::log::trace!(
         "glGetBooleanv called, parameters: pname: {:?}, data: {:?} ",
         pname,
@@ -2523,7 +2542,7 @@ unsafe extern "C" fn glGetBooleanv(pname: GLenum, data: *mut GLboolean) {
     with_ctx(|state| unsafe { state.oxidegl_get_booleanv(pname.into_enum(), data) });
 }
 #[no_mangle]
-unsafe extern "C" fn glGetDoublev(pname: GLenum, data: *mut GLdouble) {
+pub unsafe extern "C" fn glGetDoublev(pname: GLenum, data: *mut GLdouble) {
     ::log::trace!(
         "glGetDoublev called, parameters: pname: {:?}, data: {:?} ",
         pname,
@@ -2532,7 +2551,7 @@ unsafe extern "C" fn glGetDoublev(pname: GLenum, data: *mut GLdouble) {
     with_ctx(|state| unsafe { state.oxidegl_get_doublev(pname.into_enum(), data) });
 }
 #[no_mangle]
-unsafe extern "C" fn glGetFloatv(pname: GLenum, data: *mut GLfloat) {
+pub unsafe extern "C" fn glGetFloatv(pname: GLenum, data: *mut GLfloat) {
     ::log::trace!(
         "glGetFloatv called, parameters: pname: {:?}, data: {:?} ",
         pname,
@@ -2541,7 +2560,7 @@ unsafe extern "C" fn glGetFloatv(pname: GLenum, data: *mut GLfloat) {
     with_ctx(|state| unsafe { state.oxidegl_get_floatv(pname.into_enum(), data) });
 }
 #[no_mangle]
-unsafe extern "C" fn glGetIntegerv(pname: GLenum, data: *mut GLint) {
+pub unsafe extern "C" fn glGetIntegerv(pname: GLenum, data: *mut GLint) {
     dbg!(pname);
     ::log::trace!(
         "glGetIntegerv called, parameters: pname: {:?}, data: {:?} ",
@@ -2551,7 +2570,7 @@ unsafe extern "C" fn glGetIntegerv(pname: GLenum, data: *mut GLint) {
     with_ctx(|state| unsafe { state.oxidegl_get_integerv(pname.into_enum(), data) });
 }
 #[no_mangle]
-unsafe extern "C" fn glGetBooleani_v(target: GLenum, index: GLuint, data: *mut GLboolean) {
+pub unsafe extern "C" fn glGetBooleani_v(target: GLenum, index: GLuint, data: *mut GLboolean) {
     ::log::trace!(
         "glGetBooleani_v called, parameters: target: {:?}, index: {:?}, data: {:?} ",
         target,
@@ -2561,7 +2580,7 @@ unsafe extern "C" fn glGetBooleani_v(target: GLenum, index: GLuint, data: *mut G
     with_ctx(|mut state| unsafe { state.oxidegl_get_booleani_v(target.into_enum(), index, data) });
 }
 #[no_mangle]
-unsafe extern "C" fn glGetIntegeri_v(target: GLenum, index: GLuint, data: *mut GLint) {
+pub unsafe extern "C" fn glGetIntegeri_v(target: GLenum, index: GLuint, data: *mut GLint) {
     ::log::trace!(
         "glGetIntegeri_v called, parameters: target: {:?}, index: {:?}, data: {:?} ",
         target,
@@ -2571,7 +2590,7 @@ unsafe extern "C" fn glGetIntegeri_v(target: GLenum, index: GLuint, data: *mut G
     with_ctx(|mut state| unsafe { state.oxidegl_get_integeri_v(target.into_enum(), index, data) });
 }
 #[no_mangle]
-unsafe extern "C" fn glGetInteger64v(pname: GLenum, data: *mut GLint64) {
+pub unsafe extern "C" fn glGetInteger64v(pname: GLenum, data: *mut GLint64) {
     ::log::trace!(
         "glGetInteger64v called, parameters: pname: {:?}, data: {:?} ",
         pname,
@@ -2580,7 +2599,7 @@ unsafe extern "C" fn glGetInteger64v(pname: GLenum, data: *mut GLint64) {
     with_ctx(|mut state| unsafe { state.oxidegl_get_integer64v(pname.into_enum(), data) });
 }
 #[no_mangle]
-unsafe extern "C" fn glGetInteger64i_v(target: GLenum, index: GLuint, data: *mut GLint64) {
+pub unsafe extern "C" fn glGetInteger64i_v(target: GLenum, index: GLuint, data: *mut GLint64) {
     ::log::trace!(
         "glGetInteger64i_v called, parameters: target: {:?}, index: {:?}, data: {:?} ",
         target,
@@ -2592,7 +2611,7 @@ unsafe extern "C" fn glGetInteger64i_v(target: GLenum, index: GLuint, data: *mut
     });
 }
 #[no_mangle]
-unsafe extern "C" fn glGetFloati_v(target: GLenum, index: GLuint, data: *mut GLfloat) {
+pub unsafe extern "C" fn glGetFloati_v(target: GLenum, index: GLuint, data: *mut GLfloat) {
     ::log::trace!(
         "glGetFloati_v called, parameters: target: {:?}, index: {:?}, data: {:?} ",
         target,
@@ -2602,7 +2621,7 @@ unsafe extern "C" fn glGetFloati_v(target: GLenum, index: GLuint, data: *mut GLf
     with_ctx(|mut state| unsafe { state.oxidegl_get_floati_v(target.into_enum(), index, data) });
 }
 #[no_mangle]
-unsafe extern "C" fn glGetDoublei_v(target: GLenum, index: GLuint, data: *mut GLdouble) {
+pub unsafe extern "C" fn glGetDoublei_v(target: GLenum, index: GLuint, data: *mut GLdouble) {
     ::log::trace!(
         "glGetDoublei_v called, parameters: target: {:?}, index: {:?}, data: {:?} ",
         target,
@@ -2612,7 +2631,7 @@ unsafe extern "C" fn glGetDoublei_v(target: GLenum, index: GLuint, data: *mut GL
     with_ctx(|mut state| unsafe { state.oxidegl_get_doublei_v(target.into_enum(), index, data) });
 }
 #[no_mangle]
-unsafe extern "C" fn glGetActiveAtomicCounterBufferiv(
+pub unsafe extern "C" fn glGetActiveAtomicCounterBufferiv(
     program: GLuint,
     bufferIndex: GLuint,
     pname: GLenum,
@@ -2629,7 +2648,7 @@ unsafe extern "C" fn glGetActiveAtomicCounterBufferiv(
     });
 }
 #[no_mangle]
-unsafe extern "C" fn glGetActiveAttrib(
+pub unsafe extern "C" fn glGetActiveAttrib(
     program: GLuint,
     index: GLuint,
     bufSize: GLsizei,
@@ -2652,7 +2671,7 @@ unsafe extern "C" fn glGetActiveAttrib(
     });
 }
 #[no_mangle]
-unsafe extern "C" fn glGetActiveSubroutineName(
+pub unsafe extern "C" fn glGetActiveSubroutineName(
     program: GLuint,
     shadertype: GLenum,
     index: GLuint,
@@ -2673,7 +2692,7 @@ unsafe extern "C" fn glGetActiveSubroutineName(
     });
 }
 #[no_mangle]
-unsafe extern "C" fn glGetActiveSubroutineUniformiv(
+pub unsafe extern "C" fn glGetActiveSubroutineUniformiv(
     program: GLuint,
     shadertype: GLenum,
     index: GLuint,
@@ -2692,7 +2711,7 @@ unsafe extern "C" fn glGetActiveSubroutineUniformiv(
     });
 }
 #[no_mangle]
-unsafe extern "C" fn glGetActiveSubroutineUniformName(
+pub unsafe extern "C" fn glGetActiveSubroutineUniformName(
     program: GLuint,
     shadertype: GLenum,
     index: GLuint,
@@ -2713,7 +2732,7 @@ unsafe extern "C" fn glGetActiveSubroutineUniformName(
     });
 }
 #[no_mangle]
-unsafe extern "C" fn glGetActiveUniform(
+pub unsafe extern "C" fn glGetActiveUniform(
     program: GLuint,
     index: GLuint,
     bufSize: GLsizei,
@@ -2736,7 +2755,7 @@ unsafe extern "C" fn glGetActiveUniform(
     });
 }
 #[no_mangle]
-unsafe extern "C" fn glGetActiveUniformBlockiv(
+pub unsafe extern "C" fn glGetActiveUniformBlockiv(
     program: GLuint,
     uniformBlockIndex: GLuint,
     pname: GLenum,
@@ -2753,7 +2772,7 @@ unsafe extern "C" fn glGetActiveUniformBlockiv(
     });
 }
 #[no_mangle]
-unsafe extern "C" fn glGetActiveUniformBlockName(
+pub unsafe extern "C" fn glGetActiveUniformBlockName(
     program: GLuint,
     uniformBlockIndex: GLuint,
     bufSize: GLsizei,
@@ -2772,7 +2791,7 @@ unsafe extern "C" fn glGetActiveUniformBlockName(
     });
 }
 #[no_mangle]
-unsafe extern "C" fn glGetActiveUniformName(
+pub unsafe extern "C" fn glGetActiveUniformName(
     program: GLuint,
     uniformIndex: GLuint,
     bufSize: GLsizei,
@@ -2785,7 +2804,7 @@ unsafe extern "C" fn glGetActiveUniformName(
     });
 }
 #[no_mangle]
-unsafe extern "C" fn glGetActiveUniformsiv(
+pub unsafe extern "C" fn glGetActiveUniformsiv(
     program: GLuint,
     uniformCount: GLsizei,
     uniformIndices: *const GLuint,
@@ -2804,7 +2823,7 @@ unsafe extern "C" fn glGetActiveUniformsiv(
     });
 }
 #[no_mangle]
-unsafe extern "C" fn glGetAttachedShaders(
+pub unsafe extern "C" fn glGetAttachedShaders(
     program: GLuint,
     maxCount: GLsizei,
     count: *mut GLsizei,
@@ -2816,7 +2835,7 @@ unsafe extern "C" fn glGetAttachedShaders(
     });
 }
 #[no_mangle]
-unsafe extern "C" fn glGetAttribLocation(program: GLuint, name: *const GLchar) -> GLint {
+pub unsafe extern "C" fn glGetAttribLocation(program: GLuint, name: *const GLchar) -> GLint {
     ::log::trace!(
         "glGetAttribLocation called, parameters: program: {:?}, name: {:?} ",
         program,
@@ -2825,7 +2844,7 @@ unsafe extern "C" fn glGetAttribLocation(program: GLuint, name: *const GLchar) -
     with_ctx(|mut state| unsafe { state.oxidegl_get_attrib_location(program, name) })
 }
 #[no_mangle]
-unsafe extern "C" fn glGetBufferParameteriv(target: GLenum, pname: GLenum, params: *mut GLint) {
+pub unsafe extern "C" fn glGetBufferParameteriv(target: GLenum, pname: GLenum, params: *mut GLint) {
     ::log::trace!(
         "glGetBufferParameteriv called, parameters: target: {:?}, pname: {:?}, params: {:?} ",
         target,
@@ -2835,7 +2854,11 @@ unsafe extern "C" fn glGetBufferParameteriv(target: GLenum, pname: GLenum, param
     with_ctx(|mut state| unsafe { state.oxidegl_get_buffer_parameteriv(target, pname, params) });
 }
 #[no_mangle]
-unsafe extern "C" fn glGetBufferParameteri64v(target: GLenum, pname: GLenum, params: *mut GLint64) {
+pub unsafe extern "C" fn glGetBufferParameteri64v(
+    target: GLenum,
+    pname: GLenum,
+    params: *mut GLint64,
+) {
     ::log::trace!(
         "glGetBufferParameteri64v called, parameters: target: {:?}, pname: {:?}, params: {:?} ",
         target,
@@ -2845,7 +2868,7 @@ unsafe extern "C" fn glGetBufferParameteri64v(target: GLenum, pname: GLenum, par
     with_ctx(|mut state| unsafe { state.oxidegl_get_buffer_parameteri64v(target, pname, params) });
 }
 #[no_mangle]
-unsafe extern "C" fn glGetNamedBufferParameteriv(
+pub unsafe extern "C" fn glGetNamedBufferParameteriv(
     buffer: GLuint,
     pname: GLenum,
     params: *mut GLint,
@@ -2861,7 +2884,7 @@ unsafe extern "C" fn glGetNamedBufferParameteriv(
     });
 }
 #[no_mangle]
-unsafe extern "C" fn glGetNamedBufferParameteri64v(
+pub unsafe extern "C" fn glGetNamedBufferParameteri64v(
     buffer: GLuint,
     pname: GLenum,
     params: *mut GLint64,
@@ -2872,7 +2895,11 @@ unsafe extern "C" fn glGetNamedBufferParameteri64v(
     });
 }
 #[no_mangle]
-unsafe extern "C" fn glGetBufferPointerv(target: GLenum, pname: GLenum, params: *mut *mut GLvoid) {
+pub unsafe extern "C" fn glGetBufferPointerv(
+    target: GLenum,
+    pname: GLenum,
+    params: *mut *mut GLvoid,
+) {
     ::log::trace!(
         "glGetBufferPointerv called, parameters: target: {:?}, pname: {:?}, params: {:?} ",
         target,
@@ -2882,7 +2909,7 @@ unsafe extern "C" fn glGetBufferPointerv(target: GLenum, pname: GLenum, params: 
     with_ctx(|mut state| unsafe { state.oxidegl_get_buffer_pointerv(target, pname, params) });
 }
 #[no_mangle]
-unsafe extern "C" fn glGetNamedBufferPointerv(
+pub unsafe extern "C" fn glGetNamedBufferPointerv(
     buffer: GLuint,
     pname: GLenum,
     params: *mut *mut GLvoid,
@@ -2896,7 +2923,7 @@ unsafe extern "C" fn glGetNamedBufferPointerv(
     with_ctx(|mut state| unsafe { state.oxidegl_get_named_buffer_pointerv(buffer, pname, params) });
 }
 #[no_mangle]
-unsafe extern "C" fn glGetBufferSubData(
+pub unsafe extern "C" fn glGetBufferSubData(
     target: GLenum,
     offset: GLintptr,
     size: GLsizeiptr,
@@ -2906,7 +2933,7 @@ unsafe extern "C" fn glGetBufferSubData(
     with_ctx(|mut state| unsafe { state.oxidegl_get_buffer_sub_data(target, offset, size, data) });
 }
 #[no_mangle]
-unsafe extern "C" fn glGetNamedBufferSubData(
+pub unsafe extern "C" fn glGetNamedBufferSubData(
     buffer: GLuint,
     offset: GLintptr,
     size: GLsizeiptr,
@@ -2918,7 +2945,7 @@ unsafe extern "C" fn glGetNamedBufferSubData(
     });
 }
 #[no_mangle]
-unsafe extern "C" fn glGetCompressedTexImage(target: GLenum, level: GLint, img: *mut GLvoid) {
+pub unsafe extern "C" fn glGetCompressedTexImage(target: GLenum, level: GLint, img: *mut GLvoid) {
     ::log::trace!(
         "glGetCompressedTexImage called, parameters: target: {:?}, level: {:?}, img: {:?} ",
         target,
@@ -2930,7 +2957,7 @@ unsafe extern "C" fn glGetCompressedTexImage(target: GLenum, level: GLint, img: 
     });
 }
 #[no_mangle]
-unsafe extern "C" fn glGetCompressedTextureImage(
+pub unsafe extern "C" fn glGetCompressedTextureImage(
     texture: GLuint,
     level: GLint,
     bufSize: GLsizei,
@@ -2942,7 +2969,7 @@ unsafe extern "C" fn glGetCompressedTextureImage(
     });
 }
 #[no_mangle]
-unsafe extern "C" fn glGetnCompressedTexImage(
+pub unsafe extern "C" fn glGetnCompressedTexImage(
     target: GLenum,
     lod: GLint,
     bufSize: GLsizei,
@@ -2954,7 +2981,7 @@ unsafe extern "C" fn glGetnCompressedTexImage(
     });
 }
 #[no_mangle]
-unsafe extern "C" fn glGetCompressedTextureSubImage(
+pub unsafe extern "C" fn glGetCompressedTextureSubImage(
     texture: GLuint,
     level: GLint,
     xoffset: GLint,
@@ -2974,7 +3001,7 @@ unsafe extern "C" fn glGetCompressedTextureSubImage(
     });
 }
 #[no_mangle]
-unsafe extern "C" fn glGetDebugMessageLog(
+pub unsafe extern "C" fn glGetDebugMessageLog(
     count: GLuint,
     bufSize: GLsizei,
     sources: GLenum,
@@ -2999,12 +3026,12 @@ unsafe extern "C" fn glGetDebugMessageLog(
     })
 }
 #[no_mangle]
-unsafe extern "C" fn glGetError() -> GLenum {
+pub unsafe extern "C" fn glGetError() -> GLenum {
     ::log::trace!("glGetError called, parameters:  ",);
     with_ctx(|mut state| state.oxidegl_get_error())
 }
 #[no_mangle]
-unsafe extern "C" fn glGetFragDataIndex(program: GLuint, name: *const GLchar) -> GLint {
+pub unsafe extern "C" fn glGetFragDataIndex(program: GLuint, name: *const GLchar) -> GLint {
     ::log::trace!(
         "glGetFragDataIndex called, parameters: program: {:?}, name: {:?} ",
         program,
@@ -3013,7 +3040,7 @@ unsafe extern "C" fn glGetFragDataIndex(program: GLuint, name: *const GLchar) ->
     with_ctx(|mut state| unsafe { state.oxidegl_get_frag_data_index(program, name) })
 }
 #[no_mangle]
-unsafe extern "C" fn glGetFragDataLocation(program: GLuint, name: *const GLchar) -> GLint {
+pub unsafe extern "C" fn glGetFragDataLocation(program: GLuint, name: *const GLchar) -> GLint {
     ::log::trace!(
         "glGetFragDataLocation called, parameters: program: {:?}, name: {:?} ",
         program,
@@ -3022,7 +3049,7 @@ unsafe extern "C" fn glGetFragDataLocation(program: GLuint, name: *const GLchar)
     with_ctx(|mut state| unsafe { state.oxidegl_get_frag_data_location(program, name) })
 }
 #[no_mangle]
-unsafe extern "C" fn glGetFramebufferAttachmentParameteriv(
+pub unsafe extern "C" fn glGetFramebufferAttachmentParameteriv(
     target: GLenum,
     attachment: GLenum,
     pname: GLenum,
@@ -3039,7 +3066,7 @@ unsafe extern "C" fn glGetFramebufferAttachmentParameteriv(
     });
 }
 #[no_mangle]
-unsafe extern "C" fn glGetNamedFramebufferAttachmentParameteriv(
+pub unsafe extern "C" fn glGetNamedFramebufferAttachmentParameteriv(
     framebuffer: GLuint,
     attachment: GLenum,
     pname: GLenum,
@@ -3056,7 +3083,7 @@ unsafe extern "C" fn glGetNamedFramebufferAttachmentParameteriv(
     });
 }
 #[no_mangle]
-unsafe extern "C" fn glGetFramebufferParameteriv(
+pub unsafe extern "C" fn glGetFramebufferParameteriv(
     target: GLenum,
     pname: GLenum,
     params: *mut GLint,
@@ -3072,7 +3099,7 @@ unsafe extern "C" fn glGetFramebufferParameteriv(
     });
 }
 #[no_mangle]
-unsafe extern "C" fn glGetNamedFramebufferParameteriv(
+pub unsafe extern "C" fn glGetNamedFramebufferParameteriv(
     framebuffer: GLuint,
     pname: GLenum,
     param: *mut GLint,
@@ -3083,12 +3110,12 @@ unsafe extern "C" fn glGetNamedFramebufferParameteriv(
     });
 }
 #[no_mangle]
-unsafe extern "C" fn glGetGraphicsResetStatus() -> GLenum {
+pub unsafe extern "C" fn glGetGraphicsResetStatus() -> GLenum {
     ::log::trace!("glGetGraphicsResetStatus called, parameters:  ",);
     with_ctx(|mut state| state.oxidegl_get_graphics_reset_status())
 }
 #[no_mangle]
-unsafe extern "C" fn glGetInternalformativ(
+pub unsafe extern "C" fn glGetInternalformativ(
     target: GLenum,
     internalformat: GLenum,
     pname: GLenum,
@@ -3107,7 +3134,7 @@ unsafe extern "C" fn glGetInternalformativ(
     });
 }
 #[no_mangle]
-unsafe extern "C" fn glGetInternalformati64v(
+pub unsafe extern "C" fn glGetInternalformati64v(
     target: GLenum,
     internalformat: GLenum,
     pname: GLenum,
@@ -3126,7 +3153,7 @@ unsafe extern "C" fn glGetInternalformati64v(
     });
 }
 #[no_mangle]
-unsafe extern "C" fn glGetMultisamplefv(pname: GLenum, index: GLuint, val: *mut GLfloat) {
+pub unsafe extern "C" fn glGetMultisamplefv(pname: GLenum, index: GLuint, val: *mut GLfloat) {
     ::log::trace!(
         "glGetMultisamplefv called, parameters: pname: {:?}, index: {:?}, val: {:?} ",
         pname,
@@ -3136,7 +3163,7 @@ unsafe extern "C" fn glGetMultisamplefv(pname: GLenum, index: GLuint, val: *mut 
     with_ctx(|mut state| unsafe { state.oxidegl_get_multisamplefv(pname, index, val) });
 }
 #[no_mangle]
-unsafe extern "C" fn glGetObjectLabel(
+pub unsafe extern "C" fn glGetObjectLabel(
     identifier: GLenum,
     name: GLuint,
     bufSize: GLsizei,
@@ -3149,7 +3176,7 @@ unsafe extern "C" fn glGetObjectLabel(
     });
 }
 #[no_mangle]
-unsafe extern "C" fn glGetObjectPtrLabel(
+pub unsafe extern "C" fn glGetObjectPtrLabel(
     ptr: *const GLvoid,
     bufSize: GLsizei,
     length: *mut GLsizei,
@@ -3161,7 +3188,7 @@ unsafe extern "C" fn glGetObjectPtrLabel(
     });
 }
 #[no_mangle]
-unsafe extern "C" fn glGetPointerv(pname: GLenum, params: *mut *mut GLvoid) {
+pub unsafe extern "C" fn glGetPointerv(pname: GLenum, params: *mut *mut GLvoid) {
     ::log::trace!(
         "glGetPointerv called, parameters: pname: {:?}, params: {:?} ",
         pname,
@@ -3170,7 +3197,7 @@ unsafe extern "C" fn glGetPointerv(pname: GLenum, params: *mut *mut GLvoid) {
     with_ctx(|mut state| unsafe { state.oxidegl_get_pointerv(pname.into_enum(), params) });
 }
 #[no_mangle]
-unsafe extern "C" fn glGetProgramiv(program: GLuint, pname: GLenum, params: *mut GLint) {
+pub unsafe extern "C" fn glGetProgramiv(program: GLuint, pname: GLenum, params: *mut GLint) {
     ::log::trace!(
         "glGetProgramiv called, parameters: program: {:?}, pname: {:?}, params: {:?} ",
         program,
@@ -3180,7 +3207,7 @@ unsafe extern "C" fn glGetProgramiv(program: GLuint, pname: GLenum, params: *mut
     with_ctx(|mut state| unsafe { state.oxidegl_get_programiv(program, pname, params) });
 }
 #[no_mangle]
-unsafe extern "C" fn glGetProgramBinary(
+pub unsafe extern "C" fn glGetProgramBinary(
     program: GLuint,
     bufSize: GLsizei,
     length: *mut GLsizei,
@@ -3193,7 +3220,7 @@ unsafe extern "C" fn glGetProgramBinary(
     });
 }
 #[no_mangle]
-unsafe extern "C" fn glGetProgramInfoLog(
+pub unsafe extern "C" fn glGetProgramInfoLog(
     program: GLuint,
     bufSize: GLsizei,
     length: *mut GLsizei,
@@ -3205,7 +3232,7 @@ unsafe extern "C" fn glGetProgramInfoLog(
     });
 }
 #[no_mangle]
-unsafe extern "C" fn glGetProgramInterfaceiv(
+pub unsafe extern "C" fn glGetProgramInterfaceiv(
     program: GLuint,
     programInterface: GLenum,
     pname: GLenum,
@@ -3222,7 +3249,11 @@ unsafe extern "C" fn glGetProgramInterfaceiv(
     });
 }
 #[no_mangle]
-unsafe extern "C" fn glGetProgramPipelineiv(pipeline: GLuint, pname: GLenum, params: *mut GLint) {
+pub unsafe extern "C" fn glGetProgramPipelineiv(
+    pipeline: GLuint,
+    pname: GLenum,
+    params: *mut GLint,
+) {
     ::log::trace!(
         "glGetProgramPipelineiv called, parameters: pipeline: {:?}, pname: {:?}, params: {:?} ",
         pipeline,
@@ -3234,7 +3265,7 @@ unsafe extern "C" fn glGetProgramPipelineiv(pipeline: GLuint, pname: GLenum, par
     });
 }
 #[no_mangle]
-unsafe extern "C" fn glGetProgramPipelineInfoLog(
+pub unsafe extern "C" fn glGetProgramPipelineInfoLog(
     pipeline: GLuint,
     bufSize: GLsizei,
     length: *mut GLsizei,
@@ -3246,7 +3277,7 @@ unsafe extern "C" fn glGetProgramPipelineInfoLog(
     });
 }
 #[no_mangle]
-unsafe extern "C" fn glGetProgramResourceiv(
+pub unsafe extern "C" fn glGetProgramResourceiv(
     program: GLuint,
     programInterface: GLenum,
     index: GLuint,
@@ -3271,7 +3302,7 @@ unsafe extern "C" fn glGetProgramResourceiv(
     });
 }
 #[no_mangle]
-unsafe extern "C" fn glGetProgramResourceIndex(
+pub unsafe extern "C" fn glGetProgramResourceIndex(
     program: GLuint,
     programInterface: GLenum,
     name: *const GLchar,
@@ -3282,7 +3313,7 @@ unsafe extern "C" fn glGetProgramResourceIndex(
     })
 }
 #[no_mangle]
-unsafe extern "C" fn glGetProgramResourceLocation(
+pub unsafe extern "C" fn glGetProgramResourceLocation(
     program: GLuint,
     programInterface: GLenum,
     name: *const GLchar,
@@ -3293,7 +3324,7 @@ unsafe extern "C" fn glGetProgramResourceLocation(
     })
 }
 #[no_mangle]
-unsafe extern "C" fn glGetProgramResourceLocationIndex(
+pub unsafe extern "C" fn glGetProgramResourceLocationIndex(
     program: GLuint,
     programInterface: GLenum,
     name: *const GLchar,
@@ -3308,7 +3339,7 @@ unsafe extern "C" fn glGetProgramResourceLocationIndex(
     })
 }
 #[no_mangle]
-unsafe extern "C" fn glGetProgramResourceName(
+pub unsafe extern "C" fn glGetProgramResourceName(
     program: GLuint,
     programInterface: GLenum,
     index: GLuint,
@@ -3329,7 +3360,7 @@ unsafe extern "C" fn glGetProgramResourceName(
     });
 }
 #[no_mangle]
-unsafe extern "C" fn glGetProgramStageiv(
+pub unsafe extern "C" fn glGetProgramStageiv(
     program: GLuint,
     shadertype: GLenum,
     pname: GLenum,
@@ -3346,7 +3377,7 @@ unsafe extern "C" fn glGetProgramStageiv(
     });
 }
 #[no_mangle]
-unsafe extern "C" fn glGetQueryIndexediv(
+pub unsafe extern "C" fn glGetQueryIndexediv(
     target: GLenum,
     index: GLuint,
     pname: GLenum,
@@ -3358,7 +3389,7 @@ unsafe extern "C" fn glGetQueryIndexediv(
     });
 }
 #[no_mangle]
-unsafe extern "C" fn glGetQueryiv(target: GLenum, pname: GLenum, params: *mut GLint) {
+pub unsafe extern "C" fn glGetQueryiv(target: GLenum, pname: GLenum, params: *mut GLint) {
     ::log::trace!(
         "glGetQueryiv called, parameters: target: {:?}, pname: {:?}, params: {:?} ",
         target,
@@ -3370,7 +3401,7 @@ unsafe extern "C" fn glGetQueryiv(target: GLenum, pname: GLenum, params: *mut GL
     });
 }
 #[no_mangle]
-unsafe extern "C" fn glGetQueryObjectiv(id: GLuint, pname: GLenum, params: *mut GLint) {
+pub unsafe extern "C" fn glGetQueryObjectiv(id: GLuint, pname: GLenum, params: *mut GLint) {
     ::log::trace!(
         "glGetQueryObjectiv called, parameters: id: {:?}, pname: {:?}, params: {:?} ",
         id,
@@ -3382,7 +3413,7 @@ unsafe extern "C" fn glGetQueryObjectiv(id: GLuint, pname: GLenum, params: *mut 
     });
 }
 #[no_mangle]
-unsafe extern "C" fn glGetQueryObjectuiv(id: GLuint, pname: GLenum, params: *mut GLuint) {
+pub unsafe extern "C" fn glGetQueryObjectuiv(id: GLuint, pname: GLenum, params: *mut GLuint) {
     ::log::trace!(
         "glGetQueryObjectuiv called, parameters: id: {:?}, pname: {:?}, params: {:?} ",
         id,
@@ -3394,7 +3425,7 @@ unsafe extern "C" fn glGetQueryObjectuiv(id: GLuint, pname: GLenum, params: *mut
     });
 }
 #[no_mangle]
-unsafe extern "C" fn glGetQueryObjecti64v(id: GLuint, pname: GLenum, params: *mut GLint64) {
+pub unsafe extern "C" fn glGetQueryObjecti64v(id: GLuint, pname: GLenum, params: *mut GLint64) {
     ::log::trace!(
         "glGetQueryObjecti64v called, parameters: id: {:?}, pname: {:?}, params: {:?} ",
         id,
@@ -3406,7 +3437,7 @@ unsafe extern "C" fn glGetQueryObjecti64v(id: GLuint, pname: GLenum, params: *mu
     });
 }
 #[no_mangle]
-unsafe extern "C" fn glGetQueryObjectui64v(id: GLuint, pname: GLenum, params: *mut GLuint64) {
+pub unsafe extern "C" fn glGetQueryObjectui64v(id: GLuint, pname: GLenum, params: *mut GLuint64) {
     ::log::trace!(
         "glGetQueryObjectui64v called, parameters: id: {:?}, pname: {:?}, params: {:?} ",
         id,
@@ -3418,7 +3449,7 @@ unsafe extern "C" fn glGetQueryObjectui64v(id: GLuint, pname: GLenum, params: *m
     });
 }
 #[no_mangle]
-unsafe extern "C" fn glGetQueryBufferObjecti64v(
+pub unsafe extern "C" fn glGetQueryBufferObjecti64v(
     id: GLuint,
     buffer: GLuint,
     pname: GLenum,
@@ -3430,7 +3461,7 @@ unsafe extern "C" fn glGetQueryBufferObjecti64v(
     });
 }
 #[no_mangle]
-unsafe extern "C" fn glGetQueryBufferObjectiv(
+pub unsafe extern "C" fn glGetQueryBufferObjectiv(
     id: GLuint,
     buffer: GLuint,
     pname: GLenum,
@@ -3442,7 +3473,7 @@ unsafe extern "C" fn glGetQueryBufferObjectiv(
     });
 }
 #[no_mangle]
-unsafe extern "C" fn glGetQueryBufferObjectui64v(
+pub unsafe extern "C" fn glGetQueryBufferObjectui64v(
     id: GLuint,
     buffer: GLuint,
     pname: GLenum,
@@ -3459,7 +3490,7 @@ unsafe extern "C" fn glGetQueryBufferObjectui64v(
     });
 }
 #[no_mangle]
-unsafe extern "C" fn glGetQueryBufferObjectuiv(
+pub unsafe extern "C" fn glGetQueryBufferObjectuiv(
     id: GLuint,
     buffer: GLuint,
     pname: GLenum,
@@ -3471,7 +3502,7 @@ unsafe extern "C" fn glGetQueryBufferObjectuiv(
     });
 }
 #[no_mangle]
-unsafe extern "C" fn glGetRenderbufferParameteriv(
+pub unsafe extern "C" fn glGetRenderbufferParameteriv(
     target: GLenum,
     pname: GLenum,
     params: *mut GLint,
@@ -3487,7 +3518,7 @@ unsafe extern "C" fn glGetRenderbufferParameteriv(
     });
 }
 #[no_mangle]
-unsafe extern "C" fn glGetNamedRenderbufferParameteriv(
+pub unsafe extern "C" fn glGetNamedRenderbufferParameteriv(
     renderbuffer: GLuint,
     pname: GLenum,
     params: *mut GLint,
@@ -3498,7 +3529,11 @@ unsafe extern "C" fn glGetNamedRenderbufferParameteriv(
     });
 }
 #[no_mangle]
-unsafe extern "C" fn glGetSamplerParameteriv(sampler: GLuint, pname: GLenum, params: *mut GLint) {
+pub unsafe extern "C" fn glGetSamplerParameteriv(
+    sampler: GLuint,
+    pname: GLenum,
+    params: *mut GLint,
+) {
     ::log::trace!(
         "glGetSamplerParameteriv called, parameters: sampler: {:?}, pname: {:?}, params: {:?} ",
         sampler,
@@ -3510,7 +3545,11 @@ unsafe extern "C" fn glGetSamplerParameteriv(sampler: GLuint, pname: GLenum, par
     });
 }
 #[no_mangle]
-unsafe extern "C" fn glGetSamplerParameterIiv(sampler: GLuint, pname: GLenum, params: *mut GLint) {
+pub unsafe extern "C" fn glGetSamplerParameterIiv(
+    sampler: GLuint,
+    pname: GLenum,
+    params: *mut GLint,
+) {
     ::log::trace!(
         "glGetSamplerParameterIiv called, parameters: sampler: {:?}, pname: {:?}, params: {:?} ",
         sampler,
@@ -3522,7 +3561,11 @@ unsafe extern "C" fn glGetSamplerParameterIiv(sampler: GLuint, pname: GLenum, pa
     });
 }
 #[no_mangle]
-unsafe extern "C" fn glGetSamplerParameterfv(sampler: GLuint, pname: GLenum, params: *mut GLfloat) {
+pub unsafe extern "C" fn glGetSamplerParameterfv(
+    sampler: GLuint,
+    pname: GLenum,
+    params: *mut GLfloat,
+) {
     ::log::trace!(
         "glGetSamplerParameterfv called, parameters: sampler: {:?}, pname: {:?}, params: {:?} ",
         sampler,
@@ -3534,7 +3577,7 @@ unsafe extern "C" fn glGetSamplerParameterfv(sampler: GLuint, pname: GLenum, par
     });
 }
 #[no_mangle]
-unsafe extern "C" fn glGetSamplerParameterIuiv(
+pub unsafe extern "C" fn glGetSamplerParameterIuiv(
     sampler: GLuint,
     pname: GLenum,
     params: *mut GLuint,
@@ -3550,7 +3593,7 @@ unsafe extern "C" fn glGetSamplerParameterIuiv(
     });
 }
 #[no_mangle]
-unsafe extern "C" fn glGetShaderiv(shader: GLuint, pname: GLenum, params: *mut GLint) {
+pub unsafe extern "C" fn glGetShaderiv(shader: GLuint, pname: GLenum, params: *mut GLint) {
     ::log::trace!(
         "glGetShaderiv called, parameters: shader: {:?}, pname: {:?}, params: {:?} ",
         shader,
@@ -3560,7 +3603,7 @@ unsafe extern "C" fn glGetShaderiv(shader: GLuint, pname: GLenum, params: *mut G
     with_ctx(|mut state| unsafe { state.oxidegl_get_shaderiv(shader, pname.into_enum(), params) });
 }
 #[no_mangle]
-unsafe extern "C" fn glGetShaderInfoLog(
+pub unsafe extern "C" fn glGetShaderInfoLog(
     shader: GLuint,
     bufSize: GLsizei,
     length: *mut GLsizei,
@@ -3572,7 +3615,7 @@ unsafe extern "C" fn glGetShaderInfoLog(
     });
 }
 #[no_mangle]
-unsafe extern "C" fn glGetShaderPrecisionFormat(
+pub unsafe extern "C" fn glGetShaderPrecisionFormat(
     shadertype: GLenum,
     precisiontype: GLenum,
     range: *mut GLint,
@@ -3589,7 +3632,7 @@ unsafe extern "C" fn glGetShaderPrecisionFormat(
     });
 }
 #[no_mangle]
-unsafe extern "C" fn glGetShaderSource(
+pub unsafe extern "C" fn glGetShaderSource(
     shader: GLuint,
     bufSize: GLsizei,
     length: *mut GLsizei,
@@ -3601,12 +3644,12 @@ unsafe extern "C" fn glGetShaderSource(
     });
 }
 #[no_mangle]
-unsafe extern "C" fn glGetString(name: GLenum) -> *const GLubyte {
+pub unsafe extern "C" fn glGetString(name: GLenum) -> *const GLubyte {
     ::log::trace!("glGetString called, parameters: name: {:?} ", name);
     with_ctx(|mut state| state.oxidegl_get_string(unsafe { name.into_enum() }))
 }
 #[no_mangle]
-unsafe extern "C" fn glGetStringi(name: GLenum, index: GLuint) -> *const GLubyte {
+pub unsafe extern "C" fn glGetStringi(name: GLenum, index: GLuint) -> *const GLubyte {
     ::log::trace!(
         "glGetStringi called, parameters: name: {:?}, index: {:?} ",
         name,
@@ -3615,7 +3658,7 @@ unsafe extern "C" fn glGetStringi(name: GLenum, index: GLuint) -> *const GLubyte
     with_ctx(|mut state| state.oxidegl_get_stringi(unsafe { name.into_enum() }, index))
 }
 #[no_mangle]
-unsafe extern "C" fn glGetSubroutineIndex(
+pub unsafe extern "C" fn glGetSubroutineIndex(
     program: GLuint,
     shadertype: GLenum,
     name: *const GLchar,
@@ -3631,7 +3674,7 @@ unsafe extern "C" fn glGetSubroutineIndex(
     })
 }
 #[no_mangle]
-unsafe extern "C" fn glGetSubroutineUniformLocation(
+pub unsafe extern "C" fn glGetSubroutineUniformLocation(
     program: GLuint,
     shadertype: GLenum,
     name: *const GLchar,
@@ -3642,7 +3685,7 @@ unsafe extern "C" fn glGetSubroutineUniformLocation(
     })
 }
 #[no_mangle]
-unsafe extern "C" fn glGetSynciv(
+pub unsafe extern "C" fn glGetSynciv(
     sync: GLsync,
     pname: GLenum,
     count: GLsizei,
@@ -3655,7 +3698,7 @@ unsafe extern "C" fn glGetSynciv(
     });
 }
 #[no_mangle]
-unsafe extern "C" fn glGetTexImage(
+pub unsafe extern "C" fn glGetTexImage(
     target: GLenum,
     level: GLint,
     format: GLenum,
@@ -3674,7 +3717,7 @@ unsafe extern "C" fn glGetTexImage(
     });
 }
 #[no_mangle]
-unsafe extern "C" fn glGetTextureImage(
+pub unsafe extern "C" fn glGetTextureImage(
     texture: GLuint,
     level: GLint,
     format: GLenum,
@@ -3695,7 +3738,7 @@ unsafe extern "C" fn glGetTextureImage(
     });
 }
 #[no_mangle]
-unsafe extern "C" fn glGetnTexImage(
+pub unsafe extern "C" fn glGetnTexImage(
     target: GLenum,
     level: GLint,
     format: GLenum,
@@ -3716,7 +3759,7 @@ unsafe extern "C" fn glGetnTexImage(
     });
 }
 #[no_mangle]
-unsafe extern "C" fn glGetTexLevelParameterfv(
+pub unsafe extern "C" fn glGetTexLevelParameterfv(
     target: GLenum,
     level: GLint,
     pname: GLenum,
@@ -3733,7 +3776,7 @@ unsafe extern "C" fn glGetTexLevelParameterfv(
     });
 }
 #[no_mangle]
-unsafe extern "C" fn glGetTexLevelParameteriv(
+pub unsafe extern "C" fn glGetTexLevelParameteriv(
     target: GLenum,
     level: GLint,
     pname: GLenum,
@@ -3750,7 +3793,7 @@ unsafe extern "C" fn glGetTexLevelParameteriv(
     });
 }
 #[no_mangle]
-unsafe extern "C" fn glGetTextureLevelParameterfv(
+pub unsafe extern "C" fn glGetTextureLevelParameterfv(
     texture: GLuint,
     level: GLint,
     pname: GLenum,
@@ -3762,7 +3805,7 @@ unsafe extern "C" fn glGetTextureLevelParameterfv(
     });
 }
 #[no_mangle]
-unsafe extern "C" fn glGetTextureLevelParameteriv(
+pub unsafe extern "C" fn glGetTextureLevelParameteriv(
     texture: GLuint,
     level: GLint,
     pname: GLenum,
@@ -3774,7 +3817,7 @@ unsafe extern "C" fn glGetTextureLevelParameteriv(
     });
 }
 #[no_mangle]
-unsafe extern "C" fn glGetTexParameterfv(target: GLenum, pname: GLenum, params: *mut GLfloat) {
+pub unsafe extern "C" fn glGetTexParameterfv(target: GLenum, pname: GLenum, params: *mut GLfloat) {
     ::log::trace!(
         "glGetTexParameterfv called, parameters: target: {:?}, pname: {:?}, params: {:?} ",
         target,
@@ -3786,7 +3829,7 @@ unsafe extern "C" fn glGetTexParameterfv(target: GLenum, pname: GLenum, params: 
     });
 }
 #[no_mangle]
-unsafe extern "C" fn glGetTexParameteriv(target: GLenum, pname: GLenum, params: *mut GLint) {
+pub unsafe extern "C" fn glGetTexParameteriv(target: GLenum, pname: GLenum, params: *mut GLint) {
     ::log::trace!(
         "glGetTexParameteriv called, parameters: target: {:?}, pname: {:?}, params: {:?} ",
         target,
@@ -3798,7 +3841,7 @@ unsafe extern "C" fn glGetTexParameteriv(target: GLenum, pname: GLenum, params: 
     });
 }
 #[no_mangle]
-unsafe extern "C" fn glGetTexParameterIiv(target: GLenum, pname: GLenum, params: *mut GLint) {
+pub unsafe extern "C" fn glGetTexParameterIiv(target: GLenum, pname: GLenum, params: *mut GLint) {
     ::log::trace!(
         "glGetTexParameterIiv called, parameters: target: {:?}, pname: {:?}, params: {:?} ",
         target,
@@ -3810,7 +3853,7 @@ unsafe extern "C" fn glGetTexParameterIiv(target: GLenum, pname: GLenum, params:
     });
 }
 #[no_mangle]
-unsafe extern "C" fn glGetTexParameterIuiv(target: GLenum, pname: GLenum, params: *mut GLuint) {
+pub unsafe extern "C" fn glGetTexParameterIuiv(target: GLenum, pname: GLenum, params: *mut GLuint) {
     ::log::trace!(
         "glGetTexParameterIuiv called, parameters: target: {:?}, pname: {:?}, params: {:?} ",
         target,
@@ -3822,7 +3865,11 @@ unsafe extern "C" fn glGetTexParameterIuiv(target: GLenum, pname: GLenum, params
     });
 }
 #[no_mangle]
-unsafe extern "C" fn glGetTextureParameterfv(texture: GLuint, pname: GLenum, params: *mut GLfloat) {
+pub unsafe extern "C" fn glGetTextureParameterfv(
+    texture: GLuint,
+    pname: GLenum,
+    params: *mut GLfloat,
+) {
     ::log::trace!(
         "glGetTextureParameterfv called, parameters: texture: {:?}, pname: {:?}, params: {:?} ",
         texture,
@@ -3834,7 +3881,11 @@ unsafe extern "C" fn glGetTextureParameterfv(texture: GLuint, pname: GLenum, par
     });
 }
 #[no_mangle]
-unsafe extern "C" fn glGetTextureParameterIiv(texture: GLuint, pname: GLenum, params: *mut GLint) {
+pub unsafe extern "C" fn glGetTextureParameterIiv(
+    texture: GLuint,
+    pname: GLenum,
+    params: *mut GLint,
+) {
     ::log::trace!(
         "glGetTextureParameterIiv called, parameters: texture: {:?}, pname: {:?}, params: {:?} ",
         texture,
@@ -3846,7 +3897,7 @@ unsafe extern "C" fn glGetTextureParameterIiv(texture: GLuint, pname: GLenum, pa
     });
 }
 #[no_mangle]
-unsafe extern "C" fn glGetTextureParameterIuiv(
+pub unsafe extern "C" fn glGetTextureParameterIuiv(
     texture: GLuint,
     pname: GLenum,
     params: *mut GLuint,
@@ -3862,7 +3913,11 @@ unsafe extern "C" fn glGetTextureParameterIuiv(
     });
 }
 #[no_mangle]
-unsafe extern "C" fn glGetTextureParameteriv(texture: GLuint, pname: GLenum, params: *mut GLint) {
+pub unsafe extern "C" fn glGetTextureParameteriv(
+    texture: GLuint,
+    pname: GLenum,
+    params: *mut GLint,
+) {
     ::log::trace!(
         "glGetTextureParameteriv called, parameters: texture: {:?}, pname: {:?}, params: {:?} ",
         texture,
@@ -3874,7 +3929,7 @@ unsafe extern "C" fn glGetTextureParameteriv(texture: GLuint, pname: GLenum, par
     });
 }
 #[no_mangle]
-unsafe extern "C" fn glGetTextureSubImage(
+pub unsafe extern "C" fn glGetTextureSubImage(
     texture: GLuint,
     level: GLint,
     xoffset: GLint,
@@ -3907,7 +3962,7 @@ unsafe extern "C" fn glGetTextureSubImage(
     });
 }
 #[no_mangle]
-unsafe extern "C" fn glGetTransformFeedbackiv(xfb: GLuint, pname: GLenum, param: *mut GLint) {
+pub unsafe extern "C" fn glGetTransformFeedbackiv(xfb: GLuint, pname: GLenum, param: *mut GLint) {
     ::log::trace!(
         "glGetTransformFeedbackiv called, parameters: xfb: {:?}, pname: {:?}, param: {:?} ",
         xfb,
@@ -3919,7 +3974,7 @@ unsafe extern "C" fn glGetTransformFeedbackiv(xfb: GLuint, pname: GLenum, param:
     });
 }
 #[no_mangle]
-unsafe extern "C" fn glGetTransformFeedbacki_v(
+pub unsafe extern "C" fn glGetTransformFeedbacki_v(
     xfb: GLuint,
     pname: GLenum,
     index: GLuint,
@@ -3931,7 +3986,7 @@ unsafe extern "C" fn glGetTransformFeedbacki_v(
     });
 }
 #[no_mangle]
-unsafe extern "C" fn glGetTransformFeedbacki64_v(
+pub unsafe extern "C" fn glGetTransformFeedbacki64_v(
     xfb: GLuint,
     pname: GLenum,
     index: GLuint,
@@ -3943,7 +3998,7 @@ unsafe extern "C" fn glGetTransformFeedbacki64_v(
     });
 }
 #[no_mangle]
-unsafe extern "C" fn glGetTransformFeedbackVarying(
+pub unsafe extern "C" fn glGetTransformFeedbackVarying(
     program: GLuint,
     index: GLuint,
     bufSize: GLsizei,
@@ -3966,7 +4021,7 @@ unsafe extern "C" fn glGetTransformFeedbackVarying(
     });
 }
 #[no_mangle]
-unsafe extern "C" fn glGetUniformfv(program: GLuint, location: GLint, params: *mut GLfloat) {
+pub unsafe extern "C" fn glGetUniformfv(program: GLuint, location: GLint, params: *mut GLfloat) {
     ::log::trace!(
         "glGetUniformfv called, parameters: program: {:?}, location: {:?}, params: {:?} ",
         program,
@@ -3976,7 +4031,7 @@ unsafe extern "C" fn glGetUniformfv(program: GLuint, location: GLint, params: *m
     with_ctx(|mut state| unsafe { state.oxidegl_get_uniformfv(program, location, params) });
 }
 #[no_mangle]
-unsafe extern "C" fn glGetUniformiv(program: GLuint, location: GLint, params: *mut GLint) {
+pub unsafe extern "C" fn glGetUniformiv(program: GLuint, location: GLint, params: *mut GLint) {
     ::log::trace!(
         "glGetUniformiv called, parameters: program: {:?}, location: {:?}, params: {:?} ",
         program,
@@ -3986,7 +4041,7 @@ unsafe extern "C" fn glGetUniformiv(program: GLuint, location: GLint, params: *m
     with_ctx(|mut state| unsafe { state.oxidegl_get_uniformiv(program, location, params) });
 }
 #[no_mangle]
-unsafe extern "C" fn glGetUniformuiv(program: GLuint, location: GLint, params: *mut GLuint) {
+pub unsafe extern "C" fn glGetUniformuiv(program: GLuint, location: GLint, params: *mut GLuint) {
     ::log::trace!(
         "glGetUniformuiv called, parameters: program: {:?}, location: {:?}, params: {:?} ",
         program,
@@ -3996,7 +4051,7 @@ unsafe extern "C" fn glGetUniformuiv(program: GLuint, location: GLint, params: *
     with_ctx(|mut state| unsafe { state.oxidegl_get_uniformuiv(program, location, params) });
 }
 #[no_mangle]
-unsafe extern "C" fn glGetUniformdv(program: GLuint, location: GLint, params: *mut GLdouble) {
+pub unsafe extern "C" fn glGetUniformdv(program: GLuint, location: GLint, params: *mut GLdouble) {
     ::log::trace!(
         "glGetUniformdv called, parameters: program: {:?}, location: {:?}, params: {:?} ",
         program,
@@ -4006,7 +4061,7 @@ unsafe extern "C" fn glGetUniformdv(program: GLuint, location: GLint, params: *m
     with_ctx(|mut state| unsafe { state.oxidegl_get_uniformdv(program, location, params) });
 }
 #[no_mangle]
-unsafe extern "C" fn glGetnUniformdv(
+pub unsafe extern "C" fn glGetnUniformdv(
     program: GLuint,
     location: GLint,
     bufSize: GLsizei,
@@ -4018,7 +4073,7 @@ unsafe extern "C" fn glGetnUniformdv(
     });
 }
 #[no_mangle]
-unsafe extern "C" fn glGetnUniformfv(
+pub unsafe extern "C" fn glGetnUniformfv(
     program: GLuint,
     location: GLint,
     bufSize: GLsizei,
@@ -4030,7 +4085,7 @@ unsafe extern "C" fn glGetnUniformfv(
     });
 }
 #[no_mangle]
-unsafe extern "C" fn glGetnUniformiv(
+pub unsafe extern "C" fn glGetnUniformiv(
     program: GLuint,
     location: GLint,
     bufSize: GLsizei,
@@ -4042,7 +4097,7 @@ unsafe extern "C" fn glGetnUniformiv(
     });
 }
 #[no_mangle]
-unsafe extern "C" fn glGetnUniformuiv(
+pub unsafe extern "C" fn glGetnUniformuiv(
     program: GLuint,
     location: GLint,
     bufSize: GLsizei,
@@ -4054,7 +4109,7 @@ unsafe extern "C" fn glGetnUniformuiv(
     });
 }
 #[no_mangle]
-unsafe extern "C" fn glGetUniformBlockIndex(
+pub unsafe extern "C" fn glGetUniformBlockIndex(
     program: GLuint,
     uniformBlockName: *const GLchar,
 ) -> GLuint {
@@ -4068,7 +4123,7 @@ unsafe extern "C" fn glGetUniformBlockIndex(
     })
 }
 #[no_mangle]
-unsafe extern "C" fn glGetUniformIndices(
+pub unsafe extern "C" fn glGetUniformIndices(
     program: GLuint,
     uniformCount: GLsizei,
     uniformNames: GLchar,
@@ -4080,7 +4135,7 @@ unsafe extern "C" fn glGetUniformIndices(
     });
 }
 #[no_mangle]
-unsafe extern "C" fn glGetUniformLocation(program: GLuint, name: *const GLchar) -> GLint {
+pub unsafe extern "C" fn glGetUniformLocation(program: GLuint, name: *const GLchar) -> GLint {
     ::log::trace!(
         "glGetUniformLocation called, parameters: program: {:?}, name: {:?} ",
         program,
@@ -4089,7 +4144,7 @@ unsafe extern "C" fn glGetUniformLocation(program: GLuint, name: *const GLchar) 
     with_ctx(|mut state| unsafe { state.oxidegl_get_uniform_location(program, name) })
 }
 #[no_mangle]
-unsafe extern "C" fn glGetUniformSubroutineuiv(
+pub unsafe extern "C" fn glGetUniformSubroutineuiv(
     shadertype: GLenum,
     location: GLint,
     params: *mut GLuint,
@@ -4100,7 +4155,7 @@ unsafe extern "C" fn glGetUniformSubroutineuiv(
     });
 }
 #[no_mangle]
-unsafe extern "C" fn glGetVertexArrayIndexediv(
+pub unsafe extern "C" fn glGetVertexArrayIndexediv(
     vaobj: GLuint,
     index: GLuint,
     pname: GLenum,
@@ -4112,7 +4167,7 @@ unsafe extern "C" fn glGetVertexArrayIndexediv(
     });
 }
 #[no_mangle]
-unsafe extern "C" fn glGetVertexArrayIndexed64iv(
+pub unsafe extern "C" fn glGetVertexArrayIndexed64iv(
     vaobj: GLuint,
     index: GLuint,
     pname: GLenum,
@@ -4124,7 +4179,7 @@ unsafe extern "C" fn glGetVertexArrayIndexed64iv(
     });
 }
 #[no_mangle]
-unsafe extern "C" fn glGetVertexArrayiv(vaobj: GLuint, pname: GLenum, param: *mut GLint) {
+pub unsafe extern "C" fn glGetVertexArrayiv(vaobj: GLuint, pname: GLenum, param: *mut GLint) {
     ::log::trace!(
         "glGetVertexArrayiv called, parameters: vaobj: {:?}, pname: {:?}, param: {:?} ",
         vaobj,
@@ -4136,7 +4191,7 @@ unsafe extern "C" fn glGetVertexArrayiv(vaobj: GLuint, pname: GLenum, param: *mu
     });
 }
 #[no_mangle]
-unsafe extern "C" fn glGetVertexAttribdv(index: GLuint, pname: GLenum, params: *mut GLdouble) {
+pub unsafe extern "C" fn glGetVertexAttribdv(index: GLuint, pname: GLenum, params: *mut GLdouble) {
     ::log::trace!(
         "glGetVertexAttribdv called, parameters: index: {:?}, pname: {:?}, params: {:?} ",
         index,
@@ -4146,7 +4201,7 @@ unsafe extern "C" fn glGetVertexAttribdv(index: GLuint, pname: GLenum, params: *
     with_ctx(|mut state| unsafe { state.oxidegl_get_vertex_attribdv(index, pname, params) });
 }
 #[no_mangle]
-unsafe extern "C" fn glGetVertexAttribfv(index: GLuint, pname: GLenum, params: *mut GLfloat) {
+pub unsafe extern "C" fn glGetVertexAttribfv(index: GLuint, pname: GLenum, params: *mut GLfloat) {
     ::log::trace!(
         "glGetVertexAttribfv called, parameters: index: {:?}, pname: {:?}, params: {:?} ",
         index,
@@ -4156,7 +4211,7 @@ unsafe extern "C" fn glGetVertexAttribfv(index: GLuint, pname: GLenum, params: *
     with_ctx(|mut state| unsafe { state.oxidegl_get_vertex_attribfv(index, pname, params) });
 }
 #[no_mangle]
-unsafe extern "C" fn glGetVertexAttribiv(index: GLuint, pname: GLenum, params: *mut GLint) {
+pub unsafe extern "C" fn glGetVertexAttribiv(index: GLuint, pname: GLenum, params: *mut GLint) {
     ::log::trace!(
         "glGetVertexAttribiv called, parameters: index: {:?}, pname: {:?}, params: {:?} ",
         index,
@@ -4166,7 +4221,7 @@ unsafe extern "C" fn glGetVertexAttribiv(index: GLuint, pname: GLenum, params: *
     with_ctx(|mut state| unsafe { state.oxidegl_get_vertex_attribiv(index, pname, params) });
 }
 #[no_mangle]
-unsafe extern "C" fn glGetVertexAttribIiv(index: GLuint, pname: GLenum, params: *mut GLint) {
+pub unsafe extern "C" fn glGetVertexAttribIiv(index: GLuint, pname: GLenum, params: *mut GLint) {
     ::log::trace!(
         "glGetVertexAttribIiv called, parameters: index: {:?}, pname: {:?}, params: {:?} ",
         index,
@@ -4178,7 +4233,7 @@ unsafe extern "C" fn glGetVertexAttribIiv(index: GLuint, pname: GLenum, params: 
     });
 }
 #[no_mangle]
-unsafe extern "C" fn glGetVertexAttribIuiv(index: GLuint, pname: GLenum, params: *mut GLuint) {
+pub unsafe extern "C" fn glGetVertexAttribIuiv(index: GLuint, pname: GLenum, params: *mut GLuint) {
     ::log::trace!(
         "glGetVertexAttribIuiv called, parameters: index: {:?}, pname: {:?}, params: {:?} ",
         index,
@@ -4190,7 +4245,7 @@ unsafe extern "C" fn glGetVertexAttribIuiv(index: GLuint, pname: GLenum, params:
     });
 }
 #[no_mangle]
-unsafe extern "C" fn glGetVertexAttribLdv(index: GLuint, pname: GLenum, params: *mut GLdouble) {
+pub unsafe extern "C" fn glGetVertexAttribLdv(index: GLuint, pname: GLenum, params: *mut GLdouble) {
     ::log::trace!(
         "glGetVertexAttribLdv called, parameters: index: {:?}, pname: {:?}, params: {:?} ",
         index,
@@ -4202,7 +4257,7 @@ unsafe extern "C" fn glGetVertexAttribLdv(index: GLuint, pname: GLenum, params: 
     });
 }
 #[no_mangle]
-unsafe extern "C" fn glGetVertexAttribPointerv(
+pub unsafe extern "C" fn glGetVertexAttribPointerv(
     index: GLuint,
     pname: GLenum,
     pointer: *mut *mut GLvoid,
@@ -4218,7 +4273,7 @@ unsafe extern "C" fn glGetVertexAttribPointerv(
     });
 }
 #[no_mangle]
-unsafe extern "C" fn glHint(target: GLenum, mode: GLenum) {
+pub unsafe extern "C" fn glHint(target: GLenum, mode: GLenum) {
     ::log::trace!(
         "glHint called, parameters: target: {:?}, mode: {:?} ",
         target,
@@ -4229,7 +4284,7 @@ unsafe extern "C" fn glHint(target: GLenum, mode: GLenum) {
     });
 }
 #[no_mangle]
-unsafe extern "C" fn glInvalidateBufferData(buffer: GLuint) {
+pub unsafe extern "C" fn glInvalidateBufferData(buffer: GLuint) {
     ::log::trace!(
         "glInvalidateBufferData called, parameters: buffer: {:?} ",
         buffer
@@ -4237,7 +4292,7 @@ unsafe extern "C" fn glInvalidateBufferData(buffer: GLuint) {
     with_ctx(|mut state| state.oxidegl_invalidate_buffer_data(buffer));
 }
 #[no_mangle]
-unsafe extern "C" fn glInvalidateBufferSubData(
+pub unsafe extern "C" fn glInvalidateBufferSubData(
     buffer: GLuint,
     offset: GLintptr,
     length: GLsizeiptr,
@@ -4251,7 +4306,7 @@ unsafe extern "C" fn glInvalidateBufferSubData(
     with_ctx(|mut state| state.oxidegl_invalidate_buffer_sub_data(buffer, offset, length));
 }
 #[no_mangle]
-unsafe extern "C" fn glInvalidateFramebuffer(
+pub unsafe extern "C" fn glInvalidateFramebuffer(
     target: GLenum,
     numAttachments: GLsizei,
     attachments: GLenum,
@@ -4266,7 +4321,7 @@ unsafe extern "C" fn glInvalidateFramebuffer(
     });
 }
 #[no_mangle]
-unsafe extern "C" fn glInvalidateNamedFramebufferData(
+pub unsafe extern "C" fn glInvalidateNamedFramebufferData(
     framebuffer: GLuint,
     numAttachments: GLsizei,
     attachments: GLenum,
@@ -4279,7 +4334,7 @@ unsafe extern "C" fn glInvalidateNamedFramebufferData(
     });
 }
 #[no_mangle]
-unsafe extern "C" fn glInvalidateSubFramebuffer(
+pub unsafe extern "C" fn glInvalidateSubFramebuffer(
     target: GLenum,
     numAttachments: GLsizei,
     attachments: GLenum,
@@ -4302,7 +4357,7 @@ unsafe extern "C" fn glInvalidateSubFramebuffer(
     });
 }
 #[no_mangle]
-unsafe extern "C" fn glInvalidateNamedFramebufferSubData(
+pub unsafe extern "C" fn glInvalidateNamedFramebufferSubData(
     framebuffer: GLuint,
     numAttachments: GLsizei,
     attachments: GLenum,
@@ -4325,7 +4380,7 @@ unsafe extern "C" fn glInvalidateNamedFramebufferSubData(
     });
 }
 #[no_mangle]
-unsafe extern "C" fn glInvalidateTexImage(texture: GLuint, level: GLint) {
+pub unsafe extern "C" fn glInvalidateTexImage(texture: GLuint, level: GLint) {
     ::log::trace!(
         "glInvalidateTexImage called, parameters: texture: {:?}, level: {:?} ",
         texture,
@@ -4334,7 +4389,7 @@ unsafe extern "C" fn glInvalidateTexImage(texture: GLuint, level: GLint) {
     with_ctx(|mut state| state.oxidegl_invalidate_tex_image(texture, level));
 }
 #[no_mangle]
-unsafe extern "C" fn glInvalidateTexSubImage(
+pub unsafe extern "C" fn glInvalidateTexSubImage(
     texture: GLuint,
     level: GLint,
     xoffset: GLint,
@@ -4352,17 +4407,17 @@ unsafe extern "C" fn glInvalidateTexSubImage(
     });
 }
 #[no_mangle]
-unsafe extern "C" fn glIsBuffer(buffer: GLuint) -> GLboolean {
+pub unsafe extern "C" fn glIsBuffer(buffer: GLuint) -> GLboolean {
     ::log::trace!("glIsBuffer called, parameters: buffer: {:?} ", buffer);
     with_ctx(|mut state| state.oxidegl_is_buffer(buffer))
 }
 #[no_mangle]
-unsafe extern "C" fn glIsEnabled(cap: GLenum) -> GLboolean {
+pub unsafe extern "C" fn glIsEnabled(cap: GLenum) -> GLboolean {
     ::log::trace!("glIsEnabled called, parameters: cap: {:?} ", cap);
     with_ctx(|mut state| state.oxidegl_is_enabled(unsafe { cap.into_enum() }))
 }
 #[no_mangle]
-unsafe extern "C" fn glIsEnabledi(target: GLenum, index: GLuint) -> GLboolean {
+pub unsafe extern "C" fn glIsEnabledi(target: GLenum, index: GLuint) -> GLboolean {
     ::log::trace!(
         "glIsEnabledi called, parameters: target: {:?}, index: {:?} ",
         target,
@@ -4371,7 +4426,7 @@ unsafe extern "C" fn glIsEnabledi(target: GLenum, index: GLuint) -> GLboolean {
     with_ctx(|mut state| state.oxidegl_is_enabledi(unsafe { target.into_enum() }, index))
 }
 #[no_mangle]
-unsafe extern "C" fn glIsFramebuffer(framebuffer: GLuint) -> GLboolean {
+pub unsafe extern "C" fn glIsFramebuffer(framebuffer: GLuint) -> GLboolean {
     ::log::trace!(
         "glIsFramebuffer called, parameters: framebuffer: {:?} ",
         framebuffer
@@ -4379,12 +4434,12 @@ unsafe extern "C" fn glIsFramebuffer(framebuffer: GLuint) -> GLboolean {
     with_ctx(|mut state| state.oxidegl_is_framebuffer(framebuffer))
 }
 #[no_mangle]
-unsafe extern "C" fn glIsProgram(program: GLuint) -> GLboolean {
+pub unsafe extern "C" fn glIsProgram(program: GLuint) -> GLboolean {
     ::log::trace!("glIsProgram called, parameters: program: {:?} ", program);
     with_ctx(|mut state| state.oxidegl_is_program(program))
 }
 #[no_mangle]
-unsafe extern "C" fn glIsProgramPipeline(pipeline: GLuint) -> GLboolean {
+pub unsafe extern "C" fn glIsProgramPipeline(pipeline: GLuint) -> GLboolean {
     ::log::trace!(
         "glIsProgramPipeline called, parameters: pipeline: {:?} ",
         pipeline
@@ -4392,12 +4447,12 @@ unsafe extern "C" fn glIsProgramPipeline(pipeline: GLuint) -> GLboolean {
     with_ctx(|mut state| state.oxidegl_is_program_pipeline(pipeline))
 }
 #[no_mangle]
-unsafe extern "C" fn glIsQuery(id: GLuint) -> GLboolean {
+pub unsafe extern "C" fn glIsQuery(id: GLuint) -> GLboolean {
     ::log::trace!("glIsQuery called, parameters: id: {:?} ", id);
     with_ctx(|mut state| state.oxidegl_is_query(id))
 }
 #[no_mangle]
-unsafe extern "C" fn glIsRenderbuffer(renderbuffer: GLuint) -> GLboolean {
+pub unsafe extern "C" fn glIsRenderbuffer(renderbuffer: GLuint) -> GLboolean {
     ::log::trace!(
         "glIsRenderbuffer called, parameters: renderbuffer: {:?} ",
         renderbuffer
@@ -4405,52 +4460,52 @@ unsafe extern "C" fn glIsRenderbuffer(renderbuffer: GLuint) -> GLboolean {
     with_ctx(|mut state| state.oxidegl_is_renderbuffer(renderbuffer))
 }
 #[no_mangle]
-unsafe extern "C" fn glIsSampler(sampler: GLuint) -> GLboolean {
+pub unsafe extern "C" fn glIsSampler(sampler: GLuint) -> GLboolean {
     ::log::trace!("glIsSampler called, parameters: sampler: {:?} ", sampler);
     with_ctx(|mut state| state.oxidegl_is_sampler(sampler))
 }
 #[no_mangle]
-unsafe extern "C" fn glIsShader(shader: GLuint) -> GLboolean {
+pub unsafe extern "C" fn glIsShader(shader: GLuint) -> GLboolean {
     ::log::trace!("glIsShader called, parameters: shader: {:?} ", shader);
     with_ctx(|mut state| state.oxidegl_is_shader(shader))
 }
 #[no_mangle]
-unsafe extern "C" fn glIsSync(sync: GLsync) -> GLboolean {
+pub unsafe extern "C" fn glIsSync(sync: GLsync) -> GLboolean {
     ::log::trace!("glIsSync called, parameters: sync: {:?} ", sync);
     with_ctx(|mut state| state.oxidegl_is_sync(sync))
 }
 #[no_mangle]
-unsafe extern "C" fn glIsTexture(texture: GLuint) -> GLboolean {
+pub unsafe extern "C" fn glIsTexture(texture: GLuint) -> GLboolean {
     ::log::trace!("glIsTexture called, parameters: texture: {:?} ", texture);
     with_ctx(|mut state| state.oxidegl_is_texture(texture))
 }
 #[no_mangle]
-unsafe extern "C" fn glIsTransformFeedback(id: GLuint) -> GLboolean {
+pub unsafe extern "C" fn glIsTransformFeedback(id: GLuint) -> GLboolean {
     ::log::trace!("glIsTransformFeedback called, parameters: id: {:?} ", id);
     with_ctx(|mut state| state.oxidegl_is_transform_feedback(id))
 }
 #[no_mangle]
-unsafe extern "C" fn glIsVertexArray(array: GLuint) -> GLboolean {
+pub unsafe extern "C" fn glIsVertexArray(array: GLuint) -> GLboolean {
     ::log::trace!("glIsVertexArray called, parameters: array: {:?} ", array);
     with_ctx(|mut state| state.oxidegl_is_vertex_array(array))
 }
 #[no_mangle]
-unsafe extern "C" fn glLineWidth(width: GLfloat) {
+pub unsafe extern "C" fn glLineWidth(width: GLfloat) {
     ::log::trace!("glLineWidth called, parameters: width: {:?} ", width);
     with_ctx(|mut state| state.oxidegl_line_width(width));
 }
 #[no_mangle]
-unsafe extern "C" fn glLinkProgram(program: GLuint) {
+pub unsafe extern "C" fn glLinkProgram(program: GLuint) {
     ::log::trace!("glLinkProgram called, parameters: program: {:?} ", program);
     with_ctx(|mut state| state.oxidegl_link_program(program));
 }
 #[no_mangle]
-unsafe extern "C" fn glLogicOp(opcode: GLenum) {
+pub unsafe extern "C" fn glLogicOp(opcode: GLenum) {
     ::log::trace!("glLogicOp called, parameters: opcode: {:?} ", opcode);
     with_ctx(|mut state| state.oxidegl_logic_op(unsafe { opcode.into_enum() }));
 }
 #[no_mangle]
-unsafe extern "C" fn glMapBuffer(target: GLenum, access: GLenum) -> *mut GLvoid {
+pub unsafe extern "C" fn glMapBuffer(target: GLenum, access: GLenum) -> *mut GLvoid {
     ::log::trace!(
         "glMapBuffer called, parameters: target: {:?}, access: {:?} ",
         target,
@@ -4459,7 +4514,7 @@ unsafe extern "C" fn glMapBuffer(target: GLenum, access: GLenum) -> *mut GLvoid 
     with_ctx(|mut state| state.oxidegl_map_buffer(target, access))
 }
 #[no_mangle]
-unsafe extern "C" fn glMapNamedBuffer(buffer: GLuint, access: GLenum) -> *mut GLvoid {
+pub unsafe extern "C" fn glMapNamedBuffer(buffer: GLuint, access: GLenum) -> *mut GLvoid {
     ::log::trace!(
         "glMapNamedBuffer called, parameters: buffer: {:?}, access: {:?} ",
         buffer,
@@ -4468,7 +4523,7 @@ unsafe extern "C" fn glMapNamedBuffer(buffer: GLuint, access: GLenum) -> *mut GL
     with_ctx(|mut state| state.oxidegl_map_named_buffer(buffer, access))
 }
 #[no_mangle]
-unsafe extern "C" fn glMapBufferRange(
+pub unsafe extern "C" fn glMapBufferRange(
     target: GLenum,
     offset: GLintptr,
     length: GLsizeiptr,
@@ -4480,7 +4535,7 @@ unsafe extern "C" fn glMapBufferRange(
     })
 }
 #[no_mangle]
-unsafe extern "C" fn glMapNamedBufferRange(
+pub unsafe extern "C" fn glMapNamedBufferRange(
     buffer: GLuint,
     offset: GLintptr,
     length: GLsizeiptr,
@@ -4492,7 +4547,7 @@ unsafe extern "C" fn glMapNamedBufferRange(
     })
 }
 #[no_mangle]
-unsafe extern "C" fn glMemoryBarrier(barriers: GLenum) {
+pub unsafe extern "C" fn glMemoryBarrier(barriers: GLenum) {
     ::log::trace!(
         "glMemoryBarrier called, parameters: barriers: {:?} ",
         barriers
@@ -4500,7 +4555,7 @@ unsafe extern "C" fn glMemoryBarrier(barriers: GLenum) {
     with_ctx(|mut state| state.oxidegl_memory_barrier(unsafe { barriers.into_enum() }));
 }
 #[no_mangle]
-unsafe extern "C" fn glMemoryBarrierByRegion(barriers: GLenum) {
+pub unsafe extern "C" fn glMemoryBarrierByRegion(barriers: GLenum) {
     ::log::trace!(
         "glMemoryBarrierByRegion called, parameters: barriers: {:?} ",
         barriers
@@ -4508,12 +4563,12 @@ unsafe extern "C" fn glMemoryBarrierByRegion(barriers: GLenum) {
     with_ctx(|mut state| state.oxidegl_memory_barrier_by_region(unsafe { barriers.into_enum() }));
 }
 #[no_mangle]
-unsafe extern "C" fn glMinSampleShading(value: GLfloat) {
+pub unsafe extern "C" fn glMinSampleShading(value: GLfloat) {
     ::log::trace!("glMinSampleShading called, parameters: value: {:?} ", value);
     with_ctx(|mut state| state.oxidegl_min_sample_shading(value));
 }
 #[no_mangle]
-unsafe extern "C" fn glMultiDrawArrays(
+pub unsafe extern "C" fn glMultiDrawArrays(
     mode: GLenum,
     first: *const GLint,
     count: *const GLsizei,
@@ -4525,7 +4580,7 @@ unsafe extern "C" fn glMultiDrawArrays(
     });
 }
 #[no_mangle]
-unsafe extern "C" fn glMultiDrawArraysIndirect(
+pub unsafe extern "C" fn glMultiDrawArraysIndirect(
     mode: GLenum,
     indirect: *const GLvoid,
     drawcount: GLsizei,
@@ -4537,7 +4592,7 @@ unsafe extern "C" fn glMultiDrawArraysIndirect(
     });
 }
 #[no_mangle]
-unsafe extern "C" fn glMultiDrawElements(
+pub unsafe extern "C" fn glMultiDrawElements(
     mode: GLenum,
     count: *const GLsizei,
     r#type: GLenum,
@@ -4556,7 +4611,7 @@ unsafe extern "C" fn glMultiDrawElements(
     });
 }
 #[no_mangle]
-unsafe extern "C" fn glMultiDrawElementsBaseVertex(
+pub unsafe extern "C" fn glMultiDrawElementsBaseVertex(
     mode: GLenum,
     count: *const GLsizei,
     r#type: GLenum,
@@ -4577,7 +4632,7 @@ unsafe extern "C" fn glMultiDrawElementsBaseVertex(
     });
 }
 #[no_mangle]
-unsafe extern "C" fn glMultiDrawElementsIndirect(
+pub unsafe extern "C" fn glMultiDrawElementsIndirect(
     mode: GLenum,
     r#type: GLenum,
     indirect: *const GLvoid,
@@ -4596,7 +4651,7 @@ unsafe extern "C" fn glMultiDrawElementsIndirect(
     });
 }
 #[no_mangle]
-unsafe extern "C" fn glObjectLabel(
+pub unsafe extern "C" fn glObjectLabel(
     identifier: GLenum,
     name: GLuint,
     length: GLsizei,
@@ -4608,7 +4663,11 @@ unsafe extern "C" fn glObjectLabel(
     });
 }
 #[no_mangle]
-unsafe extern "C" fn glObjectPtrLabel(ptr: *const GLvoid, length: GLsizei, label: *const GLchar) {
+pub unsafe extern "C" fn glObjectPtrLabel(
+    ptr: *const GLvoid,
+    length: GLsizei,
+    label: *const GLchar,
+) {
     ::log::trace!(
         "glObjectPtrLabel called, parameters: ptr: {:?}, length: {:?}, label: {:?} ",
         ptr,
@@ -4618,7 +4677,7 @@ unsafe extern "C" fn glObjectPtrLabel(ptr: *const GLvoid, length: GLsizei, label
     with_ctx(|mut state| unsafe { state.oxidegl_object_ptr_label(ptr, length, label) });
 }
 #[no_mangle]
-unsafe extern "C" fn glPatchParameteri(pname: GLenum, value: GLint) {
+pub unsafe extern "C" fn glPatchParameteri(pname: GLenum, value: GLint) {
     ::log::trace!(
         "glPatchParameteri called, parameters: pname: {:?}, value: {:?} ",
         pname,
@@ -4627,7 +4686,7 @@ unsafe extern "C" fn glPatchParameteri(pname: GLenum, value: GLint) {
     with_ctx(|mut state| state.oxidegl_patch_parameteri(unsafe { pname.into_enum() }, value));
 }
 #[no_mangle]
-unsafe extern "C" fn glPatchParameterfv(pname: GLenum, values: *const GLfloat) {
+pub unsafe extern "C" fn glPatchParameterfv(pname: GLenum, values: *const GLfloat) {
     ::log::trace!(
         "glPatchParameterfv called, parameters: pname: {:?}, values: {:?} ",
         pname,
@@ -4636,12 +4695,12 @@ unsafe extern "C" fn glPatchParameterfv(pname: GLenum, values: *const GLfloat) {
     with_ctx(|mut state| unsafe { state.oxidegl_patch_parameterfv(pname.into_enum(), values) });
 }
 #[no_mangle]
-unsafe extern "C" fn glPauseTransformFeedback() {
+pub unsafe extern "C" fn glPauseTransformFeedback() {
     ::log::trace!("glPauseTransformFeedback called, parameters:  ",);
     with_ctx(|mut state| state.oxidegl_pause_transform_feedback());
 }
 #[no_mangle]
-unsafe extern "C" fn glPixelStoref(pname: GLenum, param: GLfloat) {
+pub unsafe extern "C" fn glPixelStoref(pname: GLenum, param: GLfloat) {
     ::log::trace!(
         "glPixelStoref called, parameters: pname: {:?}, param: {:?} ",
         pname,
@@ -4650,7 +4709,7 @@ unsafe extern "C" fn glPixelStoref(pname: GLenum, param: GLfloat) {
     with_ctx(|mut state| state.oxidegl_pixel_storef(unsafe { pname.into_enum() }, param));
 }
 #[no_mangle]
-unsafe extern "C" fn glPixelStorei(pname: GLenum, param: GLint) {
+pub unsafe extern "C" fn glPixelStorei(pname: GLenum, param: GLint) {
     ::log::trace!(
         "glPixelStorei called, parameters: pname: {:?}, param: {:?} ",
         pname,
@@ -4659,7 +4718,7 @@ unsafe extern "C" fn glPixelStorei(pname: GLenum, param: GLint) {
     with_ctx(|mut state| state.oxidegl_pixel_storei(unsafe { pname.into_enum() }, param));
 }
 #[no_mangle]
-unsafe extern "C" fn glPointParameterf(pname: GLenum, param: GLfloat) {
+pub unsafe extern "C" fn glPointParameterf(pname: GLenum, param: GLfloat) {
     ::log::trace!(
         "glPointParameterf called, parameters: pname: {:?}, param: {:?} ",
         pname,
@@ -4668,7 +4727,7 @@ unsafe extern "C" fn glPointParameterf(pname: GLenum, param: GLfloat) {
     with_ctx(|mut state| state.oxidegl_point_parameterf(pname, param));
 }
 #[no_mangle]
-unsafe extern "C" fn glPointParameterfv(pname: GLenum, params: *const GLfloat) {
+pub unsafe extern "C" fn glPointParameterfv(pname: GLenum, params: *const GLfloat) {
     ::log::trace!(
         "glPointParameterfv called, parameters: pname: {:?}, params: {:?} ",
         pname,
@@ -4677,7 +4736,7 @@ unsafe extern "C" fn glPointParameterfv(pname: GLenum, params: *const GLfloat) {
     with_ctx(|mut state| unsafe { state.oxidegl_point_parameterfv(pname, params) });
 }
 #[no_mangle]
-unsafe extern "C" fn glPointParameteri(pname: GLenum, param: GLint) {
+pub unsafe extern "C" fn glPointParameteri(pname: GLenum, param: GLint) {
     ::log::trace!(
         "glPointParameteri called, parameters: pname: {:?}, param: {:?} ",
         pname,
@@ -4686,7 +4745,7 @@ unsafe extern "C" fn glPointParameteri(pname: GLenum, param: GLint) {
     with_ctx(|mut state| state.oxidegl_point_parameteri(pname, param));
 }
 #[no_mangle]
-unsafe extern "C" fn glPointParameteriv(pname: GLenum, params: *const GLint) {
+pub unsafe extern "C" fn glPointParameteriv(pname: GLenum, params: *const GLint) {
     ::log::trace!(
         "glPointParameteriv called, parameters: pname: {:?}, params: {:?} ",
         pname,
@@ -4695,12 +4754,12 @@ unsafe extern "C" fn glPointParameteriv(pname: GLenum, params: *const GLint) {
     with_ctx(|mut state| unsafe { state.oxidegl_point_parameteriv(pname, params) });
 }
 #[no_mangle]
-unsafe extern "C" fn glPointSize(size: GLfloat) {
+pub unsafe extern "C" fn glPointSize(size: GLfloat) {
     ::log::trace!("glPointSize called, parameters: size: {:?} ", size);
     with_ctx(|mut state| state.oxidegl_point_size(size));
 }
 #[no_mangle]
-unsafe extern "C" fn glPolygonMode(face: GLenum, mode: GLenum) {
+pub unsafe extern "C" fn glPolygonMode(face: GLenum, mode: GLenum) {
     ::log::trace!(
         "glPolygonMode called, parameters: face: {:?}, mode: {:?} ",
         face,
@@ -4711,7 +4770,7 @@ unsafe extern "C" fn glPolygonMode(face: GLenum, mode: GLenum) {
     });
 }
 #[no_mangle]
-unsafe extern "C" fn glPolygonOffset(factor: GLfloat, units: GLfloat) {
+pub unsafe extern "C" fn glPolygonOffset(factor: GLfloat, units: GLfloat) {
     ::log::trace!(
         "glPolygonOffset called, parameters: factor: {:?}, units: {:?} ",
         factor,
@@ -4720,12 +4779,12 @@ unsafe extern "C" fn glPolygonOffset(factor: GLfloat, units: GLfloat) {
     with_ctx(|mut state| state.oxidegl_polygon_offset(factor, units));
 }
 #[no_mangle]
-unsafe extern "C" fn glPopDebugGroup() {
+pub unsafe extern "C" fn glPopDebugGroup() {
     ::log::trace!("glPopDebugGroup called, parameters:  ",);
     with_ctx(|mut state| state.oxidegl_pop_debug_group());
 }
 #[no_mangle]
-unsafe extern "C" fn glPrimitiveRestartIndex(index: GLuint) {
+pub unsafe extern "C" fn glPrimitiveRestartIndex(index: GLuint) {
     ::log::trace!(
         "glPrimitiveRestartIndex called, parameters: index: {:?} ",
         index
@@ -4733,7 +4792,7 @@ unsafe extern "C" fn glPrimitiveRestartIndex(index: GLuint) {
     with_ctx(|mut state| state.oxidegl_primitive_restart_index(index));
 }
 #[no_mangle]
-unsafe extern "C" fn glProgramBinary(
+pub unsafe extern "C" fn glProgramBinary(
     program: GLuint,
     binaryFormat: GLenum,
     binary: *const GLvoid,
@@ -4745,7 +4804,7 @@ unsafe extern "C" fn glProgramBinary(
     });
 }
 #[no_mangle]
-unsafe extern "C" fn glProgramParameteri(program: GLuint, pname: GLenum, value: GLint) {
+pub unsafe extern "C" fn glProgramParameteri(program: GLuint, pname: GLenum, value: GLint) {
     ::log::trace!(
         "glProgramParameteri called, parameters: program: {:?}, pname: {:?}, value: {:?} ",
         program,
@@ -4757,7 +4816,7 @@ unsafe extern "C" fn glProgramParameteri(program: GLuint, pname: GLenum, value: 
     });
 }
 #[no_mangle]
-unsafe extern "C" fn glProgramUniform1i(program: GLuint, location: GLint, v0: GLint) {
+pub unsafe extern "C" fn glProgramUniform1i(program: GLuint, location: GLint, v0: GLint) {
     ::log::trace!(
         "glProgramUniform1i called, parameters: program: {:?}, location: {:?}, v0: {:?} ",
         program,
@@ -4767,7 +4826,7 @@ unsafe extern "C" fn glProgramUniform1i(program: GLuint, location: GLint, v0: GL
     with_ctx(|mut state| state.oxidegl_program_uniform1i(program, location, v0));
 }
 #[no_mangle]
-unsafe extern "C" fn glProgramUniform1iv(
+pub unsafe extern "C" fn glProgramUniform1iv(
     program: GLuint,
     location: GLint,
     count: GLsizei,
@@ -4779,7 +4838,7 @@ unsafe extern "C" fn glProgramUniform1iv(
     });
 }
 #[no_mangle]
-unsafe extern "C" fn glProgramUniform1f(program: GLuint, location: GLint, v0: GLfloat) {
+pub unsafe extern "C" fn glProgramUniform1f(program: GLuint, location: GLint, v0: GLfloat) {
     ::log::trace!(
         "glProgramUniform1f called, parameters: program: {:?}, location: {:?}, v0: {:?} ",
         program,
@@ -4789,7 +4848,7 @@ unsafe extern "C" fn glProgramUniform1f(program: GLuint, location: GLint, v0: GL
     with_ctx(|mut state| state.oxidegl_program_uniform1f(program, location, v0));
 }
 #[no_mangle]
-unsafe extern "C" fn glProgramUniform1fv(
+pub unsafe extern "C" fn glProgramUniform1fv(
     program: GLuint,
     location: GLint,
     count: GLsizei,
@@ -4801,7 +4860,7 @@ unsafe extern "C" fn glProgramUniform1fv(
     });
 }
 #[no_mangle]
-unsafe extern "C" fn glProgramUniform1ui(program: GLuint, location: GLint, v0: GLuint) {
+pub unsafe extern "C" fn glProgramUniform1ui(program: GLuint, location: GLint, v0: GLuint) {
     ::log::trace!(
         "glProgramUniform1ui called, parameters: program: {:?}, location: {:?}, v0: {:?} ",
         program,
@@ -4811,7 +4870,7 @@ unsafe extern "C" fn glProgramUniform1ui(program: GLuint, location: GLint, v0: G
     with_ctx(|mut state| state.oxidegl_program_uniform1ui(program, location, v0));
 }
 #[no_mangle]
-unsafe extern "C" fn glProgramUniform1uiv(
+pub unsafe extern "C" fn glProgramUniform1uiv(
     program: GLuint,
     location: GLint,
     count: GLsizei,
@@ -4823,7 +4882,12 @@ unsafe extern "C" fn glProgramUniform1uiv(
     });
 }
 #[no_mangle]
-unsafe extern "C" fn glProgramUniform2i(program: GLuint, location: GLint, v0: GLint, v1: GLint) {
+pub unsafe extern "C" fn glProgramUniform2i(
+    program: GLuint,
+    location: GLint,
+    v0: GLint,
+    v1: GLint,
+) {
     ::log::trace!(
         "glProgramUniform2i called, parameters: program: {:?}, location: {:?}, v0: {:?}, v1: {:?} ",
         program,
@@ -4834,7 +4898,7 @@ unsafe extern "C" fn glProgramUniform2i(program: GLuint, location: GLint, v0: GL
     with_ctx(|mut state| state.oxidegl_program_uniform2i(program, location, v0, v1));
 }
 #[no_mangle]
-unsafe extern "C" fn glProgramUniform2iv(
+pub unsafe extern "C" fn glProgramUniform2iv(
     program: GLuint,
     location: GLint,
     count: GLsizei,
@@ -4846,7 +4910,7 @@ unsafe extern "C" fn glProgramUniform2iv(
     });
 }
 #[no_mangle]
-unsafe extern "C" fn glProgramUniform2f(
+pub unsafe extern "C" fn glProgramUniform2f(
     program: GLuint,
     location: GLint,
     v0: GLfloat,
@@ -4862,7 +4926,7 @@ unsafe extern "C" fn glProgramUniform2f(
     with_ctx(|mut state| state.oxidegl_program_uniform2f(program, location, v0, v1));
 }
 #[no_mangle]
-unsafe extern "C" fn glProgramUniform2fv(
+pub unsafe extern "C" fn glProgramUniform2fv(
     program: GLuint,
     location: GLint,
     count: GLsizei,
@@ -4874,12 +4938,17 @@ unsafe extern "C" fn glProgramUniform2fv(
     });
 }
 #[no_mangle]
-unsafe extern "C" fn glProgramUniform2ui(program: GLuint, location: GLint, v0: GLuint, v1: GLuint) {
+pub unsafe extern "C" fn glProgramUniform2ui(
+    program: GLuint,
+    location: GLint,
+    v0: GLuint,
+    v1: GLuint,
+) {
     ::log::trace!("glProgramUniform2ui called, parameters: program: {:?}, location: {:?}, v0: {:?}, v1: {:?} ", program, location, v0, v1);
     with_ctx(|mut state| state.oxidegl_program_uniform2ui(program, location, v0, v1));
 }
 #[no_mangle]
-unsafe extern "C" fn glProgramUniform2uiv(
+pub unsafe extern "C" fn glProgramUniform2uiv(
     program: GLuint,
     location: GLint,
     count: GLsizei,
@@ -4891,7 +4960,7 @@ unsafe extern "C" fn glProgramUniform2uiv(
     });
 }
 #[no_mangle]
-unsafe extern "C" fn glProgramUniform3i(
+pub unsafe extern "C" fn glProgramUniform3i(
     program: GLuint,
     location: GLint,
     v0: GLint,
@@ -4902,7 +4971,7 @@ unsafe extern "C" fn glProgramUniform3i(
     with_ctx(|mut state| state.oxidegl_program_uniform3i(program, location, v0, v1, v2));
 }
 #[no_mangle]
-unsafe extern "C" fn glProgramUniform3iv(
+pub unsafe extern "C" fn glProgramUniform3iv(
     program: GLuint,
     location: GLint,
     count: GLsizei,
@@ -4914,7 +4983,7 @@ unsafe extern "C" fn glProgramUniform3iv(
     });
 }
 #[no_mangle]
-unsafe extern "C" fn glProgramUniform3f(
+pub unsafe extern "C" fn glProgramUniform3f(
     program: GLuint,
     location: GLint,
     v0: GLfloat,
@@ -4925,7 +4994,7 @@ unsafe extern "C" fn glProgramUniform3f(
     with_ctx(|mut state| state.oxidegl_program_uniform3f(program, location, v0, v1, v2));
 }
 #[no_mangle]
-unsafe extern "C" fn glProgramUniform3fv(
+pub unsafe extern "C" fn glProgramUniform3fv(
     program: GLuint,
     location: GLint,
     count: GLsizei,
@@ -4937,7 +5006,7 @@ unsafe extern "C" fn glProgramUniform3fv(
     });
 }
 #[no_mangle]
-unsafe extern "C" fn glProgramUniform3ui(
+pub unsafe extern "C" fn glProgramUniform3ui(
     program: GLuint,
     location: GLint,
     v0: GLuint,
@@ -4948,7 +5017,7 @@ unsafe extern "C" fn glProgramUniform3ui(
     with_ctx(|mut state| state.oxidegl_program_uniform3ui(program, location, v0, v1, v2));
 }
 #[no_mangle]
-unsafe extern "C" fn glProgramUniform3uiv(
+pub unsafe extern "C" fn glProgramUniform3uiv(
     program: GLuint,
     location: GLint,
     count: GLsizei,
@@ -4960,7 +5029,7 @@ unsafe extern "C" fn glProgramUniform3uiv(
     });
 }
 #[no_mangle]
-unsafe extern "C" fn glProgramUniform4i(
+pub unsafe extern "C" fn glProgramUniform4i(
     program: GLuint,
     location: GLint,
     v0: GLint,
@@ -4972,7 +5041,7 @@ unsafe extern "C" fn glProgramUniform4i(
     with_ctx(|mut state| state.oxidegl_program_uniform4i(program, location, v0, v1, v2, v3));
 }
 #[no_mangle]
-unsafe extern "C" fn glProgramUniform4iv(
+pub unsafe extern "C" fn glProgramUniform4iv(
     program: GLuint,
     location: GLint,
     count: GLsizei,
@@ -4984,7 +5053,7 @@ unsafe extern "C" fn glProgramUniform4iv(
     });
 }
 #[no_mangle]
-unsafe extern "C" fn glProgramUniform4f(
+pub unsafe extern "C" fn glProgramUniform4f(
     program: GLuint,
     location: GLint,
     v0: GLfloat,
@@ -4996,7 +5065,7 @@ unsafe extern "C" fn glProgramUniform4f(
     with_ctx(|mut state| state.oxidegl_program_uniform4f(program, location, v0, v1, v2, v3));
 }
 #[no_mangle]
-unsafe extern "C" fn glProgramUniform4fv(
+pub unsafe extern "C" fn glProgramUniform4fv(
     program: GLuint,
     location: GLint,
     count: GLsizei,
@@ -5008,7 +5077,7 @@ unsafe extern "C" fn glProgramUniform4fv(
     });
 }
 #[no_mangle]
-unsafe extern "C" fn glProgramUniform4ui(
+pub unsafe extern "C" fn glProgramUniform4ui(
     program: GLuint,
     location: GLint,
     v0: GLuint,
@@ -5020,7 +5089,7 @@ unsafe extern "C" fn glProgramUniform4ui(
     with_ctx(|mut state| state.oxidegl_program_uniform4ui(program, location, v0, v1, v2, v3));
 }
 #[no_mangle]
-unsafe extern "C" fn glProgramUniform4uiv(
+pub unsafe extern "C" fn glProgramUniform4uiv(
     program: GLuint,
     location: GLint,
     count: GLsizei,
@@ -5032,7 +5101,7 @@ unsafe extern "C" fn glProgramUniform4uiv(
     });
 }
 #[no_mangle]
-unsafe extern "C" fn glProgramUniformMatrix2fv(
+pub unsafe extern "C" fn glProgramUniformMatrix2fv(
     program: GLuint,
     location: GLint,
     count: GLsizei,
@@ -5045,7 +5114,7 @@ unsafe extern "C" fn glProgramUniformMatrix2fv(
     });
 }
 #[no_mangle]
-unsafe extern "C" fn glProgramUniformMatrix3fv(
+pub unsafe extern "C" fn glProgramUniformMatrix3fv(
     program: GLuint,
     location: GLint,
     count: GLsizei,
@@ -5058,7 +5127,7 @@ unsafe extern "C" fn glProgramUniformMatrix3fv(
     });
 }
 #[no_mangle]
-unsafe extern "C" fn glProgramUniformMatrix4fv(
+pub unsafe extern "C" fn glProgramUniformMatrix4fv(
     program: GLuint,
     location: GLint,
     count: GLsizei,
@@ -5071,7 +5140,7 @@ unsafe extern "C" fn glProgramUniformMatrix4fv(
     });
 }
 #[no_mangle]
-unsafe extern "C" fn glProgramUniformMatrix2x3fv(
+pub unsafe extern "C" fn glProgramUniformMatrix2x3fv(
     program: GLuint,
     location: GLint,
     count: GLsizei,
@@ -5084,7 +5153,7 @@ unsafe extern "C" fn glProgramUniformMatrix2x3fv(
     });
 }
 #[no_mangle]
-unsafe extern "C" fn glProgramUniformMatrix3x2fv(
+pub unsafe extern "C" fn glProgramUniformMatrix3x2fv(
     program: GLuint,
     location: GLint,
     count: GLsizei,
@@ -5097,7 +5166,7 @@ unsafe extern "C" fn glProgramUniformMatrix3x2fv(
     });
 }
 #[no_mangle]
-unsafe extern "C" fn glProgramUniformMatrix2x4fv(
+pub unsafe extern "C" fn glProgramUniformMatrix2x4fv(
     program: GLuint,
     location: GLint,
     count: GLsizei,
@@ -5110,7 +5179,7 @@ unsafe extern "C" fn glProgramUniformMatrix2x4fv(
     });
 }
 #[no_mangle]
-unsafe extern "C" fn glProgramUniformMatrix4x2fv(
+pub unsafe extern "C" fn glProgramUniformMatrix4x2fv(
     program: GLuint,
     location: GLint,
     count: GLsizei,
@@ -5123,7 +5192,7 @@ unsafe extern "C" fn glProgramUniformMatrix4x2fv(
     });
 }
 #[no_mangle]
-unsafe extern "C" fn glProgramUniformMatrix3x4fv(
+pub unsafe extern "C" fn glProgramUniformMatrix3x4fv(
     program: GLuint,
     location: GLint,
     count: GLsizei,
@@ -5136,7 +5205,7 @@ unsafe extern "C" fn glProgramUniformMatrix3x4fv(
     });
 }
 #[no_mangle]
-unsafe extern "C" fn glProgramUniformMatrix4x3fv(
+pub unsafe extern "C" fn glProgramUniformMatrix4x3fv(
     program: GLuint,
     location: GLint,
     count: GLsizei,
@@ -5149,12 +5218,12 @@ unsafe extern "C" fn glProgramUniformMatrix4x3fv(
     });
 }
 #[no_mangle]
-unsafe extern "C" fn glProvokingVertex(mode: GLenum) {
+pub unsafe extern "C" fn glProvokingVertex(mode: GLenum) {
     ::log::trace!("glProvokingVertex called, parameters: mode: {:?} ", mode);
     with_ctx(|mut state| state.oxidegl_provoking_vertex(unsafe { mode.into_enum() }));
 }
 #[no_mangle]
-unsafe extern "C" fn glPushDebugGroup(
+pub unsafe extern "C" fn glPushDebugGroup(
     source: GLenum,
     id: GLuint,
     length: GLsizei,
@@ -5172,7 +5241,7 @@ unsafe extern "C" fn glPushDebugGroup(
     });
 }
 #[no_mangle]
-unsafe extern "C" fn glQueryCounter(id: GLuint, target: GLenum) {
+pub unsafe extern "C" fn glQueryCounter(id: GLuint, target: GLenum) {
     ::log::trace!(
         "glQueryCounter called, parameters: id: {:?}, target: {:?} ",
         id,
@@ -5181,12 +5250,12 @@ unsafe extern "C" fn glQueryCounter(id: GLuint, target: GLenum) {
     with_ctx(|mut state| state.oxidegl_query_counter(id, target));
 }
 #[no_mangle]
-unsafe extern "C" fn glReadBuffer(src: GLenum) {
+pub unsafe extern "C" fn glReadBuffer(src: GLenum) {
     ::log::trace!("glReadBuffer called, parameters: src: {:?} ", src);
     with_ctx(|mut state| state.oxidegl_read_buffer(unsafe { src.into_enum() }));
 }
 #[no_mangle]
-unsafe extern "C" fn glNamedFramebufferReadBuffer(framebuffer: GLuint, src: GLenum) {
+pub unsafe extern "C" fn glNamedFramebufferReadBuffer(framebuffer: GLuint, src: GLenum) {
     ::log::trace!(
         "glNamedFramebufferReadBuffer called, parameters: framebuffer: {:?}, src: {:?} ",
         framebuffer,
@@ -5197,7 +5266,7 @@ unsafe extern "C" fn glNamedFramebufferReadBuffer(framebuffer: GLuint, src: GLen
     });
 }
 #[no_mangle]
-unsafe extern "C" fn glReadPixels(
+pub unsafe extern "C" fn glReadPixels(
     x: GLint,
     y: GLint,
     width: GLsizei,
@@ -5220,7 +5289,7 @@ unsafe extern "C" fn glReadPixels(
     });
 }
 #[no_mangle]
-unsafe extern "C" fn glReadnPixels(
+pub unsafe extern "C" fn glReadnPixels(
     x: GLint,
     y: GLint,
     width: GLsizei,
@@ -5245,12 +5314,12 @@ unsafe extern "C" fn glReadnPixels(
     });
 }
 #[no_mangle]
-unsafe extern "C" fn glReleaseShaderCompiler() {
+pub unsafe extern "C" fn glReleaseShaderCompiler() {
     ::log::trace!("glReleaseShaderCompiler called, parameters:  ",);
     with_ctx(|mut state| state.oxidegl_release_shader_compiler());
 }
 #[no_mangle]
-unsafe extern "C" fn glRenderbufferStorage(
+pub unsafe extern "C" fn glRenderbufferStorage(
     target: GLenum,
     internalformat: GLenum,
     width: GLsizei,
@@ -5267,7 +5336,7 @@ unsafe extern "C" fn glRenderbufferStorage(
     });
 }
 #[no_mangle]
-unsafe extern "C" fn glNamedRenderbufferStorage(
+pub unsafe extern "C" fn glNamedRenderbufferStorage(
     renderbuffer: GLuint,
     internalformat: GLenum,
     width: GLsizei,
@@ -5284,7 +5353,7 @@ unsafe extern "C" fn glNamedRenderbufferStorage(
     });
 }
 #[no_mangle]
-unsafe extern "C" fn glRenderbufferStorageMultisample(
+pub unsafe extern "C" fn glRenderbufferStorageMultisample(
     target: GLenum,
     samples: GLsizei,
     internalformat: GLenum,
@@ -5303,7 +5372,7 @@ unsafe extern "C" fn glRenderbufferStorageMultisample(
     });
 }
 #[no_mangle]
-unsafe extern "C" fn glNamedRenderbufferStorageMultisample(
+pub unsafe extern "C" fn glNamedRenderbufferStorageMultisample(
     renderbuffer: GLuint,
     samples: GLsizei,
     internalformat: GLenum,
@@ -5322,12 +5391,12 @@ unsafe extern "C" fn glNamedRenderbufferStorageMultisample(
     });
 }
 #[no_mangle]
-unsafe extern "C" fn glResumeTransformFeedback() {
+pub unsafe extern "C" fn glResumeTransformFeedback() {
     ::log::trace!("glResumeTransformFeedback called, parameters:  ",);
     with_ctx(|mut state| state.oxidegl_resume_transform_feedback());
 }
 #[no_mangle]
-unsafe extern "C" fn glSampleCoverage(value: GLfloat, invert: GLboolean) {
+pub unsafe extern "C" fn glSampleCoverage(value: GLfloat, invert: GLboolean) {
     ::log::trace!(
         "glSampleCoverage called, parameters: value: {:?}, invert: {:?} ",
         value,
@@ -5336,7 +5405,7 @@ unsafe extern "C" fn glSampleCoverage(value: GLfloat, invert: GLboolean) {
     with_ctx(|mut state| state.oxidegl_sample_coverage(value, invert));
 }
 #[no_mangle]
-unsafe extern "C" fn glSampleMaski(maskNumber: GLuint, mask: GLbitfield) {
+pub unsafe extern "C" fn glSampleMaski(maskNumber: GLuint, mask: GLbitfield) {
     ::log::trace!(
         "glSampleMaski called, parameters: maskNumber: {:?}, mask: {:?} ",
         maskNumber,
@@ -5345,7 +5414,7 @@ unsafe extern "C" fn glSampleMaski(maskNumber: GLuint, mask: GLbitfield) {
     with_ctx(|mut state| state.oxidegl_sample_maski(maskNumber, mask));
 }
 #[no_mangle]
-unsafe extern "C" fn glSamplerParameteri(sampler: GLuint, pname: GLenum, param: GLint) {
+pub unsafe extern "C" fn glSamplerParameteri(sampler: GLuint, pname: GLenum, param: GLint) {
     ::log::trace!(
         "glSamplerParameteri called, parameters: sampler: {:?}, pname: {:?}, param: {:?} ",
         sampler,
@@ -5357,7 +5426,7 @@ unsafe extern "C" fn glSamplerParameteri(sampler: GLuint, pname: GLenum, param: 
     });
 }
 #[no_mangle]
-unsafe extern "C" fn glSamplerParameteriv(sampler: GLuint, pname: GLenum, param: *const GLint) {
+pub unsafe extern "C" fn glSamplerParameteriv(sampler: GLuint, pname: GLenum, param: *const GLint) {
     ::log::trace!(
         "glSamplerParameteriv called, parameters: sampler: {:?}, pname: {:?}, param: {:?} ",
         sampler,
@@ -5369,7 +5438,7 @@ unsafe extern "C" fn glSamplerParameteriv(sampler: GLuint, pname: GLenum, param:
     });
 }
 #[no_mangle]
-unsafe extern "C" fn glSamplerParameterf(sampler: GLuint, pname: GLenum, param: GLfloat) {
+pub unsafe extern "C" fn glSamplerParameterf(sampler: GLuint, pname: GLenum, param: GLfloat) {
     ::log::trace!(
         "glSamplerParameterf called, parameters: sampler: {:?}, pname: {:?}, param: {:?} ",
         sampler,
@@ -5381,7 +5450,11 @@ unsafe extern "C" fn glSamplerParameterf(sampler: GLuint, pname: GLenum, param: 
     });
 }
 #[no_mangle]
-unsafe extern "C" fn glSamplerParameterfv(sampler: GLuint, pname: GLenum, param: *const GLfloat) {
+pub unsafe extern "C" fn glSamplerParameterfv(
+    sampler: GLuint,
+    pname: GLenum,
+    param: *const GLfloat,
+) {
     ::log::trace!(
         "glSamplerParameterfv called, parameters: sampler: {:?}, pname: {:?}, param: {:?} ",
         sampler,
@@ -5393,7 +5466,11 @@ unsafe extern "C" fn glSamplerParameterfv(sampler: GLuint, pname: GLenum, param:
     });
 }
 #[no_mangle]
-unsafe extern "C" fn glSamplerParameterIiv(sampler: GLuint, pname: GLenum, param: *const GLint) {
+pub unsafe extern "C" fn glSamplerParameterIiv(
+    sampler: GLuint,
+    pname: GLenum,
+    param: *const GLint,
+) {
     ::log::trace!(
         "glSamplerParameterIiv called, parameters: sampler: {:?}, pname: {:?}, param: {:?} ",
         sampler,
@@ -5405,7 +5482,11 @@ unsafe extern "C" fn glSamplerParameterIiv(sampler: GLuint, pname: GLenum, param
     });
 }
 #[no_mangle]
-unsafe extern "C" fn glSamplerParameterIuiv(sampler: GLuint, pname: GLenum, param: *const GLuint) {
+pub unsafe extern "C" fn glSamplerParameterIuiv(
+    sampler: GLuint,
+    pname: GLenum,
+    param: *const GLuint,
+) {
     ::log::trace!(
         "glSamplerParameterIuiv called, parameters: sampler: {:?}, pname: {:?}, param: {:?} ",
         sampler,
@@ -5417,7 +5498,7 @@ unsafe extern "C" fn glSamplerParameterIuiv(sampler: GLuint, pname: GLenum, para
     });
 }
 #[no_mangle]
-unsafe extern "C" fn glScissor(x: GLint, y: GLint, width: GLsizei, height: GLsizei) {
+pub unsafe extern "C" fn glScissor(x: GLint, y: GLint, width: GLsizei, height: GLsizei) {
     ::log::trace!(
         "glScissor called, parameters: x: {:?}, y: {:?}, width: {:?}, height: {:?} ",
         x,
@@ -5428,7 +5509,7 @@ unsafe extern "C" fn glScissor(x: GLint, y: GLint, width: GLsizei, height: GLsiz
     with_ctx(|mut state| state.oxidegl_scissor(x, y, width, height));
 }
 #[no_mangle]
-unsafe extern "C" fn glScissorArrayv(first: GLuint, count: GLsizei, v: *const GLint) {
+pub unsafe extern "C" fn glScissorArrayv(first: GLuint, count: GLsizei, v: *const GLint) {
     ::log::trace!(
         "glScissorArrayv called, parameters: first: {:?}, count: {:?}, v: {:?} ",
         first,
@@ -5438,7 +5519,7 @@ unsafe extern "C" fn glScissorArrayv(first: GLuint, count: GLsizei, v: *const GL
     with_ctx(|mut state| unsafe { state.oxidegl_scissor_arrayv(first, count, v) });
 }
 #[no_mangle]
-unsafe extern "C" fn glScissorIndexed(
+pub unsafe extern "C" fn glScissorIndexed(
     index: GLuint,
     left: GLint,
     bottom: GLint,
@@ -5449,7 +5530,7 @@ unsafe extern "C" fn glScissorIndexed(
     with_ctx(|mut state| state.oxidegl_scissor_indexed(index, left, bottom, width, height));
 }
 #[no_mangle]
-unsafe extern "C" fn glScissorIndexedv(index: GLuint, v: *const GLint) {
+pub unsafe extern "C" fn glScissorIndexedv(index: GLuint, v: *const GLint) {
     ::log::trace!(
         "glScissorIndexedv called, parameters: index: {:?}, v: {:?} ",
         index,
@@ -5458,7 +5539,7 @@ unsafe extern "C" fn glScissorIndexedv(index: GLuint, v: *const GLint) {
     with_ctx(|mut state| unsafe { state.oxidegl_scissor_indexedv(index, v) });
 }
 #[no_mangle]
-unsafe extern "C" fn glShaderBinary(
+pub unsafe extern "C" fn glShaderBinary(
     count: GLsizei,
     shaders: *const GLuint,
     binaryFormat: GLenum,
@@ -5471,7 +5552,7 @@ unsafe extern "C" fn glShaderBinary(
     });
 }
 #[no_mangle]
-unsafe extern "C" fn glShaderSource(
+pub unsafe extern "C" fn glShaderSource(
     shader: GLuint,
     count: GLsizei,
     string: GLchar,
@@ -5487,7 +5568,7 @@ unsafe extern "C" fn glShaderSource(
     with_ctx(|mut state| unsafe { state.oxidegl_shader_source(shader, count, string, length) });
 }
 #[no_mangle]
-unsafe extern "C" fn glShaderStorageBlockBinding(
+pub unsafe extern "C" fn glShaderStorageBlockBinding(
     program: GLuint,
     storageBlockIndex: GLuint,
     storageBlockBinding: GLuint,
@@ -5498,7 +5579,7 @@ unsafe extern "C" fn glShaderStorageBlockBinding(
     });
 }
 #[no_mangle]
-unsafe extern "C" fn glStencilFunc(func: GLenum, r#ref: GLint, mask: GLuint) {
+pub unsafe extern "C" fn glStencilFunc(func: GLenum, r#ref: GLint, mask: GLuint) {
     ::log::trace!(
         "glStencilFunc called, parameters: func: {:?}, r#ref: {:?}, mask: {:?} ",
         func,
@@ -5508,7 +5589,12 @@ unsafe extern "C" fn glStencilFunc(func: GLenum, r#ref: GLint, mask: GLuint) {
     with_ctx(|mut state| state.oxidegl_stencil_func(unsafe { func.into_enum() }, r#ref, mask));
 }
 #[no_mangle]
-unsafe extern "C" fn glStencilFuncSeparate(face: GLenum, func: GLenum, r#ref: GLint, mask: GLuint) {
+pub unsafe extern "C" fn glStencilFuncSeparate(
+    face: GLenum,
+    func: GLenum,
+    r#ref: GLint,
+    mask: GLuint,
+) {
     ::log::trace!("glStencilFuncSeparate called, parameters: face: {:?}, func: {:?}, r#ref: {:?}, mask: {:?} ", face, func, r#ref, mask);
     with_ctx(|mut state| {
         state.oxidegl_stencil_func_separate(
@@ -5520,12 +5606,12 @@ unsafe extern "C" fn glStencilFuncSeparate(face: GLenum, func: GLenum, r#ref: GL
     });
 }
 #[no_mangle]
-unsafe extern "C" fn glStencilMask(mask: GLuint) {
+pub unsafe extern "C" fn glStencilMask(mask: GLuint) {
     ::log::trace!("glStencilMask called, parameters: mask: {:?} ", mask);
     with_ctx(|mut state| state.oxidegl_stencil_mask(mask));
 }
 #[no_mangle]
-unsafe extern "C" fn glStencilMaskSeparate(face: GLenum, mask: GLuint) {
+pub unsafe extern "C" fn glStencilMaskSeparate(face: GLenum, mask: GLuint) {
     ::log::trace!(
         "glStencilMaskSeparate called, parameters: face: {:?}, mask: {:?} ",
         face,
@@ -5534,7 +5620,7 @@ unsafe extern "C" fn glStencilMaskSeparate(face: GLenum, mask: GLuint) {
     with_ctx(|mut state| state.oxidegl_stencil_mask_separate(unsafe { face.into_enum() }, mask));
 }
 #[no_mangle]
-unsafe extern "C" fn glStencilOp(fail: GLenum, zfail: GLenum, zpass: GLenum) {
+pub unsafe extern "C" fn glStencilOp(fail: GLenum, zfail: GLenum, zpass: GLenum) {
     ::log::trace!(
         "glStencilOp called, parameters: fail: {:?}, zfail: {:?}, zpass: {:?} ",
         fail,
@@ -5550,7 +5636,7 @@ unsafe extern "C" fn glStencilOp(fail: GLenum, zfail: GLenum, zpass: GLenum) {
     });
 }
 #[no_mangle]
-unsafe extern "C" fn glStencilOpSeparate(
+pub unsafe extern "C" fn glStencilOpSeparate(
     face: GLenum,
     sfail: GLenum,
     dpfail: GLenum,
@@ -5567,7 +5653,7 @@ unsafe extern "C" fn glStencilOpSeparate(
     });
 }
 #[no_mangle]
-unsafe extern "C" fn glTexBuffer(target: GLenum, internalformat: GLenum, buffer: GLuint) {
+pub unsafe extern "C" fn glTexBuffer(target: GLenum, internalformat: GLenum, buffer: GLuint) {
     ::log::trace!(
         "glTexBuffer called, parameters: target: {:?}, internalformat: {:?}, buffer: {:?} ",
         target,
@@ -5583,7 +5669,7 @@ unsafe extern "C" fn glTexBuffer(target: GLenum, internalformat: GLenum, buffer:
     });
 }
 #[no_mangle]
-unsafe extern "C" fn glTextureBuffer(texture: GLuint, internalformat: GLenum, buffer: GLuint) {
+pub unsafe extern "C" fn glTextureBuffer(texture: GLuint, internalformat: GLenum, buffer: GLuint) {
     ::log::trace!(
         "glTextureBuffer called, parameters: texture: {:?}, internalformat: {:?}, buffer: {:?} ",
         texture,
@@ -5595,7 +5681,7 @@ unsafe extern "C" fn glTextureBuffer(texture: GLuint, internalformat: GLenum, bu
     });
 }
 #[no_mangle]
-unsafe extern "C" fn glTexBufferRange(
+pub unsafe extern "C" fn glTexBufferRange(
     target: GLenum,
     internalformat: GLenum,
     buffer: GLuint,
@@ -5614,7 +5700,7 @@ unsafe extern "C" fn glTexBufferRange(
     });
 }
 #[no_mangle]
-unsafe extern "C" fn glTextureBufferRange(
+pub unsafe extern "C" fn glTextureBufferRange(
     texture: GLuint,
     internalformat: GLenum,
     buffer: GLuint,
@@ -5633,7 +5719,7 @@ unsafe extern "C" fn glTextureBufferRange(
     });
 }
 #[no_mangle]
-unsafe extern "C" fn glTexImage1D(
+pub unsafe extern "C" fn glTexImage1D(
     target: GLenum,
     level: GLint,
     internalformat: GLenum,
@@ -5658,7 +5744,7 @@ unsafe extern "C" fn glTexImage1D(
     });
 }
 #[no_mangle]
-unsafe extern "C" fn glTexImage2D(
+pub unsafe extern "C" fn glTexImage2D(
     target: GLenum,
     level: GLint,
     internalformat: GLenum,
@@ -5685,7 +5771,7 @@ unsafe extern "C" fn glTexImage2D(
     });
 }
 #[no_mangle]
-unsafe extern "C" fn glTexImage2DMultisample(
+pub unsafe extern "C" fn glTexImage2DMultisample(
     target: GLenum,
     samples: GLsizei,
     internalformat: GLenum,
@@ -5706,7 +5792,7 @@ unsafe extern "C" fn glTexImage2DMultisample(
     });
 }
 #[no_mangle]
-unsafe extern "C" fn glTexImage3D(
+pub unsafe extern "C" fn glTexImage3D(
     target: GLenum,
     level: GLint,
     internalformat: GLenum,
@@ -5735,7 +5821,7 @@ unsafe extern "C" fn glTexImage3D(
     });
 }
 #[no_mangle]
-unsafe extern "C" fn glTexImage3DMultisample(
+pub unsafe extern "C" fn glTexImage3DMultisample(
     target: GLenum,
     samples: GLsizei,
     internalformat: GLenum,
@@ -5758,7 +5844,7 @@ unsafe extern "C" fn glTexImage3DMultisample(
     });
 }
 #[no_mangle]
-unsafe extern "C" fn glTexParameterf(target: GLenum, pname: GLenum, param: GLfloat) {
+pub unsafe extern "C" fn glTexParameterf(target: GLenum, pname: GLenum, param: GLfloat) {
     ::log::trace!(
         "glTexParameterf called, parameters: target: {:?}, pname: {:?}, param: {:?} ",
         target,
@@ -5774,7 +5860,7 @@ unsafe extern "C" fn glTexParameterf(target: GLenum, pname: GLenum, param: GLflo
     });
 }
 #[no_mangle]
-unsafe extern "C" fn glTexParameterfv(target: GLenum, pname: GLenum, params: *const GLfloat) {
+pub unsafe extern "C" fn glTexParameterfv(target: GLenum, pname: GLenum, params: *const GLfloat) {
     ::log::trace!(
         "glTexParameterfv called, parameters: target: {:?}, pname: {:?}, params: {:?} ",
         target,
@@ -5786,7 +5872,7 @@ unsafe extern "C" fn glTexParameterfv(target: GLenum, pname: GLenum, params: *co
     });
 }
 #[no_mangle]
-unsafe extern "C" fn glTexParameteri(target: GLenum, pname: GLenum, param: GLint) {
+pub unsafe extern "C" fn glTexParameteri(target: GLenum, pname: GLenum, param: GLint) {
     ::log::trace!(
         "glTexParameteri called, parameters: target: {:?}, pname: {:?}, param: {:?} ",
         target,
@@ -5802,7 +5888,7 @@ unsafe extern "C" fn glTexParameteri(target: GLenum, pname: GLenum, param: GLint
     });
 }
 #[no_mangle]
-unsafe extern "C" fn glTexParameteriv(target: GLenum, pname: GLenum, params: *const GLint) {
+pub unsafe extern "C" fn glTexParameteriv(target: GLenum, pname: GLenum, params: *const GLint) {
     ::log::trace!(
         "glTexParameteriv called, parameters: target: {:?}, pname: {:?}, params: {:?} ",
         target,
@@ -5814,7 +5900,7 @@ unsafe extern "C" fn glTexParameteriv(target: GLenum, pname: GLenum, params: *co
     });
 }
 #[no_mangle]
-unsafe extern "C" fn glTexParameterIiv(target: GLenum, pname: GLenum, params: *const GLint) {
+pub unsafe extern "C" fn glTexParameterIiv(target: GLenum, pname: GLenum, params: *const GLint) {
     ::log::trace!(
         "glTexParameterIiv called, parameters: target: {:?}, pname: {:?}, params: {:?} ",
         target,
@@ -5826,7 +5912,7 @@ unsafe extern "C" fn glTexParameterIiv(target: GLenum, pname: GLenum, params: *c
     });
 }
 #[no_mangle]
-unsafe extern "C" fn glTexParameterIuiv(target: GLenum, pname: GLenum, params: *const GLuint) {
+pub unsafe extern "C" fn glTexParameterIuiv(target: GLenum, pname: GLenum, params: *const GLuint) {
     ::log::trace!(
         "glTexParameterIuiv called, parameters: target: {:?}, pname: {:?}, params: {:?} ",
         target,
@@ -5838,7 +5924,7 @@ unsafe extern "C" fn glTexParameterIuiv(target: GLenum, pname: GLenum, params: *
     });
 }
 #[no_mangle]
-unsafe extern "C" fn glTextureParameterf(texture: GLuint, pname: GLenum, param: GLfloat) {
+pub unsafe extern "C" fn glTextureParameterf(texture: GLuint, pname: GLenum, param: GLfloat) {
     ::log::trace!(
         "glTextureParameterf called, parameters: texture: {:?}, pname: {:?}, param: {:?} ",
         texture,
@@ -5850,7 +5936,11 @@ unsafe extern "C" fn glTextureParameterf(texture: GLuint, pname: GLenum, param: 
     });
 }
 #[no_mangle]
-unsafe extern "C" fn glTextureParameterfv(texture: GLuint, pname: GLenum, param: *const GLfloat) {
+pub unsafe extern "C" fn glTextureParameterfv(
+    texture: GLuint,
+    pname: GLenum,
+    param: *const GLfloat,
+) {
     ::log::trace!(
         "glTextureParameterfv called, parameters: texture: {:?}, pname: {:?}, param: {:?} ",
         texture,
@@ -5862,7 +5952,7 @@ unsafe extern "C" fn glTextureParameterfv(texture: GLuint, pname: GLenum, param:
     });
 }
 #[no_mangle]
-unsafe extern "C" fn glTextureParameteri(texture: GLuint, pname: GLenum, param: GLint) {
+pub unsafe extern "C" fn glTextureParameteri(texture: GLuint, pname: GLenum, param: GLint) {
     ::log::trace!(
         "glTextureParameteri called, parameters: texture: {:?}, pname: {:?}, param: {:?} ",
         texture,
@@ -5874,7 +5964,11 @@ unsafe extern "C" fn glTextureParameteri(texture: GLuint, pname: GLenum, param: 
     });
 }
 #[no_mangle]
-unsafe extern "C" fn glTextureParameterIiv(texture: GLuint, pname: GLenum, params: *const GLint) {
+pub unsafe extern "C" fn glTextureParameterIiv(
+    texture: GLuint,
+    pname: GLenum,
+    params: *const GLint,
+) {
     ::log::trace!(
         "glTextureParameterIiv called, parameters: texture: {:?}, pname: {:?}, params: {:?} ",
         texture,
@@ -5886,7 +5980,11 @@ unsafe extern "C" fn glTextureParameterIiv(texture: GLuint, pname: GLenum, param
     });
 }
 #[no_mangle]
-unsafe extern "C" fn glTextureParameterIuiv(texture: GLuint, pname: GLenum, params: *const GLuint) {
+pub unsafe extern "C" fn glTextureParameterIuiv(
+    texture: GLuint,
+    pname: GLenum,
+    params: *const GLuint,
+) {
     ::log::trace!(
         "glTextureParameterIuiv called, parameters: texture: {:?}, pname: {:?}, params: {:?} ",
         texture,
@@ -5898,7 +5996,7 @@ unsafe extern "C" fn glTextureParameterIuiv(texture: GLuint, pname: GLenum, para
     });
 }
 #[no_mangle]
-unsafe extern "C" fn glTextureParameteriv(texture: GLuint, pname: GLenum, param: *const GLint) {
+pub unsafe extern "C" fn glTextureParameteriv(texture: GLuint, pname: GLenum, param: *const GLint) {
     ::log::trace!(
         "glTextureParameteriv called, parameters: texture: {:?}, pname: {:?}, param: {:?} ",
         texture,
@@ -5910,7 +6008,7 @@ unsafe extern "C" fn glTextureParameteriv(texture: GLuint, pname: GLenum, param:
     });
 }
 #[no_mangle]
-unsafe extern "C" fn glTexStorage1D(
+pub unsafe extern "C" fn glTexStorage1D(
     target: GLenum,
     levels: GLsizei,
     internalformat: GLenum,
@@ -5927,7 +6025,7 @@ unsafe extern "C" fn glTexStorage1D(
     });
 }
 #[no_mangle]
-unsafe extern "C" fn glTextureStorage1D(
+pub unsafe extern "C" fn glTextureStorage1D(
     texture: GLuint,
     levels: GLsizei,
     internalformat: GLenum,
@@ -5944,7 +6042,7 @@ unsafe extern "C" fn glTextureStorage1D(
     });
 }
 #[no_mangle]
-unsafe extern "C" fn glTexStorage2D(
+pub unsafe extern "C" fn glTexStorage2D(
     target: GLenum,
     levels: GLsizei,
     internalformat: GLenum,
@@ -5963,7 +6061,7 @@ unsafe extern "C" fn glTexStorage2D(
     });
 }
 #[no_mangle]
-unsafe extern "C" fn glTextureStorage2D(
+pub unsafe extern "C" fn glTextureStorage2D(
     texture: GLuint,
     levels: GLsizei,
     internalformat: GLenum,
@@ -5982,7 +6080,7 @@ unsafe extern "C" fn glTextureStorage2D(
     });
 }
 #[no_mangle]
-unsafe extern "C" fn glTexStorage2DMultisample(
+pub unsafe extern "C" fn glTexStorage2DMultisample(
     target: GLenum,
     samples: GLsizei,
     internalformat: GLenum,
@@ -6003,7 +6101,7 @@ unsafe extern "C" fn glTexStorage2DMultisample(
     });
 }
 #[no_mangle]
-unsafe extern "C" fn glTextureStorage2DMultisample(
+pub unsafe extern "C" fn glTextureStorage2DMultisample(
     texture: GLuint,
     samples: GLsizei,
     internalformat: GLenum,
@@ -6024,7 +6122,7 @@ unsafe extern "C" fn glTextureStorage2DMultisample(
     });
 }
 #[no_mangle]
-unsafe extern "C" fn glTexStorage3D(
+pub unsafe extern "C" fn glTexStorage3D(
     target: GLenum,
     levels: GLsizei,
     internalformat: GLenum,
@@ -6045,7 +6143,7 @@ unsafe extern "C" fn glTexStorage3D(
     });
 }
 #[no_mangle]
-unsafe extern "C" fn glTextureStorage3D(
+pub unsafe extern "C" fn glTextureStorage3D(
     texture: GLuint,
     levels: GLsizei,
     internalformat: GLenum,
@@ -6066,7 +6164,7 @@ unsafe extern "C" fn glTextureStorage3D(
     });
 }
 #[no_mangle]
-unsafe extern "C" fn glTexStorage3DMultisample(
+pub unsafe extern "C" fn glTexStorage3DMultisample(
     target: GLenum,
     samples: GLsizei,
     internalformat: GLenum,
@@ -6089,7 +6187,7 @@ unsafe extern "C" fn glTexStorage3DMultisample(
     });
 }
 #[no_mangle]
-unsafe extern "C" fn glTextureStorage3DMultisample(
+pub unsafe extern "C" fn glTextureStorage3DMultisample(
     texture: GLuint,
     samples: GLsizei,
     internalformat: GLenum,
@@ -6112,7 +6210,7 @@ unsafe extern "C" fn glTextureStorage3DMultisample(
     });
 }
 #[no_mangle]
-unsafe extern "C" fn glTexSubImage1D(
+pub unsafe extern "C" fn glTexSubImage1D(
     target: GLenum,
     level: GLint,
     xoffset: GLint,
@@ -6135,7 +6233,7 @@ unsafe extern "C" fn glTexSubImage1D(
     });
 }
 #[no_mangle]
-unsafe extern "C" fn glTextureSubImage1D(
+pub unsafe extern "C" fn glTextureSubImage1D(
     texture: GLuint,
     level: GLint,
     xoffset: GLint,
@@ -6158,7 +6256,7 @@ unsafe extern "C" fn glTextureSubImage1D(
     });
 }
 #[no_mangle]
-unsafe extern "C" fn glTexSubImage2D(
+pub unsafe extern "C" fn glTexSubImage2D(
     target: GLenum,
     level: GLint,
     xoffset: GLint,
@@ -6185,7 +6283,7 @@ unsafe extern "C" fn glTexSubImage2D(
     });
 }
 #[no_mangle]
-unsafe extern "C" fn glTextureSubImage2D(
+pub unsafe extern "C" fn glTextureSubImage2D(
     texture: GLuint,
     level: GLint,
     xoffset: GLint,
@@ -6212,7 +6310,7 @@ unsafe extern "C" fn glTextureSubImage2D(
     });
 }
 #[no_mangle]
-unsafe extern "C" fn glTexSubImage3D(
+pub unsafe extern "C" fn glTexSubImage3D(
     target: GLenum,
     level: GLint,
     xoffset: GLint,
@@ -6243,7 +6341,7 @@ unsafe extern "C" fn glTexSubImage3D(
     });
 }
 #[no_mangle]
-unsafe extern "C" fn glTextureSubImage3D(
+pub unsafe extern "C" fn glTextureSubImage3D(
     texture: GLuint,
     level: GLint,
     xoffset: GLint,
@@ -6274,12 +6372,12 @@ unsafe extern "C" fn glTextureSubImage3D(
     });
 }
 #[no_mangle]
-unsafe extern "C" fn glTextureBarrier() {
+pub unsafe extern "C" fn glTextureBarrier() {
     ::log::trace!("glTextureBarrier called, parameters:  ",);
     with_ctx(|mut state| state.oxidegl_texture_barrier());
 }
 #[no_mangle]
-unsafe extern "C" fn glTextureView(
+pub unsafe extern "C" fn glTextureView(
     texture: GLuint,
     target: GLenum,
     origtexture: GLuint,
@@ -6304,7 +6402,7 @@ unsafe extern "C" fn glTextureView(
     });
 }
 #[no_mangle]
-unsafe extern "C" fn glTransformFeedbackBufferBase(xfb: GLuint, index: GLuint, buffer: GLuint) {
+pub unsafe extern "C" fn glTransformFeedbackBufferBase(xfb: GLuint, index: GLuint, buffer: GLuint) {
     ::log::trace!(
         "glTransformFeedbackBufferBase called, parameters: xfb: {:?}, index: {:?}, buffer: {:?} ",
         xfb,
@@ -6314,7 +6412,7 @@ unsafe extern "C" fn glTransformFeedbackBufferBase(xfb: GLuint, index: GLuint, b
     with_ctx(|mut state| state.oxidegl_transform_feedback_buffer_base(xfb, index, buffer));
 }
 #[no_mangle]
-unsafe extern "C" fn glTransformFeedbackBufferRange(
+pub unsafe extern "C" fn glTransformFeedbackBufferRange(
     xfb: GLuint,
     index: GLuint,
     buffer: GLuint,
@@ -6327,7 +6425,7 @@ unsafe extern "C" fn glTransformFeedbackBufferRange(
     });
 }
 #[no_mangle]
-unsafe extern "C" fn glTransformFeedbackVaryings(
+pub unsafe extern "C" fn glTransformFeedbackVaryings(
     program: GLuint,
     count: GLsizei,
     varyings: GLchar,
@@ -6341,7 +6439,7 @@ unsafe extern "C" fn glTransformFeedbackVaryings(
     });
 }
 #[no_mangle]
-unsafe extern "C" fn glUniform1f(location: GLint, v0: GLfloat) {
+pub unsafe extern "C" fn glUniform1f(location: GLint, v0: GLfloat) {
     ::log::trace!(
         "glUniform1f called, parameters: location: {:?}, v0: {:?} ",
         location,
@@ -6350,7 +6448,7 @@ unsafe extern "C" fn glUniform1f(location: GLint, v0: GLfloat) {
     with_ctx(|mut state| state.oxidegl_uniform1f(location, v0));
 }
 #[no_mangle]
-unsafe extern "C" fn glUniform2f(location: GLint, v0: GLfloat, v1: GLfloat) {
+pub unsafe extern "C" fn glUniform2f(location: GLint, v0: GLfloat, v1: GLfloat) {
     ::log::trace!(
         "glUniform2f called, parameters: location: {:?}, v0: {:?}, v1: {:?} ",
         location,
@@ -6360,7 +6458,7 @@ unsafe extern "C" fn glUniform2f(location: GLint, v0: GLfloat, v1: GLfloat) {
     with_ctx(|mut state| state.oxidegl_uniform2f(location, v0, v1));
 }
 #[no_mangle]
-unsafe extern "C" fn glUniform3f(location: GLint, v0: GLfloat, v1: GLfloat, v2: GLfloat) {
+pub unsafe extern "C" fn glUniform3f(location: GLint, v0: GLfloat, v1: GLfloat, v2: GLfloat) {
     ::log::trace!(
         "glUniform3f called, parameters: location: {:?}, v0: {:?}, v1: {:?}, v2: {:?} ",
         location,
@@ -6371,7 +6469,7 @@ unsafe extern "C" fn glUniform3f(location: GLint, v0: GLfloat, v1: GLfloat, v2: 
     with_ctx(|mut state| state.oxidegl_uniform3f(location, v0, v1, v2));
 }
 #[no_mangle]
-unsafe extern "C" fn glUniform4f(
+pub unsafe extern "C" fn glUniform4f(
     location: GLint,
     v0: GLfloat,
     v1: GLfloat,
@@ -6389,7 +6487,7 @@ unsafe extern "C" fn glUniform4f(
     with_ctx(|mut state| state.oxidegl_uniform4f(location, v0, v1, v2, v3));
 }
 #[no_mangle]
-unsafe extern "C" fn glUniform1i(location: GLint, v0: GLint) {
+pub unsafe extern "C" fn glUniform1i(location: GLint, v0: GLint) {
     ::log::trace!(
         "glUniform1i called, parameters: location: {:?}, v0: {:?} ",
         location,
@@ -6398,7 +6496,7 @@ unsafe extern "C" fn glUniform1i(location: GLint, v0: GLint) {
     with_ctx(|mut state| state.oxidegl_uniform1i(location, v0));
 }
 #[no_mangle]
-unsafe extern "C" fn glUniform2i(location: GLint, v0: GLint, v1: GLint) {
+pub unsafe extern "C" fn glUniform2i(location: GLint, v0: GLint, v1: GLint) {
     ::log::trace!(
         "glUniform2i called, parameters: location: {:?}, v0: {:?}, v1: {:?} ",
         location,
@@ -6408,7 +6506,7 @@ unsafe extern "C" fn glUniform2i(location: GLint, v0: GLint, v1: GLint) {
     with_ctx(|mut state| state.oxidegl_uniform2i(location, v0, v1));
 }
 #[no_mangle]
-unsafe extern "C" fn glUniform3i(location: GLint, v0: GLint, v1: GLint, v2: GLint) {
+pub unsafe extern "C" fn glUniform3i(location: GLint, v0: GLint, v1: GLint, v2: GLint) {
     ::log::trace!(
         "glUniform3i called, parameters: location: {:?}, v0: {:?}, v1: {:?}, v2: {:?} ",
         location,
@@ -6419,7 +6517,7 @@ unsafe extern "C" fn glUniform3i(location: GLint, v0: GLint, v1: GLint, v2: GLin
     with_ctx(|mut state| state.oxidegl_uniform3i(location, v0, v1, v2));
 }
 #[no_mangle]
-unsafe extern "C" fn glUniform4i(location: GLint, v0: GLint, v1: GLint, v2: GLint, v3: GLint) {
+pub unsafe extern "C" fn glUniform4i(location: GLint, v0: GLint, v1: GLint, v2: GLint, v3: GLint) {
     ::log::trace!(
         "glUniform4i called, parameters: location: {:?}, v0: {:?}, v1: {:?}, v2: {:?}, v3: {:?} ",
         location,
@@ -6431,7 +6529,7 @@ unsafe extern "C" fn glUniform4i(location: GLint, v0: GLint, v1: GLint, v2: GLin
     with_ctx(|mut state| state.oxidegl_uniform4i(location, v0, v1, v2, v3));
 }
 #[no_mangle]
-unsafe extern "C" fn glUniform1fv(location: GLint, count: GLsizei, value: *const GLfloat) {
+pub unsafe extern "C" fn glUniform1fv(location: GLint, count: GLsizei, value: *const GLfloat) {
     ::log::trace!(
         "glUniform1fv called, parameters: location: {:?}, count: {:?}, value: {:?} ",
         location,
@@ -6441,7 +6539,7 @@ unsafe extern "C" fn glUniform1fv(location: GLint, count: GLsizei, value: *const
     with_ctx(|mut state| unsafe { state.oxidegl_uniform1fv(location, count, value) });
 }
 #[no_mangle]
-unsafe extern "C" fn glUniform2fv(location: GLint, count: GLsizei, value: *const GLfloat) {
+pub unsafe extern "C" fn glUniform2fv(location: GLint, count: GLsizei, value: *const GLfloat) {
     ::log::trace!(
         "glUniform2fv called, parameters: location: {:?}, count: {:?}, value: {:?} ",
         location,
@@ -6451,7 +6549,7 @@ unsafe extern "C" fn glUniform2fv(location: GLint, count: GLsizei, value: *const
     with_ctx(|mut state| unsafe { state.oxidegl_uniform2fv(location, count, value) });
 }
 #[no_mangle]
-unsafe extern "C" fn glUniform3fv(location: GLint, count: GLsizei, value: *const GLfloat) {
+pub unsafe extern "C" fn glUniform3fv(location: GLint, count: GLsizei, value: *const GLfloat) {
     ::log::trace!(
         "glUniform3fv called, parameters: location: {:?}, count: {:?}, value: {:?} ",
         location,
@@ -6461,7 +6559,7 @@ unsafe extern "C" fn glUniform3fv(location: GLint, count: GLsizei, value: *const
     with_ctx(|mut state| unsafe { state.oxidegl_uniform3fv(location, count, value) });
 }
 #[no_mangle]
-unsafe extern "C" fn glUniform4fv(location: GLint, count: GLsizei, value: *const GLfloat) {
+pub unsafe extern "C" fn glUniform4fv(location: GLint, count: GLsizei, value: *const GLfloat) {
     ::log::trace!(
         "glUniform4fv called, parameters: location: {:?}, count: {:?}, value: {:?} ",
         location,
@@ -6471,7 +6569,7 @@ unsafe extern "C" fn glUniform4fv(location: GLint, count: GLsizei, value: *const
     with_ctx(|mut state| unsafe { state.oxidegl_uniform4fv(location, count, value) });
 }
 #[no_mangle]
-unsafe extern "C" fn glUniform1iv(location: GLint, count: GLsizei, value: *const GLint) {
+pub unsafe extern "C" fn glUniform1iv(location: GLint, count: GLsizei, value: *const GLint) {
     ::log::trace!(
         "glUniform1iv called, parameters: location: {:?}, count: {:?}, value: {:?} ",
         location,
@@ -6481,7 +6579,7 @@ unsafe extern "C" fn glUniform1iv(location: GLint, count: GLsizei, value: *const
     with_ctx(|mut state| unsafe { state.oxidegl_uniform1iv(location, count, value) });
 }
 #[no_mangle]
-unsafe extern "C" fn glUniform2iv(location: GLint, count: GLsizei, value: *const GLint) {
+pub unsafe extern "C" fn glUniform2iv(location: GLint, count: GLsizei, value: *const GLint) {
     ::log::trace!(
         "glUniform2iv called, parameters: location: {:?}, count: {:?}, value: {:?} ",
         location,
@@ -6491,7 +6589,7 @@ unsafe extern "C" fn glUniform2iv(location: GLint, count: GLsizei, value: *const
     with_ctx(|mut state| unsafe { state.oxidegl_uniform2iv(location, count, value) });
 }
 #[no_mangle]
-unsafe extern "C" fn glUniform3iv(location: GLint, count: GLsizei, value: *const GLint) {
+pub unsafe extern "C" fn glUniform3iv(location: GLint, count: GLsizei, value: *const GLint) {
     ::log::trace!(
         "glUniform3iv called, parameters: location: {:?}, count: {:?}, value: {:?} ",
         location,
@@ -6501,7 +6599,7 @@ unsafe extern "C" fn glUniform3iv(location: GLint, count: GLsizei, value: *const
     with_ctx(|mut state| unsafe { state.oxidegl_uniform3iv(location, count, value) });
 }
 #[no_mangle]
-unsafe extern "C" fn glUniform4iv(location: GLint, count: GLsizei, value: *const GLint) {
+pub unsafe extern "C" fn glUniform4iv(location: GLint, count: GLsizei, value: *const GLint) {
     ::log::trace!(
         "glUniform4iv called, parameters: location: {:?}, count: {:?}, value: {:?} ",
         location,
@@ -6511,7 +6609,7 @@ unsafe extern "C" fn glUniform4iv(location: GLint, count: GLsizei, value: *const
     with_ctx(|mut state| unsafe { state.oxidegl_uniform4iv(location, count, value) });
 }
 #[no_mangle]
-unsafe extern "C" fn glUniformMatrix2fv(
+pub unsafe extern "C" fn glUniformMatrix2fv(
     location: GLint,
     count: GLsizei,
     transpose: GLboolean,
@@ -6523,7 +6621,7 @@ unsafe extern "C" fn glUniformMatrix2fv(
     });
 }
 #[no_mangle]
-unsafe extern "C" fn glUniformMatrix3fv(
+pub unsafe extern "C" fn glUniformMatrix3fv(
     location: GLint,
     count: GLsizei,
     transpose: GLboolean,
@@ -6535,7 +6633,7 @@ unsafe extern "C" fn glUniformMatrix3fv(
     });
 }
 #[no_mangle]
-unsafe extern "C" fn glUniformMatrix4fv(
+pub unsafe extern "C" fn glUniformMatrix4fv(
     location: GLint,
     count: GLsizei,
     transpose: GLboolean,
@@ -6547,7 +6645,7 @@ unsafe extern "C" fn glUniformMatrix4fv(
     });
 }
 #[no_mangle]
-unsafe extern "C" fn glUniformMatrix2x3fv(
+pub unsafe extern "C" fn glUniformMatrix2x3fv(
     location: GLint,
     count: GLsizei,
     transpose: GLboolean,
@@ -6559,7 +6657,7 @@ unsafe extern "C" fn glUniformMatrix2x3fv(
     });
 }
 #[no_mangle]
-unsafe extern "C" fn glUniformMatrix3x2fv(
+pub unsafe extern "C" fn glUniformMatrix3x2fv(
     location: GLint,
     count: GLsizei,
     transpose: GLboolean,
@@ -6571,7 +6669,7 @@ unsafe extern "C" fn glUniformMatrix3x2fv(
     });
 }
 #[no_mangle]
-unsafe extern "C" fn glUniformMatrix2x4fv(
+pub unsafe extern "C" fn glUniformMatrix2x4fv(
     location: GLint,
     count: GLsizei,
     transpose: GLboolean,
@@ -6583,7 +6681,7 @@ unsafe extern "C" fn glUniformMatrix2x4fv(
     });
 }
 #[no_mangle]
-unsafe extern "C" fn glUniformMatrix4x2fv(
+pub unsafe extern "C" fn glUniformMatrix4x2fv(
     location: GLint,
     count: GLsizei,
     transpose: GLboolean,
@@ -6595,7 +6693,7 @@ unsafe extern "C" fn glUniformMatrix4x2fv(
     });
 }
 #[no_mangle]
-unsafe extern "C" fn glUniformMatrix3x4fv(
+pub unsafe extern "C" fn glUniformMatrix3x4fv(
     location: GLint,
     count: GLsizei,
     transpose: GLboolean,
@@ -6607,7 +6705,7 @@ unsafe extern "C" fn glUniformMatrix3x4fv(
     });
 }
 #[no_mangle]
-unsafe extern "C" fn glUniformMatrix4x3fv(
+pub unsafe extern "C" fn glUniformMatrix4x3fv(
     location: GLint,
     count: GLsizei,
     transpose: GLboolean,
@@ -6619,7 +6717,7 @@ unsafe extern "C" fn glUniformMatrix4x3fv(
     });
 }
 #[no_mangle]
-unsafe extern "C" fn glUniform1ui(location: GLint, v0: GLuint) {
+pub unsafe extern "C" fn glUniform1ui(location: GLint, v0: GLuint) {
     ::log::trace!(
         "glUniform1ui called, parameters: location: {:?}, v0: {:?} ",
         location,
@@ -6628,7 +6726,7 @@ unsafe extern "C" fn glUniform1ui(location: GLint, v0: GLuint) {
     with_ctx(|mut state| state.oxidegl_uniform1ui(location, v0));
 }
 #[no_mangle]
-unsafe extern "C" fn glUniform2ui(location: GLint, v0: GLuint, v1: GLuint) {
+pub unsafe extern "C" fn glUniform2ui(location: GLint, v0: GLuint, v1: GLuint) {
     ::log::trace!(
         "glUniform2ui called, parameters: location: {:?}, v0: {:?}, v1: {:?} ",
         location,
@@ -6638,7 +6736,7 @@ unsafe extern "C" fn glUniform2ui(location: GLint, v0: GLuint, v1: GLuint) {
     with_ctx(|mut state| state.oxidegl_uniform2ui(location, v0, v1));
 }
 #[no_mangle]
-unsafe extern "C" fn glUniform3ui(location: GLint, v0: GLuint, v1: GLuint, v2: GLuint) {
+pub unsafe extern "C" fn glUniform3ui(location: GLint, v0: GLuint, v1: GLuint, v2: GLuint) {
     ::log::trace!(
         "glUniform3ui called, parameters: location: {:?}, v0: {:?}, v1: {:?}, v2: {:?} ",
         location,
@@ -6649,7 +6747,13 @@ unsafe extern "C" fn glUniform3ui(location: GLint, v0: GLuint, v1: GLuint, v2: G
     with_ctx(|mut state| state.oxidegl_uniform3ui(location, v0, v1, v2));
 }
 #[no_mangle]
-unsafe extern "C" fn glUniform4ui(location: GLint, v0: GLuint, v1: GLuint, v2: GLuint, v3: GLuint) {
+pub unsafe extern "C" fn glUniform4ui(
+    location: GLint,
+    v0: GLuint,
+    v1: GLuint,
+    v2: GLuint,
+    v3: GLuint,
+) {
     ::log::trace!(
         "glUniform4ui called, parameters: location: {:?}, v0: {:?}, v1: {:?}, v2: {:?}, v3: {:?} ",
         location,
@@ -6661,7 +6765,7 @@ unsafe extern "C" fn glUniform4ui(location: GLint, v0: GLuint, v1: GLuint, v2: G
     with_ctx(|mut state| state.oxidegl_uniform4ui(location, v0, v1, v2, v3));
 }
 #[no_mangle]
-unsafe extern "C" fn glUniform1uiv(location: GLint, count: GLsizei, value: *const GLuint) {
+pub unsafe extern "C" fn glUniform1uiv(location: GLint, count: GLsizei, value: *const GLuint) {
     ::log::trace!(
         "glUniform1uiv called, parameters: location: {:?}, count: {:?}, value: {:?} ",
         location,
@@ -6671,7 +6775,7 @@ unsafe extern "C" fn glUniform1uiv(location: GLint, count: GLsizei, value: *cons
     with_ctx(|mut state| unsafe { state.oxidegl_uniform1uiv(location, count, value) });
 }
 #[no_mangle]
-unsafe extern "C" fn glUniform2uiv(location: GLint, count: GLsizei, value: *const GLuint) {
+pub unsafe extern "C" fn glUniform2uiv(location: GLint, count: GLsizei, value: *const GLuint) {
     ::log::trace!(
         "glUniform2uiv called, parameters: location: {:?}, count: {:?}, value: {:?} ",
         location,
@@ -6681,7 +6785,7 @@ unsafe extern "C" fn glUniform2uiv(location: GLint, count: GLsizei, value: *cons
     with_ctx(|mut state| unsafe { state.oxidegl_uniform2uiv(location, count, value) });
 }
 #[no_mangle]
-unsafe extern "C" fn glUniform3uiv(location: GLint, count: GLsizei, value: *const GLuint) {
+pub unsafe extern "C" fn glUniform3uiv(location: GLint, count: GLsizei, value: *const GLuint) {
     ::log::trace!(
         "glUniform3uiv called, parameters: location: {:?}, count: {:?}, value: {:?} ",
         location,
@@ -6691,7 +6795,7 @@ unsafe extern "C" fn glUniform3uiv(location: GLint, count: GLsizei, value: *cons
     with_ctx(|mut state| unsafe { state.oxidegl_uniform3uiv(location, count, value) });
 }
 #[no_mangle]
-unsafe extern "C" fn glUniform4uiv(location: GLint, count: GLsizei, value: *const GLuint) {
+pub unsafe extern "C" fn glUniform4uiv(location: GLint, count: GLsizei, value: *const GLuint) {
     ::log::trace!(
         "glUniform4uiv called, parameters: location: {:?}, count: {:?}, value: {:?} ",
         location,
@@ -6701,7 +6805,7 @@ unsafe extern "C" fn glUniform4uiv(location: GLint, count: GLsizei, value: *cons
     with_ctx(|mut state| unsafe { state.oxidegl_uniform4uiv(location, count, value) });
 }
 #[no_mangle]
-unsafe extern "C" fn glUniformBlockBinding(
+pub unsafe extern "C" fn glUniformBlockBinding(
     program: GLuint,
     uniformBlockIndex: GLuint,
     uniformBlockBinding: GLuint,
@@ -6712,7 +6816,7 @@ unsafe extern "C" fn glUniformBlockBinding(
     });
 }
 #[no_mangle]
-unsafe extern "C" fn glUniformSubroutinesuiv(
+pub unsafe extern "C" fn glUniformSubroutinesuiv(
     shadertype: GLenum,
     count: GLsizei,
     indices: *const GLuint,
@@ -6728,12 +6832,12 @@ unsafe extern "C" fn glUniformSubroutinesuiv(
     });
 }
 #[no_mangle]
-unsafe extern "C" fn glUnmapBuffer(target: GLenum) -> GLboolean {
+pub unsafe extern "C" fn glUnmapBuffer(target: GLenum) -> GLboolean {
     ::log::trace!("glUnmapBuffer called, parameters: target: {:?} ", target);
     with_ctx(|mut state| state.oxidegl_unmap_buffer(target))
 }
 #[no_mangle]
-unsafe extern "C" fn glUnmapNamedBuffer(buffer: GLuint) -> GLboolean {
+pub unsafe extern "C" fn glUnmapNamedBuffer(buffer: GLuint) -> GLboolean {
     ::log::trace!(
         "glUnmapNamedBuffer called, parameters: buffer: {:?} ",
         buffer
@@ -6741,12 +6845,12 @@ unsafe extern "C" fn glUnmapNamedBuffer(buffer: GLuint) -> GLboolean {
     with_ctx(|mut state| state.oxidegl_unmap_named_buffer(buffer))
 }
 #[no_mangle]
-unsafe extern "C" fn glUseProgram(program: GLuint) {
+pub unsafe extern "C" fn glUseProgram(program: GLuint) {
     ::log::trace!("glUseProgram called, parameters: program: {:?} ", program);
     with_ctx(|mut state| state.oxidegl_use_program(program));
 }
 #[no_mangle]
-unsafe extern "C" fn glUseProgramStages(pipeline: GLuint, stages: GLenum, program: GLuint) {
+pub unsafe extern "C" fn glUseProgramStages(pipeline: GLuint, stages: GLenum, program: GLuint) {
     ::log::trace!(
         "glUseProgramStages called, parameters: pipeline: {:?}, stages: {:?}, program: {:?} ",
         pipeline,
@@ -6758,7 +6862,7 @@ unsafe extern "C" fn glUseProgramStages(pipeline: GLuint, stages: GLenum, progra
     });
 }
 #[no_mangle]
-unsafe extern "C" fn glValidateProgram(program: GLuint) {
+pub unsafe extern "C" fn glValidateProgram(program: GLuint) {
     ::log::trace!(
         "glValidateProgram called, parameters: program: {:?} ",
         program
@@ -6766,7 +6870,7 @@ unsafe extern "C" fn glValidateProgram(program: GLuint) {
     with_ctx(|mut state| state.oxidegl_validate_program(program));
 }
 #[no_mangle]
-unsafe extern "C" fn glValidateProgramPipeline(pipeline: GLuint) {
+pub unsafe extern "C" fn glValidateProgramPipeline(pipeline: GLuint) {
     ::log::trace!(
         "glValidateProgramPipeline called, parameters: pipeline: {:?} ",
         pipeline
@@ -6774,7 +6878,7 @@ unsafe extern "C" fn glValidateProgramPipeline(pipeline: GLuint) {
     with_ctx(|mut state| state.oxidegl_validate_program_pipeline(pipeline));
 }
 #[no_mangle]
-unsafe extern "C" fn glVertexArrayElementBuffer(vaobj: GLuint, buffer: GLuint) {
+pub unsafe extern "C" fn glVertexArrayElementBuffer(vaobj: GLuint, buffer: GLuint) {
     ::log::trace!(
         "glVertexArrayElementBuffer called, parameters: vaobj: {:?}, buffer: {:?} ",
         vaobj,
@@ -6783,7 +6887,7 @@ unsafe extern "C" fn glVertexArrayElementBuffer(vaobj: GLuint, buffer: GLuint) {
     with_ctx(|mut state| state.oxidegl_vertex_array_element_buffer(vaobj, buffer));
 }
 #[no_mangle]
-unsafe extern "C" fn glVertexAttrib1d(index: GLuint, x: GLdouble) {
+pub unsafe extern "C" fn glVertexAttrib1d(index: GLuint, x: GLdouble) {
     ::log::trace!(
         "glVertexAttrib1d called, parameters: index: {:?}, x: {:?} ",
         index,
@@ -6792,7 +6896,7 @@ unsafe extern "C" fn glVertexAttrib1d(index: GLuint, x: GLdouble) {
     with_ctx(|mut state| state.oxidegl_vertex_attrib1d(index, x));
 }
 #[no_mangle]
-unsafe extern "C" fn glVertexAttrib1dv(index: GLuint, v: *const GLdouble) {
+pub unsafe extern "C" fn glVertexAttrib1dv(index: GLuint, v: *const GLdouble) {
     ::log::trace!(
         "glVertexAttrib1dv called, parameters: index: {:?}, v: {:?} ",
         index,
@@ -6801,7 +6905,7 @@ unsafe extern "C" fn glVertexAttrib1dv(index: GLuint, v: *const GLdouble) {
     with_ctx(|mut state| unsafe { state.oxidegl_vertex_attrib1dv(index, v) });
 }
 #[no_mangle]
-unsafe extern "C" fn glVertexAttrib1f(index: GLuint, x: GLfloat) {
+pub unsafe extern "C" fn glVertexAttrib1f(index: GLuint, x: GLfloat) {
     ::log::trace!(
         "glVertexAttrib1f called, parameters: index: {:?}, x: {:?} ",
         index,
@@ -6810,7 +6914,7 @@ unsafe extern "C" fn glVertexAttrib1f(index: GLuint, x: GLfloat) {
     with_ctx(|mut state| state.oxidegl_vertex_attrib1f(index, x));
 }
 #[no_mangle]
-unsafe extern "C" fn glVertexAttrib1fv(index: GLuint, v: *const GLfloat) {
+pub unsafe extern "C" fn glVertexAttrib1fv(index: GLuint, v: *const GLfloat) {
     ::log::trace!(
         "glVertexAttrib1fv called, parameters: index: {:?}, v: {:?} ",
         index,
@@ -6819,7 +6923,7 @@ unsafe extern "C" fn glVertexAttrib1fv(index: GLuint, v: *const GLfloat) {
     with_ctx(|mut state| unsafe { state.oxidegl_vertex_attrib1fv(index, v) });
 }
 #[no_mangle]
-unsafe extern "C" fn glVertexAttrib1s(index: GLuint, x: GLshort) {
+pub unsafe extern "C" fn glVertexAttrib1s(index: GLuint, x: GLshort) {
     ::log::trace!(
         "glVertexAttrib1s called, parameters: index: {:?}, x: {:?} ",
         index,
@@ -6828,7 +6932,7 @@ unsafe extern "C" fn glVertexAttrib1s(index: GLuint, x: GLshort) {
     with_ctx(|mut state| state.oxidegl_vertex_attrib1s(index, x));
 }
 #[no_mangle]
-unsafe extern "C" fn glVertexAttrib1sv(index: GLuint, v: *const GLshort) {
+pub unsafe extern "C" fn glVertexAttrib1sv(index: GLuint, v: *const GLshort) {
     ::log::trace!(
         "glVertexAttrib1sv called, parameters: index: {:?}, v: {:?} ",
         index,
@@ -6837,7 +6941,7 @@ unsafe extern "C" fn glVertexAttrib1sv(index: GLuint, v: *const GLshort) {
     with_ctx(|mut state| unsafe { state.oxidegl_vertex_attrib1sv(index, v) });
 }
 #[no_mangle]
-unsafe extern "C" fn glVertexAttrib2d(index: GLuint, x: GLdouble, y: GLdouble) {
+pub unsafe extern "C" fn glVertexAttrib2d(index: GLuint, x: GLdouble, y: GLdouble) {
     ::log::trace!(
         "glVertexAttrib2d called, parameters: index: {:?}, x: {:?}, y: {:?} ",
         index,
@@ -6847,7 +6951,7 @@ unsafe extern "C" fn glVertexAttrib2d(index: GLuint, x: GLdouble, y: GLdouble) {
     with_ctx(|mut state| state.oxidegl_vertex_attrib2d(index, x, y));
 }
 #[no_mangle]
-unsafe extern "C" fn glVertexAttrib2dv(index: GLuint, v: *const GLdouble) {
+pub unsafe extern "C" fn glVertexAttrib2dv(index: GLuint, v: *const GLdouble) {
     ::log::trace!(
         "glVertexAttrib2dv called, parameters: index: {:?}, v: {:?} ",
         index,
@@ -6856,7 +6960,7 @@ unsafe extern "C" fn glVertexAttrib2dv(index: GLuint, v: *const GLdouble) {
     with_ctx(|mut state| unsafe { state.oxidegl_vertex_attrib2dv(index, v) });
 }
 #[no_mangle]
-unsafe extern "C" fn glVertexAttrib2f(index: GLuint, x: GLfloat, y: GLfloat) {
+pub unsafe extern "C" fn glVertexAttrib2f(index: GLuint, x: GLfloat, y: GLfloat) {
     ::log::trace!(
         "glVertexAttrib2f called, parameters: index: {:?}, x: {:?}, y: {:?} ",
         index,
@@ -6866,7 +6970,7 @@ unsafe extern "C" fn glVertexAttrib2f(index: GLuint, x: GLfloat, y: GLfloat) {
     with_ctx(|mut state| state.oxidegl_vertex_attrib2f(index, x, y));
 }
 #[no_mangle]
-unsafe extern "C" fn glVertexAttrib2fv(index: GLuint, v: *const GLfloat) {
+pub unsafe extern "C" fn glVertexAttrib2fv(index: GLuint, v: *const GLfloat) {
     ::log::trace!(
         "glVertexAttrib2fv called, parameters: index: {:?}, v: {:?} ",
         index,
@@ -6875,7 +6979,7 @@ unsafe extern "C" fn glVertexAttrib2fv(index: GLuint, v: *const GLfloat) {
     with_ctx(|mut state| unsafe { state.oxidegl_vertex_attrib2fv(index, v) });
 }
 #[no_mangle]
-unsafe extern "C" fn glVertexAttrib2s(index: GLuint, x: GLshort, y: GLshort) {
+pub unsafe extern "C" fn glVertexAttrib2s(index: GLuint, x: GLshort, y: GLshort) {
     ::log::trace!(
         "glVertexAttrib2s called, parameters: index: {:?}, x: {:?}, y: {:?} ",
         index,
@@ -6885,7 +6989,7 @@ unsafe extern "C" fn glVertexAttrib2s(index: GLuint, x: GLshort, y: GLshort) {
     with_ctx(|mut state| state.oxidegl_vertex_attrib2s(index, x, y));
 }
 #[no_mangle]
-unsafe extern "C" fn glVertexAttrib2sv(index: GLuint, v: *const GLshort) {
+pub unsafe extern "C" fn glVertexAttrib2sv(index: GLuint, v: *const GLshort) {
     ::log::trace!(
         "glVertexAttrib2sv called, parameters: index: {:?}, v: {:?} ",
         index,
@@ -6894,7 +6998,7 @@ unsafe extern "C" fn glVertexAttrib2sv(index: GLuint, v: *const GLshort) {
     with_ctx(|mut state| unsafe { state.oxidegl_vertex_attrib2sv(index, v) });
 }
 #[no_mangle]
-unsafe extern "C" fn glVertexAttrib3d(index: GLuint, x: GLdouble, y: GLdouble, z: GLdouble) {
+pub unsafe extern "C" fn glVertexAttrib3d(index: GLuint, x: GLdouble, y: GLdouble, z: GLdouble) {
     ::log::trace!(
         "glVertexAttrib3d called, parameters: index: {:?}, x: {:?}, y: {:?}, z: {:?} ",
         index,
@@ -6905,7 +7009,7 @@ unsafe extern "C" fn glVertexAttrib3d(index: GLuint, x: GLdouble, y: GLdouble, z
     with_ctx(|mut state| state.oxidegl_vertex_attrib3d(index, x, y, z));
 }
 #[no_mangle]
-unsafe extern "C" fn glVertexAttrib3dv(index: GLuint, v: *const GLdouble) {
+pub unsafe extern "C" fn glVertexAttrib3dv(index: GLuint, v: *const GLdouble) {
     ::log::trace!(
         "glVertexAttrib3dv called, parameters: index: {:?}, v: {:?} ",
         index,
@@ -6914,7 +7018,7 @@ unsafe extern "C" fn glVertexAttrib3dv(index: GLuint, v: *const GLdouble) {
     with_ctx(|mut state| unsafe { state.oxidegl_vertex_attrib3dv(index, v) });
 }
 #[no_mangle]
-unsafe extern "C" fn glVertexAttrib3f(index: GLuint, x: GLfloat, y: GLfloat, z: GLfloat) {
+pub unsafe extern "C" fn glVertexAttrib3f(index: GLuint, x: GLfloat, y: GLfloat, z: GLfloat) {
     ::log::trace!(
         "glVertexAttrib3f called, parameters: index: {:?}, x: {:?}, y: {:?}, z: {:?} ",
         index,
@@ -6925,7 +7029,7 @@ unsafe extern "C" fn glVertexAttrib3f(index: GLuint, x: GLfloat, y: GLfloat, z: 
     with_ctx(|mut state| state.oxidegl_vertex_attrib3f(index, x, y, z));
 }
 #[no_mangle]
-unsafe extern "C" fn glVertexAttrib3fv(index: GLuint, v: *const GLfloat) {
+pub unsafe extern "C" fn glVertexAttrib3fv(index: GLuint, v: *const GLfloat) {
     ::log::trace!(
         "glVertexAttrib3fv called, parameters: index: {:?}, v: {:?} ",
         index,
@@ -6934,7 +7038,7 @@ unsafe extern "C" fn glVertexAttrib3fv(index: GLuint, v: *const GLfloat) {
     with_ctx(|mut state| unsafe { state.oxidegl_vertex_attrib3fv(index, v) });
 }
 #[no_mangle]
-unsafe extern "C" fn glVertexAttrib3s(index: GLuint, x: GLshort, y: GLshort, z: GLshort) {
+pub unsafe extern "C" fn glVertexAttrib3s(index: GLuint, x: GLshort, y: GLshort, z: GLshort) {
     ::log::trace!(
         "glVertexAttrib3s called, parameters: index: {:?}, x: {:?}, y: {:?}, z: {:?} ",
         index,
@@ -6945,7 +7049,7 @@ unsafe extern "C" fn glVertexAttrib3s(index: GLuint, x: GLshort, y: GLshort, z: 
     with_ctx(|mut state| state.oxidegl_vertex_attrib3s(index, x, y, z));
 }
 #[no_mangle]
-unsafe extern "C" fn glVertexAttrib3sv(index: GLuint, v: *const GLshort) {
+pub unsafe extern "C" fn glVertexAttrib3sv(index: GLuint, v: *const GLshort) {
     ::log::trace!(
         "glVertexAttrib3sv called, parameters: index: {:?}, v: {:?} ",
         index,
@@ -6954,7 +7058,7 @@ unsafe extern "C" fn glVertexAttrib3sv(index: GLuint, v: *const GLshort) {
     with_ctx(|mut state| unsafe { state.oxidegl_vertex_attrib3sv(index, v) });
 }
 #[no_mangle]
-unsafe extern "C" fn glVertexAttrib4Nbv(index: GLuint, v: *const GLbyte) {
+pub unsafe extern "C" fn glVertexAttrib4Nbv(index: GLuint, v: *const GLbyte) {
     ::log::trace!(
         "glVertexAttrib4Nbv called, parameters: index: {:?}, v: {:?} ",
         index,
@@ -6963,7 +7067,7 @@ unsafe extern "C" fn glVertexAttrib4Nbv(index: GLuint, v: *const GLbyte) {
     with_ctx(|mut state| unsafe { state.oxidegl_vertex_attrib4_nbv(index, v) });
 }
 #[no_mangle]
-unsafe extern "C" fn glVertexAttrib4Niv(index: GLuint, v: *const GLint) {
+pub unsafe extern "C" fn glVertexAttrib4Niv(index: GLuint, v: *const GLint) {
     ::log::trace!(
         "glVertexAttrib4Niv called, parameters: index: {:?}, v: {:?} ",
         index,
@@ -6972,7 +7076,7 @@ unsafe extern "C" fn glVertexAttrib4Niv(index: GLuint, v: *const GLint) {
     with_ctx(|mut state| unsafe { state.oxidegl_vertex_attrib4_niv(index, v) });
 }
 #[no_mangle]
-unsafe extern "C" fn glVertexAttrib4Nsv(index: GLuint, v: *const GLshort) {
+pub unsafe extern "C" fn glVertexAttrib4Nsv(index: GLuint, v: *const GLshort) {
     ::log::trace!(
         "glVertexAttrib4Nsv called, parameters: index: {:?}, v: {:?} ",
         index,
@@ -6981,7 +7085,7 @@ unsafe extern "C" fn glVertexAttrib4Nsv(index: GLuint, v: *const GLshort) {
     with_ctx(|mut state| unsafe { state.oxidegl_vertex_attrib4_nsv(index, v) });
 }
 #[no_mangle]
-unsafe extern "C" fn glVertexAttrib4Nub(
+pub unsafe extern "C" fn glVertexAttrib4Nub(
     index: GLuint,
     x: GLubyte,
     y: GLubyte,
@@ -6999,7 +7103,7 @@ unsafe extern "C" fn glVertexAttrib4Nub(
     with_ctx(|mut state| state.oxidegl_vertex_attrib4_nub(index, x, y, z, w));
 }
 #[no_mangle]
-unsafe extern "C" fn glVertexAttrib4Nubv(index: GLuint, v: *const GLubyte) {
+pub unsafe extern "C" fn glVertexAttrib4Nubv(index: GLuint, v: *const GLubyte) {
     ::log::trace!(
         "glVertexAttrib4Nubv called, parameters: index: {:?}, v: {:?} ",
         index,
@@ -7008,7 +7112,7 @@ unsafe extern "C" fn glVertexAttrib4Nubv(index: GLuint, v: *const GLubyte) {
     with_ctx(|mut state| unsafe { state.oxidegl_vertex_attrib4_nubv(index, v) });
 }
 #[no_mangle]
-unsafe extern "C" fn glVertexAttrib4Nuiv(index: GLuint, v: *const GLuint) {
+pub unsafe extern "C" fn glVertexAttrib4Nuiv(index: GLuint, v: *const GLuint) {
     ::log::trace!(
         "glVertexAttrib4Nuiv called, parameters: index: {:?}, v: {:?} ",
         index,
@@ -7017,7 +7121,7 @@ unsafe extern "C" fn glVertexAttrib4Nuiv(index: GLuint, v: *const GLuint) {
     with_ctx(|mut state| unsafe { state.oxidegl_vertex_attrib4_nuiv(index, v) });
 }
 #[no_mangle]
-unsafe extern "C" fn glVertexAttrib4Nusv(index: GLuint, v: *const GLushort) {
+pub unsafe extern "C" fn glVertexAttrib4Nusv(index: GLuint, v: *const GLushort) {
     ::log::trace!(
         "glVertexAttrib4Nusv called, parameters: index: {:?}, v: {:?} ",
         index,
@@ -7026,7 +7130,7 @@ unsafe extern "C" fn glVertexAttrib4Nusv(index: GLuint, v: *const GLushort) {
     with_ctx(|mut state| unsafe { state.oxidegl_vertex_attrib4_nusv(index, v) });
 }
 #[no_mangle]
-unsafe extern "C" fn glVertexAttrib4bv(index: GLuint, v: *const GLbyte) {
+pub unsafe extern "C" fn glVertexAttrib4bv(index: GLuint, v: *const GLbyte) {
     ::log::trace!(
         "glVertexAttrib4bv called, parameters: index: {:?}, v: {:?} ",
         index,
@@ -7035,7 +7139,7 @@ unsafe extern "C" fn glVertexAttrib4bv(index: GLuint, v: *const GLbyte) {
     with_ctx(|mut state| unsafe { state.oxidegl_vertex_attrib4bv(index, v) });
 }
 #[no_mangle]
-unsafe extern "C" fn glVertexAttrib4d(
+pub unsafe extern "C" fn glVertexAttrib4d(
     index: GLuint,
     x: GLdouble,
     y: GLdouble,
@@ -7053,7 +7157,7 @@ unsafe extern "C" fn glVertexAttrib4d(
     with_ctx(|mut state| state.oxidegl_vertex_attrib4d(index, x, y, z, w));
 }
 #[no_mangle]
-unsafe extern "C" fn glVertexAttrib4dv(index: GLuint, v: *const GLdouble) {
+pub unsafe extern "C" fn glVertexAttrib4dv(index: GLuint, v: *const GLdouble) {
     ::log::trace!(
         "glVertexAttrib4dv called, parameters: index: {:?}, v: {:?} ",
         index,
@@ -7062,7 +7166,7 @@ unsafe extern "C" fn glVertexAttrib4dv(index: GLuint, v: *const GLdouble) {
     with_ctx(|mut state| unsafe { state.oxidegl_vertex_attrib4dv(index, v) });
 }
 #[no_mangle]
-unsafe extern "C" fn glVertexAttrib4f(
+pub unsafe extern "C" fn glVertexAttrib4f(
     index: GLuint,
     x: GLfloat,
     y: GLfloat,
@@ -7080,7 +7184,7 @@ unsafe extern "C" fn glVertexAttrib4f(
     with_ctx(|mut state| state.oxidegl_vertex_attrib4f(index, x, y, z, w));
 }
 #[no_mangle]
-unsafe extern "C" fn glVertexAttrib4fv(index: GLuint, v: *const GLfloat) {
+pub unsafe extern "C" fn glVertexAttrib4fv(index: GLuint, v: *const GLfloat) {
     ::log::trace!(
         "glVertexAttrib4fv called, parameters: index: {:?}, v: {:?} ",
         index,
@@ -7089,7 +7193,7 @@ unsafe extern "C" fn glVertexAttrib4fv(index: GLuint, v: *const GLfloat) {
     with_ctx(|mut state| unsafe { state.oxidegl_vertex_attrib4fv(index, v) });
 }
 #[no_mangle]
-unsafe extern "C" fn glVertexAttrib4iv(index: GLuint, v: *const GLint) {
+pub unsafe extern "C" fn glVertexAttrib4iv(index: GLuint, v: *const GLint) {
     ::log::trace!(
         "glVertexAttrib4iv called, parameters: index: {:?}, v: {:?} ",
         index,
@@ -7098,7 +7202,7 @@ unsafe extern "C" fn glVertexAttrib4iv(index: GLuint, v: *const GLint) {
     with_ctx(|mut state| unsafe { state.oxidegl_vertex_attrib4iv(index, v) });
 }
 #[no_mangle]
-unsafe extern "C" fn glVertexAttrib4s(
+pub unsafe extern "C" fn glVertexAttrib4s(
     index: GLuint,
     x: GLshort,
     y: GLshort,
@@ -7116,7 +7220,7 @@ unsafe extern "C" fn glVertexAttrib4s(
     with_ctx(|mut state| state.oxidegl_vertex_attrib4s(index, x, y, z, w));
 }
 #[no_mangle]
-unsafe extern "C" fn glVertexAttrib4sv(index: GLuint, v: *const GLshort) {
+pub unsafe extern "C" fn glVertexAttrib4sv(index: GLuint, v: *const GLshort) {
     ::log::trace!(
         "glVertexAttrib4sv called, parameters: index: {:?}, v: {:?} ",
         index,
@@ -7125,7 +7229,7 @@ unsafe extern "C" fn glVertexAttrib4sv(index: GLuint, v: *const GLshort) {
     with_ctx(|mut state| unsafe { state.oxidegl_vertex_attrib4sv(index, v) });
 }
 #[no_mangle]
-unsafe extern "C" fn glVertexAttrib4ubv(index: GLuint, v: *const GLubyte) {
+pub unsafe extern "C" fn glVertexAttrib4ubv(index: GLuint, v: *const GLubyte) {
     ::log::trace!(
         "glVertexAttrib4ubv called, parameters: index: {:?}, v: {:?} ",
         index,
@@ -7134,7 +7238,7 @@ unsafe extern "C" fn glVertexAttrib4ubv(index: GLuint, v: *const GLubyte) {
     with_ctx(|mut state| unsafe { state.oxidegl_vertex_attrib4ubv(index, v) });
 }
 #[no_mangle]
-unsafe extern "C" fn glVertexAttrib4uiv(index: GLuint, v: *const GLuint) {
+pub unsafe extern "C" fn glVertexAttrib4uiv(index: GLuint, v: *const GLuint) {
     ::log::trace!(
         "glVertexAttrib4uiv called, parameters: index: {:?}, v: {:?} ",
         index,
@@ -7143,7 +7247,7 @@ unsafe extern "C" fn glVertexAttrib4uiv(index: GLuint, v: *const GLuint) {
     with_ctx(|mut state| unsafe { state.oxidegl_vertex_attrib4uiv(index, v) });
 }
 #[no_mangle]
-unsafe extern "C" fn glVertexAttrib4usv(index: GLuint, v: *const GLushort) {
+pub unsafe extern "C" fn glVertexAttrib4usv(index: GLuint, v: *const GLushort) {
     ::log::trace!(
         "glVertexAttrib4usv called, parameters: index: {:?}, v: {:?} ",
         index,
@@ -7152,7 +7256,7 @@ unsafe extern "C" fn glVertexAttrib4usv(index: GLuint, v: *const GLushort) {
     with_ctx(|mut state| unsafe { state.oxidegl_vertex_attrib4usv(index, v) });
 }
 #[no_mangle]
-unsafe extern "C" fn glVertexAttribI1i(index: GLuint, x: GLint) {
+pub unsafe extern "C" fn glVertexAttribI1i(index: GLuint, x: GLint) {
     ::log::trace!(
         "glVertexAttribI1i called, parameters: index: {:?}, x: {:?} ",
         index,
@@ -7161,7 +7265,7 @@ unsafe extern "C" fn glVertexAttribI1i(index: GLuint, x: GLint) {
     with_ctx(|mut state| state.oxidegl_vertex_attrib_i1i(index, x));
 }
 #[no_mangle]
-unsafe extern "C" fn glVertexAttribI2i(index: GLuint, x: GLint, y: GLint) {
+pub unsafe extern "C" fn glVertexAttribI2i(index: GLuint, x: GLint, y: GLint) {
     ::log::trace!(
         "glVertexAttribI2i called, parameters: index: {:?}, x: {:?}, y: {:?} ",
         index,
@@ -7171,7 +7275,7 @@ unsafe extern "C" fn glVertexAttribI2i(index: GLuint, x: GLint, y: GLint) {
     with_ctx(|mut state| state.oxidegl_vertex_attrib_i2i(index, x, y));
 }
 #[no_mangle]
-unsafe extern "C" fn glVertexAttribI3i(index: GLuint, x: GLint, y: GLint, z: GLint) {
+pub unsafe extern "C" fn glVertexAttribI3i(index: GLuint, x: GLint, y: GLint, z: GLint) {
     ::log::trace!(
         "glVertexAttribI3i called, parameters: index: {:?}, x: {:?}, y: {:?}, z: {:?} ",
         index,
@@ -7182,7 +7286,7 @@ unsafe extern "C" fn glVertexAttribI3i(index: GLuint, x: GLint, y: GLint, z: GLi
     with_ctx(|mut state| state.oxidegl_vertex_attrib_i3i(index, x, y, z));
 }
 #[no_mangle]
-unsafe extern "C" fn glVertexAttribI4i(index: GLuint, x: GLint, y: GLint, z: GLint, w: GLint) {
+pub unsafe extern "C" fn glVertexAttribI4i(index: GLuint, x: GLint, y: GLint, z: GLint, w: GLint) {
     ::log::trace!(
         "glVertexAttribI4i called, parameters: index: {:?}, x: {:?}, y: {:?}, z: {:?}, w: {:?} ",
         index,
@@ -7194,7 +7298,7 @@ unsafe extern "C" fn glVertexAttribI4i(index: GLuint, x: GLint, y: GLint, z: GLi
     with_ctx(|mut state| state.oxidegl_vertex_attrib_i4i(index, x, y, z, w));
 }
 #[no_mangle]
-unsafe extern "C" fn glVertexAttribI1ui(index: GLuint, x: GLuint) {
+pub unsafe extern "C" fn glVertexAttribI1ui(index: GLuint, x: GLuint) {
     ::log::trace!(
         "glVertexAttribI1ui called, parameters: index: {:?}, x: {:?} ",
         index,
@@ -7203,7 +7307,7 @@ unsafe extern "C" fn glVertexAttribI1ui(index: GLuint, x: GLuint) {
     with_ctx(|mut state| state.oxidegl_vertex_attrib_i1ui(index, x));
 }
 #[no_mangle]
-unsafe extern "C" fn glVertexAttribI2ui(index: GLuint, x: GLuint, y: GLuint) {
+pub unsafe extern "C" fn glVertexAttribI2ui(index: GLuint, x: GLuint, y: GLuint) {
     ::log::trace!(
         "glVertexAttribI2ui called, parameters: index: {:?}, x: {:?}, y: {:?} ",
         index,
@@ -7213,7 +7317,7 @@ unsafe extern "C" fn glVertexAttribI2ui(index: GLuint, x: GLuint, y: GLuint) {
     with_ctx(|mut state| state.oxidegl_vertex_attrib_i2ui(index, x, y));
 }
 #[no_mangle]
-unsafe extern "C" fn glVertexAttribI3ui(index: GLuint, x: GLuint, y: GLuint, z: GLuint) {
+pub unsafe extern "C" fn glVertexAttribI3ui(index: GLuint, x: GLuint, y: GLuint, z: GLuint) {
     ::log::trace!(
         "glVertexAttribI3ui called, parameters: index: {:?}, x: {:?}, y: {:?}, z: {:?} ",
         index,
@@ -7224,7 +7328,13 @@ unsafe extern "C" fn glVertexAttribI3ui(index: GLuint, x: GLuint, y: GLuint, z: 
     with_ctx(|mut state| state.oxidegl_vertex_attrib_i3ui(index, x, y, z));
 }
 #[no_mangle]
-unsafe extern "C" fn glVertexAttribI4ui(index: GLuint, x: GLuint, y: GLuint, z: GLuint, w: GLuint) {
+pub unsafe extern "C" fn glVertexAttribI4ui(
+    index: GLuint,
+    x: GLuint,
+    y: GLuint,
+    z: GLuint,
+    w: GLuint,
+) {
     ::log::trace!(
         "glVertexAttribI4ui called, parameters: index: {:?}, x: {:?}, y: {:?}, z: {:?}, w: {:?} ",
         index,
@@ -7236,7 +7346,7 @@ unsafe extern "C" fn glVertexAttribI4ui(index: GLuint, x: GLuint, y: GLuint, z: 
     with_ctx(|mut state| state.oxidegl_vertex_attrib_i4ui(index, x, y, z, w));
 }
 #[no_mangle]
-unsafe extern "C" fn glVertexAttribI1iv(index: GLuint, v: *const GLint) {
+pub unsafe extern "C" fn glVertexAttribI1iv(index: GLuint, v: *const GLint) {
     ::log::trace!(
         "glVertexAttribI1iv called, parameters: index: {:?}, v: {:?} ",
         index,
@@ -7245,7 +7355,7 @@ unsafe extern "C" fn glVertexAttribI1iv(index: GLuint, v: *const GLint) {
     with_ctx(|mut state| unsafe { state.oxidegl_vertex_attrib_i1iv(index, v) });
 }
 #[no_mangle]
-unsafe extern "C" fn glVertexAttribI2iv(index: GLuint, v: *const GLint) {
+pub unsafe extern "C" fn glVertexAttribI2iv(index: GLuint, v: *const GLint) {
     ::log::trace!(
         "glVertexAttribI2iv called, parameters: index: {:?}, v: {:?} ",
         index,
@@ -7254,7 +7364,7 @@ unsafe extern "C" fn glVertexAttribI2iv(index: GLuint, v: *const GLint) {
     with_ctx(|mut state| unsafe { state.oxidegl_vertex_attrib_i2iv(index, v) });
 }
 #[no_mangle]
-unsafe extern "C" fn glVertexAttribI3iv(index: GLuint, v: *const GLint) {
+pub unsafe extern "C" fn glVertexAttribI3iv(index: GLuint, v: *const GLint) {
     ::log::trace!(
         "glVertexAttribI3iv called, parameters: index: {:?}, v: {:?} ",
         index,
@@ -7263,7 +7373,7 @@ unsafe extern "C" fn glVertexAttribI3iv(index: GLuint, v: *const GLint) {
     with_ctx(|mut state| unsafe { state.oxidegl_vertex_attrib_i3iv(index, v) });
 }
 #[no_mangle]
-unsafe extern "C" fn glVertexAttribI4iv(index: GLuint, v: *const GLint) {
+pub unsafe extern "C" fn glVertexAttribI4iv(index: GLuint, v: *const GLint) {
     ::log::trace!(
         "glVertexAttribI4iv called, parameters: index: {:?}, v: {:?} ",
         index,
@@ -7272,7 +7382,7 @@ unsafe extern "C" fn glVertexAttribI4iv(index: GLuint, v: *const GLint) {
     with_ctx(|mut state| unsafe { state.oxidegl_vertex_attrib_i4iv(index, v) });
 }
 #[no_mangle]
-unsafe extern "C" fn glVertexAttribI1uiv(index: GLuint, v: *const GLuint) {
+pub unsafe extern "C" fn glVertexAttribI1uiv(index: GLuint, v: *const GLuint) {
     ::log::trace!(
         "glVertexAttribI1uiv called, parameters: index: {:?}, v: {:?} ",
         index,
@@ -7281,7 +7391,7 @@ unsafe extern "C" fn glVertexAttribI1uiv(index: GLuint, v: *const GLuint) {
     with_ctx(|mut state| unsafe { state.oxidegl_vertex_attrib_i1uiv(index, v) });
 }
 #[no_mangle]
-unsafe extern "C" fn glVertexAttribI2uiv(index: GLuint, v: *const GLuint) {
+pub unsafe extern "C" fn glVertexAttribI2uiv(index: GLuint, v: *const GLuint) {
     ::log::trace!(
         "glVertexAttribI2uiv called, parameters: index: {:?}, v: {:?} ",
         index,
@@ -7290,7 +7400,7 @@ unsafe extern "C" fn glVertexAttribI2uiv(index: GLuint, v: *const GLuint) {
     with_ctx(|mut state| unsafe { state.oxidegl_vertex_attrib_i2uiv(index, v) });
 }
 #[no_mangle]
-unsafe extern "C" fn glVertexAttribI3uiv(index: GLuint, v: *const GLuint) {
+pub unsafe extern "C" fn glVertexAttribI3uiv(index: GLuint, v: *const GLuint) {
     ::log::trace!(
         "glVertexAttribI3uiv called, parameters: index: {:?}, v: {:?} ",
         index,
@@ -7299,7 +7409,7 @@ unsafe extern "C" fn glVertexAttribI3uiv(index: GLuint, v: *const GLuint) {
     with_ctx(|mut state| unsafe { state.oxidegl_vertex_attrib_i3uiv(index, v) });
 }
 #[no_mangle]
-unsafe extern "C" fn glVertexAttribI4uiv(index: GLuint, v: *const GLuint) {
+pub unsafe extern "C" fn glVertexAttribI4uiv(index: GLuint, v: *const GLuint) {
     ::log::trace!(
         "glVertexAttribI4uiv called, parameters: index: {:?}, v: {:?} ",
         index,
@@ -7308,7 +7418,7 @@ unsafe extern "C" fn glVertexAttribI4uiv(index: GLuint, v: *const GLuint) {
     with_ctx(|mut state| unsafe { state.oxidegl_vertex_attrib_i4uiv(index, v) });
 }
 #[no_mangle]
-unsafe extern "C" fn glVertexAttribI4bv(index: GLuint, v: *const GLbyte) {
+pub unsafe extern "C" fn glVertexAttribI4bv(index: GLuint, v: *const GLbyte) {
     ::log::trace!(
         "glVertexAttribI4bv called, parameters: index: {:?}, v: {:?} ",
         index,
@@ -7317,7 +7427,7 @@ unsafe extern "C" fn glVertexAttribI4bv(index: GLuint, v: *const GLbyte) {
     with_ctx(|mut state| unsafe { state.oxidegl_vertex_attrib_i4bv(index, v) });
 }
 #[no_mangle]
-unsafe extern "C" fn glVertexAttribI4sv(index: GLuint, v: *const GLshort) {
+pub unsafe extern "C" fn glVertexAttribI4sv(index: GLuint, v: *const GLshort) {
     ::log::trace!(
         "glVertexAttribI4sv called, parameters: index: {:?}, v: {:?} ",
         index,
@@ -7326,7 +7436,7 @@ unsafe extern "C" fn glVertexAttribI4sv(index: GLuint, v: *const GLshort) {
     with_ctx(|mut state| unsafe { state.oxidegl_vertex_attrib_i4sv(index, v) });
 }
 #[no_mangle]
-unsafe extern "C" fn glVertexAttribI4ubv(index: GLuint, v: *const GLubyte) {
+pub unsafe extern "C" fn glVertexAttribI4ubv(index: GLuint, v: *const GLubyte) {
     ::log::trace!(
         "glVertexAttribI4ubv called, parameters: index: {:?}, v: {:?} ",
         index,
@@ -7335,7 +7445,7 @@ unsafe extern "C" fn glVertexAttribI4ubv(index: GLuint, v: *const GLubyte) {
     with_ctx(|mut state| unsafe { state.oxidegl_vertex_attrib_i4ubv(index, v) });
 }
 #[no_mangle]
-unsafe extern "C" fn glVertexAttribI4usv(index: GLuint, v: *const GLushort) {
+pub unsafe extern "C" fn glVertexAttribI4usv(index: GLuint, v: *const GLushort) {
     ::log::trace!(
         "glVertexAttribI4usv called, parameters: index: {:?}, v: {:?} ",
         index,
@@ -7344,7 +7454,7 @@ unsafe extern "C" fn glVertexAttribI4usv(index: GLuint, v: *const GLushort) {
     with_ctx(|mut state| unsafe { state.oxidegl_vertex_attrib_i4usv(index, v) });
 }
 #[no_mangle]
-unsafe extern "C" fn glVertexAttribP1ui(
+pub unsafe extern "C" fn glVertexAttribP1ui(
     index: GLuint,
     r#type: GLenum,
     normalized: GLboolean,
@@ -7356,7 +7466,7 @@ unsafe extern "C" fn glVertexAttribP1ui(
     });
 }
 #[no_mangle]
-unsafe extern "C" fn glVertexAttribP2ui(
+pub unsafe extern "C" fn glVertexAttribP2ui(
     index: GLuint,
     r#type: GLenum,
     normalized: GLboolean,
@@ -7368,7 +7478,7 @@ unsafe extern "C" fn glVertexAttribP2ui(
     });
 }
 #[no_mangle]
-unsafe extern "C" fn glVertexAttribP3ui(
+pub unsafe extern "C" fn glVertexAttribP3ui(
     index: GLuint,
     r#type: GLenum,
     normalized: GLboolean,
@@ -7380,7 +7490,7 @@ unsafe extern "C" fn glVertexAttribP3ui(
     });
 }
 #[no_mangle]
-unsafe extern "C" fn glVertexAttribP4ui(
+pub unsafe extern "C" fn glVertexAttribP4ui(
     index: GLuint,
     r#type: GLenum,
     normalized: GLboolean,
@@ -7392,7 +7502,7 @@ unsafe extern "C" fn glVertexAttribP4ui(
     });
 }
 #[no_mangle]
-unsafe extern "C" fn glVertexAttribL1d(index: GLuint, x: GLdouble) {
+pub unsafe extern "C" fn glVertexAttribL1d(index: GLuint, x: GLdouble) {
     ::log::trace!(
         "glVertexAttribL1d called, parameters: index: {:?}, x: {:?} ",
         index,
@@ -7401,7 +7511,7 @@ unsafe extern "C" fn glVertexAttribL1d(index: GLuint, x: GLdouble) {
     with_ctx(|mut state| state.oxidegl_vertex_attrib_l1d(index, x));
 }
 #[no_mangle]
-unsafe extern "C" fn glVertexAttribL2d(index: GLuint, x: GLdouble, y: GLdouble) {
+pub unsafe extern "C" fn glVertexAttribL2d(index: GLuint, x: GLdouble, y: GLdouble) {
     ::log::trace!(
         "glVertexAttribL2d called, parameters: index: {:?}, x: {:?}, y: {:?} ",
         index,
@@ -7411,7 +7521,7 @@ unsafe extern "C" fn glVertexAttribL2d(index: GLuint, x: GLdouble, y: GLdouble) 
     with_ctx(|mut state| state.oxidegl_vertex_attrib_l2d(index, x, y));
 }
 #[no_mangle]
-unsafe extern "C" fn glVertexAttribL3d(index: GLuint, x: GLdouble, y: GLdouble, z: GLdouble) {
+pub unsafe extern "C" fn glVertexAttribL3d(index: GLuint, x: GLdouble, y: GLdouble, z: GLdouble) {
     ::log::trace!(
         "glVertexAttribL3d called, parameters: index: {:?}, x: {:?}, y: {:?}, z: {:?} ",
         index,
@@ -7422,7 +7532,7 @@ unsafe extern "C" fn glVertexAttribL3d(index: GLuint, x: GLdouble, y: GLdouble, 
     with_ctx(|mut state| state.oxidegl_vertex_attrib_l3d(index, x, y, z));
 }
 #[no_mangle]
-unsafe extern "C" fn glVertexAttribL4d(
+pub unsafe extern "C" fn glVertexAttribL4d(
     index: GLuint,
     x: GLdouble,
     y: GLdouble,
@@ -7440,7 +7550,7 @@ unsafe extern "C" fn glVertexAttribL4d(
     with_ctx(|mut state| state.oxidegl_vertex_attrib_l4d(index, x, y, z, w));
 }
 #[no_mangle]
-unsafe extern "C" fn glVertexAttribL1dv(index: GLuint, v: *const GLdouble) {
+pub unsafe extern "C" fn glVertexAttribL1dv(index: GLuint, v: *const GLdouble) {
     ::log::trace!(
         "glVertexAttribL1dv called, parameters: index: {:?}, v: {:?} ",
         index,
@@ -7449,7 +7559,7 @@ unsafe extern "C" fn glVertexAttribL1dv(index: GLuint, v: *const GLdouble) {
     with_ctx(|mut state| unsafe { state.oxidegl_vertex_attrib_l1dv(index, v) });
 }
 #[no_mangle]
-unsafe extern "C" fn glVertexAttribL2dv(index: GLuint, v: *const GLdouble) {
+pub unsafe extern "C" fn glVertexAttribL2dv(index: GLuint, v: *const GLdouble) {
     ::log::trace!(
         "glVertexAttribL2dv called, parameters: index: {:?}, v: {:?} ",
         index,
@@ -7458,7 +7568,7 @@ unsafe extern "C" fn glVertexAttribL2dv(index: GLuint, v: *const GLdouble) {
     with_ctx(|mut state| unsafe { state.oxidegl_vertex_attrib_l2dv(index, v) });
 }
 #[no_mangle]
-unsafe extern "C" fn glVertexAttribL3dv(index: GLuint, v: *const GLdouble) {
+pub unsafe extern "C" fn glVertexAttribL3dv(index: GLuint, v: *const GLdouble) {
     ::log::trace!(
         "glVertexAttribL3dv called, parameters: index: {:?}, v: {:?} ",
         index,
@@ -7467,7 +7577,7 @@ unsafe extern "C" fn glVertexAttribL3dv(index: GLuint, v: *const GLdouble) {
     with_ctx(|mut state| unsafe { state.oxidegl_vertex_attrib_l3dv(index, v) });
 }
 #[no_mangle]
-unsafe extern "C" fn glVertexAttribL4dv(index: GLuint, v: *const GLdouble) {
+pub unsafe extern "C" fn glVertexAttribL4dv(index: GLuint, v: *const GLdouble) {
     ::log::trace!(
         "glVertexAttribL4dv called, parameters: index: {:?}, v: {:?} ",
         index,
@@ -7476,7 +7586,7 @@ unsafe extern "C" fn glVertexAttribL4dv(index: GLuint, v: *const GLdouble) {
     with_ctx(|mut state| unsafe { state.oxidegl_vertex_attrib_l4dv(index, v) });
 }
 #[no_mangle]
-unsafe extern "C" fn glVertexAttribBinding(attribindex: GLuint, bindingindex: GLuint) {
+pub unsafe extern "C" fn glVertexAttribBinding(attribindex: GLuint, bindingindex: GLuint) {
     ::log::trace!(
         "glVertexAttribBinding called, parameters: attribindex: {:?}, bindingindex: {:?} ",
         attribindex,
@@ -7485,7 +7595,7 @@ unsafe extern "C" fn glVertexAttribBinding(attribindex: GLuint, bindingindex: GL
     with_ctx(|mut state| state.oxidegl_vertex_attrib_binding(attribindex, bindingindex));
 }
 #[no_mangle]
-unsafe extern "C" fn glVertexArrayAttribBinding(
+pub unsafe extern "C" fn glVertexArrayAttribBinding(
     vaobj: GLuint,
     attribindex: GLuint,
     bindingindex: GLuint,
@@ -7496,7 +7606,7 @@ unsafe extern "C" fn glVertexArrayAttribBinding(
     });
 }
 #[no_mangle]
-unsafe extern "C" fn glVertexAttribDivisor(index: GLuint, divisor: GLuint) {
+pub unsafe extern "C" fn glVertexAttribDivisor(index: GLuint, divisor: GLuint) {
     ::log::trace!(
         "glVertexAttribDivisor called, parameters: index: {:?}, divisor: {:?} ",
         index,
@@ -7505,7 +7615,7 @@ unsafe extern "C" fn glVertexAttribDivisor(index: GLuint, divisor: GLuint) {
     with_ctx(|mut state| state.oxidegl_vertex_attrib_divisor(index, divisor));
 }
 #[no_mangle]
-unsafe extern "C" fn glVertexAttribFormat(
+pub unsafe extern "C" fn glVertexAttribFormat(
     attribindex: GLuint,
     size: GLint,
     r#type: GLenum,
@@ -7524,7 +7634,7 @@ unsafe extern "C" fn glVertexAttribFormat(
     });
 }
 #[no_mangle]
-unsafe extern "C" fn glVertexAttribIFormat(
+pub unsafe extern "C" fn glVertexAttribIFormat(
     attribindex: GLuint,
     size: GLint,
     r#type: GLenum,
@@ -7541,7 +7651,7 @@ unsafe extern "C" fn glVertexAttribIFormat(
     });
 }
 #[no_mangle]
-unsafe extern "C" fn glVertexAttribLFormat(
+pub unsafe extern "C" fn glVertexAttribLFormat(
     attribindex: GLuint,
     size: GLint,
     r#type: GLenum,
@@ -7558,7 +7668,7 @@ unsafe extern "C" fn glVertexAttribLFormat(
     });
 }
 #[no_mangle]
-unsafe extern "C" fn glVertexArrayAttribFormat(
+pub unsafe extern "C" fn glVertexArrayAttribFormat(
     vaobj: GLuint,
     attribindex: GLuint,
     size: GLint,
@@ -7579,7 +7689,7 @@ unsafe extern "C" fn glVertexArrayAttribFormat(
     });
 }
 #[no_mangle]
-unsafe extern "C" fn glVertexArrayAttribIFormat(
+pub unsafe extern "C" fn glVertexArrayAttribIFormat(
     vaobj: GLuint,
     attribindex: GLuint,
     size: GLint,
@@ -7598,7 +7708,7 @@ unsafe extern "C" fn glVertexArrayAttribIFormat(
     });
 }
 #[no_mangle]
-unsafe extern "C" fn glVertexArrayAttribLFormat(
+pub unsafe extern "C" fn glVertexArrayAttribLFormat(
     vaobj: GLuint,
     attribindex: GLuint,
     size: GLint,
@@ -7617,7 +7727,7 @@ unsafe extern "C" fn glVertexArrayAttribLFormat(
     });
 }
 #[no_mangle]
-unsafe extern "C" fn glVertexAttribPointer(
+pub unsafe extern "C" fn glVertexAttribPointer(
     index: GLuint,
     size: GLint,
     r#type: GLenum,
@@ -7638,7 +7748,7 @@ unsafe extern "C" fn glVertexAttribPointer(
     });
 }
 #[no_mangle]
-unsafe extern "C" fn glVertexAttribIPointer(
+pub unsafe extern "C" fn glVertexAttribIPointer(
     index: GLuint,
     size: GLint,
     r#type: GLenum,
@@ -7651,7 +7761,7 @@ unsafe extern "C" fn glVertexAttribIPointer(
     });
 }
 #[no_mangle]
-unsafe extern "C" fn glVertexAttribLPointer(
+pub unsafe extern "C" fn glVertexAttribLPointer(
     index: GLuint,
     size: GLint,
     r#type: GLenum,
@@ -7664,7 +7774,7 @@ unsafe extern "C" fn glVertexAttribLPointer(
     });
 }
 #[no_mangle]
-unsafe extern "C" fn glVertexBindingDivisor(bindingindex: GLuint, divisor: GLuint) {
+pub unsafe extern "C" fn glVertexBindingDivisor(bindingindex: GLuint, divisor: GLuint) {
     ::log::trace!(
         "glVertexBindingDivisor called, parameters: bindingindex: {:?}, divisor: {:?} ",
         bindingindex,
@@ -7673,7 +7783,7 @@ unsafe extern "C" fn glVertexBindingDivisor(bindingindex: GLuint, divisor: GLuin
     with_ctx(|mut state| state.oxidegl_vertex_binding_divisor(bindingindex, divisor));
 }
 #[no_mangle]
-unsafe extern "C" fn glVertexArrayBindingDivisor(
+pub unsafe extern "C" fn glVertexArrayBindingDivisor(
     vaobj: GLuint,
     bindingindex: GLuint,
     divisor: GLuint,
@@ -7682,7 +7792,7 @@ unsafe extern "C" fn glVertexArrayBindingDivisor(
     with_ctx(|mut state| state.oxidegl_vertex_array_binding_divisor(vaobj, bindingindex, divisor));
 }
 #[no_mangle]
-unsafe extern "C" fn glViewport(x: GLint, y: GLint, width: GLsizei, height: GLsizei) {
+pub unsafe extern "C" fn glViewport(x: GLint, y: GLint, width: GLsizei, height: GLsizei) {
     ::log::trace!(
         "glViewport called, parameters: x: {:?}, y: {:?}, width: {:?}, height: {:?} ",
         x,
@@ -7693,7 +7803,7 @@ unsafe extern "C" fn glViewport(x: GLint, y: GLint, width: GLsizei, height: GLsi
     with_ctx(|mut state| state.oxidegl_viewport(x, y, width, height));
 }
 #[no_mangle]
-unsafe extern "C" fn glViewportArrayv(first: GLuint, count: GLsizei, v: *const GLfloat) {
+pub unsafe extern "C" fn glViewportArrayv(first: GLuint, count: GLsizei, v: *const GLfloat) {
     ::log::trace!(
         "glViewportArrayv called, parameters: first: {:?}, count: {:?}, v: {:?} ",
         first,
@@ -7703,7 +7813,7 @@ unsafe extern "C" fn glViewportArrayv(first: GLuint, count: GLsizei, v: *const G
     with_ctx(|mut state| unsafe { state.oxidegl_viewport_arrayv(first, count, v) });
 }
 #[no_mangle]
-unsafe extern "C" fn glViewportIndexedf(
+pub unsafe extern "C" fn glViewportIndexedf(
     index: GLuint,
     x: GLfloat,
     y: GLfloat,
@@ -7721,7 +7831,7 @@ unsafe extern "C" fn glViewportIndexedf(
     with_ctx(|mut state| state.oxidegl_viewport_indexedf(index, x, y, w, h));
 }
 #[no_mangle]
-unsafe extern "C" fn glViewportIndexedfv(index: GLuint, v: *const GLfloat) {
+pub unsafe extern "C" fn glViewportIndexedfv(index: GLuint, v: *const GLfloat) {
     ::log::trace!(
         "glViewportIndexedfv called, parameters: index: {:?}, v: {:?} ",
         index,
@@ -7730,7 +7840,7 @@ unsafe extern "C" fn glViewportIndexedfv(index: GLuint, v: *const GLfloat) {
     with_ctx(|mut state| unsafe { state.oxidegl_viewport_indexedfv(index, v) });
 }
 #[no_mangle]
-unsafe extern "C" fn glWaitSync(sync: GLsync, flags: GLenum, timeout: GLuint64) {
+pub unsafe extern "C" fn glWaitSync(sync: GLsync, flags: GLenum, timeout: GLuint64) {
     ::log::trace!(
         "glWaitSync called, parameters: sync: {:?}, flags: {:?}, timeout: {:?} ",
         sync,
@@ -7740,7 +7850,7 @@ unsafe extern "C" fn glWaitSync(sync: GLsync, flags: GLenum, timeout: GLuint64) 
     with_ctx(|mut state| state.oxidegl_wait_sync(sync, unsafe { flags.into_enum() }, timeout));
 }
 #[no_mangle]
-unsafe extern "C" fn glVertexAttribP1uiv(
+pub unsafe extern "C" fn glVertexAttribP1uiv(
     index: GLuint,
     r#type: GLenum,
     normalized: GLboolean,
@@ -7752,7 +7862,7 @@ unsafe extern "C" fn glVertexAttribP1uiv(
     });
 }
 #[no_mangle]
-unsafe extern "C" fn glVertexAttribP2uiv(
+pub unsafe extern "C" fn glVertexAttribP2uiv(
     index: GLuint,
     r#type: GLenum,
     normalized: GLboolean,
@@ -7764,7 +7874,7 @@ unsafe extern "C" fn glVertexAttribP2uiv(
     });
 }
 #[no_mangle]
-unsafe extern "C" fn glVertexAttribP3uiv(
+pub unsafe extern "C" fn glVertexAttribP3uiv(
     index: GLuint,
     r#type: GLenum,
     normalized: GLboolean,
@@ -7776,7 +7886,7 @@ unsafe extern "C" fn glVertexAttribP3uiv(
     });
 }
 #[no_mangle]
-unsafe extern "C" fn glVertexAttribP4uiv(
+pub unsafe extern "C" fn glVertexAttribP4uiv(
     index: GLuint,
     r#type: GLenum,
     normalized: GLboolean,
@@ -7788,7 +7898,7 @@ unsafe extern "C" fn glVertexAttribP4uiv(
     });
 }
 #[no_mangle]
-unsafe extern "C" fn glUniform1d(location: GLint, x: GLdouble) {
+pub unsafe extern "C" fn glUniform1d(location: GLint, x: GLdouble) {
     ::log::trace!(
         "glUniform1d called, parameters: location: {:?}, x: {:?} ",
         location,
@@ -7797,7 +7907,7 @@ unsafe extern "C" fn glUniform1d(location: GLint, x: GLdouble) {
     with_ctx(|mut state| state.oxidegl_uniform1d(location, x));
 }
 #[no_mangle]
-unsafe extern "C" fn glUniform2d(location: GLint, x: GLdouble, y: GLdouble) {
+pub unsafe extern "C" fn glUniform2d(location: GLint, x: GLdouble, y: GLdouble) {
     ::log::trace!(
         "glUniform2d called, parameters: location: {:?}, x: {:?}, y: {:?} ",
         location,
@@ -7807,7 +7917,7 @@ unsafe extern "C" fn glUniform2d(location: GLint, x: GLdouble, y: GLdouble) {
     with_ctx(|mut state| state.oxidegl_uniform2d(location, x, y));
 }
 #[no_mangle]
-unsafe extern "C" fn glUniform3d(location: GLint, x: GLdouble, y: GLdouble, z: GLdouble) {
+pub unsafe extern "C" fn glUniform3d(location: GLint, x: GLdouble, y: GLdouble, z: GLdouble) {
     ::log::trace!(
         "glUniform3d called, parameters: location: {:?}, x: {:?}, y: {:?}, z: {:?} ",
         location,
@@ -7818,7 +7928,7 @@ unsafe extern "C" fn glUniform3d(location: GLint, x: GLdouble, y: GLdouble, z: G
     with_ctx(|mut state| state.oxidegl_uniform3d(location, x, y, z));
 }
 #[no_mangle]
-unsafe extern "C" fn glUniform4d(
+pub unsafe extern "C" fn glUniform4d(
     location: GLint,
     x: GLdouble,
     y: GLdouble,
@@ -7836,7 +7946,7 @@ unsafe extern "C" fn glUniform4d(
     with_ctx(|mut state| state.oxidegl_uniform4d(location, x, y, z, w));
 }
 #[no_mangle]
-unsafe extern "C" fn glUniform1dv(location: GLint, count: GLsizei, value: *const GLdouble) {
+pub unsafe extern "C" fn glUniform1dv(location: GLint, count: GLsizei, value: *const GLdouble) {
     ::log::trace!(
         "glUniform1dv called, parameters: location: {:?}, count: {:?}, value: {:?} ",
         location,
@@ -7846,7 +7956,7 @@ unsafe extern "C" fn glUniform1dv(location: GLint, count: GLsizei, value: *const
     with_ctx(|mut state| unsafe { state.oxidegl_uniform1dv(location, count, value) });
 }
 #[no_mangle]
-unsafe extern "C" fn glUniform2dv(location: GLint, count: GLsizei, value: *const GLdouble) {
+pub unsafe extern "C" fn glUniform2dv(location: GLint, count: GLsizei, value: *const GLdouble) {
     ::log::trace!(
         "glUniform2dv called, parameters: location: {:?}, count: {:?}, value: {:?} ",
         location,
@@ -7856,7 +7966,7 @@ unsafe extern "C" fn glUniform2dv(location: GLint, count: GLsizei, value: *const
     with_ctx(|mut state| unsafe { state.oxidegl_uniform2dv(location, count, value) });
 }
 #[no_mangle]
-unsafe extern "C" fn glUniform3dv(location: GLint, count: GLsizei, value: *const GLdouble) {
+pub unsafe extern "C" fn glUniform3dv(location: GLint, count: GLsizei, value: *const GLdouble) {
     ::log::trace!(
         "glUniform3dv called, parameters: location: {:?}, count: {:?}, value: {:?} ",
         location,
@@ -7866,7 +7976,7 @@ unsafe extern "C" fn glUniform3dv(location: GLint, count: GLsizei, value: *const
     with_ctx(|mut state| unsafe { state.oxidegl_uniform3dv(location, count, value) });
 }
 #[no_mangle]
-unsafe extern "C" fn glUniform4dv(location: GLint, count: GLsizei, value: *const GLdouble) {
+pub unsafe extern "C" fn glUniform4dv(location: GLint, count: GLsizei, value: *const GLdouble) {
     ::log::trace!(
         "glUniform4dv called, parameters: location: {:?}, count: {:?}, value: {:?} ",
         location,
@@ -7876,7 +7986,7 @@ unsafe extern "C" fn glUniform4dv(location: GLint, count: GLsizei, value: *const
     with_ctx(|mut state| unsafe { state.oxidegl_uniform4dv(location, count, value) });
 }
 #[no_mangle]
-unsafe extern "C" fn glUniformMatrix2dv(
+pub unsafe extern "C" fn glUniformMatrix2dv(
     location: GLint,
     count: GLsizei,
     transpose: GLboolean,
@@ -7888,7 +7998,7 @@ unsafe extern "C" fn glUniformMatrix2dv(
     });
 }
 #[no_mangle]
-unsafe extern "C" fn glUniformMatrix3dv(
+pub unsafe extern "C" fn glUniformMatrix3dv(
     location: GLint,
     count: GLsizei,
     transpose: GLboolean,
@@ -7900,7 +8010,7 @@ unsafe extern "C" fn glUniformMatrix3dv(
     });
 }
 #[no_mangle]
-unsafe extern "C" fn glUniformMatrix4dv(
+pub unsafe extern "C" fn glUniformMatrix4dv(
     location: GLint,
     count: GLsizei,
     transpose: GLboolean,
@@ -7912,7 +8022,7 @@ unsafe extern "C" fn glUniformMatrix4dv(
     });
 }
 #[no_mangle]
-unsafe extern "C" fn glUniformMatrix2x3dv(
+pub unsafe extern "C" fn glUniformMatrix2x3dv(
     location: GLint,
     count: GLsizei,
     transpose: GLboolean,
@@ -7924,7 +8034,7 @@ unsafe extern "C" fn glUniformMatrix2x3dv(
     });
 }
 #[no_mangle]
-unsafe extern "C" fn glUniformMatrix2x4dv(
+pub unsafe extern "C" fn glUniformMatrix2x4dv(
     location: GLint,
     count: GLsizei,
     transpose: GLboolean,
@@ -7936,7 +8046,7 @@ unsafe extern "C" fn glUniformMatrix2x4dv(
     });
 }
 #[no_mangle]
-unsafe extern "C" fn glUniformMatrix3x2dv(
+pub unsafe extern "C" fn glUniformMatrix3x2dv(
     location: GLint,
     count: GLsizei,
     transpose: GLboolean,
@@ -7948,7 +8058,7 @@ unsafe extern "C" fn glUniformMatrix3x2dv(
     });
 }
 #[no_mangle]
-unsafe extern "C" fn glUniformMatrix3x4dv(
+pub unsafe extern "C" fn glUniformMatrix3x4dv(
     location: GLint,
     count: GLsizei,
     transpose: GLboolean,
@@ -7960,7 +8070,7 @@ unsafe extern "C" fn glUniformMatrix3x4dv(
     });
 }
 #[no_mangle]
-unsafe extern "C" fn glUniformMatrix4x2dv(
+pub unsafe extern "C" fn glUniformMatrix4x2dv(
     location: GLint,
     count: GLsizei,
     transpose: GLboolean,
@@ -7972,7 +8082,7 @@ unsafe extern "C" fn glUniformMatrix4x2dv(
     });
 }
 #[no_mangle]
-unsafe extern "C" fn glUniformMatrix4x3dv(
+pub unsafe extern "C" fn glUniformMatrix4x3dv(
     location: GLint,
     count: GLsizei,
     transpose: GLboolean,
@@ -7984,7 +8094,7 @@ unsafe extern "C" fn glUniformMatrix4x3dv(
     });
 }
 #[no_mangle]
-unsafe extern "C" fn glProgramUniform1d(program: GLuint, location: GLint, v0: GLdouble) {
+pub unsafe extern "C" fn glProgramUniform1d(program: GLuint, location: GLint, v0: GLdouble) {
     ::log::trace!(
         "glProgramUniform1d called, parameters: program: {:?}, location: {:?}, v0: {:?} ",
         program,
@@ -7994,7 +8104,7 @@ unsafe extern "C" fn glProgramUniform1d(program: GLuint, location: GLint, v0: GL
     with_ctx(|mut state| state.oxidegl_program_uniform1d(program, location, v0));
 }
 #[no_mangle]
-unsafe extern "C" fn glProgramUniform1dv(
+pub unsafe extern "C" fn glProgramUniform1dv(
     program: GLuint,
     location: GLint,
     count: GLsizei,
@@ -8006,7 +8116,7 @@ unsafe extern "C" fn glProgramUniform1dv(
     });
 }
 #[no_mangle]
-unsafe extern "C" fn glProgramUniform2d(
+pub unsafe extern "C" fn glProgramUniform2d(
     program: GLuint,
     location: GLint,
     v0: GLdouble,
@@ -8022,7 +8132,7 @@ unsafe extern "C" fn glProgramUniform2d(
     with_ctx(|mut state| state.oxidegl_program_uniform2d(program, location, v0, v1));
 }
 #[no_mangle]
-unsafe extern "C" fn glProgramUniform2dv(
+pub unsafe extern "C" fn glProgramUniform2dv(
     program: GLuint,
     location: GLint,
     count: GLsizei,
@@ -8034,7 +8144,7 @@ unsafe extern "C" fn glProgramUniform2dv(
     });
 }
 #[no_mangle]
-unsafe extern "C" fn glProgramUniform3d(
+pub unsafe extern "C" fn glProgramUniform3d(
     program: GLuint,
     location: GLint,
     v0: GLdouble,
@@ -8045,7 +8155,7 @@ unsafe extern "C" fn glProgramUniform3d(
     with_ctx(|mut state| state.oxidegl_program_uniform3d(program, location, v0, v1, v2));
 }
 #[no_mangle]
-unsafe extern "C" fn glProgramUniform3dv(
+pub unsafe extern "C" fn glProgramUniform3dv(
     program: GLuint,
     location: GLint,
     count: GLsizei,
@@ -8057,7 +8167,7 @@ unsafe extern "C" fn glProgramUniform3dv(
     });
 }
 #[no_mangle]
-unsafe extern "C" fn glProgramUniform4d(
+pub unsafe extern "C" fn glProgramUniform4d(
     program: GLuint,
     location: GLint,
     v0: GLdouble,
@@ -8069,7 +8179,7 @@ unsafe extern "C" fn glProgramUniform4d(
     with_ctx(|mut state| state.oxidegl_program_uniform4d(program, location, v0, v1, v2, v3));
 }
 #[no_mangle]
-unsafe extern "C" fn glProgramUniform4dv(
+pub unsafe extern "C" fn glProgramUniform4dv(
     program: GLuint,
     location: GLint,
     count: GLsizei,
@@ -8081,7 +8191,7 @@ unsafe extern "C" fn glProgramUniform4dv(
     });
 }
 #[no_mangle]
-unsafe extern "C" fn glProgramUniformMatrix2dv(
+pub unsafe extern "C" fn glProgramUniformMatrix2dv(
     program: GLuint,
     location: GLint,
     count: GLsizei,
@@ -8094,7 +8204,7 @@ unsafe extern "C" fn glProgramUniformMatrix2dv(
     });
 }
 #[no_mangle]
-unsafe extern "C" fn glProgramUniformMatrix3dv(
+pub unsafe extern "C" fn glProgramUniformMatrix3dv(
     program: GLuint,
     location: GLint,
     count: GLsizei,
@@ -8107,7 +8217,7 @@ unsafe extern "C" fn glProgramUniformMatrix3dv(
     });
 }
 #[no_mangle]
-unsafe extern "C" fn glProgramUniformMatrix4dv(
+pub unsafe extern "C" fn glProgramUniformMatrix4dv(
     program: GLuint,
     location: GLint,
     count: GLsizei,
@@ -8120,7 +8230,7 @@ unsafe extern "C" fn glProgramUniformMatrix4dv(
     });
 }
 #[no_mangle]
-unsafe extern "C" fn glProgramUniformMatrix2x3dv(
+pub unsafe extern "C" fn glProgramUniformMatrix2x3dv(
     program: GLuint,
     location: GLint,
     count: GLsizei,
@@ -8133,7 +8243,7 @@ unsafe extern "C" fn glProgramUniformMatrix2x3dv(
     });
 }
 #[no_mangle]
-unsafe extern "C" fn glProgramUniformMatrix3x2dv(
+pub unsafe extern "C" fn glProgramUniformMatrix3x2dv(
     program: GLuint,
     location: GLint,
     count: GLsizei,
@@ -8146,7 +8256,7 @@ unsafe extern "C" fn glProgramUniformMatrix3x2dv(
     });
 }
 #[no_mangle]
-unsafe extern "C" fn glProgramUniformMatrix2x4dv(
+pub unsafe extern "C" fn glProgramUniformMatrix2x4dv(
     program: GLuint,
     location: GLint,
     count: GLsizei,
@@ -8159,7 +8269,7 @@ unsafe extern "C" fn glProgramUniformMatrix2x4dv(
     });
 }
 #[no_mangle]
-unsafe extern "C" fn glProgramUniformMatrix4x2dv(
+pub unsafe extern "C" fn glProgramUniformMatrix4x2dv(
     program: GLuint,
     location: GLint,
     count: GLsizei,
@@ -8172,7 +8282,7 @@ unsafe extern "C" fn glProgramUniformMatrix4x2dv(
     });
 }
 #[no_mangle]
-unsafe extern "C" fn glProgramUniformMatrix3x4dv(
+pub unsafe extern "C" fn glProgramUniformMatrix3x4dv(
     program: GLuint,
     location: GLint,
     count: GLsizei,
@@ -8185,7 +8295,7 @@ unsafe extern "C" fn glProgramUniformMatrix3x4dv(
     });
 }
 #[no_mangle]
-unsafe extern "C" fn glProgramUniformMatrix4x3dv(
+pub unsafe extern "C" fn glProgramUniformMatrix4x3dv(
     program: GLuint,
     location: GLint,
     count: GLsizei,
@@ -8198,7 +8308,7 @@ unsafe extern "C" fn glProgramUniformMatrix4x3dv(
     });
 }
 #[no_mangle]
-unsafe extern "C" fn glSpecializeShader(
+pub unsafe extern "C" fn glSpecializeShader(
     shader: GLuint,
     pEntryPoint: *const GLchar,
     numSpecializationConstants: GLuint,
@@ -8217,7 +8327,7 @@ unsafe extern "C" fn glSpecializeShader(
     });
 }
 #[no_mangle]
-unsafe extern "C" fn glMultiDrawArraysIndirectCount(
+pub unsafe extern "C" fn glMultiDrawArraysIndirectCount(
     mode: GLenum,
     indirect: *const GLvoid,
     drawcount: GLintptr,
@@ -8236,7 +8346,7 @@ unsafe extern "C" fn glMultiDrawArraysIndirectCount(
     });
 }
 #[no_mangle]
-unsafe extern "C" fn glMultiDrawElementsIndirectCount(
+pub unsafe extern "C" fn glMultiDrawElementsIndirectCount(
     mode: GLenum,
     r#type: GLenum,
     indirect: *const GLvoid,
@@ -8257,7 +8367,7 @@ unsafe extern "C" fn glMultiDrawElementsIndirectCount(
     });
 }
 #[no_mangle]
-unsafe extern "C" fn glPolygonOffsetClamp(factor: GLfloat, units: GLfloat, clamp: GLfloat) {
+pub unsafe extern "C" fn glPolygonOffsetClamp(factor: GLfloat, units: GLfloat, clamp: GLfloat) {
     ::log::trace!(
         "glPolygonOffsetClamp called, parameters: factor: {:?}, units: {:?}, clamp: {:?} ",
         factor,

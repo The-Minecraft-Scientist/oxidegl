@@ -9,6 +9,7 @@ use std::os::raw::c_void;
 use std::pin::Pin;
 use std::ptr::NonNull;
 use std::sync::atomic::compiler_fence;
+use std::thread::LocalKey;
 
 use crate::dispatch::gl_types::GLenum;
 
@@ -54,8 +55,7 @@ impl Context {
 #[allow(clippy::inline_always)]
 //#[inline(always)]
 pub fn with_ctx<Ret, Func: for<'a> Fn(Pin<&'a mut Context>) -> Ret>(f: Func) -> Ret {
-    trace!("with_ctx called");
-
+    dbg!(&CTX as *const LocalKey<_>);
     let mut ptr: NonNull<Context> = CTX.take().expect("No context set");
 
     //SAFETY: we are the exclusive accessor of ptr.
@@ -63,11 +63,13 @@ pub fn with_ctx<Ret, Func: for<'a> Fn(Pin<&'a mut Context>) -> Ret>(f: Func) -> 
 
     let ret = f(p);
     CTX.set(Some(ptr));
+    compiler_fence(std::sync::atomic::Ordering::SeqCst);
     ret
 }
 
 #[no_mangle]
 unsafe extern "C" fn oxidegl_set_current_context(ctx: Option<NonNull<Context>>) {
+    dbg!(&CTX as *const LocalKey<_>);
     trace!("set context to {:?}", ctx);
     CTX.set(ctx);
 }

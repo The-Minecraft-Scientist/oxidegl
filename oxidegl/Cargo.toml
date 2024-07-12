@@ -29,6 +29,7 @@ objc2-foundation = "0.2.2"
 log = "0.4.21"
 sptr = "0.3.2"
 simple_logger = "5.0.0"
+thread-id = "4.2.1"
 
 
 [features]
