@@ -1,7 +1,10 @@
 // GL Commands
 use crate::context::with_ctx;
 use crate::dispatch::conversions::GLenumExt;
-use crate::dispatch::gl_types::{GLDEBUGPROC, GLbitfield, GLboolean, GLbyte, GLchar, GLdouble, GLenum, GLfloat, GLint, GLint64, GLintptr, GLshort, GLsizei, GLsizeiptr, GLsync, GLubyte, GLuint, GLuint64, GLushort, GLvoid};
+use crate::dispatch::gl_types::{
+    GLbitfield, GLboolean, GLbyte, GLchar, GLdouble, GLenum, GLfloat, GLint, GLint64, GLintptr,
+    GLshort, GLsizei, GLsizeiptr, GLsync, GLubyte, GLuint, GLuint64, GLushort, GLvoid, GLDEBUGPROC,
+};
 
 #[no_mangle]
 unsafe extern "C" fn glActiveShaderProgram(pipeline: GLuint, program: GLuint) {
@@ -186,7 +189,9 @@ unsafe extern "C" fn glBindFramebuffer(target: GLenum, framebuffer: GLuint) {
         target,
         framebuffer
     );
-    with_ctx(|mut state| state.oxidegl_bind_framebuffer(unsafe { target.into_enum() }, framebuffer));
+    with_ctx(|mut state| {
+        state.oxidegl_bind_framebuffer(unsafe { target.into_enum() }, framebuffer);
+    });
 }
 #[no_mangle]
 unsafe extern "C" fn glBindImageTexture(
@@ -608,7 +613,9 @@ unsafe extern "C" fn glNamedBufferSubData(
     data: *const GLvoid,
 ) {
     ::log::trace!("glNamedBufferSubData called, parameters: buffer: {:?}, offset: {:?}, size: {:?}, data: {:?} ", buffer, offset, size, data);
-    with_ctx(|mut state| unsafe { state.oxidegl_named_buffer_sub_data(buffer, offset, size, data) });
+    with_ctx(|mut state| unsafe {
+        state.oxidegl_named_buffer_sub_data(buffer, offset, size, data);
+    });
 }
 #[no_mangle]
 unsafe extern "C" fn glCheckFramebufferStatus(target: GLenum) -> GLenum {
@@ -712,7 +719,12 @@ unsafe extern "C" fn glClearNamedFramebufferuiv(
 ) {
     ::log::trace!("glClearNamedFramebufferuiv called, parameters: framebuffer: {:?}, buffer: {:?}, drawbuffer: {:?}, value: {:?} ", framebuffer, buffer, drawbuffer, value);
     with_ctx(|mut state| unsafe {
-        state.oxidegl_clear_named_framebufferuiv(framebuffer, buffer.into_enum(), drawbuffer, value);
+        state.oxidegl_clear_named_framebufferuiv(
+            framebuffer,
+            buffer.into_enum(),
+            drawbuffer,
+            value,
+        );
     });
 }
 #[no_mangle]
@@ -2230,7 +2242,11 @@ unsafe extern "C" fn glNamedFramebufferParameteri(
 ) {
     ::log::trace!("glNamedFramebufferParameteri called, parameters: framebuffer: {:?}, pname: {:?}, param: {:?} ", framebuffer, pname, param);
     with_ctx(|mut state| {
-        state.oxidegl_named_framebuffer_parameteri(framebuffer, unsafe { pname.into_enum() }, param);
+        state.oxidegl_named_framebuffer_parameteri(
+            framebuffer,
+            unsafe { pname.into_enum() },
+            param,
+        );
     });
 }
 #[no_mangle]
@@ -2570,7 +2586,9 @@ unsafe extern "C" fn glGetInteger64i_v(target: GLenum, index: GLuint, data: *mut
         index,
         data
     );
-    with_ctx(|mut state| unsafe { state.oxidegl_get_integer64i_v(target.into_enum(), index, data) });
+    with_ctx(|mut state| unsafe {
+        state.oxidegl_get_integer64i_v(target.into_enum(), index, data);
+    });
 }
 #[no_mangle]
 unsafe extern "C" fn glGetFloati_v(target: GLenum, index: GLuint, data: *mut GLfloat) {
@@ -2847,12 +2865,7 @@ unsafe extern "C" fn glGetNamedBufferParameteri64v(
     pname: GLenum,
     params: *mut GLint64,
 ) {
-    ::log::trace!(
-        "glGetNamedBufferParameteri64v called, parameters: buffer: {:?}, pname: {:?}, params: {:?} ",
-        buffer,
-        pname,
-        params
-    );
+    ::log::trace!("glGetNamedBufferParameteri64v called, parameters: buffer: {:?}, pname: {:?}, params: {:?} ", buffer, pname, params);
     with_ctx(|mut state| unsafe {
         state.oxidegl_get_named_buffer_parameteri64v(buffer, pname, params);
     });
@@ -2888,13 +2901,7 @@ unsafe extern "C" fn glGetBufferSubData(
     size: GLsizeiptr,
     data: *mut GLvoid,
 ) {
-    ::log::trace!(
-        "glGetBufferSubData called, parameters: target: {:?}, offset: {:?}, size: {:?}, data: {:?} ",
-        target,
-        offset,
-        size,
-        data
-    );
+    ::log::trace!("glGetBufferSubData called, parameters: target: {:?}, offset: {:?}, size: {:?}, data: {:?} ", target, offset, size, data);
     with_ctx(|mut state| unsafe { state.oxidegl_get_buffer_sub_data(target, offset, size, data) });
 }
 #[no_mangle]
@@ -3148,7 +3155,9 @@ unsafe extern "C" fn glGetObjectPtrLabel(
     label: *mut GLchar,
 ) {
     ::log::trace!("glGetObjectPtrLabel called, parameters: ptr: {:?}, bufSize: {:?}, length: {:?}, label: {:?} ", ptr, bufSize, length, label);
-    with_ctx(|mut state| unsafe { state.oxidegl_get_object_ptr_label(ptr, bufSize, length, label) });
+    with_ctx(|mut state| unsafe {
+        state.oxidegl_get_object_ptr_label(ptr, bufSize, length, label);
+    });
 }
 #[no_mangle]
 unsafe extern "C" fn glGetPointerv(pname: GLenum, params: *mut *mut GLvoid) {
@@ -3367,7 +3376,9 @@ unsafe extern "C" fn glGetQueryObjectiv(id: GLuint, pname: GLenum, params: *mut 
         pname,
         params
     );
-    with_ctx(|mut state| unsafe { state.oxidegl_get_query_objectiv(id, pname.into_enum(), params) });
+    with_ctx(|mut state| unsafe {
+        state.oxidegl_get_query_objectiv(id, pname.into_enum(), params);
+    });
 }
 #[no_mangle]
 unsafe extern "C" fn glGetQueryObjectuiv(id: GLuint, pname: GLenum, params: *mut GLuint) {
@@ -3438,7 +3449,12 @@ unsafe extern "C" fn glGetQueryBufferObjectui64v(
 ) {
     ::log::trace!("glGetQueryBufferObjectui64v called, parameters: id: {:?}, buffer: {:?}, pname: {:?}, offset: {:?} ", id, buffer, pname, offset);
     with_ctx(|mut state| {
-        state.oxidegl_get_query_buffer_objectui64v(id, buffer, unsafe { pname.into_enum() }, offset);
+        state.oxidegl_get_query_buffer_objectui64v(
+            id,
+            buffer,
+            unsafe { pname.into_enum() },
+            offset,
+        );
     });
 }
 #[no_mangle]
@@ -4196,7 +4212,9 @@ unsafe extern "C" fn glGetVertexAttribPointerv(
         pname,
         pointer
     );
-    with_ctx(|mut state| unsafe { state.oxidegl_get_vertex_attrib_pointerv(index, pname, pointer) });
+    with_ctx(|mut state| unsafe {
+        state.oxidegl_get_vertex_attrib_pointerv(index, pname, pointer);
+    });
 }
 #[no_mangle]
 unsafe extern "C" fn glHint(target: GLenum, mode: GLenum) {
@@ -4583,13 +4601,7 @@ unsafe extern "C" fn glObjectLabel(
     length: GLsizei,
     label: *const GLchar,
 ) {
-    ::log::trace!(
-        "glObjectLabel called, parameters: identifier: {:?}, name: {:?}, length: {:?}, label: {:?} ",
-        identifier,
-        name,
-        length,
-        label
-    );
+    ::log::trace!("glObjectLabel called, parameters: identifier: {:?}, name: {:?}, length: {:?}, label: {:?} ", identifier, name, length, label);
     with_ctx(|mut state| unsafe {
         state.oxidegl_object_label(identifier.into_enum(), name, length, label);
     });
@@ -4862,13 +4874,7 @@ unsafe extern "C" fn glProgramUniform2fv(
 }
 #[no_mangle]
 unsafe extern "C" fn glProgramUniform2ui(program: GLuint, location: GLint, v0: GLuint, v1: GLuint) {
-    ::log::trace!(
-        "glProgramUniform2ui called, parameters: program: {:?}, location: {:?}, v0: {:?}, v1: {:?} ",
-        program,
-        location,
-        v0,
-        v1
-    );
+    ::log::trace!("glProgramUniform2ui called, parameters: program: {:?}, location: {:?}, v0: {:?}, v1: {:?} ", program, location, v0, v1);
     with_ctx(|mut state| state.oxidegl_program_uniform2ui(program, location, v0, v1));
 }
 #[no_mangle]
@@ -5502,13 +5508,7 @@ unsafe extern "C" fn glStencilFunc(func: GLenum, r#ref: GLint, mask: GLuint) {
 }
 #[no_mangle]
 unsafe extern "C" fn glStencilFuncSeparate(face: GLenum, func: GLenum, r#ref: GLint, mask: GLuint) {
-    ::log::trace!(
-        "glStencilFuncSeparate called, parameters: face: {:?}, func: {:?}, r#ref: {:?}, mask: {:?} ",
-        face,
-        func,
-        r#ref,
-        mask
-    );
+    ::log::trace!("glStencilFuncSeparate called, parameters: face: {:?}, func: {:?}, r#ref: {:?}, mask: {:?} ", face, func, r#ref, mask);
     with_ctx(|mut state| {
         state.oxidegl_stencil_func_separate(
             unsafe { face.into_enum() },

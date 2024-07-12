@@ -672,11 +672,11 @@ fn print_dispatch_fn<'a>(name: &'a str, ret_type: GLTypes, params: &[Parameter<'
         .map(|p| sanitize_param_name(p.name))
         .collect::<Vec<_>>()
         .join(", ");
-
+    let semi_if_ret_void = if ret_type == GLTypes::GLvoid { ";" } else { "" };
     let body = format!(
         "{{\n
             ::log::trace!(\"{name} called, parameters: {params_trace} \", {params_string});
-            with_ctx(|mut state|{} state.oxide{}({}){})\n}}",
+            with_ctx(|mut state|{} state.oxide{}({}){}){semi_if_ret_void}\n}}",
         if is_unsafe { " unsafe {" } else { "" },
         snake_case_name,
         paramnl,
@@ -826,7 +826,7 @@ fn print_rust_enum_entry(name: &str, value: u32) -> String {
     }
 }
 #[allow(clippy::upper_case_acronyms)]
-#[derive(Clone, Debug, AsRefStr)]
+#[derive(Clone, Debug, AsRefStr, PartialEq)]
 pub enum GLTypes {
     GLint,
     GLuint64,
