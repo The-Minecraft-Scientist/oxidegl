@@ -56,7 +56,7 @@ impl Context {
 pub fn with_ctx<Ret, Func: for<'a> Fn(Pin<&'a mut Context>) -> Ret>(f: Func) -> Ret {
     trace!("with_ctx called");
 
-    let mut ptr: NonNull<Context> = CTX.get().expect("No context set");
+    let mut ptr: NonNull<Context> = CTX.take().expect("No context set");
 
     //SAFETY: we are the exclusive accessor of ptr.
     let p = Pin::new(unsafe { ptr.as_mut() });
