@@ -9,7 +9,6 @@ use anyhow::{bail, Result};
 use clap::{Args, Subcommand};
 use dashmap::DashSet;
 use enum_dispatch::enum_dispatch;
-use log::{error, info};
 
 use crate::{
     codegen::{get_vals, write_dispatch_impl, write_enum_impl, write_placeholder_impl},
@@ -327,12 +326,11 @@ impl TaskTrait for GetXcodeCommandLineTools {
             return Ok(());
         }
         if !out.status.success() {
-            error!("xcode-select error: {stderr}");
             bail!("error from xcode-select!");
         }
         let stdout = String::from_utf8(out.stdout)?;
         if stdout.contains("install requested") {
-            info!("Requested install of XCode command line tools.\nPlease confirm the installation and run this command again when it is finished.");
+            println!("Requested install of XCode command line tools.\nPlease confirm the installation and run this command again when it is finished.");
             exit(0);
         } else {
             bail!("unexpected successful execution of xcode-select, output: {stdout}");
@@ -340,7 +338,7 @@ impl TaskTrait for GetXcodeCommandLineTools {
     }
 }
 fn submodule_init(paths: &[&str]) -> Result<()> {
-    info!(
+    println!(
         "initializing git submodule(s) at: {}",
         paths
             .iter()
