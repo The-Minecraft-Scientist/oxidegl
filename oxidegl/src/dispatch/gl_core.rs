@@ -2542,6 +2542,7 @@ unsafe extern "C" fn glGetFloatv(pname: GLenum, data: *mut GLfloat) {
 }
 #[no_mangle]
 unsafe extern "C" fn glGetIntegerv(pname: GLenum, data: *mut GLint) {
+    dbg!(pname);
     ::log::trace!(
         "glGetIntegerv called, parameters: pname: {:?}, data: {:?} ",
         pname,

@@ -1,5 +1,5 @@
 use std::{
-    fs::{create_dir, read_dir},
+    fs::{copy, create_dir, read_dir, remove_file},
     path::{Path, PathBuf},
     process::{self, exit, Command, Stdio},
     sync::{Arc, OnceLock},
@@ -99,6 +99,9 @@ pub struct BuildOxideGL {
     /// Maximum logging level to compile OxideGL with (valid options are: "off", "error", "warn", "info", "debug", and "trace")
     #[arg(short, long, default_value = "trace")]
     logging_level: String,
+    /// Install the compiled binary to /usr/local/lib, replacing the current one if it exists.
+    #[arg(short, long, default_value_t = false)]
+    install: bool,
 }
 impl TaskTrait for BuildOxideGL {
     fn dependencies(&self) -> Option<Box<[Task]>> {
@@ -127,6 +130,16 @@ impl TaskTrait for BuildOxideGL {
         c.current_dir("oxidegl");
         if !c.spawn()?.wait()?.success() {
             bail!("failed to compile OxideGL!");
+        }
+        if self.install {
+            let _ = remove_file("/usr/local/lib/liboxidegl.dylib");
+            copy(
+                format!(
+                    "target/{}/liboxidegl.dylib",
+                    if self.release { "release" } else { "debug" }
+                ),
+                "/usr/local/lib/liboxidegl.dylib",
+            )?;
         }
         Ok(())
     }

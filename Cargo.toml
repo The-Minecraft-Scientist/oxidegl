@@ -8,7 +8,6 @@ lto = "fat"
 panic = "abort"
 
 [profile.dev]
-opt-level = 1
 codegen-units = 256
 # incremental = true
 lto = "thin"

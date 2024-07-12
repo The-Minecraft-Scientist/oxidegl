@@ -1,3 +1,4 @@
+use log::{trace, Log};
 use objc2::rc::{Id, Retained};
 use objc2_app_kit::NSView;
 use platform::PlatformState;
@@ -7,6 +8,7 @@ use std::ops::{Deref, DerefMut};
 use std::os::raw::c_void;
 use std::pin::Pin;
 use std::ptr::NonNull;
+use std::sync::atomic::compiler_fence;
 
 use crate::dispatch::gl_types::GLenum;
 
@@ -48,10 +50,14 @@ impl Context {
         }
     }
 }
-/// This function is only used by GL dispatch. It is always advantageous for it to be inlined in that usage
+// This function is only used by GL dispatch. It is always advantageous for it to be inlined in that usage
 #[allow(clippy::inline_always)]
-#[inline(always)]
+//#[inline(always)]
 pub fn with_ctx<Ret, Func: for<'a> Fn(Pin<&'a mut Context>) -> Ret>(f: Func) -> Ret {
+    trace!("with_ctx called");
+
+    log::logger().flush();
+
     let mut opt = CTX.take().expect("No context set");
     let p = Pin::new(&mut *opt);
     let ret = f(p);
@@ -61,16 +67,31 @@ pub fn with_ctx<Ret, Func: for<'a> Fn(Pin<&'a mut Context>) -> Ret>(f: Func) -> 
 
 #[no_mangle]
 unsafe extern "C" fn oxidegl_set_current_context(ctx: Option<CtxRef>) {
+    trace!(
+        "set context to {:?}",
+        ctx.as_ref().map(|p| p.0.as_ptr() as usize)
+    );
+    log::logger().flush();
+    if ctx
+        .as_ref()
+        .map_or(Some(false), |p| ctx.as_ref().map(|c| c.0 == p.0))
+        .unwrap_or(false)
+    {
+        //Need to forget about this context if it's a duplicate of the current one
+        let _ = ManuallyDrop::new(ctx);
+        return;
+    }
     CTX.set(ctx);
 }
 
 #[no_mangle]
 unsafe extern "C" fn oxidegl_swap_buffers(_ctx: ManuallyDrop<CtxRef>) {
-    println!("oxideGl swap buffers called");
+    trace!("swap buffers called");
 }
 #[no_mangle]
 unsafe extern "C" fn oxidegl_platform_init() {
     simple_logger::init_with_env().expect("failed to initialize OxideGL's logger!");
+    trace!("OxideGL Logger initialized");
 }
 
 #[no_mangle]
@@ -86,7 +107,7 @@ unsafe extern "C" fn oxidegl_create_context(
     // Safety: caller ensures ptr is a pointer to a valid, initialized NSView.
     // It is retained because we need it to live until we've injected our layer. (which happens in PlatformState::new)
     let ctx = unsafe { Context::new(&Retained::retain(view).unwrap()) };
-
+    trace!("Created context");
     Box::into_raw(Box::new(ctx)).cast()
 }
 
