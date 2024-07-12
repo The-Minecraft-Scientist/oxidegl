@@ -2,6 +2,7 @@ use log::{debug, trace};
 use objc2::rc::{Id, Retained};
 use objc2_app_kit::NSView;
 use platform::PlatformState;
+use state::NeedsRefreshBits;
 use std::cell::Cell;
 use std::os::raw::c_void;
 use std::pin::Pin;
@@ -33,6 +34,7 @@ thread_local! {
 #[derive(Debug)]
 #[repr(C)]
 pub struct Context {
+    dirty_components: NeedsRefreshBits,
     gl_state: GLState,
     platform_state: PlatformState,
 }
@@ -40,7 +42,8 @@ pub struct Context {
 impl Context {
     pub(crate) fn new(view: &Id<NSView>) -> Self {
         Self {
-            gl_state: GLState::new(),
+            dirty_components: NeedsRefreshBits::empty(),
+            gl_state: GLState::default(),
             platform_state: PlatformState {
                 metal: MetalComponents::new(view),
             },

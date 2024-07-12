@@ -1487,5 +1487,8 @@
 /// and [`GL_MAX_VERTEX_ATTRIB_BINDINGS`](crate::enums::GL_MAX_VERTEX_ATTRIB_BINDINGS)
 /// are available only if the GL version is 4.3 or greater.
 pub mod get;
+
 #[allow(clippy::missing_safety_doc)]
 pub mod unimplemented;
+
+pub mod clear;

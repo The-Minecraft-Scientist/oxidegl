@@ -483,13 +483,19 @@ pub fn write_enum_impl<T: Write>(
 ) -> Result<()> {
     writeln!(w, "{TYPES_USE}")?;
     writeln!(w, "{ENUM_UTILS_USE}")?;
+    writeln!(w, "use ::bitflags::bitflags;")?;
     for item in v {
         if let GLAPIEntry::Enum { name, value, .. } = item {
             writeln!(w, "{}", print_rust_enum_entry(name, *value))?;
         }
     }
     for (name, group) in groups.iter() {
-        print_enum_group(w, name, group)?;
+        let lc = name.to_ascii_lowercase();
+        if lc.contains("mask") | lc.contains("bits") {
+            print_enum_group_bitfield(w, name, group)?;
+        } else {
+            print_enum_group_enum(w, name, group)?;
+        }
     }
     Ok(())
 }
@@ -717,7 +723,11 @@ fn print_dispatch_fn<'a>(name: &'a str, ret_type: GLTypes, params: &[Parameter<'
         body
     )
 }
-fn print_enum_group<'a>(w: &mut impl Write, name: &'a str, group: &EnumGroup<'a>) -> Result<()> {
+fn print_enum_group_enum<'a>(
+    w: &mut impl Write,
+    name: &'a str,
+    group: &EnumGroup<'a>,
+) -> Result<()> {
     writeln!(
         w,
         "#[derive(Debug, Clone, Copy, PartialEq, Eq, ::strum_macros::FromRepr)]"
@@ -746,7 +756,7 @@ fn print_enum_group<'a>(w: &mut impl Write, name: &'a str, group: &EnumGroup<'a>
             unsafe fn unsafe_from_gl_enum(val: u32) -> Self {{
                 #[cfg(debug_assertions)]
                 let Some(ret) = {name}::from_repr(val) else {{
-                    println!(\"Tried to create a {name} from a GLenum with invalid value {{:#X}}\", val);
+                    println!(\"Attempt to create a {name} from a GLenum with invalid value {{:#X}}\", val);
                     panic!();
                 }};
                 #[cfg(not(debug_assertions))]
@@ -762,6 +772,56 @@ fn print_enum_group<'a>(w: &mut impl Write, name: &'a str, group: &EnumGroup<'a>
         impl<Dst: GlDstType> SrcType<Dst> for {name} {{
             fn cast(self) -> Dst {{
                 Dst::from_uint(self as u32)
+            }}
+        }}",
+    )?;
+
+    Ok(())
+}
+fn print_enum_group_bitfield<'a>(
+    w: &mut impl Write,
+    name: &'a str,
+    group: &EnumGroup<'a>,
+) -> Result<()> {
+    writeln!(w, "bitflags! {{")?;
+    writeln!(
+        w,
+        "#[derive(Debug, Clone, Copy, PartialEq, Eq)]\n#[repr(transparent)]"
+    )?;
+    writeln!(w, "pub struct {name}: u32 {{")?;
+    for e in group.enum_members.iter() {
+        let GLAPIEntry::Enum {
+            name: enum_name, ..
+        } = e
+        else {
+            continue;
+        };
+        writeln!(w, "const {} = {};", enum_name.replace("GL_", ""), enum_name)?;
+    }
+    writeln!(w, "}}\n}}")?;
+
+    writeln!(
+        w,
+        "impl UnsafeFromGLenum for {name} {{
+            unsafe fn unsafe_from_gl_enum(val: u32) -> Self {{
+                #[cfg(debug_assertions)]
+                let Some(ret) = {name}::from_bits(val) else {{
+                    println!(\"Attempt to create a {name} from a GLenum with an invalid bit set! {{:#X}}\", val);
+                    panic!();
+                }};
+                #[cfg(not(debug_assertions))]
+                let ret = unsafe {{ std::mem::transmute(val) }};
+                ret
+            }}
+        }}
+        impl From<{name}> for u32 {{
+            fn from(value: {name}) -> u32 {{
+                value.bits()
+            }}
+        }}
+        impl<Dst: GlDstType> SrcType<Dst> for {name} {{
+            fn cast(self) -> Dst {{
+                Dst::from_uint(self.bits())
             }}
         }}",
     )?;
