@@ -1,4 +1,4 @@
-use log::trace;
+use log::{debug, trace};
 
 #[allow(clippy::wildcard_imports)]
 use crate::{
@@ -14,7 +14,7 @@ use crate::{
 
 impl Context {
     fn get<T: GlDstType>(&self, parameter_name: GetPName, ptr: *mut T, idx: Option<GLuint>) {
-        trace!(target: "get", "glGet {:#0x}", parameter_name as u32);
+        debug!(target: "get", "glGet {:#0x}", parameter_name as u32);
         //Safety: Parameters are guaranteed to exist by GL and we are allowed to have UB if they aren't
         unsafe {
             match parameter_name {
@@ -471,7 +471,8 @@ impl Context {
 /// always returns a compatible version number. The release number always describes
 /// the server.
 pub mod get_string {
-    use log::trace;
+
+    use log::debug;
 
     use crate::context::Context;
     use crate::dispatch::gl_types::{GLubyte, GLuint};
@@ -482,7 +483,7 @@ pub mod get_string {
             const RENDERER: &[u8] = b"OxideGL\0";
             const VERSION: &[u8] = b"4.6.0\0";
 
-            trace!(target: "get", "glGetString {:#0x}", name as u32);
+            debug!(target: "get", "glGetString {:#0x}", name as u32);
             match name {
                 StringName::Vendor => VENDOR.as_ptr(),
                 StringName::Renderer => RENDERER.as_ptr(),

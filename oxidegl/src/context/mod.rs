@@ -1,4 +1,4 @@
-use log::{trace, Log};
+use log::{debug, trace, Log};
 use objc2::rc::{Id, Retained};
 use objc2_app_kit::NSView;
 use platform::PlatformState;
@@ -55,10 +55,9 @@ impl Context {
 #[allow(clippy::inline_always)]
 //#[inline(always)]
 pub fn with_ctx<Ret, Func: for<'a> Fn(Pin<&'a mut Context>) -> Ret>(f: Func) -> Ret {
-    dbg!(&CTX as *const LocalKey<_>);
     let mut ptr: NonNull<Context> = CTX.take().expect("No context set");
 
-    //SAFETY: we are the exclusive accessor of ptr.
+    //SAFETY: we are the exclusive accessor of ptr due to its thread locality and the fact that we called `take` on it previously
     let p = Pin::new(unsafe { ptr.as_mut() });
 
     let ret = f(p);
@@ -69,19 +68,18 @@ pub fn with_ctx<Ret, Func: for<'a> Fn(Pin<&'a mut Context>) -> Ret>(f: Func) -> 
 
 #[no_mangle]
 unsafe extern "C" fn oxidegl_set_current_context(ctx: Option<NonNull<Context>>) {
-    dbg!(&CTX as *const LocalKey<_>);
     trace!("set context to {:?}", ctx);
     CTX.set(ctx);
 }
 
 #[no_mangle]
-unsafe extern "C" fn oxidegl_swap_buffers(_ctx: ManuallyDrop<CtxRef>) {
-    trace!("swap buffers called");
+unsafe extern "C" fn oxidegl_swap_buffers(_ctx: Option<NonNull<Context>>) {
+    debug!("swap buffers called");
 }
 #[no_mangle]
 unsafe extern "C" fn oxidegl_platform_init() {
     simple_logger::init_with_env().expect("failed to initialize OxideGL's logger!");
-    trace!("OxideGL Logger initialized");
+    debug!("OxideGL Logger initialized");
 }
 
 #[no_mangle]
@@ -97,41 +95,6 @@ unsafe extern "C" fn oxidegl_create_context(
     // Safety: caller ensures ptr is a pointer to a valid, initialized NSView.
     // It is retained because we need it to live until we've injected our layer. (which happens in PlatformState::new)
     let ctx = unsafe { Context::new(&Retained::retain(view).unwrap()) };
-    trace!("Created context");
+    debug!("Created context");
     Box::into_raw(Box::new(ctx)).cast()
-}
-
-#[repr(transparent)]
-#[derive(PartialEq)]
-pub struct CtxRef(NonNull<Context>);
-impl CtxRef {
-    //Safety: caller ensures ptr upholds the invariants specified by Unique, namely that it is an exclusive pointer with mutable access to a Box<Context>
-    unsafe fn from_void(ptr: *mut c_void) -> Option<Self> {
-        Some(Self(NonNull::new(ptr.cast())?))
-    }
-    #[must_use]
-    fn into_box(self) -> Box<Context> {
-        //Safety: CtxRef is not Copy or Clone. it holds its pointer exclusively and so can be safely consumed back into a Box<Context> at any time
-        unsafe { Box::from_raw(self.0.as_ptr()) }
-    }
-}
-impl Deref for CtxRef {
-    type Target = Context;
-    fn deref(&self) -> &Self::Target {
-        // Safety: we are basically a Box<Context>, so it's fine to share out (appropriately lifetimed) references to the inner value
-        unsafe { self.0.as_ref() }
-    }
-}
-impl DerefMut for CtxRef {
-    fn deref_mut(&mut self) -> &mut Self::Target {
-        // Safety: we are basically a Box<Context>, so it's fine to share out (appropriately lifetimed) references to the inner value
-        unsafe { self.0.as_mut() }
-    }
-}
-impl Drop for CtxRef {
-    fn drop(&mut self) {
-        // Safety: We are basically a Box, it's fine to recover the Box<Context> from this pointer (not to mention that this function diverges)
-        let _ = unsafe { Box::from_raw(self.0.as_ptr()) };
-        panic!("OxideGL just dropped your OpenGL Context!! This is really bad, time to quit!!")
-    }
 }

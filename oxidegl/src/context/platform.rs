@@ -1,3 +1,4 @@
+use log::{debug, trace};
 use objc2::rc::{Id, Retained};
 use objc2::runtime::ProtocolObject;
 use objc2_app_kit::{NSScreen, NSView};
@@ -34,6 +35,7 @@ impl MetalComponents {
         } else {
             unsafe { view.setLayer(Some(&layer)) };
         }
+        trace!("injected layer{:?} into window!", &layer);
         //SAFETY: GL must be called from the main thread on Apple platforms
         let cscale = NSScreen::mainScreen(unsafe { MainThreadMarker::new_unchecked() })
             .unwrap()
@@ -42,6 +44,7 @@ impl MetalComponents {
 
         unsafe { view.setLayer(Some(&layer)) };
         view.setWantsLayer(true);
-        dbg!(Self { device, layer })
+        debug!("OxideGL got device: {}", device.name());
+        Self { device, layer }
     }
 }
