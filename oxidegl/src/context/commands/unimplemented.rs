@@ -1,3 +1,27 @@
+use crate::context::Context;
+use crate::dispatch::gl_types::*;
+use crate::enums::{
+    AtomicCounterBufferPName, AttributeType, BlendEquationModeEXT, BlendingFactor,
+    BlitFramebufferFilter, Buffer, BufferStorageMask, BufferStorageTarget, ClearBufferMask,
+    ClipControlDepth, ClipControlOrigin, ColorBuffer, ConditionalRenderMode,
+    CopyBufferSubDataTarget, CopyImageSubDataTarget, DebugSeverity, DebugSource, DebugType,
+    DepthFunction, DrawBufferMode, DrawElementsType, EnableCap, FramebufferAttachment,
+    FramebufferAttachmentParameterName, FramebufferParameterName, FramebufferTarget,
+    FrontFaceDirection, GetFramebufferParameter, GetPointervPName, GetTextureParameter, HintMode,
+    HintTarget, InternalFormat, InternalFormatPName, InvalidateFramebufferAttachment, LogicOp,
+    MapBufferAccessMask, MemoryBarrierMask, ObjectIdentifier, PatchParameterName,
+    PipelineParameterName, PixelFormat, PixelStoreParameter, PixelType, PolygonMode, PrecisionType,
+    PrimitiveType, ProgramInterface, ProgramInterfacePName, ProgramParameterPName,
+    ProgramResourceProperty, ProgramStagePName, QueryObjectParameterName, QueryParameterName,
+    QueryTarget, ReadBufferMode, RenderbufferParameterName, RenderbufferTarget, SamplerParameterF,
+    SamplerParameterI, ShaderParameterName, ShaderType, SizedInternalFormat, StencilFunction,
+    StencilOp, SubroutineParameterName, SyncBehaviorFlags, SyncParameterName, TextureParameterName,
+    TextureTarget, TextureUnit, TransformFeedbackBufferMode, TransformFeedbackPName, TriangleFace,
+    UniformBlockPName, UniformPName, UniformType, UseProgramStageMask, VertexArrayPName,
+    VertexAttribEnum, VertexAttribIType, VertexAttribLType, VertexAttribPointerType,
+    VertexAttribType, VertexBufferObjectUsage, VertexProvokingMode,
+};
+
 /// ### Parameters
 /// `id`
 ///
@@ -51,21 +75,12 @@
 ///
 /// The [`GL_ANY_SAMPLES_PASSED`](crate::enums::GL_ANY_SAMPLES_PASSED) query
 /// result is available only if the GL version is 3.3 or greater.
-pub mod begin_conditional_render {
-    use crate::context::Context;
-    use crate::dispatch::gl_types::*;
-    use crate::enums::ConditionalRenderMode;
-    impl Context {
-        pub fn oxidegl_begin_conditional_render(
-            &mut self,
-            id: GLuint,
-            mode: ConditionalRenderMode,
-        ) {
-            panic!("command oxidegl_begin_conditional_render not yet implemented");
-        }
-        pub fn oxidegl_end_conditional_render(&mut self) {
-            panic!("command oxidegl_end_conditional_render not yet implemented");
-        }
+impl Context {
+    pub fn oxidegl_begin_conditional_render(&mut self, id: GLuint, mode: ConditionalRenderMode) {
+        panic!("command oxidegl_begin_conditional_render not yet implemented");
+    }
+    pub fn oxidegl_end_conditional_render(&mut self) {
+        panic!("command oxidegl_end_conditional_render not yet implemented");
     }
 }
 /// ### Parameters
@@ -191,17 +206,12 @@ pub mod begin_conditional_render {
 ///
 /// The query target [`GL_ANY_SAMPLES_PASSED_CONSERVATIVE`](crate::enums::GL_ANY_SAMPLES_PASSED_CONSERVATIVE)
 /// is available only of the GL version is 4.3 or higher.
-pub mod begin_query {
-    use crate::context::Context;
-    use crate::dispatch::gl_types::*;
-    use crate::enums::QueryTarget;
-    impl Context {
-        pub fn oxidegl_begin_query(&mut self, target: QueryTarget, id: GLuint) {
-            panic!("command oxidegl_begin_query not yet implemented");
-        }
-        pub fn oxidegl_end_query(&mut self, target: QueryTarget) {
-            panic!("command oxidegl_end_query not yet implemented");
-        }
+impl Context {
+    pub fn oxidegl_begin_query(&mut self, target: QueryTarget, id: GLuint) {
+        panic!("command oxidegl_begin_query not yet implemented");
+    }
+    pub fn oxidegl_end_query(&mut self, target: QueryTarget) {
+        panic!("command oxidegl_end_query not yet implemented");
     }
 }
 /// ### Parameters
@@ -342,22 +352,12 @@ pub mod begin_query {
 /// to calling [**glBeginQueryIndexed**](crate::context::Context::oxidegl_begin_query_indexed)
 /// or [**glEndQueryIndexed**](crate::context::Context::oxidegl_end_query_indexed)
 /// with `index` set to zero, respectively.
-pub mod begin_query_indexed {
-    use crate::context::Context;
-    use crate::dispatch::gl_types::*;
-    use crate::enums::QueryTarget;
-    impl Context {
-        pub fn oxidegl_begin_query_indexed(
-            &mut self,
-            target: QueryTarget,
-            index: GLuint,
-            id: GLuint,
-        ) {
-            panic!("command oxidegl_begin_query_indexed not yet implemented");
-        }
-        pub fn oxidegl_end_query_indexed(&mut self, target: QueryTarget, index: GLuint) {
-            panic!("command oxidegl_end_query_indexed not yet implemented");
-        }
+impl Context {
+    pub fn oxidegl_begin_query_indexed(&mut self, target: QueryTarget, index: GLuint, id: GLuint) {
+        panic!("command oxidegl_begin_query_indexed not yet implemented");
+    }
+    pub fn oxidegl_end_query_indexed(&mut self, target: QueryTarget, index: GLuint) {
+        panic!("command oxidegl_end_query_indexed not yet implemented");
     }
 }
 /// ### Parameters
@@ -397,17 +397,12 @@ pub mod begin_query_indexed {
 /// [`GL_TRIANGLE_STRIP_ADJACENCY`](crate::enums::GL_TRIANGLE_STRIP_ADJACENCY),
 /// [`GL_LINES_ADJACENCY`](crate::enums::GL_LINES_ADJACENCY) and [`GL_LINE_STRIP_ADJACENCY`](crate::enums::GL_LINE_STRIP_ADJACENCY)
 /// primtive modes are available only if the GL version is 3.2 or greater.
-pub mod begin_transform_feedback {
-    use crate::context::Context;
-
-    use crate::enums::PrimitiveType;
-    impl Context {
-        pub fn oxidegl_begin_transform_feedback(&mut self, primitive_mode: PrimitiveType) {
-            panic!("command oxidegl_begin_transform_feedback not yet implemented");
-        }
-        pub fn oxidegl_end_transform_feedback(&mut self) {
-            panic!("command oxidegl_end_transform_feedback not yet implemented");
-        }
+impl Context {
+    pub fn oxidegl_begin_transform_feedback(&mut self, primitive_mode: PrimitiveType) {
+        panic!("command oxidegl_begin_transform_feedback not yet implemented");
+    }
+    pub fn oxidegl_end_transform_feedback(&mut self) {
+        panic!("command oxidegl_end_transform_feedback not yet implemented");
     }
 }
 /// ### Parameters
@@ -456,29 +451,25 @@ pub mod begin_transform_feedback {
 ///
 /// ### Associated Gets
 /// [**glGet**](crate::context::Context::oxidegl_get) with argument [`GL_MAX_VERTEX_ATTRIB_BINDINGS`](crate::enums::GL_MAX_VERTEX_ATTRIB_BINDINGS).
-pub mod bind_vertex_buffer {
-    use crate::context::Context;
-    use crate::dispatch::gl_types::*;
-    impl Context {
-        pub fn oxidegl_bind_vertex_buffer(
-            &mut self,
-            bindingindex: GLuint,
-            buffer: GLuint,
-            offset: GLintptr,
-            stride: GLsizei,
-        ) {
-            panic!("command oxidegl_bind_vertex_buffer not yet implemented");
-        }
-        pub fn oxidegl_vertex_array_vertex_buffer(
-            &mut self,
-            vaobj: GLuint,
-            bindingindex: GLuint,
-            buffer: GLuint,
-            offset: GLintptr,
-            stride: GLsizei,
-        ) {
-            panic!("command oxidegl_vertex_array_vertex_buffer not yet implemented");
-        }
+impl Context {
+    pub fn oxidegl_bind_vertex_buffer(
+        &mut self,
+        bindingindex: GLuint,
+        buffer: GLuint,
+        offset: GLintptr,
+        stride: GLsizei,
+    ) {
+        panic!("command oxidegl_bind_vertex_buffer not yet implemented");
+    }
+    pub fn oxidegl_vertex_array_vertex_buffer(
+        &mut self,
+        vaobj: GLuint,
+        bindingindex: GLuint,
+        buffer: GLuint,
+        offset: GLintptr,
+        stride: GLsizei,
+    ) {
+        panic!("command oxidegl_vertex_array_vertex_buffer not yet implemented");
     }
 }
 /// ### Parameters
@@ -544,31 +535,27 @@ pub mod bind_vertex_buffer {
 /// will be unchanged and an error will be generated. However, state for other
 /// vertex buffer binding points will still be changed if their corresponding
 /// values are valid.
-pub mod bind_vertex_buffers {
-    use crate::context::Context;
-    use crate::dispatch::gl_types::*;
-    impl Context {
-        pub unsafe fn oxidegl_bind_vertex_buffers(
-            &mut self,
-            first: GLuint,
-            count: GLsizei,
-            buffers: *const GLuint,
-            offsets: *const GLintptr,
-            strides: *const GLsizei,
-        ) {
-            panic!("command oxidegl_bind_vertex_buffers not yet implemented");
-        }
-        pub unsafe fn oxidegl_vertex_array_vertex_buffers(
-            &mut self,
-            vaobj: GLuint,
-            first: GLuint,
-            count: GLsizei,
-            buffers: *const GLuint,
-            offsets: *const GLintptr,
-            strides: *const GLsizei,
-        ) {
-            panic!("command oxidegl_vertex_array_vertex_buffers not yet implemented");
-        }
+impl Context {
+    pub unsafe fn oxidegl_bind_vertex_buffers(
+        &mut self,
+        first: GLuint,
+        count: GLsizei,
+        buffers: *const GLuint,
+        offsets: *const GLintptr,
+        strides: *const GLsizei,
+    ) {
+        panic!("command oxidegl_bind_vertex_buffers not yet implemented");
+    }
+    pub unsafe fn oxidegl_vertex_array_vertex_buffers(
+        &mut self,
+        vaobj: GLuint,
+        first: GLuint,
+        count: GLsizei,
+        buffers: *const GLuint,
+        offsets: *const GLintptr,
+        strides: *const GLsizei,
+    ) {
+        panic!("command oxidegl_vertex_array_vertex_buffers not yet implemented");
     }
 }
 /// ### Parameters
@@ -630,17 +617,12 @@ pub mod bind_vertex_buffers {
 /// [**glGet**](crate::context::Context::oxidegl_get) with an argument of [`GL_BLEND_EQUATION_RGB`](crate::enums::GL_BLEND_EQUATION_RGB)
 ///
 /// [**glGet**](crate::context::Context::oxidegl_get) with an argument of [`GL_BLEND_EQUATION_ALPHA`](crate::enums::GL_BLEND_EQUATION_ALPHA)
-pub mod blend_equation {
-    use crate::context::Context;
-    use crate::dispatch::gl_types::*;
-    use crate::enums::BlendEquationModeEXT;
-    impl Context {
-        pub fn oxidegl_blend_equation(&mut self, mode: BlendEquationModeEXT) {
-            panic!("command oxidegl_blend_equation not yet implemented");
-        }
-        pub fn oxidegl_blend_equationi(&mut self, buf: GLuint, mode: BlendEquationModeEXT) {
-            panic!("command oxidegl_blend_equationi not yet implemented");
-        }
+impl Context {
+    pub fn oxidegl_blend_equation(&mut self, mode: BlendEquationModeEXT) {
+        panic!("command oxidegl_blend_equation not yet implemented");
+    }
+    pub fn oxidegl_blend_equationi(&mut self, buf: GLuint, mode: BlendEquationModeEXT) {
+        panic!("command oxidegl_blend_equationi not yet implemented");
     }
 }
 /// ### Parameters
@@ -710,26 +692,21 @@ pub mod blend_equation {
 /// [**glGet**](crate::context::Context::oxidegl_get) with an argument of [`GL_BLEND_EQUATION_RGB`](crate::enums::GL_BLEND_EQUATION_RGB)
 ///
 /// [**glGet**](crate::context::Context::oxidegl_get) with an argument of [`GL_BLEND_EQUATION_ALPHA`](crate::enums::GL_BLEND_EQUATION_ALPHA)
-pub mod blend_equation_separate {
-    use crate::context::Context;
-    use crate::dispatch::gl_types::*;
-    use crate::enums::BlendEquationModeEXT;
-    impl Context {
-        pub fn oxidegl_blend_equation_separate(
-            &mut self,
-            mode_r_g_b: BlendEquationModeEXT,
-            mode_alpha: BlendEquationModeEXT,
-        ) {
-            panic!("command oxidegl_blend_equation_separate not yet implemented");
-        }
-        pub fn oxidegl_blend_equation_separatei(
-            &mut self,
-            buf: GLuint,
-            mode_r_g_b: BlendEquationModeEXT,
-            mode_alpha: BlendEquationModeEXT,
-        ) {
-            panic!("command oxidegl_blend_equation_separatei not yet implemented");
-        }
+impl Context {
+    pub fn oxidegl_blend_equation_separate(
+        &mut self,
+        mode_r_g_b: BlendEquationModeEXT,
+        mode_alpha: BlendEquationModeEXT,
+    ) {
+        panic!("command oxidegl_blend_equation_separate not yet implemented");
+    }
+    pub fn oxidegl_blend_equation_separatei(
+        &mut self,
+        buf: GLuint,
+        mode_r_g_b: BlendEquationModeEXT,
+        mode_alpha: BlendEquationModeEXT,
+    ) {
+        panic!("command oxidegl_blend_equation_separatei not yet implemented");
     }
 }
 /// ### Parameters
@@ -863,22 +840,12 @@ pub mod blend_equation_separate {
 /// [**glIsEnabled**](crate::context::Context::oxidegl_is_enabled) with argument
 /// [`GL_BLEND`](crate::enums::GL_BLEND)
 ///
-pub mod blend_func {
-    use crate::context::Context;
-    use crate::dispatch::gl_types::*;
-    use crate::enums::BlendingFactor;
-    impl Context {
-        pub fn oxidegl_blend_func(&mut self, sfactor: BlendingFactor, dfactor: BlendingFactor) {
-            panic!("command oxidegl_blend_func not yet implemented");
-        }
-        pub fn oxidegl_blend_funci(
-            &mut self,
-            buf: GLuint,
-            src: BlendingFactor,
-            dst: BlendingFactor,
-        ) {
-            panic!("command oxidegl_blend_funci not yet implemented");
-        }
+impl Context {
+    pub fn oxidegl_blend_func(&mut self, sfactor: BlendingFactor, dfactor: BlendingFactor) {
+        panic!("command oxidegl_blend_func not yet implemented");
+    }
+    pub fn oxidegl_blend_funci(&mut self, buf: GLuint, src: BlendingFactor, dst: BlendingFactor) {
+        panic!("command oxidegl_blend_funci not yet implemented");
     }
 }
 /// ### Parameters
@@ -1008,30 +975,25 @@ pub mod blend_func {
 /// [**glIsEnabled**](crate::context::Context::oxidegl_is_enabled) with argument
 /// [`GL_BLEND`](crate::enums::GL_BLEND)
 ///
-pub mod blend_func_separate {
-    use crate::context::Context;
-    use crate::dispatch::gl_types::*;
-    use crate::enums::BlendingFactor;
-    impl Context {
-        pub fn oxidegl_blend_func_separate(
-            &mut self,
-            sfactor_r_g_b: BlendingFactor,
-            dfactor_r_g_b: BlendingFactor,
-            sfactor_alpha: BlendingFactor,
-            dfactor_alpha: BlendingFactor,
-        ) {
-            panic!("command oxidegl_blend_func_separate not yet implemented");
-        }
-        pub fn oxidegl_blend_func_separatei(
-            &mut self,
-            buf: GLuint,
-            src_r_g_b: BlendingFactor,
-            dst_r_g_b: BlendingFactor,
-            src_alpha: BlendingFactor,
-            dst_alpha: BlendingFactor,
-        ) {
-            panic!("command oxidegl_blend_func_separatei not yet implemented");
-        }
+impl Context {
+    pub fn oxidegl_blend_func_separate(
+        &mut self,
+        sfactor_r_g_b: BlendingFactor,
+        dfactor_r_g_b: BlendingFactor,
+        sfactor_alpha: BlendingFactor,
+        dfactor_alpha: BlendingFactor,
+    ) {
+        panic!("command oxidegl_blend_func_separate not yet implemented");
+    }
+    pub fn oxidegl_blend_func_separatei(
+        &mut self,
+        buf: GLuint,
+        src_r_g_b: BlendingFactor,
+        dst_r_g_b: BlendingFactor,
+        src_alpha: BlendingFactor,
+        dst_alpha: BlendingFactor,
+    ) {
+        panic!("command oxidegl_blend_func_separatei not yet implemented");
     }
 }
 /// ### Parameters
@@ -1132,43 +1094,38 @@ pub mod blend_func_separate {
 ///
 /// If the source and destination rectangles overlap or are the same, and the
 /// read and draw buffers are the same, the result of the operation is undefined.
-pub mod blit_framebuffer {
-    use crate::context::Context;
-    use crate::dispatch::gl_types::*;
-    use crate::enums::{BlitFramebufferFilter, ClearBufferMask};
-    impl Context {
-        pub fn oxidegl_blit_framebuffer(
-            &mut self,
-            src_x0: GLint,
-            src_y0: GLint,
-            src_x1: GLint,
-            src_y1: GLint,
-            dst_x0: GLint,
-            dst_y0: GLint,
-            dst_x1: GLint,
-            dst_y1: GLint,
-            mask: ClearBufferMask,
-            filter: BlitFramebufferFilter,
-        ) {
-            panic!("command oxidegl_blit_framebuffer not yet implemented");
-        }
-        pub fn oxidegl_blit_named_framebuffer(
-            &mut self,
-            read_framebuffer: GLuint,
-            draw_framebuffer: GLuint,
-            src_x0: GLint,
-            src_y0: GLint,
-            src_x1: GLint,
-            src_y1: GLint,
-            dst_x0: GLint,
-            dst_y0: GLint,
-            dst_x1: GLint,
-            dst_y1: GLint,
-            mask: ClearBufferMask,
-            filter: BlitFramebufferFilter,
-        ) {
-            panic!("command oxidegl_blit_named_framebuffer not yet implemented");
-        }
+impl Context {
+    pub fn oxidegl_blit_framebuffer(
+        &mut self,
+        src_x0: GLint,
+        src_y0: GLint,
+        src_x1: GLint,
+        src_y1: GLint,
+        dst_x0: GLint,
+        dst_y0: GLint,
+        dst_x1: GLint,
+        dst_y1: GLint,
+        mask: ClearBufferMask,
+        filter: BlitFramebufferFilter,
+    ) {
+        panic!("command oxidegl_blit_framebuffer not yet implemented");
+    }
+    pub fn oxidegl_blit_named_framebuffer(
+        &mut self,
+        read_framebuffer: GLuint,
+        draw_framebuffer: GLuint,
+        src_x0: GLint,
+        src_y0: GLint,
+        src_x1: GLint,
+        src_y1: GLint,
+        dst_x0: GLint,
+        dst_y0: GLint,
+        dst_x1: GLint,
+        dst_y1: GLint,
+        mask: ClearBufferMask,
+        filter: BlitFramebufferFilter,
+    ) {
+        panic!("command oxidegl_blit_named_framebuffer not yet implemented");
     }
 }
 /// ### Parameters
@@ -1291,29 +1248,24 @@ pub mod blit_framebuffer {
 ///
 /// [**glGetBufferParameter**](crate::context::Context::oxidegl_get_buffer_parameter)
 /// with argument [`GL_BUFFER_SIZE`](crate::enums::GL_BUFFER_SIZE) or [`GL_BUFFER_USAGE`](crate::enums::GL_BUFFER_USAGE)
-pub mod buffer_data {
-    use crate::context::Context;
-    use crate::dispatch::gl_types::*;
-    use crate::enums::VertexBufferObjectUsage;
-    impl Context {
-        pub unsafe fn oxidegl_buffer_data(
-            &mut self,
-            target: GLenum,
-            size: GLsizeiptr,
-            data: *const GLvoid,
-            usage: GLenum,
-        ) {
-            panic!("command oxidegl_buffer_data not yet implemented");
-        }
-        pub unsafe fn oxidegl_named_buffer_data(
-            &mut self,
-            buffer: GLuint,
-            size: GLsizeiptr,
-            data: *const GLvoid,
-            usage: VertexBufferObjectUsage,
-        ) {
-            panic!("command oxidegl_named_buffer_data not yet implemented");
-        }
+impl Context {
+    pub unsafe fn oxidegl_buffer_data(
+        &mut self,
+        target: GLenum,
+        size: GLsizeiptr,
+        data: *const GLvoid,
+        usage: GLenum,
+    ) {
+        panic!("command oxidegl_buffer_data not yet implemented");
+    }
+    pub unsafe fn oxidegl_named_buffer_data(
+        &mut self,
+        buffer: GLuint,
+        size: GLsizeiptr,
+        data: *const GLvoid,
+        usage: VertexBufferObjectUsage,
+    ) {
+        panic!("command oxidegl_named_buffer_data not yet implemented");
     }
 }
 /// ### Parameters
@@ -1466,29 +1418,24 @@ pub mod buffer_data {
 ///
 /// [**glGetBufferParameter**](crate::context::Context::oxidegl_get_buffer_parameter)
 /// with argument [`GL_BUFFER_SIZE`](crate::enums::GL_BUFFER_SIZE) or [`GL_BUFFER_USAGE`](crate::enums::GL_BUFFER_USAGE)
-pub mod buffer_storage {
-    use crate::context::Context;
-    use crate::dispatch::gl_types::*;
-    use crate::enums::{BufferStorageMask, BufferStorageTarget};
-    impl Context {
-        pub unsafe fn oxidegl_buffer_storage(
-            &mut self,
-            target: BufferStorageTarget,
-            size: GLsizeiptr,
-            data: *const GLvoid,
-            flags: BufferStorageMask,
-        ) {
-            panic!("command oxidegl_buffer_storage not yet implemented");
-        }
-        pub unsafe fn oxidegl_named_buffer_storage(
-            &mut self,
-            buffer: GLuint,
-            size: GLsizeiptr,
-            data: *const GLvoid,
-            flags: BufferStorageMask,
-        ) {
-            panic!("command oxidegl_named_buffer_storage not yet implemented");
-        }
+impl Context {
+    pub unsafe fn oxidegl_buffer_storage(
+        &mut self,
+        target: BufferStorageTarget,
+        size: GLsizeiptr,
+        data: *const GLvoid,
+        flags: BufferStorageMask,
+    ) {
+        panic!("command oxidegl_buffer_storage not yet implemented");
+    }
+    pub unsafe fn oxidegl_named_buffer_storage(
+        &mut self,
+        buffer: GLuint,
+        size: GLsizeiptr,
+        data: *const GLvoid,
+        flags: BufferStorageMask,
+    ) {
+        panic!("command oxidegl_named_buffer_storage not yet implemented");
     }
 }
 /// ### Parameters
@@ -1567,28 +1514,24 @@ pub mod buffer_storage {
 ///
 /// ### Associated Gets
 /// [**glGetBufferSubData**](crate::context::Context::oxidegl_get_buffer_sub_data)
-pub mod buffer_sub_data {
-    use crate::context::Context;
-    use crate::dispatch::gl_types::*;
-    impl Context {
-        pub unsafe fn oxidegl_buffer_sub_data(
-            &mut self,
-            target: GLenum,
-            offset: GLintptr,
-            size: GLsizeiptr,
-            data: *const GLvoid,
-        ) {
-            panic!("command oxidegl_buffer_sub_data not yet implemented");
-        }
-        pub unsafe fn oxidegl_named_buffer_sub_data(
-            &mut self,
-            buffer: GLuint,
-            offset: GLintptr,
-            size: GLsizeiptr,
-            data: *const GLvoid,
-        ) {
-            panic!("command oxidegl_named_buffer_sub_data not yet implemented");
-        }
+impl Context {
+    pub unsafe fn oxidegl_buffer_sub_data(
+        &mut self,
+        target: GLenum,
+        offset: GLintptr,
+        size: GLsizeiptr,
+        data: *const GLvoid,
+    ) {
+        panic!("command oxidegl_buffer_sub_data not yet implemented");
+    }
+    pub unsafe fn oxidegl_named_buffer_sub_data(
+        &mut self,
+        buffer: GLuint,
+        offset: GLintptr,
+        size: GLsizeiptr,
+        data: *const GLvoid,
+    ) {
+        panic!("command oxidegl_named_buffer_sub_data not yet implemented");
     }
 }
 /// ### Parameters
@@ -1667,21 +1610,16 @@ pub mod buffer_sub_data {
 ///
 ///
 /// Additionally, if an error occurs, zero is returned.
-pub mod check_framebuffer_status {
-    use crate::context::Context;
-    use crate::dispatch::gl_types::*;
-    use crate::enums::FramebufferTarget;
-    impl Context {
-        pub fn oxidegl_check_framebuffer_status(&mut self, target: FramebufferTarget) -> GLenum {
-            panic!("command oxidegl_check_framebuffer_status not yet implemented");
-        }
-        pub fn oxidegl_check_named_framebuffer_status(
-            &mut self,
-            framebuffer: GLuint,
-            target: FramebufferTarget,
-        ) -> GLenum {
-            panic!("command oxidegl_check_named_framebuffer_status not yet implemented");
-        }
+impl Context {
+    pub fn oxidegl_check_framebuffer_status(&mut self, target: FramebufferTarget) -> GLenum {
+        panic!("command oxidegl_check_framebuffer_status not yet implemented");
+    }
+    pub fn oxidegl_check_named_framebuffer_status(
+        &mut self,
+        framebuffer: GLuint,
+        target: FramebufferTarget,
+    ) -> GLenum {
+        panic!("command oxidegl_check_named_framebuffer_status not yet implemented");
     }
 }
 /// ### Parameters
@@ -1767,81 +1705,76 @@ pub mod check_framebuffer_status {
 /// is defined (for example, if [**glClearBufferiv**](crate::context::Context::oxidegl_clear_bufferiv)
 /// is called for a fixed- or floating-point buffer, or if [**glClearBufferfv**](crate::context::Context::oxidegl_clear_bufferfv)
 /// is called for a signed or unsigned integer buffer). This is not an error.
-pub mod clear_buffer {
-    use crate::context::Context;
-    use crate::dispatch::gl_types::*;
-    use crate::enums::Buffer;
-    impl Context {
-        pub unsafe fn oxidegl_clear_bufferiv(
-            &mut self,
-            buffer: Buffer,
-            drawbuffer: GLint,
-            value: *const GLint,
-        ) {
-            panic!("command oxidegl_clear_bufferiv not yet implemented");
-        }
-        pub unsafe fn oxidegl_clear_bufferuiv(
-            &mut self,
-            buffer: Buffer,
-            drawbuffer: GLint,
-            value: *const GLuint,
-        ) {
-            panic!("command oxidegl_clear_bufferuiv not yet implemented");
-        }
-        pub unsafe fn oxidegl_clear_bufferfv(
-            &mut self,
-            buffer: Buffer,
-            drawbuffer: GLint,
-            value: *const GLfloat,
-        ) {
-            panic!("command oxidegl_clear_bufferfv not yet implemented");
-        }
-        pub fn oxidegl_clear_bufferfi(
-            &mut self,
-            buffer: Buffer,
-            drawbuffer: GLint,
-            depth: GLfloat,
-            stencil: GLint,
-        ) {
-            panic!("command oxidegl_clear_bufferfi not yet implemented");
-        }
-        pub unsafe fn oxidegl_clear_named_framebufferiv(
-            &mut self,
-            framebuffer: GLuint,
-            buffer: Buffer,
-            drawbuffer: GLint,
-            value: *const GLint,
-        ) {
-            panic!("command oxidegl_clear_named_framebufferiv not yet implemented");
-        }
-        pub unsafe fn oxidegl_clear_named_framebufferuiv(
-            &mut self,
-            framebuffer: GLuint,
-            buffer: Buffer,
-            drawbuffer: GLint,
-            value: *const GLuint,
-        ) {
-            panic!("command oxidegl_clear_named_framebufferuiv not yet implemented");
-        }
-        pub unsafe fn oxidegl_clear_named_framebufferfv(
-            &mut self,
-            framebuffer: GLuint,
-            buffer: Buffer,
-            drawbuffer: GLint,
-            value: *const GLfloat,
-        ) {
-            panic!("command oxidegl_clear_named_framebufferfv not yet implemented");
-        }
-        pub fn oxidegl_clear_named_framebufferfi(
-            &mut self,
-            framebuffer: GLuint,
-            buffer: Buffer,
-            drawbuffer: GLint,
-            depth: GLfloat,
-            stencil: GLint,
-        ) {
-            panic!("command oxidegl_clear_named_framebufferfi not yet implemented");
-        }
+impl Context {
+    pub unsafe fn oxidegl_clear_bufferiv(
+        &mut self,
+        buffer: Buffer,
+        drawbuffer: GLint,
+        value: *const GLint,
+    ) {
+        panic!("command oxidegl_clear_bufferiv not yet implemented");
+    }
+    pub unsafe fn oxidegl_clear_bufferuiv(
+        &mut self,
+        buffer: Buffer,
+        drawbuffer: GLint,
+        value: *const GLuint,
+    ) {
+        panic!("command oxidegl_clear_bufferuiv not yet implemented");
+    }
+    pub unsafe fn oxidegl_clear_bufferfv(
+        &mut self,
+        buffer: Buffer,
+        drawbuffer: GLint,
+        value: *const GLfloat,
+    ) {
+        panic!("command oxidegl_clear_bufferfv not yet implemented");
+    }
+    pub fn oxidegl_clear_bufferfi(
+        &mut self,
+        buffer: Buffer,
+        drawbuffer: GLint,
+        depth: GLfloat,
+        stencil: GLint,
+    ) {
+        panic!("command oxidegl_clear_bufferfi not yet implemented");
+    }
+    pub unsafe fn oxidegl_clear_named_framebufferiv(
+        &mut self,
+        framebuffer: GLuint,
+        buffer: Buffer,
+        drawbuffer: GLint,
+        value: *const GLint,
+    ) {
+        panic!("command oxidegl_clear_named_framebufferiv not yet implemented");
+    }
+    pub unsafe fn oxidegl_clear_named_framebufferuiv(
+        &mut self,
+        framebuffer: GLuint,
+        buffer: Buffer,
+        drawbuffer: GLint,
+        value: *const GLuint,
+    ) {
+        panic!("command oxidegl_clear_named_framebufferuiv not yet implemented");
+    }
+    pub unsafe fn oxidegl_clear_named_framebufferfv(
+        &mut self,
+        framebuffer: GLuint,
+        buffer: Buffer,
+        drawbuffer: GLint,
+        value: *const GLfloat,
+    ) {
+        panic!("command oxidegl_clear_named_framebufferfv not yet implemented");
+    }
+    pub fn oxidegl_clear_named_framebufferfi(
+        &mut self,
+        framebuffer: GLuint,
+        buffer: Buffer,
+        drawbuffer: GLint,
+        depth: GLfloat,
+        stencil: GLint,
+    ) {
+        panic!("command oxidegl_clear_named_framebufferfi not yet implemented");
     }
 }
 /// ### Parameters
@@ -1937,31 +1870,26 @@ pub mod clear_buffer {
 ///
 /// This converted data is then replicated throughout the buffer object's data
 /// store. If `data` is NULL, then the buffer's data store is filled with zeros.
-pub mod clear_buffer_data {
-    use crate::context::Context;
-    use crate::dispatch::gl_types::*;
-    use crate::enums::{BufferStorageTarget, PixelFormat, PixelType, SizedInternalFormat};
-    impl Context {
-        pub unsafe fn oxidegl_clear_buffer_data(
-            &mut self,
-            target: BufferStorageTarget,
-            internalformat: SizedInternalFormat,
-            format: PixelFormat,
-            r#type: PixelType,
-            data: *const GLvoid,
-        ) {
-            panic!("command oxidegl_clear_buffer_data not yet implemented");
-        }
-        pub unsafe fn oxidegl_clear_named_buffer_data(
-            &mut self,
-            buffer: GLuint,
-            internalformat: SizedInternalFormat,
-            format: PixelFormat,
-            r#type: PixelType,
-            data: *const GLvoid,
-        ) {
-            panic!("command oxidegl_clear_named_buffer_data not yet implemented");
-        }
+impl Context {
+    pub unsafe fn oxidegl_clear_buffer_data(
+        &mut self,
+        target: BufferStorageTarget,
+        internalformat: SizedInternalFormat,
+        format: PixelFormat,
+        r#type: PixelType,
+        data: *const GLvoid,
+    ) {
+        panic!("command oxidegl_clear_buffer_data not yet implemented");
+    }
+    pub unsafe fn oxidegl_clear_named_buffer_data(
+        &mut self,
+        buffer: GLuint,
+        internalformat: SizedInternalFormat,
+        format: PixelFormat,
+        r#type: PixelType,
+        data: *const GLvoid,
+    ) {
+        panic!("command oxidegl_clear_named_buffer_data not yet implemented");
     }
 }
 /// ### Parameters
@@ -2068,35 +1996,30 @@ pub mod clear_buffer_data {
 /// This converted data is then replicated throughout the specified region
 /// of the buffer object's data store. If `data` is NULL, then the subrange
 /// of the buffer's data store is filled with zeros.
-pub mod clear_buffer_sub_data {
-    use crate::context::Context;
-    use crate::dispatch::gl_types::*;
-    use crate::enums::{PixelFormat, PixelType, SizedInternalFormat};
-    impl Context {
-        pub unsafe fn oxidegl_clear_buffer_sub_data(
-            &mut self,
-            target: GLenum,
-            internalformat: SizedInternalFormat,
-            offset: GLintptr,
-            size: GLsizeiptr,
-            format: PixelFormat,
-            r#type: PixelType,
-            data: *const GLvoid,
-        ) {
-            panic!("command oxidegl_clear_buffer_sub_data not yet implemented");
-        }
-        pub unsafe fn oxidegl_clear_named_buffer_sub_data(
-            &mut self,
-            buffer: GLuint,
-            internalformat: SizedInternalFormat,
-            offset: GLintptr,
-            size: GLsizeiptr,
-            format: PixelFormat,
-            r#type: PixelType,
-            data: *const GLvoid,
-        ) {
-            panic!("command oxidegl_clear_named_buffer_sub_data not yet implemented");
-        }
+impl Context {
+    pub unsafe fn oxidegl_clear_buffer_sub_data(
+        &mut self,
+        target: GLenum,
+        internalformat: SizedInternalFormat,
+        offset: GLintptr,
+        size: GLsizeiptr,
+        format: PixelFormat,
+        r#type: PixelType,
+        data: *const GLvoid,
+    ) {
+        panic!("command oxidegl_clear_buffer_sub_data not yet implemented");
+    }
+    pub unsafe fn oxidegl_clear_named_buffer_sub_data(
+        &mut self,
+        buffer: GLuint,
+        internalformat: SizedInternalFormat,
+        offset: GLintptr,
+        size: GLsizeiptr,
+        format: PixelFormat,
+        r#type: PixelType,
+        data: *const GLvoid,
+    ) {
+        panic!("command oxidegl_clear_named_buffer_sub_data not yet implemented");
     }
 }
 /// ### Parameters
@@ -2120,16 +2043,12 @@ pub mod clear_buffer_sub_data {
 ///
 /// ### Associated Gets
 /// [**glGet**](crate::context::Context::oxidegl_get) with argument [`GL_DEPTH_CLEAR_VALUE`](crate::enums::GL_DEPTH_CLEAR_VALUE)
-pub mod clear_depth {
-    use crate::context::Context;
-    use crate::dispatch::gl_types::*;
-    impl Context {
-        pub fn oxidegl_clear_depth(&mut self, depth: GLdouble) {
-            panic!("command oxidegl_clear_depth not yet implemented");
-        }
-        pub fn oxidegl_clear_depthf(&mut self, d: GLfloat) {
-            panic!("command oxidegl_clear_depthf not yet implemented");
-        }
+impl Context {
+    pub fn oxidegl_clear_depth(&mut self, depth: GLdouble) {
+        panic!("command oxidegl_clear_depth not yet implemented");
+    }
+    pub fn oxidegl_clear_depthf(&mut self, d: GLfloat) {
+        panic!("command oxidegl_clear_depthf not yet implemented");
     }
 }
 /// ### Parameters
@@ -2164,29 +2083,25 @@ pub mod clear_depth {
 ///
 /// ### Associated Gets
 /// [**glGet**](crate::context::Context::oxidegl_get) with argument [`GL_COLOR_WRITEMASK`](crate::enums::GL_COLOR_WRITEMASK)
-pub mod color_mask {
-    use crate::context::Context;
-    use crate::dispatch::gl_types::*;
-    impl Context {
-        pub fn oxidegl_color_mask(
-            &mut self,
-            red: GLboolean,
-            green: GLboolean,
-            blue: GLboolean,
-            alpha: GLboolean,
-        ) {
-            panic!("command oxidegl_color_mask not yet implemented");
-        }
-        pub fn oxidegl_color_maski(
-            &mut self,
-            index: GLuint,
-            r: GLboolean,
-            g: GLboolean,
-            b: GLboolean,
-            a: GLboolean,
-        ) {
-            panic!("command oxidegl_color_maski not yet implemented");
-        }
+impl Context {
+    pub fn oxidegl_color_mask(
+        &mut self,
+        red: GLboolean,
+        green: GLboolean,
+        blue: GLboolean,
+        alpha: GLboolean,
+    ) {
+        panic!("command oxidegl_color_mask not yet implemented");
+    }
+    pub fn oxidegl_color_maski(
+        &mut self,
+        index: GLuint,
+        r: GLboolean,
+        g: GLboolean,
+        b: GLboolean,
+        a: GLboolean,
+    ) {
+        panic!("command oxidegl_color_maski not yet implemented");
     }
 }
 /// ### Parameters
@@ -2256,35 +2171,30 @@ pub mod color_mask {
 /// [**glGetTexLevelParameter**](crate::context::Context::oxidegl_get_tex_level_parameter)
 /// with arguments [`GL_TEXTURE_INTERNAL_FORMAT`](crate::enums::GL_TEXTURE_INTERNAL_FORMAT)
 /// and [`GL_TEXTURE_COMPRESSED_IMAGE_SIZE`](crate::enums::GL_TEXTURE_COMPRESSED_IMAGE_SIZE)
-pub mod compressed_tex_sub_image1_d {
-    use crate::context::Context;
-    use crate::dispatch::gl_types::*;
-    use crate::enums::{InternalFormat, TextureTarget};
-    impl Context {
-        pub unsafe fn oxidegl_compressed_tex_sub_image1_d(
-            &mut self,
-            target: TextureTarget,
-            level: GLint,
-            xoffset: GLint,
-            width: GLsizei,
-            format: InternalFormat,
-            image_size: GLsizei,
-            data: *const GLvoid,
-        ) {
-            panic!("command oxidegl_compressed_tex_sub_image1_d not yet implemented");
-        }
-        pub unsafe fn oxidegl_compressed_texture_sub_image1_d(
-            &mut self,
-            texture: GLuint,
-            level: GLint,
-            xoffset: GLint,
-            width: GLsizei,
-            format: InternalFormat,
-            image_size: GLsizei,
-            data: *const GLvoid,
-        ) {
-            panic!("command oxidegl_compressed_texture_sub_image1_d not yet implemented");
-        }
+impl Context {
+    pub unsafe fn oxidegl_compressed_tex_sub_image1_d(
+        &mut self,
+        target: TextureTarget,
+        level: GLint,
+        xoffset: GLint,
+        width: GLsizei,
+        format: InternalFormat,
+        image_size: GLsizei,
+        data: *const GLvoid,
+    ) {
+        panic!("command oxidegl_compressed_tex_sub_image1_d not yet implemented");
+    }
+    pub unsafe fn oxidegl_compressed_texture_sub_image1_d(
+        &mut self,
+        texture: GLuint,
+        level: GLint,
+        xoffset: GLint,
+        width: GLsizei,
+        format: InternalFormat,
+        image_size: GLsizei,
+        data: *const GLvoid,
+    ) {
+        panic!("command oxidegl_compressed_texture_sub_image1_d not yet implemented");
     }
 }
 /// ### Parameters
@@ -2368,39 +2278,34 @@ pub mod compressed_tex_sub_image1_d {
 /// [**glGetTexLevelParameter**](crate::context::Context::oxidegl_get_tex_level_parameter)
 /// with arguments [`GL_TEXTURE_INTERNAL_FORMAT`](crate::enums::GL_TEXTURE_INTERNAL_FORMAT)
 /// and [`GL_TEXTURE_COMPRESSED_IMAGE_SIZE`](crate::enums::GL_TEXTURE_COMPRESSED_IMAGE_SIZE)
-pub mod compressed_tex_sub_image2_d {
-    use crate::context::Context;
-    use crate::dispatch::gl_types::*;
-    use crate::enums::{InternalFormat, TextureTarget};
-    impl Context {
-        pub unsafe fn oxidegl_compressed_tex_sub_image2_d(
-            &mut self,
-            target: TextureTarget,
-            level: GLint,
-            xoffset: GLint,
-            yoffset: GLint,
-            width: GLsizei,
-            height: GLsizei,
-            format: InternalFormat,
-            image_size: GLsizei,
-            data: *const GLvoid,
-        ) {
-            panic!("command oxidegl_compressed_tex_sub_image2_d not yet implemented");
-        }
-        pub unsafe fn oxidegl_compressed_texture_sub_image2_d(
-            &mut self,
-            texture: GLuint,
-            level: GLint,
-            xoffset: GLint,
-            yoffset: GLint,
-            width: GLsizei,
-            height: GLsizei,
-            format: InternalFormat,
-            image_size: GLsizei,
-            data: *const GLvoid,
-        ) {
-            panic!("command oxidegl_compressed_texture_sub_image2_d not yet implemented");
-        }
+impl Context {
+    pub unsafe fn oxidegl_compressed_tex_sub_image2_d(
+        &mut self,
+        target: TextureTarget,
+        level: GLint,
+        xoffset: GLint,
+        yoffset: GLint,
+        width: GLsizei,
+        height: GLsizei,
+        format: InternalFormat,
+        image_size: GLsizei,
+        data: *const GLvoid,
+    ) {
+        panic!("command oxidegl_compressed_tex_sub_image2_d not yet implemented");
+    }
+    pub unsafe fn oxidegl_compressed_texture_sub_image2_d(
+        &mut self,
+        texture: GLuint,
+        level: GLint,
+        xoffset: GLint,
+        yoffset: GLint,
+        width: GLsizei,
+        height: GLsizei,
+        format: InternalFormat,
+        image_size: GLsizei,
+        data: *const GLvoid,
+    ) {
+        panic!("command oxidegl_compressed_texture_sub_image2_d not yet implemented");
     }
 }
 /// ### Parameters
@@ -2488,43 +2393,38 @@ pub mod compressed_tex_sub_image2_d {
 /// [**glGetTexLevelParameter**](crate::context::Context::oxidegl_get_tex_level_parameter)
 /// with arguments [`GL_TEXTURE_INTERNAL_FORMAT`](crate::enums::GL_TEXTURE_INTERNAL_FORMAT)
 /// and [`GL_TEXTURE_COMPRESSED_IMAGE_SIZE`](crate::enums::GL_TEXTURE_COMPRESSED_IMAGE_SIZE)
-pub mod compressed_tex_sub_image3_d {
-    use crate::context::Context;
-    use crate::dispatch::gl_types::*;
-    use crate::enums::{InternalFormat, TextureTarget};
-    impl Context {
-        pub unsafe fn oxidegl_compressed_tex_sub_image3_d(
-            &mut self,
-            target: TextureTarget,
-            level: GLint,
-            xoffset: GLint,
-            yoffset: GLint,
-            zoffset: GLint,
-            width: GLsizei,
-            height: GLsizei,
-            depth: GLsizei,
-            format: InternalFormat,
-            image_size: GLsizei,
-            data: *const GLvoid,
-        ) {
-            panic!("command oxidegl_compressed_tex_sub_image3_d not yet implemented");
-        }
-        pub unsafe fn oxidegl_compressed_texture_sub_image3_d(
-            &mut self,
-            texture: GLuint,
-            level: GLint,
-            xoffset: GLint,
-            yoffset: GLint,
-            zoffset: GLint,
-            width: GLsizei,
-            height: GLsizei,
-            depth: GLsizei,
-            format: InternalFormat,
-            image_size: GLsizei,
-            data: *const GLvoid,
-        ) {
-            panic!("command oxidegl_compressed_texture_sub_image3_d not yet implemented");
-        }
+impl Context {
+    pub unsafe fn oxidegl_compressed_tex_sub_image3_d(
+        &mut self,
+        target: TextureTarget,
+        level: GLint,
+        xoffset: GLint,
+        yoffset: GLint,
+        zoffset: GLint,
+        width: GLsizei,
+        height: GLsizei,
+        depth: GLsizei,
+        format: InternalFormat,
+        image_size: GLsizei,
+        data: *const GLvoid,
+    ) {
+        panic!("command oxidegl_compressed_tex_sub_image3_d not yet implemented");
+    }
+    pub unsafe fn oxidegl_compressed_texture_sub_image3_d(
+        &mut self,
+        texture: GLuint,
+        level: GLint,
+        xoffset: GLint,
+        yoffset: GLint,
+        zoffset: GLint,
+        width: GLsizei,
+        height: GLsizei,
+        depth: GLsizei,
+        format: InternalFormat,
+        image_size: GLsizei,
+        data: *const GLvoid,
+    ) {
+        panic!("command oxidegl_compressed_texture_sub_image3_d not yet implemented");
     }
 }
 /// ### Parameters
@@ -2610,31 +2510,26 @@ pub mod compressed_tex_sub_image3_d {
 ///
 /// The [`GL_QUERY_BUFFER`](crate::enums::GL_QUERY_BUFFER) target is available
 /// only if the GL version is 4.4 or greater.
-pub mod copy_buffer_sub_data {
-    use crate::context::Context;
-    use crate::dispatch::gl_types::*;
-    use crate::enums::CopyBufferSubDataTarget;
-    impl Context {
-        pub fn oxidegl_copy_buffer_sub_data(
-            &mut self,
-            read_target: CopyBufferSubDataTarget,
-            write_target: CopyBufferSubDataTarget,
-            read_offset: GLintptr,
-            write_offset: GLintptr,
-            size: GLsizeiptr,
-        ) {
-            panic!("command oxidegl_copy_buffer_sub_data not yet implemented");
-        }
-        pub fn oxidegl_copy_named_buffer_sub_data(
-            &mut self,
-            read_buffer: GLuint,
-            write_buffer: GLuint,
-            read_offset: GLintptr,
-            write_offset: GLintptr,
-            size: GLsizeiptr,
-        ) {
-            panic!("command oxidegl_copy_named_buffer_sub_data not yet implemented");
-        }
+impl Context {
+    pub fn oxidegl_copy_buffer_sub_data(
+        &mut self,
+        read_target: CopyBufferSubDataTarget,
+        write_target: CopyBufferSubDataTarget,
+        read_offset: GLintptr,
+        write_offset: GLintptr,
+        size: GLsizeiptr,
+    ) {
+        panic!("command oxidegl_copy_buffer_sub_data not yet implemented");
+    }
+    pub fn oxidegl_copy_named_buffer_sub_data(
+        &mut self,
+        read_buffer: GLuint,
+        write_buffer: GLuint,
+        read_offset: GLintptr,
+        write_offset: GLintptr,
+        size: GLsizeiptr,
+    ) {
+        panic!("command oxidegl_copy_named_buffer_sub_data not yet implemented");
     }
 }
 /// ### Parameters
@@ -2703,33 +2598,28 @@ pub mod copy_buffer_sub_data {
 ///
 /// ### Associated Gets
 /// [**glGetTexImage**](crate::context::Context::oxidegl_get_tex_image)
-pub mod copy_tex_sub_image1_d {
-    use crate::context::Context;
-    use crate::dispatch::gl_types::*;
-    use crate::enums::TextureTarget;
-    impl Context {
-        pub fn oxidegl_copy_tex_sub_image1_d(
-            &mut self,
-            target: TextureTarget,
-            level: GLint,
-            xoffset: GLint,
-            x: GLint,
-            y: GLint,
-            width: GLsizei,
-        ) {
-            panic!("command oxidegl_copy_tex_sub_image1_d not yet implemented");
-        }
-        pub fn oxidegl_copy_texture_sub_image1_d(
-            &mut self,
-            texture: GLuint,
-            level: GLint,
-            xoffset: GLint,
-            x: GLint,
-            y: GLint,
-            width: GLsizei,
-        ) {
-            panic!("command oxidegl_copy_texture_sub_image1_d not yet implemented");
-        }
+impl Context {
+    pub fn oxidegl_copy_tex_sub_image1_d(
+        &mut self,
+        target: TextureTarget,
+        level: GLint,
+        xoffset: GLint,
+        x: GLint,
+        y: GLint,
+        width: GLsizei,
+    ) {
+        panic!("command oxidegl_copy_tex_sub_image1_d not yet implemented");
+    }
+    pub fn oxidegl_copy_texture_sub_image1_d(
+        &mut self,
+        texture: GLuint,
+        level: GLint,
+        xoffset: GLint,
+        x: GLint,
+        y: GLint,
+        width: GLsizei,
+    ) {
+        panic!("command oxidegl_copy_texture_sub_image1_d not yet implemented");
     }
 }
 /// ### Parameters
@@ -2820,37 +2710,32 @@ pub mod copy_tex_sub_image1_d {
 ///
 /// ### Associated Gets
 /// [**glGetTexImage**](crate::context::Context::oxidegl_get_tex_image)
-pub mod copy_tex_sub_image2_d {
-    use crate::context::Context;
-    use crate::dispatch::gl_types::*;
-    use crate::enums::TextureTarget;
-    impl Context {
-        pub fn oxidegl_copy_tex_sub_image2_d(
-            &mut self,
-            target: TextureTarget,
-            level: GLint,
-            xoffset: GLint,
-            yoffset: GLint,
-            x: GLint,
-            y: GLint,
-            width: GLsizei,
-            height: GLsizei,
-        ) {
-            panic!("command oxidegl_copy_tex_sub_image2_d not yet implemented");
-        }
-        pub fn oxidegl_copy_texture_sub_image2_d(
-            &mut self,
-            texture: GLuint,
-            level: GLint,
-            xoffset: GLint,
-            yoffset: GLint,
-            x: GLint,
-            y: GLint,
-            width: GLsizei,
-            height: GLsizei,
-        ) {
-            panic!("command oxidegl_copy_texture_sub_image2_d not yet implemented");
-        }
+impl Context {
+    pub fn oxidegl_copy_tex_sub_image2_d(
+        &mut self,
+        target: TextureTarget,
+        level: GLint,
+        xoffset: GLint,
+        yoffset: GLint,
+        x: GLint,
+        y: GLint,
+        width: GLsizei,
+        height: GLsizei,
+    ) {
+        panic!("command oxidegl_copy_tex_sub_image2_d not yet implemented");
+    }
+    pub fn oxidegl_copy_texture_sub_image2_d(
+        &mut self,
+        texture: GLuint,
+        level: GLint,
+        xoffset: GLint,
+        yoffset: GLint,
+        x: GLint,
+        y: GLint,
+        width: GLsizei,
+        height: GLsizei,
+    ) {
+        panic!("command oxidegl_copy_texture_sub_image2_d not yet implemented");
     }
 }
 /// ### Parameters
@@ -2933,39 +2818,34 @@ pub mod copy_tex_sub_image2_d {
 ///
 /// ### Associated Gets
 /// [**glGetTexImage**](crate::context::Context::oxidegl_get_tex_image)
-pub mod copy_tex_sub_image3_d {
-    use crate::context::Context;
-    use crate::dispatch::gl_types::*;
-    use crate::enums::TextureTarget;
-    impl Context {
-        pub fn oxidegl_copy_tex_sub_image3_d(
-            &mut self,
-            target: TextureTarget,
-            level: GLint,
-            xoffset: GLint,
-            yoffset: GLint,
-            zoffset: GLint,
-            x: GLint,
-            y: GLint,
-            width: GLsizei,
-            height: GLsizei,
-        ) {
-            panic!("command oxidegl_copy_tex_sub_image3_d not yet implemented");
-        }
-        pub fn oxidegl_copy_texture_sub_image3_d(
-            &mut self,
-            texture: GLuint,
-            level: GLint,
-            xoffset: GLint,
-            yoffset: GLint,
-            zoffset: GLint,
-            x: GLint,
-            y: GLint,
-            width: GLsizei,
-            height: GLsizei,
-        ) {
-            panic!("command oxidegl_copy_texture_sub_image3_d not yet implemented");
-        }
+impl Context {
+    pub fn oxidegl_copy_tex_sub_image3_d(
+        &mut self,
+        target: TextureTarget,
+        level: GLint,
+        xoffset: GLint,
+        yoffset: GLint,
+        zoffset: GLint,
+        x: GLint,
+        y: GLint,
+        width: GLsizei,
+        height: GLsizei,
+    ) {
+        panic!("command oxidegl_copy_tex_sub_image3_d not yet implemented");
+    }
+    pub fn oxidegl_copy_texture_sub_image3_d(
+        &mut self,
+        texture: GLuint,
+        level: GLint,
+        xoffset: GLint,
+        yoffset: GLint,
+        zoffset: GLint,
+        x: GLint,
+        y: GLint,
+        width: GLsizei,
+        height: GLsizei,
+    ) {
+        panic!("command oxidegl_copy_texture_sub_image3_d not yet implemented");
     }
 }
 /// ### Parameters
@@ -3003,16 +2883,12 @@ pub mod copy_tex_sub_image3_d {
 ///
 /// ### Associated Gets
 /// [**glGet**](crate::context::Context::oxidegl_get) with argument [`GL_DEPTH_RANGE`](crate::enums::GL_DEPTH_RANGE)
-pub mod depth_range {
-    use crate::context::Context;
-    use crate::dispatch::gl_types::*;
-    impl Context {
-        pub fn oxidegl_depth_range(&mut self, n: GLdouble, f: GLdouble) {
-            panic!("command oxidegl_depth_range not yet implemented");
-        }
-        pub fn oxidegl_depth_rangef(&mut self, n: GLfloat, f: GLfloat) {
-            panic!("command oxidegl_depth_rangef not yet implemented");
-        }
+impl Context {
+    pub fn oxidegl_depth_range(&mut self, n: GLdouble, f: GLdouble) {
+        panic!("command oxidegl_depth_range not yet implemented");
+    }
+    pub fn oxidegl_depth_rangef(&mut self, n: GLfloat, f: GLfloat) {
+        panic!("command oxidegl_depth_rangef not yet implemented");
     }
 }
 /// ### Parameters
@@ -3107,21 +2983,12 @@ pub mod depth_range {
 ///
 /// ### Associated Gets
 /// [**glGet**](crate::context::Context::oxidegl_get) with argument [`GL_DRAW_BUFFER`](crate::enums::GL_DRAW_BUFFER)
-pub mod draw_buffer {
-    use crate::context::Context;
-    use crate::dispatch::gl_types::*;
-    use crate::enums::{ColorBuffer, DrawBufferMode};
-    impl Context {
-        pub fn oxidegl_draw_buffer(&mut self, buf: DrawBufferMode) {
-            panic!("command oxidegl_draw_buffer not yet implemented");
-        }
-        pub fn oxidegl_named_framebuffer_draw_buffer(
-            &mut self,
-            framebuffer: GLuint,
-            buf: ColorBuffer,
-        ) {
-            panic!("command oxidegl_named_framebuffer_draw_buffer not yet implemented");
-        }
+impl Context {
+    pub fn oxidegl_draw_buffer(&mut self, buf: DrawBufferMode) {
+        panic!("command oxidegl_draw_buffer not yet implemented");
+    }
+    pub fn oxidegl_named_framebuffer_draw_buffer(&mut self, framebuffer: GLuint, buf: ColorBuffer) {
+        panic!("command oxidegl_named_framebuffer_draw_buffer not yet implemented");
     }
 }
 /// ### Parameters
@@ -3206,22 +3073,17 @@ pub mod draw_buffer {
 /// [**glGet**](crate::context::Context::oxidegl_get) with argument [`GL_DRAW_BUFFER`](crate::enums::GL_DRAW_BUFFER)
 /// *i* where ** indicates the number of the draw buffer whose value is to
 /// be queried.
-pub mod draw_buffers {
-    use crate::context::Context;
-    use crate::dispatch::gl_types::*;
-    use crate::enums::{ColorBuffer, DrawBufferMode};
-    impl Context {
-        pub fn oxidegl_draw_buffers(&mut self, n: GLsizei, bufs: DrawBufferMode) {
-            panic!("command oxidegl_draw_buffers not yet implemented");
-        }
-        pub fn oxidegl_named_framebuffer_draw_buffers(
-            &mut self,
-            framebuffer: GLuint,
-            n: GLsizei,
-            bufs: ColorBuffer,
-        ) {
-            panic!("command oxidegl_named_framebuffer_draw_buffers not yet implemented");
-        }
+impl Context {
+    pub fn oxidegl_draw_buffers(&mut self, n: GLsizei, bufs: DrawBufferMode) {
+        panic!("command oxidegl_draw_buffers not yet implemented");
+    }
+    pub fn oxidegl_named_framebuffer_draw_buffers(
+        &mut self,
+        framebuffer: GLuint,
+        n: GLsizei,
+        bufs: ColorBuffer,
+    ) {
+        panic!("command oxidegl_named_framebuffer_draw_buffers not yet implemented");
     }
 }
 /// ### Parameters
@@ -3478,23 +3340,18 @@ pub mod draw_buffers {
 /// [**glIsEnabled**](crate::context::Context::oxidegl_is_enabled)
 ///
 /// [**glGet**](crate::context::Context::oxidegl_get)
-pub mod enable {
-    use crate::context::Context;
-    use crate::dispatch::gl_types::*;
-    use crate::enums::EnableCap;
-    impl Context {
-        pub fn oxidegl_disable(&mut self, cap: EnableCap) {
-            panic!("command oxidegl_disable not yet implemented");
-        }
-        pub fn oxidegl_enable(&mut self, cap: EnableCap) {
-            panic!("command oxidegl_enable not yet implemented");
-        }
-        pub fn oxidegl_enablei(&mut self, target: EnableCap, index: GLuint) {
-            panic!("command oxidegl_enablei not yet implemented");
-        }
-        pub fn oxidegl_disablei(&mut self, target: EnableCap, index: GLuint) {
-            panic!("command oxidegl_disablei not yet implemented");
-        }
+impl Context {
+    pub fn oxidegl_disable(&mut self, cap: EnableCap) {
+        panic!("command oxidegl_disable not yet implemented");
+    }
+    pub fn oxidegl_enable(&mut self, cap: EnableCap) {
+        panic!("command oxidegl_enable not yet implemented");
+    }
+    pub fn oxidegl_enablei(&mut self, target: EnableCap, index: GLuint) {
+        panic!("command oxidegl_enablei not yet implemented");
+    }
+    pub fn oxidegl_disablei(&mut self, target: EnableCap, index: GLuint) {
+        panic!("command oxidegl_disablei not yet implemented");
     }
 }
 /// ### Parameters
@@ -3537,22 +3394,18 @@ pub mod enable {
 ///
 /// [**glGetVertexAttribPointerv**](crate::context::Context::oxidegl_get_vertex_attrib_pointerv)
 /// with arguments `index` and [`GL_VERTEX_ATTRIB_ARRAY_POINTER`](crate::enums::GL_VERTEX_ATTRIB_ARRAY_POINTER)
-pub mod enable_vertex_attrib_array {
-    use crate::context::Context;
-    use crate::dispatch::gl_types::*;
-    impl Context {
-        pub fn oxidegl_disable_vertex_attrib_array(&mut self, index: GLuint) {
-            panic!("command oxidegl_disable_vertex_attrib_array not yet implemented");
-        }
-        pub fn oxidegl_enable_vertex_attrib_array(&mut self, index: GLuint) {
-            panic!("command oxidegl_enable_vertex_attrib_array not yet implemented");
-        }
-        pub fn oxidegl_disable_vertex_array_attrib(&mut self, vaobj: GLuint, index: GLuint) {
-            panic!("command oxidegl_disable_vertex_array_attrib not yet implemented");
-        }
-        pub fn oxidegl_enable_vertex_array_attrib(&mut self, vaobj: GLuint, index: GLuint) {
-            panic!("command oxidegl_enable_vertex_array_attrib not yet implemented");
-        }
+impl Context {
+    pub fn oxidegl_disable_vertex_attrib_array(&mut self, index: GLuint) {
+        panic!("command oxidegl_disable_vertex_attrib_array not yet implemented");
+    }
+    pub fn oxidegl_enable_vertex_attrib_array(&mut self, index: GLuint) {
+        panic!("command oxidegl_enable_vertex_attrib_array not yet implemented");
+    }
+    pub fn oxidegl_disable_vertex_array_attrib(&mut self, vaobj: GLuint, index: GLuint) {
+        panic!("command oxidegl_disable_vertex_array_attrib not yet implemented");
+    }
+    pub fn oxidegl_enable_vertex_array_attrib(&mut self, vaobj: GLuint, index: GLuint) {
+        panic!("command oxidegl_enable_vertex_array_attrib not yet implemented");
     }
 }
 /// ### Parameters
@@ -3616,26 +3469,22 @@ pub mod enable_vertex_attrib_array {
 ///
 /// The [`GL_QUERY_BUFFER`](crate::enums::GL_QUERY_BUFFER) target is available
 /// only if the GL version is 4.4 or greater.
-pub mod flush_mapped_buffer_range {
-    use crate::context::Context;
-    use crate::dispatch::gl_types::*;
-    impl Context {
-        pub fn oxidegl_flush_mapped_buffer_range(
-            &mut self,
-            target: GLenum,
-            offset: GLintptr,
-            length: GLsizeiptr,
-        ) {
-            panic!("command oxidegl_flush_mapped_buffer_range not yet implemented");
-        }
-        pub fn oxidegl_flush_mapped_named_buffer_range(
-            &mut self,
-            buffer: GLuint,
-            offset: GLintptr,
-            length: GLsizeiptr,
-        ) {
-            panic!("command oxidegl_flush_mapped_named_buffer_range not yet implemented");
-        }
+impl Context {
+    pub fn oxidegl_flush_mapped_buffer_range(
+        &mut self,
+        target: GLenum,
+        offset: GLintptr,
+        length: GLsizeiptr,
+    ) {
+        panic!("command oxidegl_flush_mapped_buffer_range not yet implemented");
+    }
+    pub fn oxidegl_flush_mapped_named_buffer_range(
+        &mut self,
+        buffer: GLuint,
+        offset: GLintptr,
+        length: GLsizeiptr,
+    ) {
+        panic!("command oxidegl_flush_mapped_named_buffer_range not yet implemented");
     }
 }
 /// ### Parameters
@@ -3716,27 +3565,22 @@ pub mod flush_mapped_buffer_range {
 ///
 /// ### Associated Gets
 /// [**glGetFramebufferParameteriv**](crate::context::Context::oxidegl_get_framebuffer_parameteriv).
-pub mod framebuffer_parameteri {
-    use crate::context::Context;
-    use crate::dispatch::gl_types::*;
-    use crate::enums::{FramebufferParameterName, FramebufferTarget};
-    impl Context {
-        pub fn oxidegl_framebuffer_parameteri(
-            &mut self,
-            target: FramebufferTarget,
-            pname: FramebufferParameterName,
-            param: GLint,
-        ) {
-            panic!("command oxidegl_framebuffer_parameteri not yet implemented");
-        }
-        pub fn oxidegl_named_framebuffer_parameteri(
-            &mut self,
-            framebuffer: GLuint,
-            pname: FramebufferParameterName,
-            param: GLint,
-        ) {
-            panic!("command oxidegl_named_framebuffer_parameteri not yet implemented");
-        }
+impl Context {
+    pub fn oxidegl_framebuffer_parameteri(
+        &mut self,
+        target: FramebufferTarget,
+        pname: FramebufferParameterName,
+        param: GLint,
+    ) {
+        panic!("command oxidegl_framebuffer_parameteri not yet implemented");
+    }
+    pub fn oxidegl_named_framebuffer_parameteri(
+        &mut self,
+        framebuffer: GLuint,
+        pname: FramebufferParameterName,
+        param: GLint,
+    ) {
+        panic!("command oxidegl_named_framebuffer_parameteri not yet implemented");
     }
 }
 /// ### Parameters
@@ -3805,29 +3649,24 @@ pub mod framebuffer_parameteri {
 /// identified by the specified attachment point of the specified framebuffer
 /// object. All state values of the attachment point are set to their default
 /// values.
-pub mod framebuffer_renderbuffer {
-    use crate::context::Context;
-    use crate::dispatch::gl_types::*;
-    use crate::enums::{FramebufferAttachment, FramebufferTarget, RenderbufferTarget};
-    impl Context {
-        pub fn oxidegl_framebuffer_renderbuffer(
-            &mut self,
-            target: FramebufferTarget,
-            attachment: FramebufferAttachment,
-            renderbuffertarget: RenderbufferTarget,
-            renderbuffer: GLuint,
-        ) {
-            panic!("command oxidegl_framebuffer_renderbuffer not yet implemented");
-        }
-        pub fn oxidegl_named_framebuffer_renderbuffer(
-            &mut self,
-            framebuffer: GLuint,
-            attachment: FramebufferAttachment,
-            renderbuffertarget: RenderbufferTarget,
-            renderbuffer: GLuint,
-        ) {
-            panic!("command oxidegl_named_framebuffer_renderbuffer not yet implemented");
-        }
+impl Context {
+    pub fn oxidegl_framebuffer_renderbuffer(
+        &mut self,
+        target: FramebufferTarget,
+        attachment: FramebufferAttachment,
+        renderbuffertarget: RenderbufferTarget,
+        renderbuffer: GLuint,
+    ) {
+        panic!("command oxidegl_framebuffer_renderbuffer not yet implemented");
+    }
+    pub fn oxidegl_named_framebuffer_renderbuffer(
+        &mut self,
+        framebuffer: GLuint,
+        attachment: FramebufferAttachment,
+        renderbuffertarget: RenderbufferTarget,
+        renderbuffer: GLuint,
+    ) {
+        panic!("command oxidegl_named_framebuffer_renderbuffer not yet implemented");
     }
 }
 /// ### Parameters
@@ -3956,60 +3795,55 @@ pub mod framebuffer_renderbuffer {
 /// map, one- or two-dimensional array, or two-dimensional multisample array
 /// texture, the specified texture level is an array of images, and the framebuffer
 /// attachment is considered to be *layered*.
-pub mod framebuffer_texture {
-    use crate::context::Context;
-    use crate::dispatch::gl_types::*;
-    use crate::enums::{FramebufferAttachment, FramebufferTarget, TextureTarget};
-    impl Context {
-        pub fn oxidegl_framebuffer_texture1_d(
-            &mut self,
-            target: FramebufferTarget,
-            attachment: FramebufferAttachment,
-            textarget: TextureTarget,
-            texture: GLuint,
-            level: GLint,
-        ) {
-            panic!("command oxidegl_framebuffer_texture1_d not yet implemented");
-        }
-        pub fn oxidegl_framebuffer_texture2_d(
-            &mut self,
-            target: FramebufferTarget,
-            attachment: FramebufferAttachment,
-            textarget: TextureTarget,
-            texture: GLuint,
-            level: GLint,
-        ) {
-            panic!("command oxidegl_framebuffer_texture2_d not yet implemented");
-        }
-        pub fn oxidegl_framebuffer_texture3_d(
-            &mut self,
-            target: FramebufferTarget,
-            attachment: FramebufferAttachment,
-            textarget: TextureTarget,
-            texture: GLuint,
-            level: GLint,
-            zoffset: GLint,
-        ) {
-            panic!("command oxidegl_framebuffer_texture3_d not yet implemented");
-        }
-        pub fn oxidegl_framebuffer_texture(
-            &mut self,
-            target: FramebufferTarget,
-            attachment: FramebufferAttachment,
-            texture: GLuint,
-            level: GLint,
-        ) {
-            panic!("command oxidegl_framebuffer_texture not yet implemented");
-        }
-        pub fn oxidegl_named_framebuffer_texture(
-            &mut self,
-            framebuffer: GLuint,
-            attachment: FramebufferAttachment,
-            texture: GLuint,
-            level: GLint,
-        ) {
-            panic!("command oxidegl_named_framebuffer_texture not yet implemented");
-        }
+impl Context {
+    pub fn oxidegl_framebuffer_texture1_d(
+        &mut self,
+        target: FramebufferTarget,
+        attachment: FramebufferAttachment,
+        textarget: TextureTarget,
+        texture: GLuint,
+        level: GLint,
+    ) {
+        panic!("command oxidegl_framebuffer_texture1_d not yet implemented");
+    }
+    pub fn oxidegl_framebuffer_texture2_d(
+        &mut self,
+        target: FramebufferTarget,
+        attachment: FramebufferAttachment,
+        textarget: TextureTarget,
+        texture: GLuint,
+        level: GLint,
+    ) {
+        panic!("command oxidegl_framebuffer_texture2_d not yet implemented");
+    }
+    pub fn oxidegl_framebuffer_texture3_d(
+        &mut self,
+        target: FramebufferTarget,
+        attachment: FramebufferAttachment,
+        textarget: TextureTarget,
+        texture: GLuint,
+        level: GLint,
+        zoffset: GLint,
+    ) {
+        panic!("command oxidegl_framebuffer_texture3_d not yet implemented");
+    }
+    pub fn oxidegl_framebuffer_texture(
+        &mut self,
+        target: FramebufferTarget,
+        attachment: FramebufferAttachment,
+        texture: GLuint,
+        level: GLint,
+    ) {
+        panic!("command oxidegl_framebuffer_texture not yet implemented");
+    }
+    pub fn oxidegl_named_framebuffer_texture(
+        &mut self,
+        framebuffer: GLuint,
+        attachment: FramebufferAttachment,
+        texture: GLuint,
+        level: GLint,
+    ) {
+        panic!("command oxidegl_named_framebuffer_texture not yet implemented");
     }
 }
 /// ### Parameters
@@ -4078,31 +3912,26 @@ pub mod framebuffer_texture {
 /// to $$ face= k \bmod 6. $$ For cube map array textures, `layer` is translated
 /// into an array layer and face according to $$ layer= \left\lfloor{ layer
 /// \over 6} \right\rfloor$$ and $$ face= k \bmod 6. $$
-pub mod framebuffer_texture_layer {
-    use crate::context::Context;
-    use crate::dispatch::gl_types::*;
-    use crate::enums::{FramebufferAttachment, FramebufferTarget};
-    impl Context {
-        pub fn oxidegl_framebuffer_texture_layer(
-            &mut self,
-            target: FramebufferTarget,
-            attachment: FramebufferAttachment,
-            texture: GLuint,
-            level: GLint,
-            layer: GLint,
-        ) {
-            panic!("command oxidegl_framebuffer_texture_layer not yet implemented");
-        }
-        pub fn oxidegl_named_framebuffer_texture_layer(
-            &mut self,
-            framebuffer: GLuint,
-            attachment: FramebufferAttachment,
-            texture: GLuint,
-            level: GLint,
-            layer: GLint,
-        ) {
-            panic!("command oxidegl_named_framebuffer_texture_layer not yet implemented");
-        }
+impl Context {
+    pub fn oxidegl_framebuffer_texture_layer(
+        &mut self,
+        target: FramebufferTarget,
+        attachment: FramebufferAttachment,
+        texture: GLuint,
+        level: GLint,
+        layer: GLint,
+    ) {
+        panic!("command oxidegl_framebuffer_texture_layer not yet implemented");
+    }
+    pub fn oxidegl_named_framebuffer_texture_layer(
+        &mut self,
+        framebuffer: GLuint,
+        attachment: FramebufferAttachment,
+        texture: GLuint,
+        level: GLint,
+        layer: GLint,
+    ) {
+        panic!("command oxidegl_named_framebuffer_texture_layer not yet implemented");
     }
 }
 /// ### Parameters
@@ -4141,17 +3970,12 @@ pub mod framebuffer_texture_layer {
 ///
 /// ### Notes
 /// Cube map array textures are accepted only if the GL version is 4.0 or higher.
-pub mod generate_mipmap {
-    use crate::context::Context;
-    use crate::dispatch::gl_types::*;
-    use crate::enums::TextureTarget;
-    impl Context {
-        pub fn oxidegl_generate_mipmap(&mut self, target: TextureTarget) {
-            panic!("command oxidegl_generate_mipmap not yet implemented");
-        }
-        pub fn oxidegl_generate_texture_mipmap(&mut self, texture: GLuint) {
-            panic!("command oxidegl_generate_texture_mipmap not yet implemented");
-        }
+impl Context {
+    pub fn oxidegl_generate_mipmap(&mut self, target: TextureTarget) {
+        panic!("command oxidegl_generate_mipmap not yet implemented");
+    }
+    pub fn oxidegl_generate_texture_mipmap(&mut self, texture: GLuint) {
+        panic!("command oxidegl_generate_texture_mipmap not yet implemented");
     }
 }
 /// ### Parameters
@@ -4272,42 +4096,38 @@ pub mod generate_mipmap {
 ///
 /// The [`GL_QUERY_BUFFER`](crate::enums::GL_QUERY_BUFFER) target is available
 /// only if the GL version is 4.4 or greater.
-pub mod get_buffer_parameter {
-    use crate::context::Context;
-    use crate::dispatch::gl_types::*;
-    impl Context {
-        pub unsafe fn oxidegl_get_buffer_parameteriv(
-            &mut self,
-            target: GLenum,
-            pname: GLenum,
-            params: *mut GLint,
-        ) {
-            panic!("command oxidegl_get_buffer_parameteriv not yet implemented");
-        }
-        pub unsafe fn oxidegl_get_buffer_parameteri64v(
-            &mut self,
-            target: GLenum,
-            pname: GLenum,
-            params: *mut GLint64,
-        ) {
-            panic!("command oxidegl_get_buffer_parameteri64v not yet implemented");
-        }
-        pub unsafe fn oxidegl_get_named_buffer_parameteriv(
-            &mut self,
-            buffer: GLuint,
-            pname: GLenum,
-            params: *mut GLint,
-        ) {
-            panic!("command oxidegl_get_named_buffer_parameteriv not yet implemented");
-        }
-        pub unsafe fn oxidegl_get_named_buffer_parameteri64v(
-            &mut self,
-            buffer: GLuint,
-            pname: GLenum,
-            params: *mut GLint64,
-        ) {
-            panic!("command oxidegl_get_named_buffer_parameteri64v not yet implemented");
-        }
+impl Context {
+    pub unsafe fn oxidegl_get_buffer_parameteriv(
+        &mut self,
+        target: GLenum,
+        pname: GLenum,
+        params: *mut GLint,
+    ) {
+        panic!("command oxidegl_get_buffer_parameteriv not yet implemented");
+    }
+    pub unsafe fn oxidegl_get_buffer_parameteri64v(
+        &mut self,
+        target: GLenum,
+        pname: GLenum,
+        params: *mut GLint64,
+    ) {
+        panic!("command oxidegl_get_buffer_parameteri64v not yet implemented");
+    }
+    pub unsafe fn oxidegl_get_named_buffer_parameteriv(
+        &mut self,
+        buffer: GLuint,
+        pname: GLenum,
+        params: *mut GLint,
+    ) {
+        panic!("command oxidegl_get_named_buffer_parameteriv not yet implemented");
+    }
+    pub unsafe fn oxidegl_get_named_buffer_parameteri64v(
+        &mut self,
+        buffer: GLuint,
+        pname: GLenum,
+        params: *mut GLint64,
+    ) {
+        panic!("command oxidegl_get_named_buffer_parameteri64v not yet implemented");
     }
 }
 /// ### Parameters
@@ -4369,26 +4189,22 @@ pub mod get_buffer_parameter {
 ///
 /// The [`GL_QUERY_BUFFER`](crate::enums::GL_QUERY_BUFFER) target is available
 /// only if the GL version is 4.4 or greater.
-pub mod get_buffer_pointerv {
-    use crate::context::Context;
-    use crate::dispatch::gl_types::*;
-    impl Context {
-        pub unsafe fn oxidegl_get_buffer_pointerv(
-            &mut self,
-            target: GLenum,
-            pname: GLenum,
-            params: *mut *mut GLvoid,
-        ) {
-            panic!("command oxidegl_get_buffer_pointerv not yet implemented");
-        }
-        pub unsafe fn oxidegl_get_named_buffer_pointerv(
-            &mut self,
-            buffer: GLuint,
-            pname: GLenum,
-            params: *mut *mut GLvoid,
-        ) {
-            panic!("command oxidegl_get_named_buffer_pointerv not yet implemented");
-        }
+impl Context {
+    pub unsafe fn oxidegl_get_buffer_pointerv(
+        &mut self,
+        target: GLenum,
+        pname: GLenum,
+        params: *mut *mut GLvoid,
+    ) {
+        panic!("command oxidegl_get_buffer_pointerv not yet implemented");
+    }
+    pub unsafe fn oxidegl_get_named_buffer_pointerv(
+        &mut self,
+        buffer: GLuint,
+        pname: GLenum,
+        params: *mut *mut GLvoid,
+    ) {
+        panic!("command oxidegl_get_named_buffer_pointerv not yet implemented");
     }
 }
 /// ### Parameters
@@ -4453,28 +4269,24 @@ pub mod get_buffer_pointerv {
 ///
 /// The [`GL_QUERY_BUFFER`](crate::enums::GL_QUERY_BUFFER) target is available
 /// only if the GL version is 4.4 or greater.
-pub mod get_buffer_sub_data {
-    use crate::context::Context;
-    use crate::dispatch::gl_types::*;
-    impl Context {
-        pub unsafe fn oxidegl_get_buffer_sub_data(
-            &mut self,
-            target: GLenum,
-            offset: GLintptr,
-            size: GLsizeiptr,
-            data: *mut GLvoid,
-        ) {
-            panic!("command oxidegl_get_buffer_sub_data not yet implemented");
-        }
-        pub unsafe fn oxidegl_get_named_buffer_sub_data(
-            &mut self,
-            buffer: GLuint,
-            offset: GLintptr,
-            size: GLsizeiptr,
-            data: *mut GLvoid,
-        ) {
-            panic!("command oxidegl_get_named_buffer_sub_data not yet implemented");
-        }
+impl Context {
+    pub unsafe fn oxidegl_get_buffer_sub_data(
+        &mut self,
+        target: GLenum,
+        offset: GLintptr,
+        size: GLsizeiptr,
+        data: *mut GLvoid,
+    ) {
+        panic!("command oxidegl_get_buffer_sub_data not yet implemented");
+    }
+    pub unsafe fn oxidegl_get_named_buffer_sub_data(
+        &mut self,
+        buffer: GLuint,
+        offset: GLintptr,
+        size: GLsizeiptr,
+        data: *mut GLvoid,
+    ) {
+        panic!("command oxidegl_get_named_buffer_sub_data not yet implemented");
     }
 }
 /// ### Parameters
@@ -4557,37 +4369,32 @@ pub mod get_buffer_sub_data {
 /// with argument [`GL_TEXTURE_INTERNAL_FORMAT`](crate::enums::GL_TEXTURE_INTERNAL_FORMAT)
 ///
 /// [**glGet**](crate::context::Context::oxidegl_get) with argument [`GL_PIXEL_PACK_BUFFER_BINDING`](crate::enums::GL_PIXEL_PACK_BUFFER_BINDING)
-pub mod get_compressed_tex_image {
-    use crate::context::Context;
-    use crate::dispatch::gl_types::*;
-    use crate::enums::TextureTarget;
-    impl Context {
-        pub unsafe fn oxidegl_get_compressed_tex_image(
-            &mut self,
-            target: TextureTarget,
-            level: GLint,
-            img: *mut GLvoid,
-        ) {
-            panic!("command oxidegl_get_compressed_tex_image not yet implemented");
-        }
-        pub unsafe fn oxidegl_get_compressed_texture_image(
-            &mut self,
-            texture: GLuint,
-            level: GLint,
-            buf_size: GLsizei,
-            pixels: *mut GLvoid,
-        ) {
-            panic!("command oxidegl_get_compressed_texture_image not yet implemented");
-        }
-        pub unsafe fn oxidegl_getn_compressed_tex_image(
-            &mut self,
-            target: TextureTarget,
-            lod: GLint,
-            buf_size: GLsizei,
-            pixels: *mut GLvoid,
-        ) {
-            panic!("command oxidegl_getn_compressed_tex_image not yet implemented");
-        }
+impl Context {
+    pub unsafe fn oxidegl_get_compressed_tex_image(
+        &mut self,
+        target: TextureTarget,
+        level: GLint,
+        img: *mut GLvoid,
+    ) {
+        panic!("command oxidegl_get_compressed_tex_image not yet implemented");
+    }
+    pub unsafe fn oxidegl_get_compressed_texture_image(
+        &mut self,
+        texture: GLuint,
+        level: GLint,
+        buf_size: GLsizei,
+        pixels: *mut GLvoid,
+    ) {
+        panic!("command oxidegl_get_compressed_texture_image not yet implemented");
+    }
+    pub unsafe fn oxidegl_getn_compressed_tex_image(
+        &mut self,
+        target: TextureTarget,
+        lod: GLint,
+        buf_size: GLsizei,
+        pixels: *mut GLvoid,
+    ) {
+        panic!("command oxidegl_getn_compressed_tex_image not yet implemented");
     }
 }
 /// ### Parameters
@@ -4739,33 +4546,24 @@ pub mod get_compressed_tex_image {
 /// ### Notes
 /// The [`GL_FRAMEBUFFER_ATTACHMENT_LAYERED`](crate::enums::GL_FRAMEBUFFER_ATTACHMENT_LAYERED)
 /// query is supported only if the GL version is 3.2 or greater.
-pub mod get_framebuffer_attachment_parameter {
-    use crate::context::Context;
-    use crate::dispatch::gl_types::*;
-    use crate::enums::{
-        FramebufferAttachment, FramebufferAttachmentParameterName, FramebufferTarget,
-    };
-    impl Context {
-        pub unsafe fn oxidegl_get_framebuffer_attachment_parameteriv(
-            &mut self,
-            target: FramebufferTarget,
-            attachment: FramebufferAttachment,
-            pname: FramebufferAttachmentParameterName,
-            params: *mut GLint,
-        ) {
-            panic!("command oxidegl_get_framebuffer_attachment_parameteriv not yet implemented");
-        }
-        pub unsafe fn oxidegl_get_named_framebuffer_attachment_parameteriv(
-            &mut self,
-            framebuffer: GLuint,
-            attachment: FramebufferAttachment,
-            pname: FramebufferAttachmentParameterName,
-            params: *mut GLint,
-        ) {
-            panic!(
-                "command oxidegl_get_named_framebuffer_attachment_parameteriv not yet implemented"
-            );
-        }
+impl Context {
+    pub unsafe fn oxidegl_get_framebuffer_attachment_parameteriv(
+        &mut self,
+        target: FramebufferTarget,
+        attachment: FramebufferAttachment,
+        pname: FramebufferAttachmentParameterName,
+        params: *mut GLint,
+    ) {
+        panic!("command oxidegl_get_framebuffer_attachment_parameteriv not yet implemented");
+    }
+    pub unsafe fn oxidegl_get_named_framebuffer_attachment_parameteriv(
+        &mut self,
+        framebuffer: GLuint,
+        attachment: FramebufferAttachment,
+        pname: FramebufferAttachmentParameterName,
+        params: *mut GLint,
+    ) {
+        panic!("command oxidegl_get_named_framebuffer_attachment_parameteriv not yet implemented");
     }
 }
 /// ### Parameters
@@ -4880,29 +4678,22 @@ pub mod get_framebuffer_attachment_parameter {
 ///
 /// ### Associated Gets
 /// [**glGetFramebufferAttachmentParameter**](crate::context::Context::oxidegl_get_framebuffer_attachment_parameter)
-pub mod get_framebuffer_parameter {
-    use crate::context::Context;
-    use crate::dispatch::gl_types::*;
-    use crate::enums::{
-        FramebufferAttachmentParameterName, FramebufferTarget, GetFramebufferParameter,
-    };
-    impl Context {
-        pub unsafe fn oxidegl_get_framebuffer_parameteriv(
-            &mut self,
-            target: FramebufferTarget,
-            pname: FramebufferAttachmentParameterName,
-            params: *mut GLint,
-        ) {
-            panic!("command oxidegl_get_framebuffer_parameteriv not yet implemented");
-        }
-        pub unsafe fn oxidegl_get_named_framebuffer_parameteriv(
-            &mut self,
-            framebuffer: GLuint,
-            pname: GetFramebufferParameter,
-            param: *mut GLint,
-        ) {
-            panic!("command oxidegl_get_named_framebuffer_parameteriv not yet implemented");
-        }
+impl Context {
+    pub unsafe fn oxidegl_get_framebuffer_parameteriv(
+        &mut self,
+        target: FramebufferTarget,
+        pname: FramebufferAttachmentParameterName,
+        params: *mut GLint,
+    ) {
+        panic!("command oxidegl_get_framebuffer_parameteriv not yet implemented");
+    }
+    pub unsafe fn oxidegl_get_named_framebuffer_parameteriv(
+        &mut self,
+        framebuffer: GLuint,
+        pname: GetFramebufferParameter,
+        param: *mut GLint,
+    ) {
+        panic!("command oxidegl_get_named_framebuffer_parameteriv not yet implemented");
     }
 }
 /// ### Parameters
@@ -5313,31 +5104,26 @@ pub mod get_framebuffer_parameter {
 ///
 /// The [`GL_CLEAR_TEXTURE`](crate::enums::GL_CLEAR_TEXTURE) token is accepted
 /// for `pname` only if the GL version is 4.4 or higher.
-pub mod get_internalformat {
-    use crate::context::Context;
-    use crate::dispatch::gl_types::*;
-    use crate::enums::{InternalFormat, InternalFormatPName, TextureTarget};
-    impl Context {
-        pub unsafe fn oxidegl_get_internalformativ(
-            &mut self,
-            target: TextureTarget,
-            internalformat: InternalFormat,
-            pname: InternalFormatPName,
-            count: GLsizei,
-            params: *mut GLint,
-        ) {
-            panic!("command oxidegl_get_internalformativ not yet implemented");
-        }
-        pub unsafe fn oxidegl_get_internalformati64v(
-            &mut self,
-            target: TextureTarget,
-            internalformat: InternalFormat,
-            pname: InternalFormatPName,
-            count: GLsizei,
-            params: *mut GLint64,
-        ) {
-            panic!("command oxidegl_get_internalformati64v not yet implemented");
-        }
+impl Context {
+    pub unsafe fn oxidegl_get_internalformativ(
+        &mut self,
+        target: TextureTarget,
+        internalformat: InternalFormat,
+        pname: InternalFormatPName,
+        count: GLsizei,
+        params: *mut GLint,
+    ) {
+        panic!("command oxidegl_get_internalformativ not yet implemented");
+    }
+    pub unsafe fn oxidegl_get_internalformati64v(
+        &mut self,
+        target: TextureTarget,
+        internalformat: InternalFormat,
+        pname: InternalFormatPName,
+        count: GLsizei,
+        params: *mut GLint64,
+    ) {
+        panic!("command oxidegl_get_internalformati64v not yet implemented");
     }
 }
 /// ### Parameters
@@ -5430,79 +5216,74 @@ pub mod get_internalformat {
 /// The [`GL_QUERY_RESULT_BUFFER`](crate::enums::GL_QUERY_RESULT_BUFFER) target
 /// is available only if the GL version is 4.4 or higher. On earlier versions
 /// of the GL, `params` is always an address in client memory.
-pub mod get_query_object {
-    use crate::context::Context;
-    use crate::dispatch::gl_types::*;
-    use crate::enums::QueryObjectParameterName;
-    impl Context {
-        pub unsafe fn oxidegl_get_query_objectiv(
-            &mut self,
-            id: GLuint,
-            pname: QueryObjectParameterName,
-            params: *mut GLint,
-        ) {
-            panic!("command oxidegl_get_query_objectiv not yet implemented");
-        }
-        pub unsafe fn oxidegl_get_query_objectuiv(
-            &mut self,
-            id: GLuint,
-            pname: QueryObjectParameterName,
-            params: *mut GLuint,
-        ) {
-            panic!("command oxidegl_get_query_objectuiv not yet implemented");
-        }
-        pub unsafe fn oxidegl_get_query_objecti64v(
-            &mut self,
-            id: GLuint,
-            pname: QueryObjectParameterName,
-            params: *mut GLint64,
-        ) {
-            panic!("command oxidegl_get_query_objecti64v not yet implemented");
-        }
-        pub unsafe fn oxidegl_get_query_objectui64v(
-            &mut self,
-            id: GLuint,
-            pname: QueryObjectParameterName,
-            params: *mut GLuint64,
-        ) {
-            panic!("command oxidegl_get_query_objectui64v not yet implemented");
-        }
-        pub fn oxidegl_get_query_buffer_objecti64v(
-            &mut self,
-            id: GLuint,
-            buffer: GLuint,
-            pname: QueryObjectParameterName,
-            offset: GLintptr,
-        ) {
-            panic!("command oxidegl_get_query_buffer_objecti64v not yet implemented");
-        }
-        pub fn oxidegl_get_query_buffer_objectiv(
-            &mut self,
-            id: GLuint,
-            buffer: GLuint,
-            pname: QueryObjectParameterName,
-            offset: GLintptr,
-        ) {
-            panic!("command oxidegl_get_query_buffer_objectiv not yet implemented");
-        }
-        pub fn oxidegl_get_query_buffer_objectui64v(
-            &mut self,
-            id: GLuint,
-            buffer: GLuint,
-            pname: QueryObjectParameterName,
-            offset: GLintptr,
-        ) {
-            panic!("command oxidegl_get_query_buffer_objectui64v not yet implemented");
-        }
-        pub fn oxidegl_get_query_buffer_objectuiv(
-            &mut self,
-            id: GLuint,
-            buffer: GLuint,
-            pname: QueryObjectParameterName,
-            offset: GLintptr,
-        ) {
-            panic!("command oxidegl_get_query_buffer_objectuiv not yet implemented");
-        }
+impl Context {
+    pub unsafe fn oxidegl_get_query_objectiv(
+        &mut self,
+        id: GLuint,
+        pname: QueryObjectParameterName,
+        params: *mut GLint,
+    ) {
+        panic!("command oxidegl_get_query_objectiv not yet implemented");
+    }
+    pub unsafe fn oxidegl_get_query_objectuiv(
+        &mut self,
+        id: GLuint,
+        pname: QueryObjectParameterName,
+        params: *mut GLuint,
+    ) {
+        panic!("command oxidegl_get_query_objectuiv not yet implemented");
+    }
+    pub unsafe fn oxidegl_get_query_objecti64v(
+        &mut self,
+        id: GLuint,
+        pname: QueryObjectParameterName,
+        params: *mut GLint64,
+    ) {
+        panic!("command oxidegl_get_query_objecti64v not yet implemented");
+    }
+    pub unsafe fn oxidegl_get_query_objectui64v(
+        &mut self,
+        id: GLuint,
+        pname: QueryObjectParameterName,
+        params: *mut GLuint64,
+    ) {
+        panic!("command oxidegl_get_query_objectui64v not yet implemented");
+    }
+    pub fn oxidegl_get_query_buffer_objecti64v(
+        &mut self,
+        id: GLuint,
+        buffer: GLuint,
+        pname: QueryObjectParameterName,
+        offset: GLintptr,
+    ) {
+        panic!("command oxidegl_get_query_buffer_objecti64v not yet implemented");
+    }
+    pub fn oxidegl_get_query_buffer_objectiv(
+        &mut self,
+        id: GLuint,
+        buffer: GLuint,
+        pname: QueryObjectParameterName,
+        offset: GLintptr,
+    ) {
+        panic!("command oxidegl_get_query_buffer_objectiv not yet implemented");
+    }
+    pub fn oxidegl_get_query_buffer_objectui64v(
+        &mut self,
+        id: GLuint,
+        buffer: GLuint,
+        pname: QueryObjectParameterName,
+        offset: GLintptr,
+    ) {
+        panic!("command oxidegl_get_query_buffer_objectui64v not yet implemented");
+    }
+    pub fn oxidegl_get_query_buffer_objectuiv(
+        &mut self,
+        id: GLuint,
+        buffer: GLuint,
+        pname: QueryObjectParameterName,
+        offset: GLintptr,
+    ) {
+        panic!("command oxidegl_get_query_buffer_objectuiv not yet implemented");
     }
 }
 /// ### Parameters
@@ -5554,27 +5335,22 @@ pub mod get_query_object {
 /// > `params` returns the actual resolution in bits (not the resolution specified
 /// > when the image was defined) for the red, green, blue, alpha, depth or stencil
 /// > components, respectively, of the image of the renderbuffer object.
-pub mod get_renderbuffer_parameter {
-    use crate::context::Context;
-    use crate::dispatch::gl_types::*;
-    use crate::enums::{RenderbufferParameterName, RenderbufferTarget};
-    impl Context {
-        pub unsafe fn oxidegl_get_renderbuffer_parameteriv(
-            &mut self,
-            target: RenderbufferTarget,
-            pname: RenderbufferParameterName,
-            params: *mut GLint,
-        ) {
-            panic!("command oxidegl_get_renderbuffer_parameteriv not yet implemented");
-        }
-        pub unsafe fn oxidegl_get_named_renderbuffer_parameteriv(
-            &mut self,
-            renderbuffer: GLuint,
-            pname: RenderbufferParameterName,
-            params: *mut GLint,
-        ) {
-            panic!("command oxidegl_get_named_renderbuffer_parameteriv not yet implemented");
-        }
+impl Context {
+    pub unsafe fn oxidegl_get_renderbuffer_parameteriv(
+        &mut self,
+        target: RenderbufferTarget,
+        pname: RenderbufferParameterName,
+        params: *mut GLint,
+    ) {
+        panic!("command oxidegl_get_renderbuffer_parameteriv not yet implemented");
+    }
+    pub unsafe fn oxidegl_get_named_renderbuffer_parameteriv(
+        &mut self,
+        renderbuffer: GLuint,
+        pname: RenderbufferParameterName,
+        params: *mut GLint,
+    ) {
+        panic!("command oxidegl_get_named_renderbuffer_parameteriv not yet implemented");
     }
 }
 /// ### Parameters
@@ -5661,43 +5437,38 @@ pub mod get_renderbuffer_parameter {
 ///
 /// [**glGetSamplerParameter**](crate::context::Context::oxidegl_get_sampler_parameter)
 /// is available only if the GL version is 3.3 or higher.
-pub mod get_sampler_parameter {
-    use crate::context::Context;
-    use crate::dispatch::gl_types::*;
-    use crate::enums::{SamplerParameterF, SamplerParameterI};
-    impl Context {
-        pub unsafe fn oxidegl_get_sampler_parameteriv(
-            &mut self,
-            sampler: GLuint,
-            pname: SamplerParameterI,
-            params: *mut GLint,
-        ) {
-            panic!("command oxidegl_get_sampler_parameteriv not yet implemented");
-        }
-        pub unsafe fn oxidegl_get_sampler_parameter_iiv(
-            &mut self,
-            sampler: GLuint,
-            pname: SamplerParameterI,
-            params: *mut GLint,
-        ) {
-            panic!("command oxidegl_get_sampler_parameter_iiv not yet implemented");
-        }
-        pub unsafe fn oxidegl_get_sampler_parameterfv(
-            &mut self,
-            sampler: GLuint,
-            pname: SamplerParameterF,
-            params: *mut GLfloat,
-        ) {
-            panic!("command oxidegl_get_sampler_parameterfv not yet implemented");
-        }
-        pub unsafe fn oxidegl_get_sampler_parameter_iuiv(
-            &mut self,
-            sampler: GLuint,
-            pname: SamplerParameterI,
-            params: *mut GLuint,
-        ) {
-            panic!("command oxidegl_get_sampler_parameter_iuiv not yet implemented");
-        }
+impl Context {
+    pub unsafe fn oxidegl_get_sampler_parameteriv(
+        &mut self,
+        sampler: GLuint,
+        pname: SamplerParameterI,
+        params: *mut GLint,
+    ) {
+        panic!("command oxidegl_get_sampler_parameteriv not yet implemented");
+    }
+    pub unsafe fn oxidegl_get_sampler_parameter_iiv(
+        &mut self,
+        sampler: GLuint,
+        pname: SamplerParameterI,
+        params: *mut GLint,
+    ) {
+        panic!("command oxidegl_get_sampler_parameter_iiv not yet implemented");
+    }
+    pub unsafe fn oxidegl_get_sampler_parameterfv(
+        &mut self,
+        sampler: GLuint,
+        pname: SamplerParameterF,
+        params: *mut GLfloat,
+    ) {
+        panic!("command oxidegl_get_sampler_parameterfv not yet implemented");
+    }
+    pub unsafe fn oxidegl_get_sampler_parameter_iuiv(
+        &mut self,
+        sampler: GLuint,
+        pname: SamplerParameterI,
+        params: *mut GLuint,
+    ) {
+        panic!("command oxidegl_get_sampler_parameter_iuiv not yet implemented");
     }
 }
 /// ### Parameters
@@ -5865,43 +5636,38 @@ pub mod get_sampler_parameter {
 /// and others
 ///
 /// [**glGet**](crate::context::Context::oxidegl_get) with argument [`GL_PIXEL_PACK_BUFFER_BINDING`](crate::enums::GL_PIXEL_PACK_BUFFER_BINDING)
-pub mod get_tex_image {
-    use crate::context::Context;
-    use crate::dispatch::gl_types::*;
-    use crate::enums::{PixelFormat, PixelType, TextureTarget};
-    impl Context {
-        pub unsafe fn oxidegl_get_tex_image(
-            &mut self,
-            target: TextureTarget,
-            level: GLint,
-            format: PixelFormat,
-            r#type: PixelType,
-            pixels: *mut GLvoid,
-        ) {
-            panic!("command oxidegl_get_tex_image not yet implemented");
-        }
-        pub unsafe fn oxidegl_get_texture_image(
-            &mut self,
-            texture: GLuint,
-            level: GLint,
-            format: PixelFormat,
-            r#type: PixelType,
-            buf_size: GLsizei,
-            pixels: *mut GLvoid,
-        ) {
-            panic!("command oxidegl_get_texture_image not yet implemented");
-        }
-        pub unsafe fn oxidegl_getn_tex_image(
-            &mut self,
-            target: TextureTarget,
-            level: GLint,
-            format: PixelFormat,
-            r#type: PixelType,
-            buf_size: GLsizei,
-            pixels: *mut GLvoid,
-        ) {
-            panic!("command oxidegl_getn_tex_image not yet implemented");
-        }
+impl Context {
+    pub unsafe fn oxidegl_get_tex_image(
+        &mut self,
+        target: TextureTarget,
+        level: GLint,
+        format: PixelFormat,
+        r#type: PixelType,
+        pixels: *mut GLvoid,
+    ) {
+        panic!("command oxidegl_get_tex_image not yet implemented");
+    }
+    pub unsafe fn oxidegl_get_texture_image(
+        &mut self,
+        texture: GLuint,
+        level: GLint,
+        format: PixelFormat,
+        r#type: PixelType,
+        buf_size: GLsizei,
+        pixels: *mut GLvoid,
+    ) {
+        panic!("command oxidegl_get_texture_image not yet implemented");
+    }
+    pub unsafe fn oxidegl_getn_tex_image(
+        &mut self,
+        target: TextureTarget,
+        level: GLint,
+        format: PixelFormat,
+        r#type: PixelType,
+        buf_size: GLsizei,
+        pixels: *mut GLvoid,
+    ) {
+        panic!("command oxidegl_getn_tex_image not yet implemented");
     }
 }
 /// ### Parameters
@@ -6068,47 +5834,42 @@ pub mod get_tex_image {
 /// [`GL_TEXTURE_BUFFER_OFFSET`](crate::enums::GL_TEXTURE_BUFFER_OFFSET) and
 /// [`GL_TEXTURE_BUFFER_SIZE`](crate::enums::GL_TEXTURE_BUFFER_SIZE) are available
 /// only if the GL version is 4.3 or greater.
-pub mod get_tex_level_parameter {
-    use crate::context::Context;
-    use crate::dispatch::gl_types::*;
-    use crate::enums::{GetTextureParameter, TextureTarget};
-    impl Context {
-        pub unsafe fn oxidegl_get_tex_level_parameterfv(
-            &mut self,
-            target: TextureTarget,
-            level: GLint,
-            pname: GetTextureParameter,
-            params: *mut GLfloat,
-        ) {
-            panic!("command oxidegl_get_tex_level_parameterfv not yet implemented");
-        }
-        pub unsafe fn oxidegl_get_tex_level_parameteriv(
-            &mut self,
-            target: TextureTarget,
-            level: GLint,
-            pname: GetTextureParameter,
-            params: *mut GLint,
-        ) {
-            panic!("command oxidegl_get_tex_level_parameteriv not yet implemented");
-        }
-        pub unsafe fn oxidegl_get_texture_level_parameterfv(
-            &mut self,
-            texture: GLuint,
-            level: GLint,
-            pname: GetTextureParameter,
-            params: *mut GLfloat,
-        ) {
-            panic!("command oxidegl_get_texture_level_parameterfv not yet implemented");
-        }
-        pub unsafe fn oxidegl_get_texture_level_parameteriv(
-            &mut self,
-            texture: GLuint,
-            level: GLint,
-            pname: GetTextureParameter,
-            params: *mut GLint,
-        ) {
-            panic!("command oxidegl_get_texture_level_parameteriv not yet implemented");
-        }
+impl Context {
+    pub unsafe fn oxidegl_get_tex_level_parameterfv(
+        &mut self,
+        target: TextureTarget,
+        level: GLint,
+        pname: GetTextureParameter,
+        params: *mut GLfloat,
+    ) {
+        panic!("command oxidegl_get_tex_level_parameterfv not yet implemented");
+    }
+    pub unsafe fn oxidegl_get_tex_level_parameteriv(
+        &mut self,
+        target: TextureTarget,
+        level: GLint,
+        pname: GetTextureParameter,
+        params: *mut GLint,
+    ) {
+        panic!("command oxidegl_get_tex_level_parameteriv not yet implemented");
+    }
+    pub unsafe fn oxidegl_get_texture_level_parameterfv(
+        &mut self,
+        texture: GLuint,
+        level: GLint,
+        pname: GetTextureParameter,
+        params: *mut GLfloat,
+    ) {
+        panic!("command oxidegl_get_texture_level_parameterfv not yet implemented");
+    }
+    pub unsafe fn oxidegl_get_texture_level_parameteriv(
+        &mut self,
+        texture: GLuint,
+        level: GLint,
+        pname: GetTextureParameter,
+        params: *mut GLint,
+    ) {
+        panic!("command oxidegl_get_texture_level_parameteriv not yet implemented");
     }
 }
 /// ### Parameters
@@ -6330,75 +6091,70 @@ pub mod get_tex_level_parameter {
 ///
 /// [`GL_TEXTURE_TARGET`](crate::enums::GL_TEXTURE_TARGET) are available only
 /// if the GL version is 4.5 or greater.
-pub mod get_tex_parameter {
-    use crate::context::Context;
-    use crate::dispatch::gl_types::*;
-    use crate::enums::{GetTextureParameter, TextureTarget};
-    impl Context {
-        pub unsafe fn oxidegl_get_tex_parameterfv(
-            &mut self,
-            target: TextureTarget,
-            pname: GetTextureParameter,
-            params: *mut GLfloat,
-        ) {
-            panic!("command oxidegl_get_tex_parameterfv not yet implemented");
-        }
-        pub unsafe fn oxidegl_get_tex_parameteriv(
-            &mut self,
-            target: TextureTarget,
-            pname: GetTextureParameter,
-            params: *mut GLint,
-        ) {
-            panic!("command oxidegl_get_tex_parameteriv not yet implemented");
-        }
-        pub unsafe fn oxidegl_get_tex_parameter_iiv(
-            &mut self,
-            target: TextureTarget,
-            pname: GetTextureParameter,
-            params: *mut GLint,
-        ) {
-            panic!("command oxidegl_get_tex_parameter_iiv not yet implemented");
-        }
-        pub unsafe fn oxidegl_get_tex_parameter_iuiv(
-            &mut self,
-            target: TextureTarget,
-            pname: GetTextureParameter,
-            params: *mut GLuint,
-        ) {
-            panic!("command oxidegl_get_tex_parameter_iuiv not yet implemented");
-        }
-        pub unsafe fn oxidegl_get_texture_parameterfv(
-            &mut self,
-            texture: GLuint,
-            pname: GetTextureParameter,
-            params: *mut GLfloat,
-        ) {
-            panic!("command oxidegl_get_texture_parameterfv not yet implemented");
-        }
-        pub unsafe fn oxidegl_get_texture_parameter_iiv(
-            &mut self,
-            texture: GLuint,
-            pname: GetTextureParameter,
-            params: *mut GLint,
-        ) {
-            panic!("command oxidegl_get_texture_parameter_iiv not yet implemented");
-        }
-        pub unsafe fn oxidegl_get_texture_parameter_iuiv(
-            &mut self,
-            texture: GLuint,
-            pname: GetTextureParameter,
-            params: *mut GLuint,
-        ) {
-            panic!("command oxidegl_get_texture_parameter_iuiv not yet implemented");
-        }
-        pub unsafe fn oxidegl_get_texture_parameteriv(
-            &mut self,
-            texture: GLuint,
-            pname: GetTextureParameter,
-            params: *mut GLint,
-        ) {
-            panic!("command oxidegl_get_texture_parameteriv not yet implemented");
-        }
+impl Context {
+    pub unsafe fn oxidegl_get_tex_parameterfv(
+        &mut self,
+        target: TextureTarget,
+        pname: GetTextureParameter,
+        params: *mut GLfloat,
+    ) {
+        panic!("command oxidegl_get_tex_parameterfv not yet implemented");
+    }
+    pub unsafe fn oxidegl_get_tex_parameteriv(
+        &mut self,
+        target: TextureTarget,
+        pname: GetTextureParameter,
+        params: *mut GLint,
+    ) {
+        panic!("command oxidegl_get_tex_parameteriv not yet implemented");
+    }
+    pub unsafe fn oxidegl_get_tex_parameter_iiv(
+        &mut self,
+        target: TextureTarget,
+        pname: GetTextureParameter,
+        params: *mut GLint,
+    ) {
+        panic!("command oxidegl_get_tex_parameter_iiv not yet implemented");
+    }
+    pub unsafe fn oxidegl_get_tex_parameter_iuiv(
+        &mut self,
+        target: TextureTarget,
+        pname: GetTextureParameter,
+        params: *mut GLuint,
+    ) {
+        panic!("command oxidegl_get_tex_parameter_iuiv not yet implemented");
+    }
+    pub unsafe fn oxidegl_get_texture_parameterfv(
+        &mut self,
+        texture: GLuint,
+        pname: GetTextureParameter,
+        params: *mut GLfloat,
+    ) {
+        panic!("command oxidegl_get_texture_parameterfv not yet implemented");
+    }
+    pub unsafe fn oxidegl_get_texture_parameter_iiv(
+        &mut self,
+        texture: GLuint,
+        pname: GetTextureParameter,
+        params: *mut GLint,
+    ) {
+        panic!("command oxidegl_get_texture_parameter_iiv not yet implemented");
+    }
+    pub unsafe fn oxidegl_get_texture_parameter_iuiv(
+        &mut self,
+        texture: GLuint,
+        pname: GetTextureParameter,
+        params: *mut GLuint,
+    ) {
+        panic!("command oxidegl_get_texture_parameter_iuiv not yet implemented");
+    }
+    pub unsafe fn oxidegl_get_texture_parameteriv(
+        &mut self,
+        texture: GLuint,
+        pname: GetTextureParameter,
+        params: *mut GLint,
+    ) {
+        panic!("command oxidegl_get_texture_parameteriv not yet implemented");
     }
 }
 /// ### Parameters
@@ -6476,37 +6232,32 @@ pub mod get_tex_parameter {
 /// > only: What the length of the region used for the binding is;( [`GL_TRANSFORM_FEEDBACK_BUFFER_SIZE`](crate::enums::GL_TRANSFORM_FEEDBACK_BUFFER_SIZE)
 /// > );
 ///
-pub mod get_transform_feedback {
-    use crate::context::Context;
-    use crate::dispatch::gl_types::*;
-    use crate::enums::TransformFeedbackPName;
-    impl Context {
-        pub unsafe fn oxidegl_get_transform_feedbackiv(
-            &mut self,
-            xfb: GLuint,
-            pname: TransformFeedbackPName,
-            param: *mut GLint,
-        ) {
-            panic!("command oxidegl_get_transform_feedbackiv not yet implemented");
-        }
-        pub unsafe fn oxidegl_get_transform_feedbacki_v(
-            &mut self,
-            xfb: GLuint,
-            pname: TransformFeedbackPName,
-            index: GLuint,
-            param: *mut GLint,
-        ) {
-            panic!("command oxidegl_get_transform_feedbacki_v not yet implemented");
-        }
-        pub unsafe fn oxidegl_get_transform_feedbacki64_v(
-            &mut self,
-            xfb: GLuint,
-            pname: TransformFeedbackPName,
-            index: GLuint,
-            param: *mut GLint64,
-        ) {
-            panic!("command oxidegl_get_transform_feedbacki64_v not yet implemented");
-        }
+impl Context {
+    pub unsafe fn oxidegl_get_transform_feedbackiv(
+        &mut self,
+        xfb: GLuint,
+        pname: TransformFeedbackPName,
+        param: *mut GLint,
+    ) {
+        panic!("command oxidegl_get_transform_feedbackiv not yet implemented");
+    }
+    pub unsafe fn oxidegl_get_transform_feedbacki_v(
+        &mut self,
+        xfb: GLuint,
+        pname: TransformFeedbackPName,
+        index: GLuint,
+        param: *mut GLint,
+    ) {
+        panic!("command oxidegl_get_transform_feedbacki_v not yet implemented");
+    }
+    pub unsafe fn oxidegl_get_transform_feedbacki64_v(
+        &mut self,
+        xfb: GLuint,
+        pname: TransformFeedbackPName,
+        index: GLuint,
+        param: *mut GLint64,
+    ) {
+        panic!("command oxidegl_get_transform_feedbacki64_v not yet implemented");
     }
 }
 /// ### Parameters
@@ -6571,78 +6322,74 @@ pub mod get_transform_feedback {
 /// with arguments `program` and the name of a uniform variable
 ///
 /// [**glIsProgram**](crate::context::Context::oxidegl_is_program)
-pub mod get_uniform {
-    use crate::context::Context;
-    use crate::dispatch::gl_types::*;
-    impl Context {
-        pub unsafe fn oxidegl_get_uniformfv(
-            &mut self,
-            program: GLuint,
-            location: GLint,
-            params: *mut GLfloat,
-        ) {
-            panic!("command oxidegl_get_uniformfv not yet implemented");
-        }
-        pub unsafe fn oxidegl_get_uniformiv(
-            &mut self,
-            program: GLuint,
-            location: GLint,
-            params: *mut GLint,
-        ) {
-            panic!("command oxidegl_get_uniformiv not yet implemented");
-        }
-        pub unsafe fn oxidegl_get_uniformuiv(
-            &mut self,
-            program: GLuint,
-            location: GLint,
-            params: *mut GLuint,
-        ) {
-            panic!("command oxidegl_get_uniformuiv not yet implemented");
-        }
-        pub unsafe fn oxidegl_get_uniformdv(
-            &mut self,
-            program: GLuint,
-            location: GLint,
-            params: *mut GLdouble,
-        ) {
-            panic!("command oxidegl_get_uniformdv not yet implemented");
-        }
-        pub unsafe fn oxidegl_getn_uniformdv(
-            &mut self,
-            program: GLuint,
-            location: GLint,
-            buf_size: GLsizei,
-            params: *mut GLdouble,
-        ) {
-            panic!("command oxidegl_getn_uniformdv not yet implemented");
-        }
-        pub unsafe fn oxidegl_getn_uniformfv(
-            &mut self,
-            program: GLuint,
-            location: GLint,
-            buf_size: GLsizei,
-            params: *mut GLfloat,
-        ) {
-            panic!("command oxidegl_getn_uniformfv not yet implemented");
-        }
-        pub unsafe fn oxidegl_getn_uniformiv(
-            &mut self,
-            program: GLuint,
-            location: GLint,
-            buf_size: GLsizei,
-            params: *mut GLint,
-        ) {
-            panic!("command oxidegl_getn_uniformiv not yet implemented");
-        }
-        pub unsafe fn oxidegl_getn_uniformuiv(
-            &mut self,
-            program: GLuint,
-            location: GLint,
-            buf_size: GLsizei,
-            params: *mut GLuint,
-        ) {
-            panic!("command oxidegl_getn_uniformuiv not yet implemented");
-        }
+impl Context {
+    pub unsafe fn oxidegl_get_uniformfv(
+        &mut self,
+        program: GLuint,
+        location: GLint,
+        params: *mut GLfloat,
+    ) {
+        panic!("command oxidegl_get_uniformfv not yet implemented");
+    }
+    pub unsafe fn oxidegl_get_uniformiv(
+        &mut self,
+        program: GLuint,
+        location: GLint,
+        params: *mut GLint,
+    ) {
+        panic!("command oxidegl_get_uniformiv not yet implemented");
+    }
+    pub unsafe fn oxidegl_get_uniformuiv(
+        &mut self,
+        program: GLuint,
+        location: GLint,
+        params: *mut GLuint,
+    ) {
+        panic!("command oxidegl_get_uniformuiv not yet implemented");
+    }
+    pub unsafe fn oxidegl_get_uniformdv(
+        &mut self,
+        program: GLuint,
+        location: GLint,
+        params: *mut GLdouble,
+    ) {
+        panic!("command oxidegl_get_uniformdv not yet implemented");
+    }
+    pub unsafe fn oxidegl_getn_uniformdv(
+        &mut self,
+        program: GLuint,
+        location: GLint,
+        buf_size: GLsizei,
+        params: *mut GLdouble,
+    ) {
+        panic!("command oxidegl_getn_uniformdv not yet implemented");
+    }
+    pub unsafe fn oxidegl_getn_uniformfv(
+        &mut self,
+        program: GLuint,
+        location: GLint,
+        buf_size: GLsizei,
+        params: *mut GLfloat,
+    ) {
+        panic!("command oxidegl_getn_uniformfv not yet implemented");
+    }
+    pub unsafe fn oxidegl_getn_uniformiv(
+        &mut self,
+        program: GLuint,
+        location: GLint,
+        buf_size: GLsizei,
+        params: *mut GLint,
+    ) {
+        panic!("command oxidegl_getn_uniformiv not yet implemented");
+    }
+    pub unsafe fn oxidegl_getn_uniformuiv(
+        &mut self,
+        program: GLuint,
+        location: GLint,
+        buf_size: GLsizei,
+        params: *mut GLuint,
+    ) {
+        panic!("command oxidegl_getn_uniformuiv not yet implemented");
     }
 }
 /// ### Parameters
@@ -6747,29 +6494,24 @@ pub mod get_uniform {
 /// `param` returns a single value that is the byte offset of the first element
 /// in the bound buffer's data store. The initial value for this parameter
 /// is 0.
-pub mod get_vertex_array_indexed {
-    use crate::context::Context;
-    use crate::dispatch::gl_types::*;
-    use crate::enums::VertexArrayPName;
-    impl Context {
-        pub unsafe fn oxidegl_get_vertex_array_indexediv(
-            &mut self,
-            vaobj: GLuint,
-            index: GLuint,
-            pname: VertexArrayPName,
-            param: *mut GLint,
-        ) {
-            panic!("command oxidegl_get_vertex_array_indexediv not yet implemented");
-        }
-        pub unsafe fn oxidegl_get_vertex_array_indexed64iv(
-            &mut self,
-            vaobj: GLuint,
-            index: GLuint,
-            pname: VertexArrayPName,
-            param: *mut GLint64,
-        ) {
-            panic!("command oxidegl_get_vertex_array_indexed64iv not yet implemented");
-        }
+impl Context {
+    pub unsafe fn oxidegl_get_vertex_array_indexediv(
+        &mut self,
+        vaobj: GLuint,
+        index: GLuint,
+        pname: VertexArrayPName,
+        param: *mut GLint,
+    ) {
+        panic!("command oxidegl_get_vertex_array_indexediv not yet implemented");
+    }
+    pub unsafe fn oxidegl_get_vertex_array_indexed64iv(
+        &mut self,
+        vaobj: GLuint,
+        index: GLuint,
+        pname: VertexArrayPName,
+        param: *mut GLint64,
+    ) {
+        panic!("command oxidegl_get_vertex_array_indexed64iv not yet implemented");
     }
 }
 /// ### Parameters
@@ -6917,59 +6659,54 @@ pub mod get_vertex_array_indexed {
 ///
 /// [**glGetVertexAttribPointerv**](crate::context::Context::oxidegl_get_vertex_attrib_pointerv)
 /// with arguments `index` and [`GL_VERTEX_ATTRIB_ARRAY_POINTER`](crate::enums::GL_VERTEX_ATTRIB_ARRAY_POINTER)
-pub mod get_vertex_attrib {
-    use crate::context::Context;
-    use crate::dispatch::gl_types::*;
-    use crate::enums::VertexAttribEnum;
-    impl Context {
-        pub unsafe fn oxidegl_get_vertex_attribdv(
-            &mut self,
-            index: GLuint,
-            pname: GLenum,
-            params: *mut GLdouble,
-        ) {
-            panic!("command oxidegl_get_vertex_attribdv not yet implemented");
-        }
-        pub unsafe fn oxidegl_get_vertex_attribfv(
-            &mut self,
-            index: GLuint,
-            pname: GLenum,
-            params: *mut GLfloat,
-        ) {
-            panic!("command oxidegl_get_vertex_attribfv not yet implemented");
-        }
-        pub unsafe fn oxidegl_get_vertex_attribiv(
-            &mut self,
-            index: GLuint,
-            pname: GLenum,
-            params: *mut GLint,
-        ) {
-            panic!("command oxidegl_get_vertex_attribiv not yet implemented");
-        }
-        pub unsafe fn oxidegl_get_vertex_attrib_iiv(
-            &mut self,
-            index: GLuint,
-            pname: VertexAttribEnum,
-            params: *mut GLint,
-        ) {
-            panic!("command oxidegl_get_vertex_attrib_iiv not yet implemented");
-        }
-        pub unsafe fn oxidegl_get_vertex_attrib_iuiv(
-            &mut self,
-            index: GLuint,
-            pname: VertexAttribEnum,
-            params: *mut GLuint,
-        ) {
-            panic!("command oxidegl_get_vertex_attrib_iuiv not yet implemented");
-        }
-        pub unsafe fn oxidegl_get_vertex_attrib_ldv(
-            &mut self,
-            index: GLuint,
-            pname: VertexAttribEnum,
-            params: *mut GLdouble,
-        ) {
-            panic!("command oxidegl_get_vertex_attrib_ldv not yet implemented");
-        }
+impl Context {
+    pub unsafe fn oxidegl_get_vertex_attribdv(
+        &mut self,
+        index: GLuint,
+        pname: GLenum,
+        params: *mut GLdouble,
+    ) {
+        panic!("command oxidegl_get_vertex_attribdv not yet implemented");
+    }
+    pub unsafe fn oxidegl_get_vertex_attribfv(
+        &mut self,
+        index: GLuint,
+        pname: GLenum,
+        params: *mut GLfloat,
+    ) {
+        panic!("command oxidegl_get_vertex_attribfv not yet implemented");
+    }
+    pub unsafe fn oxidegl_get_vertex_attribiv(
+        &mut self,
+        index: GLuint,
+        pname: GLenum,
+        params: *mut GLint,
+    ) {
+        panic!("command oxidegl_get_vertex_attribiv not yet implemented");
+    }
+    pub unsafe fn oxidegl_get_vertex_attrib_iiv(
+        &mut self,
+        index: GLuint,
+        pname: VertexAttribEnum,
+        params: *mut GLint,
+    ) {
+        panic!("command oxidegl_get_vertex_attrib_iiv not yet implemented");
+    }
+    pub unsafe fn oxidegl_get_vertex_attrib_iuiv(
+        &mut self,
+        index: GLuint,
+        pname: VertexAttribEnum,
+        params: *mut GLuint,
+    ) {
+        panic!("command oxidegl_get_vertex_attrib_iuiv not yet implemented");
+    }
+    pub unsafe fn oxidegl_get_vertex_attrib_ldv(
+        &mut self,
+        index: GLuint,
+        pname: VertexAttribEnum,
+        params: *mut GLdouble,
+    ) {
+        panic!("command oxidegl_get_vertex_attrib_ldv not yet implemented");
     }
 }
 /// ### Parameters
@@ -7035,27 +6772,22 @@ pub mod get_vertex_attrib {
 ///
 /// ### Associated Gets
 /// [**glGet**](crate::context::Context::oxidegl_get) with argument [`GL_MAX_COLOR_ATTACHMENTS`](crate::enums::GL_MAX_COLOR_ATTACHMENTS)
-pub mod invalidate_framebuffer {
-    use crate::context::Context;
-    use crate::dispatch::gl_types::*;
-    use crate::enums::{FramebufferAttachment, FramebufferTarget, InvalidateFramebufferAttachment};
-    impl Context {
-        pub fn oxidegl_invalidate_framebuffer(
-            &mut self,
-            target: FramebufferTarget,
-            num_attachments: GLsizei,
-            attachments: InvalidateFramebufferAttachment,
-        ) {
-            panic!("command oxidegl_invalidate_framebuffer not yet implemented");
-        }
-        pub fn oxidegl_invalidate_named_framebuffer_data(
-            &mut self,
-            framebuffer: GLuint,
-            num_attachments: GLsizei,
-            attachments: FramebufferAttachment,
-        ) {
-            panic!("command oxidegl_invalidate_named_framebuffer_data not yet implemented");
-        }
+impl Context {
+    pub fn oxidegl_invalidate_framebuffer(
+        &mut self,
+        target: FramebufferTarget,
+        num_attachments: GLsizei,
+        attachments: InvalidateFramebufferAttachment,
+    ) {
+        panic!("command oxidegl_invalidate_framebuffer not yet implemented");
+    }
+    pub fn oxidegl_invalidate_named_framebuffer_data(
+        &mut self,
+        framebuffer: GLuint,
+        num_attachments: GLsizei,
+        attachments: FramebufferAttachment,
+    ) {
+        panic!("command oxidegl_invalidate_named_framebuffer_data not yet implemented");
     }
 }
 /// ### Parameters
@@ -7146,35 +6878,30 @@ pub mod invalidate_framebuffer {
 ///
 /// ### Associated Gets
 /// [**glGet**](crate::context::Context::oxidegl_get) with argument [`GL_MAX_COLOR_ATTACHMENTS`](crate::enums::GL_MAX_COLOR_ATTACHMENTS)
-pub mod invalidate_sub_framebuffer {
-    use crate::context::Context;
-    use crate::dispatch::gl_types::*;
-    use crate::enums::{FramebufferAttachment, FramebufferTarget, InvalidateFramebufferAttachment};
-    impl Context {
-        pub fn oxidegl_invalidate_sub_framebuffer(
-            &mut self,
-            target: FramebufferTarget,
-            num_attachments: GLsizei,
-            attachments: InvalidateFramebufferAttachment,
-            x: GLint,
-            y: GLint,
-            width: GLsizei,
-            height: GLsizei,
-        ) {
-            panic!("command oxidegl_invalidate_sub_framebuffer not yet implemented");
-        }
-        pub fn oxidegl_invalidate_named_framebuffer_sub_data(
-            &mut self,
-            framebuffer: GLuint,
-            num_attachments: GLsizei,
-            attachments: FramebufferAttachment,
-            x: GLint,
-            y: GLint,
-            width: GLsizei,
-            height: GLsizei,
-        ) {
-            panic!("command oxidegl_invalidate_named_framebuffer_sub_data not yet implemented");
-        }
+impl Context {
+    pub fn oxidegl_invalidate_sub_framebuffer(
+        &mut self,
+        target: FramebufferTarget,
+        num_attachments: GLsizei,
+        attachments: InvalidateFramebufferAttachment,
+        x: GLint,
+        y: GLint,
+        width: GLsizei,
+        height: GLsizei,
+    ) {
+        panic!("command oxidegl_invalidate_sub_framebuffer not yet implemented");
+    }
+    pub fn oxidegl_invalidate_named_framebuffer_sub_data(
+        &mut self,
+        framebuffer: GLuint,
+        num_attachments: GLsizei,
+        attachments: FramebufferAttachment,
+        x: GLint,
+        y: GLint,
+        width: GLsizei,
+        height: GLsizei,
+    ) {
+        panic!("command oxidegl_invalidate_named_framebuffer_sub_data not yet implemented");
     }
 }
 /// ### Parameters
@@ -7240,17 +6967,12 @@ pub mod invalidate_sub_framebuffer {
 ///
 /// [`GL_DEBUG_OUTPUT`](crate::enums::GL_DEBUG_OUTPUT) and [`GL_DEBUG_OUTPUT_SYNCHRONOUS`](crate::enums::GL_DEBUG_OUTPUT_SYNCHRONOUS)
 /// are available only if the GL version is 4.3 or greater.
-pub mod is_enabled {
-    use crate::context::Context;
-    use crate::dispatch::gl_types::*;
-    use crate::enums::EnableCap;
-    impl Context {
-        pub fn oxidegl_is_enabled(&mut self, cap: EnableCap) -> GLboolean {
-            panic!("command oxidegl_is_enabled not yet implemented");
-        }
-        pub fn oxidegl_is_enabledi(&mut self, target: EnableCap, index: GLuint) -> GLboolean {
-            panic!("command oxidegl_is_enabledi not yet implemented");
-        }
+impl Context {
+    pub fn oxidegl_is_enabled(&mut self, cap: EnableCap) -> GLboolean {
+        panic!("command oxidegl_is_enabled not yet implemented");
+    }
+    pub fn oxidegl_is_enabledi(&mut self, target: EnableCap, index: GLuint) -> GLboolean {
+        panic!("command oxidegl_is_enabledi not yet implemented");
     }
 }
 /// ### Parameters
@@ -7357,16 +7079,12 @@ pub mod is_enabled {
 ///
 /// [**glGet**](crate::context::Context::oxidegl_get) with `pname` [`GL_MIN_MAP_BUFFER_ALIGNMENT`](crate::enums::GL_MIN_MAP_BUFFER_ALIGNMENT).
 /// The value must be a power of two that is at least 64.
-pub mod map_buffer {
-    use crate::context::Context;
-    use crate::dispatch::gl_types::*;
-    impl Context {
-        pub fn oxidegl_map_buffer(&mut self, target: GLenum, access: GLenum) -> *mut GLvoid {
-            panic!("command oxidegl_map_buffer not yet implemented");
-        }
-        pub fn oxidegl_map_named_buffer(&mut self, buffer: GLuint, access: GLenum) -> *mut GLvoid {
-            panic!("command oxidegl_map_named_buffer not yet implemented");
-        }
+impl Context {
+    pub fn oxidegl_map_buffer(&mut self, target: GLenum, access: GLenum) -> *mut GLvoid {
+        panic!("command oxidegl_map_buffer not yet implemented");
+    }
+    pub fn oxidegl_map_named_buffer(&mut self, buffer: GLuint, access: GLenum) -> *mut GLvoid {
+        panic!("command oxidegl_map_named_buffer not yet implemented");
     }
 }
 /// ### Parameters
@@ -7532,29 +7250,24 @@ pub mod map_buffer {
 /// ### Associated Gets
 /// [**glGet**](crate::context::Context::oxidegl_get) with `pname` [`GL_MIN_MAP_BUFFER_ALIGNMENT`](crate::enums::GL_MIN_MAP_BUFFER_ALIGNMENT).
 /// The value must be a power of two that is at least 64.
-pub mod map_buffer_range {
-    use crate::context::Context;
-    use crate::dispatch::gl_types::*;
-    use crate::enums::MapBufferAccessMask;
-    impl Context {
-        pub fn oxidegl_map_buffer_range(
-            &mut self,
-            target: GLenum,
-            offset: GLintptr,
-            length: GLsizeiptr,
-            access: MapBufferAccessMask,
-        ) -> *mut GLvoid {
-            panic!("command oxidegl_map_buffer_range not yet implemented");
-        }
-        pub fn oxidegl_map_named_buffer_range(
-            &mut self,
-            buffer: GLuint,
-            offset: GLintptr,
-            length: GLsizeiptr,
-            access: MapBufferAccessMask,
-        ) -> *mut GLvoid {
-            panic!("command oxidegl_map_named_buffer_range not yet implemented");
-        }
+impl Context {
+    pub fn oxidegl_map_buffer_range(
+        &mut self,
+        target: GLenum,
+        offset: GLintptr,
+        length: GLsizeiptr,
+        access: MapBufferAccessMask,
+    ) -> *mut GLvoid {
+        panic!("command oxidegl_map_buffer_range not yet implemented");
+    }
+    pub fn oxidegl_map_named_buffer_range(
+        &mut self,
+        buffer: GLuint,
+        offset: GLintptr,
+        length: GLsizeiptr,
+        access: MapBufferAccessMask,
+    ) -> *mut GLvoid {
+        panic!("command oxidegl_map_named_buffer_range not yet implemented");
     }
 }
 /// ### Parameters
@@ -7777,17 +7490,12 @@ pub mod map_buffer_range {
 ///
 /// [`GL_QUERY_BUFFER_BARRIER_BIT`](crate::enums::GL_QUERY_BUFFER_BARRIER_BIT)
 /// is available only if the GL version is 4.4 or higher.
-pub mod memory_barrier {
-    use crate::context::Context;
-
-    use crate::enums::MemoryBarrierMask;
-    impl Context {
-        pub fn oxidegl_memory_barrier(&mut self, barriers: MemoryBarrierMask) {
-            panic!("command oxidegl_memory_barrier not yet implemented");
-        }
-        pub fn oxidegl_memory_barrier_by_region(&mut self, barriers: MemoryBarrierMask) {
-            panic!("command oxidegl_memory_barrier_by_region not yet implemented");
-        }
+impl Context {
+    pub fn oxidegl_memory_barrier(&mut self, barriers: MemoryBarrierMask) {
+        panic!("command oxidegl_memory_barrier not yet implemented");
+    }
+    pub fn oxidegl_memory_barrier_by_region(&mut self, barriers: MemoryBarrierMask) {
+        panic!("command oxidegl_memory_barrier_by_region not yet implemented");
     }
 }
 /// ### Parameters
@@ -7834,21 +7542,16 @@ pub mod memory_barrier {
 /// `values` contains the address of an array contiaining the default outer
 /// or inner tessellation levels, respectively, to be used when no tessellation
 /// control shader is present.
-pub mod patch_parameter {
-    use crate::context::Context;
-    use crate::dispatch::gl_types::*;
-    use crate::enums::PatchParameterName;
-    impl Context {
-        pub fn oxidegl_patch_parameteri(&mut self, pname: PatchParameterName, value: GLint) {
-            panic!("command oxidegl_patch_parameteri not yet implemented");
-        }
-        pub unsafe fn oxidegl_patch_parameterfv(
-            &mut self,
-            pname: PatchParameterName,
-            values: *const GLfloat,
-        ) {
-            panic!("command oxidegl_patch_parameterfv not yet implemented");
-        }
+impl Context {
+    pub fn oxidegl_patch_parameteri(&mut self, pname: PatchParameterName, value: GLint) {
+        panic!("command oxidegl_patch_parameteri not yet implemented");
+    }
+    pub unsafe fn oxidegl_patch_parameterfv(
+        &mut self,
+        pname: PatchParameterName,
+        values: *const GLfloat,
+    ) {
+        panic!("command oxidegl_patch_parameterfv not yet implemented");
     }
 }
 /// ### Parameters
@@ -7931,7 +7634,7 @@ pub mod patch_parameter {
 ///
 /// > If greater than 0, [`GL_PACK_IMAGE_HEIGHT`](crate::enums::GL_PACK_IMAGE_HEIGHT)
 /// > defines the number of pixels in an image three-dimensional texture volume,
-/// > where ``image`` is defined by all pixels sharing the same third dimension
+/// > where `image` is defined by all pixels sharing the same third dimension
 /// > index. If the first pixel of a row is placed at location `[inlineq]`
 ///
 ///
@@ -8018,7 +7721,7 @@ pub mod patch_parameter {
 ///
 /// > If greater than 0, [`GL_UNPACK_IMAGE_HEIGHT`](crate::enums::GL_UNPACK_IMAGE_HEIGHT)
 /// > defines the number of pixels in an image of a three-dimensional texture
-/// > volume. Where ``image`` is defined by all pixel sharing the same third
+/// > volume. Where `image` is defined by all pixel sharing the same third
 /// > dimension index. If the first pixel of a row is placed at location `[inlineq]`
 ///
 ///
@@ -8118,17 +7821,12 @@ pub mod patch_parameter {
 /// [**glGet**](crate::context::Context::oxidegl_get) with argument [`GL_UNPACK_SKIP_IMAGES`](crate::enums::GL_UNPACK_SKIP_IMAGES)
 ///
 /// [**glGet**](crate::context::Context::oxidegl_get) with argument [`GL_UNPACK_ALIGNMENT`](crate::enums::GL_UNPACK_ALIGNMENT)
-pub mod pixel_store {
-    use crate::context::Context;
-    use crate::dispatch::gl_types::*;
-    use crate::enums::PixelStoreParameter;
-    impl Context {
-        pub fn oxidegl_pixel_storef(&mut self, pname: PixelStoreParameter, param: GLfloat) {
-            panic!("command oxidegl_pixel_storef not yet implemented");
-        }
-        pub fn oxidegl_pixel_storei(&mut self, pname: PixelStoreParameter, param: GLint) {
-            panic!("command oxidegl_pixel_storei not yet implemented");
-        }
+impl Context {
+    pub fn oxidegl_pixel_storef(&mut self, pname: PixelStoreParameter, param: GLfloat) {
+        panic!("command oxidegl_pixel_storef not yet implemented");
+    }
+    pub fn oxidegl_pixel_storei(&mut self, pname: PixelStoreParameter, param: GLint) {
+        panic!("command oxidegl_pixel_storei not yet implemented");
     }
 }
 /// ### Parameters
@@ -8172,22 +7870,18 @@ pub mod pixel_store {
 /// [**glGet**](crate::context::Context::oxidegl_get) with argument [`GL_POINT_FADE_THRESHOLD_SIZE`](crate::enums::GL_POINT_FADE_THRESHOLD_SIZE)
 ///
 /// [**glGet**](crate::context::Context::oxidegl_get) with argument [`GL_POINT_SPRITE_COORD_ORIGIN`](crate::enums::GL_POINT_SPRITE_COORD_ORIGIN)
-pub mod point_parameter {
-    use crate::context::Context;
-    use crate::dispatch::gl_types::*;
-    impl Context {
-        pub fn oxidegl_point_parameterf(&mut self, pname: GLenum, param: GLfloat) {
-            panic!("command oxidegl_point_parameterf not yet implemented");
-        }
-        pub unsafe fn oxidegl_point_parameterfv(&mut self, pname: GLenum, params: *const GLfloat) {
-            panic!("command oxidegl_point_parameterfv not yet implemented");
-        }
-        pub fn oxidegl_point_parameteri(&mut self, pname: GLenum, param: GLint) {
-            panic!("command oxidegl_point_parameteri not yet implemented");
-        }
-        pub unsafe fn oxidegl_point_parameteriv(&mut self, pname: GLenum, params: *const GLint) {
-            panic!("command oxidegl_point_parameteriv not yet implemented");
-        }
+impl Context {
+    pub fn oxidegl_point_parameterf(&mut self, pname: GLenum, param: GLfloat) {
+        panic!("command oxidegl_point_parameterf not yet implemented");
+    }
+    pub unsafe fn oxidegl_point_parameterfv(&mut self, pname: GLenum, params: *const GLfloat) {
+        panic!("command oxidegl_point_parameterfv not yet implemented");
+    }
+    pub fn oxidegl_point_parameteri(&mut self, pname: GLenum, param: GLint) {
+        panic!("command oxidegl_point_parameteri not yet implemented");
+    }
+    pub unsafe fn oxidegl_point_parameteriv(&mut self, pname: GLenum, params: *const GLint) {
+        panic!("command oxidegl_point_parameteriv not yet implemented");
     }
 }
 /// ### Parameters
@@ -8332,307 +8026,303 @@ pub mod point_parameter {
 ///
 /// [**glGetUniformLocation**](crate::context::Context::oxidegl_get_uniform_location)
 /// with the handle of a program object and the name of a uniform variable
-pub mod program_uniform {
-    use crate::context::Context;
-    use crate::dispatch::gl_types::*;
-    impl Context {
-        pub fn oxidegl_program_uniform1i(&mut self, program: GLuint, location: GLint, v0: GLint) {
-            panic!("command oxidegl_program_uniform1i not yet implemented");
-        }
-        pub unsafe fn oxidegl_program_uniform1iv(
-            &mut self,
-            program: GLuint,
-            location: GLint,
-            count: GLsizei,
-            value: *const GLint,
-        ) {
-            panic!("command oxidegl_program_uniform1iv not yet implemented");
-        }
-        pub fn oxidegl_program_uniform1f(&mut self, program: GLuint, location: GLint, v0: GLfloat) {
-            panic!("command oxidegl_program_uniform1f not yet implemented");
-        }
-        pub unsafe fn oxidegl_program_uniform1fv(
-            &mut self,
-            program: GLuint,
-            location: GLint,
-            count: GLsizei,
-            value: *const GLfloat,
-        ) {
-            panic!("command oxidegl_program_uniform1fv not yet implemented");
-        }
-        pub fn oxidegl_program_uniform1ui(&mut self, program: GLuint, location: GLint, v0: GLuint) {
-            panic!("command oxidegl_program_uniform1ui not yet implemented");
-        }
-        pub unsafe fn oxidegl_program_uniform1uiv(
-            &mut self,
-            program: GLuint,
-            location: GLint,
-            count: GLsizei,
-            value: *const GLuint,
-        ) {
-            panic!("command oxidegl_program_uniform1uiv not yet implemented");
-        }
-        pub fn oxidegl_program_uniform2i(
-            &mut self,
-            program: GLuint,
-            location: GLint,
-            v0: GLint,
-            v1: GLint,
-        ) {
-            panic!("command oxidegl_program_uniform2i not yet implemented");
-        }
-        pub unsafe fn oxidegl_program_uniform2iv(
-            &mut self,
-            program: GLuint,
-            location: GLint,
-            count: GLsizei,
-            value: *const GLint,
-        ) {
-            panic!("command oxidegl_program_uniform2iv not yet implemented");
-        }
-        pub fn oxidegl_program_uniform2f(
-            &mut self,
-            program: GLuint,
-            location: GLint,
-            v0: GLfloat,
-            v1: GLfloat,
-        ) {
-            panic!("command oxidegl_program_uniform2f not yet implemented");
-        }
-        pub unsafe fn oxidegl_program_uniform2fv(
-            &mut self,
-            program: GLuint,
-            location: GLint,
-            count: GLsizei,
-            value: *const GLfloat,
-        ) {
-            panic!("command oxidegl_program_uniform2fv not yet implemented");
-        }
-        pub fn oxidegl_program_uniform2ui(
-            &mut self,
-            program: GLuint,
-            location: GLint,
-            v0: GLuint,
-            v1: GLuint,
-        ) {
-            panic!("command oxidegl_program_uniform2ui not yet implemented");
-        }
-        pub unsafe fn oxidegl_program_uniform2uiv(
-            &mut self,
-            program: GLuint,
-            location: GLint,
-            count: GLsizei,
-            value: *const GLuint,
-        ) {
-            panic!("command oxidegl_program_uniform2uiv not yet implemented");
-        }
-        pub fn oxidegl_program_uniform3i(
-            &mut self,
-            program: GLuint,
-            location: GLint,
-            v0: GLint,
-            v1: GLint,
-            v2: GLint,
-        ) {
-            panic!("command oxidegl_program_uniform3i not yet implemented");
-        }
-        pub unsafe fn oxidegl_program_uniform3iv(
-            &mut self,
-            program: GLuint,
-            location: GLint,
-            count: GLsizei,
-            value: *const GLint,
-        ) {
-            panic!("command oxidegl_program_uniform3iv not yet implemented");
-        }
-        pub fn oxidegl_program_uniform3f(
-            &mut self,
-            program: GLuint,
-            location: GLint,
-            v0: GLfloat,
-            v1: GLfloat,
-            v2: GLfloat,
-        ) {
-            panic!("command oxidegl_program_uniform3f not yet implemented");
-        }
-        pub unsafe fn oxidegl_program_uniform3fv(
-            &mut self,
-            program: GLuint,
-            location: GLint,
-            count: GLsizei,
-            value: *const GLfloat,
-        ) {
-            panic!("command oxidegl_program_uniform3fv not yet implemented");
-        }
-        pub fn oxidegl_program_uniform3ui(
-            &mut self,
-            program: GLuint,
-            location: GLint,
-            v0: GLuint,
-            v1: GLuint,
-            v2: GLuint,
-        ) {
-            panic!("command oxidegl_program_uniform3ui not yet implemented");
-        }
-        pub unsafe fn oxidegl_program_uniform3uiv(
-            &mut self,
-            program: GLuint,
-            location: GLint,
-            count: GLsizei,
-            value: *const GLuint,
-        ) {
-            panic!("command oxidegl_program_uniform3uiv not yet implemented");
-        }
-        pub fn oxidegl_program_uniform4i(
-            &mut self,
-            program: GLuint,
-            location: GLint,
-            v0: GLint,
-            v1: GLint,
-            v2: GLint,
-            v3: GLint,
-        ) {
-            panic!("command oxidegl_program_uniform4i not yet implemented");
-        }
-        pub unsafe fn oxidegl_program_uniform4iv(
-            &mut self,
-            program: GLuint,
-            location: GLint,
-            count: GLsizei,
-            value: *const GLint,
-        ) {
-            panic!("command oxidegl_program_uniform4iv not yet implemented");
-        }
-        pub fn oxidegl_program_uniform4f(
-            &mut self,
-            program: GLuint,
-            location: GLint,
-            v0: GLfloat,
-            v1: GLfloat,
-            v2: GLfloat,
-            v3: GLfloat,
-        ) {
-            panic!("command oxidegl_program_uniform4f not yet implemented");
-        }
-        pub unsafe fn oxidegl_program_uniform4fv(
-            &mut self,
-            program: GLuint,
-            location: GLint,
-            count: GLsizei,
-            value: *const GLfloat,
-        ) {
-            panic!("command oxidegl_program_uniform4fv not yet implemented");
-        }
-        pub fn oxidegl_program_uniform4ui(
-            &mut self,
-            program: GLuint,
-            location: GLint,
-            v0: GLuint,
-            v1: GLuint,
-            v2: GLuint,
-            v3: GLuint,
-        ) {
-            panic!("command oxidegl_program_uniform4ui not yet implemented");
-        }
-        pub unsafe fn oxidegl_program_uniform4uiv(
-            &mut self,
-            program: GLuint,
-            location: GLint,
-            count: GLsizei,
-            value: *const GLuint,
-        ) {
-            panic!("command oxidegl_program_uniform4uiv not yet implemented");
-        }
-        pub unsafe fn oxidegl_program_uniform_matrix2fv(
-            &mut self,
-            program: GLuint,
-            location: GLint,
-            count: GLsizei,
-            transpose: GLboolean,
-            value: *const GLfloat,
-        ) {
-            panic!("command oxidegl_program_uniform_matrix2fv not yet implemented");
-        }
-        pub unsafe fn oxidegl_program_uniform_matrix3fv(
-            &mut self,
-            program: GLuint,
-            location: GLint,
-            count: GLsizei,
-            transpose: GLboolean,
-            value: *const GLfloat,
-        ) {
-            panic!("command oxidegl_program_uniform_matrix3fv not yet implemented");
-        }
-        pub unsafe fn oxidegl_program_uniform_matrix4fv(
-            &mut self,
-            program: GLuint,
-            location: GLint,
-            count: GLsizei,
-            transpose: GLboolean,
-            value: *const GLfloat,
-        ) {
-            panic!("command oxidegl_program_uniform_matrix4fv not yet implemented");
-        }
-        pub unsafe fn oxidegl_program_uniform_matrix2x3fv(
-            &mut self,
-            program: GLuint,
-            location: GLint,
-            count: GLsizei,
-            transpose: GLboolean,
-            value: *const GLfloat,
-        ) {
-            panic!("command oxidegl_program_uniform_matrix2x3fv not yet implemented");
-        }
-        pub unsafe fn oxidegl_program_uniform_matrix3x2fv(
-            &mut self,
-            program: GLuint,
-            location: GLint,
-            count: GLsizei,
-            transpose: GLboolean,
-            value: *const GLfloat,
-        ) {
-            panic!("command oxidegl_program_uniform_matrix3x2fv not yet implemented");
-        }
-        pub unsafe fn oxidegl_program_uniform_matrix2x4fv(
-            &mut self,
-            program: GLuint,
-            location: GLint,
-            count: GLsizei,
-            transpose: GLboolean,
-            value: *const GLfloat,
-        ) {
-            panic!("command oxidegl_program_uniform_matrix2x4fv not yet implemented");
-        }
-        pub unsafe fn oxidegl_program_uniform_matrix4x2fv(
-            &mut self,
-            program: GLuint,
-            location: GLint,
-            count: GLsizei,
-            transpose: GLboolean,
-            value: *const GLfloat,
-        ) {
-            panic!("command oxidegl_program_uniform_matrix4x2fv not yet implemented");
-        }
-        pub unsafe fn oxidegl_program_uniform_matrix3x4fv(
-            &mut self,
-            program: GLuint,
-            location: GLint,
-            count: GLsizei,
-            transpose: GLboolean,
-            value: *const GLfloat,
-        ) {
-            panic!("command oxidegl_program_uniform_matrix3x4fv not yet implemented");
-        }
-        pub unsafe fn oxidegl_program_uniform_matrix4x3fv(
-            &mut self,
-            program: GLuint,
-            location: GLint,
-            count: GLsizei,
-            transpose: GLboolean,
-            value: *const GLfloat,
-        ) {
-            panic!("command oxidegl_program_uniform_matrix4x3fv not yet implemented");
-        }
+impl Context {
+    pub fn oxidegl_program_uniform1i(&mut self, program: GLuint, location: GLint, v0: GLint) {
+        panic!("command oxidegl_program_uniform1i not yet implemented");
+    }
+    pub unsafe fn oxidegl_program_uniform1iv(
+        &mut self,
+        program: GLuint,
+        location: GLint,
+        count: GLsizei,
+        value: *const GLint,
+    ) {
+        panic!("command oxidegl_program_uniform1iv not yet implemented");
+    }
+    pub fn oxidegl_program_uniform1f(&mut self, program: GLuint, location: GLint, v0: GLfloat) {
+        panic!("command oxidegl_program_uniform1f not yet implemented");
+    }
+    pub unsafe fn oxidegl_program_uniform1fv(
+        &mut self,
+        program: GLuint,
+        location: GLint,
+        count: GLsizei,
+        value: *const GLfloat,
+    ) {
+        panic!("command oxidegl_program_uniform1fv not yet implemented");
+    }
+    pub fn oxidegl_program_uniform1ui(&mut self, program: GLuint, location: GLint, v0: GLuint) {
+        panic!("command oxidegl_program_uniform1ui not yet implemented");
+    }
+    pub unsafe fn oxidegl_program_uniform1uiv(
+        &mut self,
+        program: GLuint,
+        location: GLint,
+        count: GLsizei,
+        value: *const GLuint,
+    ) {
+        panic!("command oxidegl_program_uniform1uiv not yet implemented");
+    }
+    pub fn oxidegl_program_uniform2i(
+        &mut self,
+        program: GLuint,
+        location: GLint,
+        v0: GLint,
+        v1: GLint,
+    ) {
+        panic!("command oxidegl_program_uniform2i not yet implemented");
+    }
+    pub unsafe fn oxidegl_program_uniform2iv(
+        &mut self,
+        program: GLuint,
+        location: GLint,
+        count: GLsizei,
+        value: *const GLint,
+    ) {
+        panic!("command oxidegl_program_uniform2iv not yet implemented");
+    }
+    pub fn oxidegl_program_uniform2f(
+        &mut self,
+        program: GLuint,
+        location: GLint,
+        v0: GLfloat,
+        v1: GLfloat,
+    ) {
+        panic!("command oxidegl_program_uniform2f not yet implemented");
+    }
+    pub unsafe fn oxidegl_program_uniform2fv(
+        &mut self,
+        program: GLuint,
+        location: GLint,
+        count: GLsizei,
+        value: *const GLfloat,
+    ) {
+        panic!("command oxidegl_program_uniform2fv not yet implemented");
+    }
+    pub fn oxidegl_program_uniform2ui(
+        &mut self,
+        program: GLuint,
+        location: GLint,
+        v0: GLuint,
+        v1: GLuint,
+    ) {
+        panic!("command oxidegl_program_uniform2ui not yet implemented");
+    }
+    pub unsafe fn oxidegl_program_uniform2uiv(
+        &mut self,
+        program: GLuint,
+        location: GLint,
+        count: GLsizei,
+        value: *const GLuint,
+    ) {
+        panic!("command oxidegl_program_uniform2uiv not yet implemented");
+    }
+    pub fn oxidegl_program_uniform3i(
+        &mut self,
+        program: GLuint,
+        location: GLint,
+        v0: GLint,
+        v1: GLint,
+        v2: GLint,
+    ) {
+        panic!("command oxidegl_program_uniform3i not yet implemented");
+    }
+    pub unsafe fn oxidegl_program_uniform3iv(
+        &mut self,
+        program: GLuint,
+        location: GLint,
+        count: GLsizei,
+        value: *const GLint,
+    ) {
+        panic!("command oxidegl_program_uniform3iv not yet implemented");
+    }
+    pub fn oxidegl_program_uniform3f(
+        &mut self,
+        program: GLuint,
+        location: GLint,
+        v0: GLfloat,
+        v1: GLfloat,
+        v2: GLfloat,
+    ) {
+        panic!("command oxidegl_program_uniform3f not yet implemented");
+    }
+    pub unsafe fn oxidegl_program_uniform3fv(
+        &mut self,
+        program: GLuint,
+        location: GLint,
+        count: GLsizei,
+        value: *const GLfloat,
+    ) {
+        panic!("command oxidegl_program_uniform3fv not yet implemented");
+    }
+    pub fn oxidegl_program_uniform3ui(
+        &mut self,
+        program: GLuint,
+        location: GLint,
+        v0: GLuint,
+        v1: GLuint,
+        v2: GLuint,
+    ) {
+        panic!("command oxidegl_program_uniform3ui not yet implemented");
+    }
+    pub unsafe fn oxidegl_program_uniform3uiv(
+        &mut self,
+        program: GLuint,
+        location: GLint,
+        count: GLsizei,
+        value: *const GLuint,
+    ) {
+        panic!("command oxidegl_program_uniform3uiv not yet implemented");
+    }
+    pub fn oxidegl_program_uniform4i(
+        &mut self,
+        program: GLuint,
+        location: GLint,
+        v0: GLint,
+        v1: GLint,
+        v2: GLint,
+        v3: GLint,
+    ) {
+        panic!("command oxidegl_program_uniform4i not yet implemented");
+    }
+    pub unsafe fn oxidegl_program_uniform4iv(
+        &mut self,
+        program: GLuint,
+        location: GLint,
+        count: GLsizei,
+        value: *const GLint,
+    ) {
+        panic!("command oxidegl_program_uniform4iv not yet implemented");
+    }
+    pub fn oxidegl_program_uniform4f(
+        &mut self,
+        program: GLuint,
+        location: GLint,
+        v0: GLfloat,
+        v1: GLfloat,
+        v2: GLfloat,
+        v3: GLfloat,
+    ) {
+        panic!("command oxidegl_program_uniform4f not yet implemented");
+    }
+    pub unsafe fn oxidegl_program_uniform4fv(
+        &mut self,
+        program: GLuint,
+        location: GLint,
+        count: GLsizei,
+        value: *const GLfloat,
+    ) {
+        panic!("command oxidegl_program_uniform4fv not yet implemented");
+    }
+    pub fn oxidegl_program_uniform4ui(
+        &mut self,
+        program: GLuint,
+        location: GLint,
+        v0: GLuint,
+        v1: GLuint,
+        v2: GLuint,
+        v3: GLuint,
+    ) {
+        panic!("command oxidegl_program_uniform4ui not yet implemented");
+    }
+    pub unsafe fn oxidegl_program_uniform4uiv(
+        &mut self,
+        program: GLuint,
+        location: GLint,
+        count: GLsizei,
+        value: *const GLuint,
+    ) {
+        panic!("command oxidegl_program_uniform4uiv not yet implemented");
+    }
+    pub unsafe fn oxidegl_program_uniform_matrix2fv(
+        &mut self,
+        program: GLuint,
+        location: GLint,
+        count: GLsizei,
+        transpose: GLboolean,
+        value: *const GLfloat,
+    ) {
+        panic!("command oxidegl_program_uniform_matrix2fv not yet implemented");
+    }
+    pub unsafe fn oxidegl_program_uniform_matrix3fv(
+        &mut self,
+        program: GLuint,
+        location: GLint,
+        count: GLsizei,
+        transpose: GLboolean,
+        value: *const GLfloat,
+    ) {
+        panic!("command oxidegl_program_uniform_matrix3fv not yet implemented");
+    }
+    pub unsafe fn oxidegl_program_uniform_matrix4fv(
+        &mut self,
+        program: GLuint,
+        location: GLint,
+        count: GLsizei,
+        transpose: GLboolean,
+        value: *const GLfloat,
+    ) {
+        panic!("command oxidegl_program_uniform_matrix4fv not yet implemented");
+    }
+    pub unsafe fn oxidegl_program_uniform_matrix2x3fv(
+        &mut self,
+        program: GLuint,
+        location: GLint,
+        count: GLsizei,
+        transpose: GLboolean,
+        value: *const GLfloat,
+    ) {
+        panic!("command oxidegl_program_uniform_matrix2x3fv not yet implemented");
+    }
+    pub unsafe fn oxidegl_program_uniform_matrix3x2fv(
+        &mut self,
+        program: GLuint,
+        location: GLint,
+        count: GLsizei,
+        transpose: GLboolean,
+        value: *const GLfloat,
+    ) {
+        panic!("command oxidegl_program_uniform_matrix3x2fv not yet implemented");
+    }
+    pub unsafe fn oxidegl_program_uniform_matrix2x4fv(
+        &mut self,
+        program: GLuint,
+        location: GLint,
+        count: GLsizei,
+        transpose: GLboolean,
+        value: *const GLfloat,
+    ) {
+        panic!("command oxidegl_program_uniform_matrix2x4fv not yet implemented");
+    }
+    pub unsafe fn oxidegl_program_uniform_matrix4x2fv(
+        &mut self,
+        program: GLuint,
+        location: GLint,
+        count: GLsizei,
+        transpose: GLboolean,
+        value: *const GLfloat,
+    ) {
+        panic!("command oxidegl_program_uniform_matrix4x2fv not yet implemented");
+    }
+    pub unsafe fn oxidegl_program_uniform_matrix3x4fv(
+        &mut self,
+        program: GLuint,
+        location: GLint,
+        count: GLsizei,
+        transpose: GLboolean,
+        value: *const GLfloat,
+    ) {
+        panic!("command oxidegl_program_uniform_matrix3x4fv not yet implemented");
+    }
+    pub unsafe fn oxidegl_program_uniform_matrix4x3fv(
+        &mut self,
+        program: GLuint,
+        location: GLint,
+        count: GLsizei,
+        transpose: GLboolean,
+        value: *const GLfloat,
+    ) {
+        panic!("command oxidegl_program_uniform_matrix4x3fv not yet implemented");
     }
 }
 /// ### Parameters
@@ -8687,21 +8377,12 @@ pub mod program_uniform {
 ///
 /// ### Associated Gets
 /// [**glGet**](crate::context::Context::oxidegl_get) with argument [`GL_READ_BUFFER`](crate::enums::GL_READ_BUFFER)
-pub mod read_buffer {
-    use crate::context::Context;
-    use crate::dispatch::gl_types::*;
-    use crate::enums::{ColorBuffer, ReadBufferMode};
-    impl Context {
-        pub fn oxidegl_read_buffer(&mut self, src: ReadBufferMode) {
-            panic!("command oxidegl_read_buffer not yet implemented");
-        }
-        pub fn oxidegl_named_framebuffer_read_buffer(
-            &mut self,
-            framebuffer: GLuint,
-            src: ColorBuffer,
-        ) {
-            panic!("command oxidegl_named_framebuffer_read_buffer not yet implemented");
-        }
+impl Context {
+    pub fn oxidegl_read_buffer(&mut self, src: ReadBufferMode) {
+        panic!("command oxidegl_read_buffer not yet implemented");
+    }
+    pub fn oxidegl_named_framebuffer_read_buffer(&mut self, framebuffer: GLuint, src: ColorBuffer) {
+        panic!("command oxidegl_named_framebuffer_read_buffer not yet implemented");
     }
 }
 /// ### Parameters
@@ -8872,36 +8553,31 @@ pub mod read_buffer {
 ///
 /// ### Associated Gets
 /// [**glGet**](crate::context::Context::oxidegl_get) with argument [`GL_PIXEL_PACK_BUFFER_BINDING`](crate::enums::GL_PIXEL_PACK_BUFFER_BINDING)
-pub mod read_pixels {
-    use crate::context::Context;
-    use crate::dispatch::gl_types::*;
-    use crate::enums::{PixelFormat, PixelType};
-    impl Context {
-        pub unsafe fn oxidegl_read_pixels(
-            &mut self,
-            x: GLint,
-            y: GLint,
-            width: GLsizei,
-            height: GLsizei,
-            format: PixelFormat,
-            r#type: PixelType,
-            pixels: *mut GLvoid,
-        ) {
-            panic!("command oxidegl_read_pixels not yet implemented");
-        }
-        pub unsafe fn oxidegl_readn_pixels(
-            &mut self,
-            x: GLint,
-            y: GLint,
-            width: GLsizei,
-            height: GLsizei,
-            format: PixelFormat,
-            r#type: PixelType,
-            buf_size: GLsizei,
-            data: *mut GLvoid,
-        ) {
-            panic!("command oxidegl_readn_pixels not yet implemented");
-        }
+impl Context {
+    pub unsafe fn oxidegl_read_pixels(
+        &mut self,
+        x: GLint,
+        y: GLint,
+        width: GLsizei,
+        height: GLsizei,
+        format: PixelFormat,
+        r#type: PixelType,
+        pixels: *mut GLvoid,
+    ) {
+        panic!("command oxidegl_read_pixels not yet implemented");
+    }
+    pub unsafe fn oxidegl_readn_pixels(
+        &mut self,
+        x: GLint,
+        y: GLint,
+        width: GLsizei,
+        height: GLsizei,
+        format: PixelFormat,
+        r#type: PixelType,
+        buf_size: GLsizei,
+        data: *mut GLvoid,
+    ) {
+        panic!("command oxidegl_readn_pixels not yet implemented");
     }
 }
 /// ### Parameters
@@ -8948,29 +8624,24 @@ pub mod read_pixels {
 /// delete any existing data store for the renderbuffer image and the contents
 /// of the data store after calling [**glRenderbufferStorage**](crate::context::Context::oxidegl_renderbuffer_storage)
 /// are undefined.
-pub mod renderbuffer_storage {
-    use crate::context::Context;
-    use crate::dispatch::gl_types::*;
-    use crate::enums::{InternalFormat, RenderbufferTarget};
-    impl Context {
-        pub fn oxidegl_renderbuffer_storage(
-            &mut self,
-            target: RenderbufferTarget,
-            internalformat: InternalFormat,
-            width: GLsizei,
-            height: GLsizei,
-        ) {
-            panic!("command oxidegl_renderbuffer_storage not yet implemented");
-        }
-        pub fn oxidegl_named_renderbuffer_storage(
-            &mut self,
-            renderbuffer: GLuint,
-            internalformat: InternalFormat,
-            width: GLsizei,
-            height: GLsizei,
-        ) {
-            panic!("command oxidegl_named_renderbuffer_storage not yet implemented");
-        }
+impl Context {
+    pub fn oxidegl_renderbuffer_storage(
+        &mut self,
+        target: RenderbufferTarget,
+        internalformat: InternalFormat,
+        width: GLsizei,
+        height: GLsizei,
+    ) {
+        panic!("command oxidegl_renderbuffer_storage not yet implemented");
+    }
+    pub fn oxidegl_named_renderbuffer_storage(
+        &mut self,
+        renderbuffer: GLuint,
+        internalformat: InternalFormat,
+        width: GLsizei,
+        height: GLsizei,
+    ) {
+        panic!("command oxidegl_named_renderbuffer_storage not yet implemented");
     }
 }
 /// ### Parameters
@@ -9024,31 +8695,26 @@ pub mod renderbuffer_storage {
 /// and [**glNamedRenderbufferStorageMultisample**](crate::context::Context::oxidegl_named_renderbuffer_storage_multisample)
 /// delete any existing data store for the renderbuffer image and the contents
 /// of the data store after calling either of the functions are undefined.
-pub mod renderbuffer_storage_multisample {
-    use crate::context::Context;
-    use crate::dispatch::gl_types::*;
-    use crate::enums::{InternalFormat, RenderbufferTarget};
-    impl Context {
-        pub fn oxidegl_renderbuffer_storage_multisample(
-            &mut self,
-            target: RenderbufferTarget,
-            samples: GLsizei,
-            internalformat: InternalFormat,
-            width: GLsizei,
-            height: GLsizei,
-        ) {
-            panic!("command oxidegl_renderbuffer_storage_multisample not yet implemented");
-        }
-        pub fn oxidegl_named_renderbuffer_storage_multisample(
-            &mut self,
-            renderbuffer: GLuint,
-            samples: GLsizei,
-            internalformat: InternalFormat,
-            width: GLsizei,
-            height: GLsizei,
-        ) {
-            panic!("command oxidegl_named_renderbuffer_storage_multisample not yet implemented");
-        }
+impl Context {
+    pub fn oxidegl_renderbuffer_storage_multisample(
+        &mut self,
+        target: RenderbufferTarget,
+        samples: GLsizei,
+        internalformat: InternalFormat,
+        width: GLsizei,
+        height: GLsizei,
+    ) {
+        panic!("command oxidegl_renderbuffer_storage_multisample not yet implemented");
+    }
+    pub fn oxidegl_named_renderbuffer_storage_multisample(
+        &mut self,
+        renderbuffer: GLuint,
+        samples: GLsizei,
+        internalformat: InternalFormat,
+        width: GLsizei,
+        height: GLsizei,
+    ) {
+        panic!("command oxidegl_named_renderbuffer_storage_multisample not yet implemented");
     }
 }
 /// ### Parameters
@@ -9293,59 +8959,54 @@ pub mod renderbuffer_storage_multisample {
 ///
 /// ### Associated Gets
 /// [**glGetSamplerParameter**](crate::context::Context::oxidegl_get_sampler_parameter)
-pub mod sampler_parameter {
-    use crate::context::Context;
-    use crate::dispatch::gl_types::*;
-    use crate::enums::{SamplerParameterF, SamplerParameterI};
-    impl Context {
-        pub fn oxidegl_sampler_parameteri(
-            &mut self,
-            sampler: GLuint,
-            pname: SamplerParameterI,
-            param: GLint,
-        ) {
-            panic!("command oxidegl_sampler_parameteri not yet implemented");
-        }
-        pub unsafe fn oxidegl_sampler_parameteriv(
-            &mut self,
-            sampler: GLuint,
-            pname: SamplerParameterI,
-            param: *const GLint,
-        ) {
-            panic!("command oxidegl_sampler_parameteriv not yet implemented");
-        }
-        pub fn oxidegl_sampler_parameterf(
-            &mut self,
-            sampler: GLuint,
-            pname: SamplerParameterF,
-            param: GLfloat,
-        ) {
-            panic!("command oxidegl_sampler_parameterf not yet implemented");
-        }
-        pub unsafe fn oxidegl_sampler_parameterfv(
-            &mut self,
-            sampler: GLuint,
-            pname: SamplerParameterF,
-            param: *const GLfloat,
-        ) {
-            panic!("command oxidegl_sampler_parameterfv not yet implemented");
-        }
-        pub unsafe fn oxidegl_sampler_parameter_iiv(
-            &mut self,
-            sampler: GLuint,
-            pname: SamplerParameterI,
-            param: *const GLint,
-        ) {
-            panic!("command oxidegl_sampler_parameter_iiv not yet implemented");
-        }
-        pub unsafe fn oxidegl_sampler_parameter_iuiv(
-            &mut self,
-            sampler: GLuint,
-            pname: SamplerParameterI,
-            param: *const GLuint,
-        ) {
-            panic!("command oxidegl_sampler_parameter_iuiv not yet implemented");
-        }
+impl Context {
+    pub fn oxidegl_sampler_parameteri(
+        &mut self,
+        sampler: GLuint,
+        pname: SamplerParameterI,
+        param: GLint,
+    ) {
+        panic!("command oxidegl_sampler_parameteri not yet implemented");
+    }
+    pub unsafe fn oxidegl_sampler_parameteriv(
+        &mut self,
+        sampler: GLuint,
+        pname: SamplerParameterI,
+        param: *const GLint,
+    ) {
+        panic!("command oxidegl_sampler_parameteriv not yet implemented");
+    }
+    pub fn oxidegl_sampler_parameterf(
+        &mut self,
+        sampler: GLuint,
+        pname: SamplerParameterF,
+        param: GLfloat,
+    ) {
+        panic!("command oxidegl_sampler_parameterf not yet implemented");
+    }
+    pub unsafe fn oxidegl_sampler_parameterfv(
+        &mut self,
+        sampler: GLuint,
+        pname: SamplerParameterF,
+        param: *const GLfloat,
+    ) {
+        panic!("command oxidegl_sampler_parameterfv not yet implemented");
+    }
+    pub unsafe fn oxidegl_sampler_parameter_iiv(
+        &mut self,
+        sampler: GLuint,
+        pname: SamplerParameterI,
+        param: *const GLint,
+    ) {
+        panic!("command oxidegl_sampler_parameter_iiv not yet implemented");
+    }
+    pub unsafe fn oxidegl_sampler_parameter_iuiv(
+        &mut self,
+        sampler: GLuint,
+        pname: SamplerParameterI,
+        param: *const GLuint,
+    ) {
+        panic!("command oxidegl_sampler_parameter_iuiv not yet implemented");
     }
 }
 /// ### Parameters
@@ -9398,23 +9059,19 @@ pub mod sampler_parameter {
 ///
 /// [**glIsEnabled**](crate::context::Context::oxidegl_is_enabled) with argument
 /// [`GL_SCISSOR_TEST`](crate::enums::GL_SCISSOR_TEST)
-pub mod scissor_indexed {
-    use crate::context::Context;
-    use crate::dispatch::gl_types::*;
-    impl Context {
-        pub fn oxidegl_scissor_indexed(
-            &mut self,
-            index: GLuint,
-            left: GLint,
-            bottom: GLint,
-            width: GLsizei,
-            height: GLsizei,
-        ) {
-            panic!("command oxidegl_scissor_indexed not yet implemented");
-        }
-        pub unsafe fn oxidegl_scissor_indexedv(&mut self, index: GLuint, v: *const GLint) {
-            panic!("command oxidegl_scissor_indexedv not yet implemented");
-        }
+impl Context {
+    pub fn oxidegl_scissor_indexed(
+        &mut self,
+        index: GLuint,
+        left: GLint,
+        bottom: GLint,
+        width: GLsizei,
+        height: GLsizei,
+    ) {
+        panic!("command oxidegl_scissor_indexed not yet implemented");
+    }
+    pub unsafe fn oxidegl_scissor_indexedv(&mut self, index: GLuint, v: *const GLint) {
+        panic!("command oxidegl_scissor_indexedv not yet implemented");
     }
 }
 /// ### Parameters
@@ -9505,27 +9162,22 @@ pub mod scissor_indexed {
 ///
 /// [**glGetTexLevelParameter**](crate::context::Context::oxidegl_get_tex_level_parameter)
 /// with argument [`GL_TEXTURE_BUFFER_DATA_STORE_BINDING`](crate::enums::GL_TEXTURE_BUFFER_DATA_STORE_BINDING)
-pub mod tex_buffer {
-    use crate::context::Context;
-    use crate::dispatch::gl_types::*;
-    use crate::enums::{SizedInternalFormat, TextureTarget};
-    impl Context {
-        pub fn oxidegl_tex_buffer(
-            &mut self,
-            target: TextureTarget,
-            internalformat: SizedInternalFormat,
-            buffer: GLuint,
-        ) {
-            panic!("command oxidegl_tex_buffer not yet implemented");
-        }
-        pub fn oxidegl_texture_buffer(
-            &mut self,
-            texture: GLuint,
-            internalformat: SizedInternalFormat,
-            buffer: GLuint,
-        ) {
-            panic!("command oxidegl_texture_buffer not yet implemented");
-        }
+impl Context {
+    pub fn oxidegl_tex_buffer(
+        &mut self,
+        target: TextureTarget,
+        internalformat: SizedInternalFormat,
+        buffer: GLuint,
+    ) {
+        panic!("command oxidegl_tex_buffer not yet implemented");
+    }
+    pub fn oxidegl_texture_buffer(
+        &mut self,
+        texture: GLuint,
+        internalformat: SizedInternalFormat,
+        buffer: GLuint,
+    ) {
+        panic!("command oxidegl_texture_buffer not yet implemented");
     }
 }
 /// ### Parameters
@@ -9631,31 +9283,26 @@ pub mod tex_buffer {
 /// [**glGetTexLevelParameter**](crate::context::Context::oxidegl_get_tex_level_parameter)
 /// with arguments [`GL_TEXTURE_BUFFER_OFFSET`](crate::enums::GL_TEXTURE_BUFFER_OFFSET)
 /// or [`GL_TEXTURE_BUFFER_SIZE`](crate::enums::GL_TEXTURE_BUFFER_SIZE).
-pub mod tex_buffer_range {
-    use crate::context::Context;
-    use crate::dispatch::gl_types::*;
-    use crate::enums::{SizedInternalFormat, TextureTarget};
-    impl Context {
-        pub fn oxidegl_tex_buffer_range(
-            &mut self,
-            target: TextureTarget,
-            internalformat: SizedInternalFormat,
-            buffer: GLuint,
-            offset: GLintptr,
-            size: GLsizeiptr,
-        ) {
-            panic!("command oxidegl_tex_buffer_range not yet implemented");
-        }
-        pub fn oxidegl_texture_buffer_range(
-            &mut self,
-            texture: GLuint,
-            internalformat: SizedInternalFormat,
-            buffer: GLuint,
-            offset: GLintptr,
-            size: GLsizeiptr,
-        ) {
-            panic!("command oxidegl_texture_buffer_range not yet implemented");
-        }
+impl Context {
+    pub fn oxidegl_tex_buffer_range(
+        &mut self,
+        target: TextureTarget,
+        internalformat: SizedInternalFormat,
+        buffer: GLuint,
+        offset: GLintptr,
+        size: GLsizeiptr,
+    ) {
+        panic!("command oxidegl_tex_buffer_range not yet implemented");
+    }
+    pub fn oxidegl_texture_buffer_range(
+        &mut self,
+        texture: GLuint,
+        internalformat: SizedInternalFormat,
+        buffer: GLuint,
+        offset: GLintptr,
+        size: GLsizeiptr,
+    ) {
+        panic!("command oxidegl_texture_buffer_range not yet implemented");
     }
 }
 /// ### Parameters
@@ -10034,107 +9681,102 @@ pub mod tex_buffer_range {
 /// [**glGetTexLevelParameter**](crate::context::Context::oxidegl_get_tex_level_parameter)
 ///
 /// [**glGetTextureLevelParameter**](crate::context::Context::oxidegl_get_texture_level_parameter)
-pub mod tex_parameter {
-    use crate::context::Context;
-    use crate::dispatch::gl_types::*;
-    use crate::enums::{TextureParameterName, TextureTarget};
-    impl Context {
-        pub fn oxidegl_tex_parameterf(
-            &mut self,
-            target: TextureTarget,
-            pname: TextureParameterName,
-            param: GLfloat,
-        ) {
-            panic!("command oxidegl_tex_parameterf not yet implemented");
-        }
-        pub unsafe fn oxidegl_tex_parameterfv(
-            &mut self,
-            target: TextureTarget,
-            pname: TextureParameterName,
-            params: *const GLfloat,
-        ) {
-            panic!("command oxidegl_tex_parameterfv not yet implemented");
-        }
-        pub fn oxidegl_tex_parameteri(
-            &mut self,
-            target: TextureTarget,
-            pname: TextureParameterName,
-            param: GLint,
-        ) {
-            panic!("command oxidegl_tex_parameteri not yet implemented");
-        }
-        pub unsafe fn oxidegl_tex_parameteriv(
-            &mut self,
-            target: TextureTarget,
-            pname: TextureParameterName,
-            params: *const GLint,
-        ) {
-            panic!("command oxidegl_tex_parameteriv not yet implemented");
-        }
-        pub unsafe fn oxidegl_tex_parameter_iiv(
-            &mut self,
-            target: TextureTarget,
-            pname: TextureParameterName,
-            params: *const GLint,
-        ) {
-            panic!("command oxidegl_tex_parameter_iiv not yet implemented");
-        }
-        pub unsafe fn oxidegl_tex_parameter_iuiv(
-            &mut self,
-            target: TextureTarget,
-            pname: TextureParameterName,
-            params: *const GLuint,
-        ) {
-            panic!("command oxidegl_tex_parameter_iuiv not yet implemented");
-        }
-        pub fn oxidegl_texture_parameterf(
-            &mut self,
-            texture: GLuint,
-            pname: TextureParameterName,
-            param: GLfloat,
-        ) {
-            panic!("command oxidegl_texture_parameterf not yet implemented");
-        }
-        pub unsafe fn oxidegl_texture_parameterfv(
-            &mut self,
-            texture: GLuint,
-            pname: TextureParameterName,
-            param: *const GLfloat,
-        ) {
-            panic!("command oxidegl_texture_parameterfv not yet implemented");
-        }
-        pub fn oxidegl_texture_parameteri(
-            &mut self,
-            texture: GLuint,
-            pname: TextureParameterName,
-            param: GLint,
-        ) {
-            panic!("command oxidegl_texture_parameteri not yet implemented");
-        }
-        pub unsafe fn oxidegl_texture_parameter_iiv(
-            &mut self,
-            texture: GLuint,
-            pname: TextureParameterName,
-            params: *const GLint,
-        ) {
-            panic!("command oxidegl_texture_parameter_iiv not yet implemented");
-        }
-        pub unsafe fn oxidegl_texture_parameter_iuiv(
-            &mut self,
-            texture: GLuint,
-            pname: TextureParameterName,
-            params: *const GLuint,
-        ) {
-            panic!("command oxidegl_texture_parameter_iuiv not yet implemented");
-        }
-        pub unsafe fn oxidegl_texture_parameteriv(
-            &mut self,
-            texture: GLuint,
-            pname: TextureParameterName,
-            param: *const GLint,
-        ) {
-            panic!("command oxidegl_texture_parameteriv not yet implemented");
-        }
+impl Context {
+    pub fn oxidegl_tex_parameterf(
+        &mut self,
+        target: TextureTarget,
+        pname: TextureParameterName,
+        param: GLfloat,
+    ) {
+        panic!("command oxidegl_tex_parameterf not yet implemented");
+    }
+    pub unsafe fn oxidegl_tex_parameterfv(
+        &mut self,
+        target: TextureTarget,
+        pname: TextureParameterName,
+        params: *const GLfloat,
+    ) {
+        panic!("command oxidegl_tex_parameterfv not yet implemented");
+    }
+    pub fn oxidegl_tex_parameteri(
+        &mut self,
+        target: TextureTarget,
+        pname: TextureParameterName,
+        param: GLint,
+    ) {
+        panic!("command oxidegl_tex_parameteri not yet implemented");
+    }
+    pub unsafe fn oxidegl_tex_parameteriv(
+        &mut self,
+        target: TextureTarget,
+        pname: TextureParameterName,
+        params: *const GLint,
+    ) {
+        panic!("command oxidegl_tex_parameteriv not yet implemented");
+    }
+    pub unsafe fn oxidegl_tex_parameter_iiv(
+        &mut self,
+        target: TextureTarget,
+        pname: TextureParameterName,
+        params: *const GLint,
+    ) {
+        panic!("command oxidegl_tex_parameter_iiv not yet implemented");
+    }
+    pub unsafe fn oxidegl_tex_parameter_iuiv(
+        &mut self,
+        target: TextureTarget,
+        pname: TextureParameterName,
+        params: *const GLuint,
+    ) {
+        panic!("command oxidegl_tex_parameter_iuiv not yet implemented");
+    }
+    pub fn oxidegl_texture_parameterf(
+        &mut self,
+        texture: GLuint,
+        pname: TextureParameterName,
+        param: GLfloat,
+    ) {
+        panic!("command oxidegl_texture_parameterf not yet implemented");
+    }
+    pub unsafe fn oxidegl_texture_parameterfv(
+        &mut self,
+        texture: GLuint,
+        pname: TextureParameterName,
+        param: *const GLfloat,
+    ) {
+        panic!("command oxidegl_texture_parameterfv not yet implemented");
+    }
+    pub fn oxidegl_texture_parameteri(
+        &mut self,
+        texture: GLuint,
+        pname: TextureParameterName,
+        param: GLint,
+    ) {
+        panic!("command oxidegl_texture_parameteri not yet implemented");
+    }
+    pub unsafe fn oxidegl_texture_parameter_iiv(
+        &mut self,
+        texture: GLuint,
+        pname: TextureParameterName,
+        params: *const GLint,
+    ) {
+        panic!("command oxidegl_texture_parameter_iiv not yet implemented");
+    }
+    pub unsafe fn oxidegl_texture_parameter_iuiv(
+        &mut self,
+        texture: GLuint,
+        pname: TextureParameterName,
+        params: *const GLuint,
+    ) {
+        panic!("command oxidegl_texture_parameter_iuiv not yet implemented");
+    }
+    pub unsafe fn oxidegl_texture_parameteriv(
+        &mut self,
+        texture: GLuint,
+        pname: TextureParameterName,
+        param: *const GLint,
+    ) {
+        panic!("command oxidegl_texture_parameteriv not yet implemented");
     }
 }
 /// ### Parameters
@@ -10269,29 +9911,24 @@ pub mod tex_parameter {
 /// ### Notes
 /// [`GL_STENCIL_INDEX8`](crate::enums::GL_STENCIL_INDEX8) is accepted for
 /// `internalformat` only if the GL version is 4.4 or higher.
-pub mod tex_storage1_d {
-    use crate::context::Context;
-    use crate::dispatch::gl_types::*;
-    use crate::enums::{SizedInternalFormat, TextureTarget};
-    impl Context {
-        pub fn oxidegl_tex_storage1_d(
-            &mut self,
-            target: TextureTarget,
-            levels: GLsizei,
-            internalformat: SizedInternalFormat,
-            width: GLsizei,
-        ) {
-            panic!("command oxidegl_tex_storage1_d not yet implemented");
-        }
-        pub fn oxidegl_texture_storage1_d(
-            &mut self,
-            texture: GLuint,
-            levels: GLsizei,
-            internalformat: SizedInternalFormat,
-            width: GLsizei,
-        ) {
-            panic!("command oxidegl_texture_storage1_d not yet implemented");
-        }
+impl Context {
+    pub fn oxidegl_tex_storage1_d(
+        &mut self,
+        target: TextureTarget,
+        levels: GLsizei,
+        internalformat: SizedInternalFormat,
+        width: GLsizei,
+    ) {
+        panic!("command oxidegl_tex_storage1_d not yet implemented");
+    }
+    pub fn oxidegl_texture_storage1_d(
+        &mut self,
+        texture: GLuint,
+        levels: GLsizei,
+        internalformat: SizedInternalFormat,
+        width: GLsizei,
+    ) {
+        panic!("command oxidegl_texture_storage1_d not yet implemented");
     }
 }
 /// ### Parameters
@@ -10448,31 +10085,26 @@ pub mod tex_storage1_d {
 /// ### Notes
 /// [`GL_STENCIL_INDEX8`](crate::enums::GL_STENCIL_INDEX8) is accepted for
 /// `internalformat` only if the GL version is 4.4 or higher.
-pub mod tex_storage2_d {
-    use crate::context::Context;
-    use crate::dispatch::gl_types::*;
-    use crate::enums::{SizedInternalFormat, TextureTarget};
-    impl Context {
-        pub fn oxidegl_tex_storage2_d(
-            &mut self,
-            target: TextureTarget,
-            levels: GLsizei,
-            internalformat: SizedInternalFormat,
-            width: GLsizei,
-            height: GLsizei,
-        ) {
-            panic!("command oxidegl_tex_storage2_d not yet implemented");
-        }
-        pub fn oxidegl_texture_storage2_d(
-            &mut self,
-            texture: GLuint,
-            levels: GLsizei,
-            internalformat: SizedInternalFormat,
-            width: GLsizei,
-            height: GLsizei,
-        ) {
-            panic!("command oxidegl_texture_storage2_d not yet implemented");
-        }
+impl Context {
+    pub fn oxidegl_tex_storage2_d(
+        &mut self,
+        target: TextureTarget,
+        levels: GLsizei,
+        internalformat: SizedInternalFormat,
+        width: GLsizei,
+        height: GLsizei,
+    ) {
+        panic!("command oxidegl_tex_storage2_d not yet implemented");
+    }
+    pub fn oxidegl_texture_storage2_d(
+        &mut self,
+        texture: GLuint,
+        levels: GLsizei,
+        internalformat: SizedInternalFormat,
+        width: GLsizei,
+        height: GLsizei,
+    ) {
+        panic!("command oxidegl_texture_storage2_d not yet implemented");
     }
 }
 /// ### Parameters
@@ -10592,33 +10224,28 @@ pub mod tex_storage2_d {
 /// | [`GL_RGBA32I`](crate::enums::GL_RGBA32I)              | [`GL_RGBA`](crate::enums::GL_RGBA)                   | i32              | i32                 | i32               | i32                 |                      |
 /// | [`GL_RGBA32UI`](crate::enums::GL_RGBA32UI)            | [`GL_RGBA`](crate::enums::GL_RGBA)                   | ui32             | ui32                | ui32              | ui32                |                      |
 ///
-pub mod tex_storage2_d_multisample {
-    use crate::context::Context;
-    use crate::dispatch::gl_types::*;
-    use crate::enums::{SizedInternalFormat, TextureTarget};
-    impl Context {
-        pub fn oxidegl_tex_storage2_d_multisample(
-            &mut self,
-            target: TextureTarget,
-            samples: GLsizei,
-            internalformat: SizedInternalFormat,
-            width: GLsizei,
-            height: GLsizei,
-            fixedsamplelocations: GLboolean,
-        ) {
-            panic!("command oxidegl_tex_storage2_d_multisample not yet implemented");
-        }
-        pub fn oxidegl_texture_storage2_d_multisample(
-            &mut self,
-            texture: GLuint,
-            samples: GLsizei,
-            internalformat: SizedInternalFormat,
-            width: GLsizei,
-            height: GLsizei,
-            fixedsamplelocations: GLboolean,
-        ) {
-            panic!("command oxidegl_texture_storage2_d_multisample not yet implemented");
-        }
+impl Context {
+    pub fn oxidegl_tex_storage2_d_multisample(
+        &mut self,
+        target: TextureTarget,
+        samples: GLsizei,
+        internalformat: SizedInternalFormat,
+        width: GLsizei,
+        height: GLsizei,
+        fixedsamplelocations: GLboolean,
+    ) {
+        panic!("command oxidegl_tex_storage2_d_multisample not yet implemented");
+    }
+    pub fn oxidegl_texture_storage2_d_multisample(
+        &mut self,
+        texture: GLuint,
+        samples: GLsizei,
+        internalformat: SizedInternalFormat,
+        width: GLsizei,
+        height: GLsizei,
+        fixedsamplelocations: GLboolean,
+    ) {
+        panic!("command oxidegl_texture_storage2_d_multisample not yet implemented");
     }
 }
 /// ### Parameters
@@ -10774,33 +10401,28 @@ pub mod tex_storage2_d_multisample {
 /// ### Notes
 /// [`GL_STENCIL_INDEX8`](crate::enums::GL_STENCIL_INDEX8) is accepted for
 /// `internalformat` only if the GL version is 4.4 or higher.
-pub mod tex_storage3_d {
-    use crate::context::Context;
-    use crate::dispatch::gl_types::*;
-    use crate::enums::{SizedInternalFormat, TextureTarget};
-    impl Context {
-        pub fn oxidegl_tex_storage3_d(
-            &mut self,
-            target: TextureTarget,
-            levels: GLsizei,
-            internalformat: SizedInternalFormat,
-            width: GLsizei,
-            height: GLsizei,
-            depth: GLsizei,
-        ) {
-            panic!("command oxidegl_tex_storage3_d not yet implemented");
-        }
-        pub fn oxidegl_texture_storage3_d(
-            &mut self,
-            texture: GLuint,
-            levels: GLsizei,
-            internalformat: SizedInternalFormat,
-            width: GLsizei,
-            height: GLsizei,
-            depth: GLsizei,
-        ) {
-            panic!("command oxidegl_texture_storage3_d not yet implemented");
-        }
+impl Context {
+    pub fn oxidegl_tex_storage3_d(
+        &mut self,
+        target: TextureTarget,
+        levels: GLsizei,
+        internalformat: SizedInternalFormat,
+        width: GLsizei,
+        height: GLsizei,
+        depth: GLsizei,
+    ) {
+        panic!("command oxidegl_tex_storage3_d not yet implemented");
+    }
+    pub fn oxidegl_texture_storage3_d(
+        &mut self,
+        texture: GLuint,
+        levels: GLsizei,
+        internalformat: SizedInternalFormat,
+        width: GLsizei,
+        height: GLsizei,
+        depth: GLsizei,
+    ) {
+        panic!("command oxidegl_texture_storage3_d not yet implemented");
     }
 }
 /// ### Parameters
@@ -10932,35 +10554,30 @@ pub mod tex_storage3_d {
 /// [`GL_TEXTURE_VIEW_MIN_LAYER`](crate::enums::GL_TEXTURE_VIEW_MIN_LAYER),
 /// [`GL_TEXTURE_VIEW_NUM_LAYERS`](crate::enums::GL_TEXTURE_VIEW_NUM_LAYERS),
 /// or [`GL_TEXTURE_IMMUTABLE_LEVELS`](crate::enums::GL_TEXTURE_IMMUTABLE_LEVELS).
-pub mod tex_storage3_d_multisample {
-    use crate::context::Context;
-    use crate::dispatch::gl_types::*;
-    use crate::enums::{SizedInternalFormat, TextureTarget};
-    impl Context {
-        pub fn oxidegl_tex_storage3_d_multisample(
-            &mut self,
-            target: TextureTarget,
-            samples: GLsizei,
-            internalformat: SizedInternalFormat,
-            width: GLsizei,
-            height: GLsizei,
-            depth: GLsizei,
-            fixedsamplelocations: GLboolean,
-        ) {
-            panic!("command oxidegl_tex_storage3_d_multisample not yet implemented");
-        }
-        pub fn oxidegl_texture_storage3_d_multisample(
-            &mut self,
-            texture: GLuint,
-            samples: GLsizei,
-            internalformat: SizedInternalFormat,
-            width: GLsizei,
-            height: GLsizei,
-            depth: GLsizei,
-            fixedsamplelocations: GLboolean,
-        ) {
-            panic!("command oxidegl_texture_storage3_d_multisample not yet implemented");
-        }
+impl Context {
+    pub fn oxidegl_tex_storage3_d_multisample(
+        &mut self,
+        target: TextureTarget,
+        samples: GLsizei,
+        internalformat: SizedInternalFormat,
+        width: GLsizei,
+        height: GLsizei,
+        depth: GLsizei,
+        fixedsamplelocations: GLboolean,
+    ) {
+        panic!("command oxidegl_tex_storage3_d_multisample not yet implemented");
+    }
+    pub fn oxidegl_texture_storage3_d_multisample(
+        &mut self,
+        texture: GLuint,
+        samples: GLsizei,
+        internalformat: SizedInternalFormat,
+        width: GLsizei,
+        height: GLsizei,
+        depth: GLsizei,
+        fixedsamplelocations: GLboolean,
+    ) {
+        panic!("command oxidegl_texture_storage3_d_multisample not yet implemented");
     }
 }
 /// ### Parameters
@@ -11050,35 +10667,30 @@ pub mod tex_storage3_d_multisample {
 /// [**glGetTexImage**](crate::context::Context::oxidegl_get_tex_image)
 ///
 /// [**glGet**](crate::context::Context::oxidegl_get) with argument [`GL_PIXEL_UNPACK_BUFFER_BINDING`](crate::enums::GL_PIXEL_UNPACK_BUFFER_BINDING)
-pub mod tex_sub_image1_d {
-    use crate::context::Context;
-    use crate::dispatch::gl_types::*;
-    use crate::enums::{PixelFormat, PixelType, TextureTarget};
-    impl Context {
-        pub unsafe fn oxidegl_tex_sub_image1_d(
-            &mut self,
-            target: TextureTarget,
-            level: GLint,
-            xoffset: GLint,
-            width: GLsizei,
-            format: PixelFormat,
-            r#type: PixelType,
-            pixels: *const GLvoid,
-        ) {
-            panic!("command oxidegl_tex_sub_image1_d not yet implemented");
-        }
-        pub unsafe fn oxidegl_texture_sub_image1_d(
-            &mut self,
-            texture: GLuint,
-            level: GLint,
-            xoffset: GLint,
-            width: GLsizei,
-            format: PixelFormat,
-            r#type: PixelType,
-            pixels: *const GLvoid,
-        ) {
-            panic!("command oxidegl_texture_sub_image1_d not yet implemented");
-        }
+impl Context {
+    pub unsafe fn oxidegl_tex_sub_image1_d(
+        &mut self,
+        target: TextureTarget,
+        level: GLint,
+        xoffset: GLint,
+        width: GLsizei,
+        format: PixelFormat,
+        r#type: PixelType,
+        pixels: *const GLvoid,
+    ) {
+        panic!("command oxidegl_tex_sub_image1_d not yet implemented");
+    }
+    pub unsafe fn oxidegl_texture_sub_image1_d(
+        &mut self,
+        texture: GLuint,
+        level: GLint,
+        xoffset: GLint,
+        width: GLsizei,
+        format: PixelFormat,
+        r#type: PixelType,
+        pixels: *const GLvoid,
+    ) {
+        panic!("command oxidegl_texture_sub_image1_d not yet implemented");
     }
 }
 /// ### Parameters
@@ -11181,39 +10793,34 @@ pub mod tex_sub_image1_d {
 /// [**glGetTexImage**](crate::context::Context::oxidegl_get_tex_image)
 ///
 /// [**glGet**](crate::context::Context::oxidegl_get) with argument [`GL_PIXEL_UNPACK_BUFFER_BINDING`](crate::enums::GL_PIXEL_UNPACK_BUFFER_BINDING)
-pub mod tex_sub_image2_d {
-    use crate::context::Context;
-    use crate::dispatch::gl_types::*;
-    use crate::enums::{PixelFormat, PixelType, TextureTarget};
-    impl Context {
-        pub unsafe fn oxidegl_tex_sub_image2_d(
-            &mut self,
-            target: TextureTarget,
-            level: GLint,
-            xoffset: GLint,
-            yoffset: GLint,
-            width: GLsizei,
-            height: GLsizei,
-            format: PixelFormat,
-            r#type: PixelType,
-            pixels: *const GLvoid,
-        ) {
-            panic!("command oxidegl_tex_sub_image2_d not yet implemented");
-        }
-        pub unsafe fn oxidegl_texture_sub_image2_d(
-            &mut self,
-            texture: GLuint,
-            level: GLint,
-            xoffset: GLint,
-            yoffset: GLint,
-            width: GLsizei,
-            height: GLsizei,
-            format: PixelFormat,
-            r#type: PixelType,
-            pixels: *const GLvoid,
-        ) {
-            panic!("command oxidegl_texture_sub_image2_d not yet implemented");
-        }
+impl Context {
+    pub unsafe fn oxidegl_tex_sub_image2_d(
+        &mut self,
+        target: TextureTarget,
+        level: GLint,
+        xoffset: GLint,
+        yoffset: GLint,
+        width: GLsizei,
+        height: GLsizei,
+        format: PixelFormat,
+        r#type: PixelType,
+        pixels: *const GLvoid,
+    ) {
+        panic!("command oxidegl_tex_sub_image2_d not yet implemented");
+    }
+    pub unsafe fn oxidegl_texture_sub_image2_d(
+        &mut self,
+        texture: GLuint,
+        level: GLint,
+        xoffset: GLint,
+        yoffset: GLint,
+        width: GLsizei,
+        height: GLsizei,
+        format: PixelFormat,
+        r#type: PixelType,
+        pixels: *const GLvoid,
+    ) {
+        panic!("command oxidegl_texture_sub_image2_d not yet implemented");
     }
 }
 /// ### Parameters
@@ -11317,43 +10924,38 @@ pub mod tex_sub_image2_d {
 /// [**glGetTexImage**](crate::context::Context::oxidegl_get_tex_image)
 ///
 /// [**glGet**](crate::context::Context::oxidegl_get) with argument [`GL_PIXEL_UNPACK_BUFFER_BINDING`](crate::enums::GL_PIXEL_UNPACK_BUFFER_BINDING)
-pub mod tex_sub_image3_d {
-    use crate::context::Context;
-    use crate::dispatch::gl_types::*;
-    use crate::enums::{PixelFormat, PixelType, TextureTarget};
-    impl Context {
-        pub unsafe fn oxidegl_tex_sub_image3_d(
-            &mut self,
-            target: TextureTarget,
-            level: GLint,
-            xoffset: GLint,
-            yoffset: GLint,
-            zoffset: GLint,
-            width: GLsizei,
-            height: GLsizei,
-            depth: GLsizei,
-            format: PixelFormat,
-            r#type: PixelType,
-            pixels: *const GLvoid,
-        ) {
-            panic!("command oxidegl_tex_sub_image3_d not yet implemented");
-        }
-        pub unsafe fn oxidegl_texture_sub_image3_d(
-            &mut self,
-            texture: GLuint,
-            level: GLint,
-            xoffset: GLint,
-            yoffset: GLint,
-            zoffset: GLint,
-            width: GLsizei,
-            height: GLsizei,
-            depth: GLsizei,
-            format: PixelFormat,
-            r#type: PixelType,
-            pixels: *const GLvoid,
-        ) {
-            panic!("command oxidegl_texture_sub_image3_d not yet implemented");
-        }
+impl Context {
+    pub unsafe fn oxidegl_tex_sub_image3_d(
+        &mut self,
+        target: TextureTarget,
+        level: GLint,
+        xoffset: GLint,
+        yoffset: GLint,
+        zoffset: GLint,
+        width: GLsizei,
+        height: GLsizei,
+        depth: GLsizei,
+        format: PixelFormat,
+        r#type: PixelType,
+        pixels: *const GLvoid,
+    ) {
+        panic!("command oxidegl_tex_sub_image3_d not yet implemented");
+    }
+    pub unsafe fn oxidegl_texture_sub_image3_d(
+        &mut self,
+        texture: GLuint,
+        level: GLint,
+        xoffset: GLint,
+        yoffset: GLint,
+        zoffset: GLint,
+        width: GLsizei,
+        height: GLsizei,
+        depth: GLsizei,
+        format: PixelFormat,
+        r#type: PixelType,
+        pixels: *const GLvoid,
+    ) {
+        panic!("command oxidegl_texture_sub_image3_d not yet implemented");
     }
 }
 /// ### Parameters
@@ -11496,250 +11098,240 @@ pub mod tex_sub_image3_d {
 ///
 /// [**glGetUniformLocation**](crate::context::Context::oxidegl_get_uniform_location)
 /// with the handle of a program object and the name of a uniform variable
-pub mod uniform {
-    use crate::context::Context;
-    use crate::dispatch::gl_types::*;
-    impl Context {
-        pub fn oxidegl_uniform1f(&mut self, location: GLint, v0: GLfloat) {
-            panic!("command oxidegl_uniform1f not yet implemented");
-        }
-        pub fn oxidegl_uniform2f(&mut self, location: GLint, v0: GLfloat, v1: GLfloat) {
-            panic!("command oxidegl_uniform2f not yet implemented");
-        }
-        pub fn oxidegl_uniform3f(
-            &mut self,
-            location: GLint,
-            v0: GLfloat,
-            v1: GLfloat,
-            v2: GLfloat,
-        ) {
-            panic!("command oxidegl_uniform3f not yet implemented");
-        }
-        pub fn oxidegl_uniform4f(
-            &mut self,
-            location: GLint,
-            v0: GLfloat,
-            v1: GLfloat,
-            v2: GLfloat,
-            v3: GLfloat,
-        ) {
-            panic!("command oxidegl_uniform4f not yet implemented");
-        }
-        pub fn oxidegl_uniform1i(&mut self, location: GLint, v0: GLint) {
-            panic!("command oxidegl_uniform1i not yet implemented");
-        }
-        pub fn oxidegl_uniform2i(&mut self, location: GLint, v0: GLint, v1: GLint) {
-            panic!("command oxidegl_uniform2i not yet implemented");
-        }
-        pub fn oxidegl_uniform3i(&mut self, location: GLint, v0: GLint, v1: GLint, v2: GLint) {
-            panic!("command oxidegl_uniform3i not yet implemented");
-        }
-        pub fn oxidegl_uniform4i(
-            &mut self,
-            location: GLint,
-            v0: GLint,
-            v1: GLint,
-            v2: GLint,
-            v3: GLint,
-        ) {
-            panic!("command oxidegl_uniform4i not yet implemented");
-        }
-        pub unsafe fn oxidegl_uniform1fv(
-            &mut self,
-            location: GLint,
-            count: GLsizei,
-            value: *const GLfloat,
-        ) {
-            panic!("command oxidegl_uniform1fv not yet implemented");
-        }
-        pub unsafe fn oxidegl_uniform2fv(
-            &mut self,
-            location: GLint,
-            count: GLsizei,
-            value: *const GLfloat,
-        ) {
-            panic!("command oxidegl_uniform2fv not yet implemented");
-        }
-        pub unsafe fn oxidegl_uniform3fv(
-            &mut self,
-            location: GLint,
-            count: GLsizei,
-            value: *const GLfloat,
-        ) {
-            panic!("command oxidegl_uniform3fv not yet implemented");
-        }
-        pub unsafe fn oxidegl_uniform4fv(
-            &mut self,
-            location: GLint,
-            count: GLsizei,
-            value: *const GLfloat,
-        ) {
-            panic!("command oxidegl_uniform4fv not yet implemented");
-        }
-        pub unsafe fn oxidegl_uniform1iv(
-            &mut self,
-            location: GLint,
-            count: GLsizei,
-            value: *const GLint,
-        ) {
-            panic!("command oxidegl_uniform1iv not yet implemented");
-        }
-        pub unsafe fn oxidegl_uniform2iv(
-            &mut self,
-            location: GLint,
-            count: GLsizei,
-            value: *const GLint,
-        ) {
-            panic!("command oxidegl_uniform2iv not yet implemented");
-        }
-        pub unsafe fn oxidegl_uniform3iv(
-            &mut self,
-            location: GLint,
-            count: GLsizei,
-            value: *const GLint,
-        ) {
-            panic!("command oxidegl_uniform3iv not yet implemented");
-        }
-        pub unsafe fn oxidegl_uniform4iv(
-            &mut self,
-            location: GLint,
-            count: GLsizei,
-            value: *const GLint,
-        ) {
-            panic!("command oxidegl_uniform4iv not yet implemented");
-        }
-        pub unsafe fn oxidegl_uniform_matrix2fv(
-            &mut self,
-            location: GLint,
-            count: GLsizei,
-            transpose: GLboolean,
-            value: *const GLfloat,
-        ) {
-            panic!("command oxidegl_uniform_matrix2fv not yet implemented");
-        }
-        pub unsafe fn oxidegl_uniform_matrix3fv(
-            &mut self,
-            location: GLint,
-            count: GLsizei,
-            transpose: GLboolean,
-            value: *const GLfloat,
-        ) {
-            panic!("command oxidegl_uniform_matrix3fv not yet implemented");
-        }
-        pub unsafe fn oxidegl_uniform_matrix4fv(
-            &mut self,
-            location: GLint,
-            count: GLsizei,
-            transpose: GLboolean,
-            value: *const GLfloat,
-        ) {
-            panic!("command oxidegl_uniform_matrix4fv not yet implemented");
-        }
-        pub unsafe fn oxidegl_uniform_matrix2x3fv(
-            &mut self,
-            location: GLint,
-            count: GLsizei,
-            transpose: GLboolean,
-            value: *const GLfloat,
-        ) {
-            panic!("command oxidegl_uniform_matrix2x3fv not yet implemented");
-        }
-        pub unsafe fn oxidegl_uniform_matrix3x2fv(
-            &mut self,
-            location: GLint,
-            count: GLsizei,
-            transpose: GLboolean,
-            value: *const GLfloat,
-        ) {
-            panic!("command oxidegl_uniform_matrix3x2fv not yet implemented");
-        }
-        pub unsafe fn oxidegl_uniform_matrix2x4fv(
-            &mut self,
-            location: GLint,
-            count: GLsizei,
-            transpose: GLboolean,
-            value: *const GLfloat,
-        ) {
-            panic!("command oxidegl_uniform_matrix2x4fv not yet implemented");
-        }
-        pub unsafe fn oxidegl_uniform_matrix4x2fv(
-            &mut self,
-            location: GLint,
-            count: GLsizei,
-            transpose: GLboolean,
-            value: *const GLfloat,
-        ) {
-            panic!("command oxidegl_uniform_matrix4x2fv not yet implemented");
-        }
-        pub unsafe fn oxidegl_uniform_matrix3x4fv(
-            &mut self,
-            location: GLint,
-            count: GLsizei,
-            transpose: GLboolean,
-            value: *const GLfloat,
-        ) {
-            panic!("command oxidegl_uniform_matrix3x4fv not yet implemented");
-        }
-        pub unsafe fn oxidegl_uniform_matrix4x3fv(
-            &mut self,
-            location: GLint,
-            count: GLsizei,
-            transpose: GLboolean,
-            value: *const GLfloat,
-        ) {
-            panic!("command oxidegl_uniform_matrix4x3fv not yet implemented");
-        }
-        pub fn oxidegl_uniform1ui(&mut self, location: GLint, v0: GLuint) {
-            panic!("command oxidegl_uniform1ui not yet implemented");
-        }
-        pub fn oxidegl_uniform2ui(&mut self, location: GLint, v0: GLuint, v1: GLuint) {
-            panic!("command oxidegl_uniform2ui not yet implemented");
-        }
-        pub fn oxidegl_uniform3ui(&mut self, location: GLint, v0: GLuint, v1: GLuint, v2: GLuint) {
-            panic!("command oxidegl_uniform3ui not yet implemented");
-        }
-        pub fn oxidegl_uniform4ui(
-            &mut self,
-            location: GLint,
-            v0: GLuint,
-            v1: GLuint,
-            v2: GLuint,
-            v3: GLuint,
-        ) {
-            panic!("command oxidegl_uniform4ui not yet implemented");
-        }
-        pub unsafe fn oxidegl_uniform1uiv(
-            &mut self,
-            location: GLint,
-            count: GLsizei,
-            value: *const GLuint,
-        ) {
-            panic!("command oxidegl_uniform1uiv not yet implemented");
-        }
-        pub unsafe fn oxidegl_uniform2uiv(
-            &mut self,
-            location: GLint,
-            count: GLsizei,
-            value: *const GLuint,
-        ) {
-            panic!("command oxidegl_uniform2uiv not yet implemented");
-        }
-        pub unsafe fn oxidegl_uniform3uiv(
-            &mut self,
-            location: GLint,
-            count: GLsizei,
-            value: *const GLuint,
-        ) {
-            panic!("command oxidegl_uniform3uiv not yet implemented");
-        }
-        pub unsafe fn oxidegl_uniform4uiv(
-            &mut self,
-            location: GLint,
-            count: GLsizei,
-            value: *const GLuint,
-        ) {
-            panic!("command oxidegl_uniform4uiv not yet implemented");
-        }
+impl Context {
+    pub fn oxidegl_uniform1f(&mut self, location: GLint, v0: GLfloat) {
+        panic!("command oxidegl_uniform1f not yet implemented");
+    }
+    pub fn oxidegl_uniform2f(&mut self, location: GLint, v0: GLfloat, v1: GLfloat) {
+        panic!("command oxidegl_uniform2f not yet implemented");
+    }
+    pub fn oxidegl_uniform3f(&mut self, location: GLint, v0: GLfloat, v1: GLfloat, v2: GLfloat) {
+        panic!("command oxidegl_uniform3f not yet implemented");
+    }
+    pub fn oxidegl_uniform4f(
+        &mut self,
+        location: GLint,
+        v0: GLfloat,
+        v1: GLfloat,
+        v2: GLfloat,
+        v3: GLfloat,
+    ) {
+        panic!("command oxidegl_uniform4f not yet implemented");
+    }
+    pub fn oxidegl_uniform1i(&mut self, location: GLint, v0: GLint) {
+        panic!("command oxidegl_uniform1i not yet implemented");
+    }
+    pub fn oxidegl_uniform2i(&mut self, location: GLint, v0: GLint, v1: GLint) {
+        panic!("command oxidegl_uniform2i not yet implemented");
+    }
+    pub fn oxidegl_uniform3i(&mut self, location: GLint, v0: GLint, v1: GLint, v2: GLint) {
+        panic!("command oxidegl_uniform3i not yet implemented");
+    }
+    pub fn oxidegl_uniform4i(
+        &mut self,
+        location: GLint,
+        v0: GLint,
+        v1: GLint,
+        v2: GLint,
+        v3: GLint,
+    ) {
+        panic!("command oxidegl_uniform4i not yet implemented");
+    }
+    pub unsafe fn oxidegl_uniform1fv(
+        &mut self,
+        location: GLint,
+        count: GLsizei,
+        value: *const GLfloat,
+    ) {
+        panic!("command oxidegl_uniform1fv not yet implemented");
+    }
+    pub unsafe fn oxidegl_uniform2fv(
+        &mut self,
+        location: GLint,
+        count: GLsizei,
+        value: *const GLfloat,
+    ) {
+        panic!("command oxidegl_uniform2fv not yet implemented");
+    }
+    pub unsafe fn oxidegl_uniform3fv(
+        &mut self,
+        location: GLint,
+        count: GLsizei,
+        value: *const GLfloat,
+    ) {
+        panic!("command oxidegl_uniform3fv not yet implemented");
+    }
+    pub unsafe fn oxidegl_uniform4fv(
+        &mut self,
+        location: GLint,
+        count: GLsizei,
+        value: *const GLfloat,
+    ) {
+        panic!("command oxidegl_uniform4fv not yet implemented");
+    }
+    pub unsafe fn oxidegl_uniform1iv(
+        &mut self,
+        location: GLint,
+        count: GLsizei,
+        value: *const GLint,
+    ) {
+        panic!("command oxidegl_uniform1iv not yet implemented");
+    }
+    pub unsafe fn oxidegl_uniform2iv(
+        &mut self,
+        location: GLint,
+        count: GLsizei,
+        value: *const GLint,
+    ) {
+        panic!("command oxidegl_uniform2iv not yet implemented");
+    }
+    pub unsafe fn oxidegl_uniform3iv(
+        &mut self,
+        location: GLint,
+        count: GLsizei,
+        value: *const GLint,
+    ) {
+        panic!("command oxidegl_uniform3iv not yet implemented");
+    }
+    pub unsafe fn oxidegl_uniform4iv(
+        &mut self,
+        location: GLint,
+        count: GLsizei,
+        value: *const GLint,
+    ) {
+        panic!("command oxidegl_uniform4iv not yet implemented");
+    }
+    pub unsafe fn oxidegl_uniform_matrix2fv(
+        &mut self,
+        location: GLint,
+        count: GLsizei,
+        transpose: GLboolean,
+        value: *const GLfloat,
+    ) {
+        panic!("command oxidegl_uniform_matrix2fv not yet implemented");
+    }
+    pub unsafe fn oxidegl_uniform_matrix3fv(
+        &mut self,
+        location: GLint,
+        count: GLsizei,
+        transpose: GLboolean,
+        value: *const GLfloat,
+    ) {
+        panic!("command oxidegl_uniform_matrix3fv not yet implemented");
+    }
+    pub unsafe fn oxidegl_uniform_matrix4fv(
+        &mut self,
+        location: GLint,
+        count: GLsizei,
+        transpose: GLboolean,
+        value: *const GLfloat,
+    ) {
+        panic!("command oxidegl_uniform_matrix4fv not yet implemented");
+    }
+    pub unsafe fn oxidegl_uniform_matrix2x3fv(
+        &mut self,
+        location: GLint,
+        count: GLsizei,
+        transpose: GLboolean,
+        value: *const GLfloat,
+    ) {
+        panic!("command oxidegl_uniform_matrix2x3fv not yet implemented");
+    }
+    pub unsafe fn oxidegl_uniform_matrix3x2fv(
+        &mut self,
+        location: GLint,
+        count: GLsizei,
+        transpose: GLboolean,
+        value: *const GLfloat,
+    ) {
+        panic!("command oxidegl_uniform_matrix3x2fv not yet implemented");
+    }
+    pub unsafe fn oxidegl_uniform_matrix2x4fv(
+        &mut self,
+        location: GLint,
+        count: GLsizei,
+        transpose: GLboolean,
+        value: *const GLfloat,
+    ) {
+        panic!("command oxidegl_uniform_matrix2x4fv not yet implemented");
+    }
+    pub unsafe fn oxidegl_uniform_matrix4x2fv(
+        &mut self,
+        location: GLint,
+        count: GLsizei,
+        transpose: GLboolean,
+        value: *const GLfloat,
+    ) {
+        panic!("command oxidegl_uniform_matrix4x2fv not yet implemented");
+    }
+    pub unsafe fn oxidegl_uniform_matrix3x4fv(
+        &mut self,
+        location: GLint,
+        count: GLsizei,
+        transpose: GLboolean,
+        value: *const GLfloat,
+    ) {
+        panic!("command oxidegl_uniform_matrix3x4fv not yet implemented");
+    }
+    pub unsafe fn oxidegl_uniform_matrix4x3fv(
+        &mut self,
+        location: GLint,
+        count: GLsizei,
+        transpose: GLboolean,
+        value: *const GLfloat,
+    ) {
+        panic!("command oxidegl_uniform_matrix4x3fv not yet implemented");
+    }
+    pub fn oxidegl_uniform1ui(&mut self, location: GLint, v0: GLuint) {
+        panic!("command oxidegl_uniform1ui not yet implemented");
+    }
+    pub fn oxidegl_uniform2ui(&mut self, location: GLint, v0: GLuint, v1: GLuint) {
+        panic!("command oxidegl_uniform2ui not yet implemented");
+    }
+    pub fn oxidegl_uniform3ui(&mut self, location: GLint, v0: GLuint, v1: GLuint, v2: GLuint) {
+        panic!("command oxidegl_uniform3ui not yet implemented");
+    }
+    pub fn oxidegl_uniform4ui(
+        &mut self,
+        location: GLint,
+        v0: GLuint,
+        v1: GLuint,
+        v2: GLuint,
+        v3: GLuint,
+    ) {
+        panic!("command oxidegl_uniform4ui not yet implemented");
+    }
+    pub unsafe fn oxidegl_uniform1uiv(
+        &mut self,
+        location: GLint,
+        count: GLsizei,
+        value: *const GLuint,
+    ) {
+        panic!("command oxidegl_uniform1uiv not yet implemented");
+    }
+    pub unsafe fn oxidegl_uniform2uiv(
+        &mut self,
+        location: GLint,
+        count: GLsizei,
+        value: *const GLuint,
+    ) {
+        panic!("command oxidegl_uniform2uiv not yet implemented");
+    }
+    pub unsafe fn oxidegl_uniform3uiv(
+        &mut self,
+        location: GLint,
+        count: GLsizei,
+        value: *const GLuint,
+    ) {
+        panic!("command oxidegl_uniform3uiv not yet implemented");
+    }
+    pub unsafe fn oxidegl_uniform4uiv(
+        &mut self,
+        location: GLint,
+        count: GLsizei,
+        value: *const GLuint,
+    ) {
+        panic!("command oxidegl_uniform4uiv not yet implemented");
     }
 }
 /// ### Parameters
@@ -11812,16 +11404,12 @@ pub mod uniform {
 /// ### Associated Gets
 /// [**glGetBufferParameter**](crate::context::Context::oxidegl_get_buffer_parameter)
 /// with argument [`GL_BUFFER_MAPPED`](crate::enums::GL_BUFFER_MAPPED).
-pub mod unmap_buffer {
-    use crate::context::Context;
-    use crate::dispatch::gl_types::*;
-    impl Context {
-        pub fn oxidegl_unmap_buffer(&mut self, target: GLenum) -> GLboolean {
-            panic!("command oxidegl_unmap_buffer not yet implemented");
-        }
-        pub fn oxidegl_unmap_named_buffer(&mut self, buffer: GLuint) -> GLboolean {
-            panic!("command oxidegl_unmap_named_buffer not yet implemented");
-        }
+impl Context {
+    pub fn oxidegl_unmap_buffer(&mut self, target: GLenum) -> GLboolean {
+        panic!("command oxidegl_unmap_buffer not yet implemented");
+    }
+    pub fn oxidegl_unmap_named_buffer(&mut self, buffer: GLuint) -> GLboolean {
+        panic!("command oxidegl_unmap_named_buffer not yet implemented");
     }
 }
 /// ### Parameters
@@ -11976,318 +11564,295 @@ pub mod unmap_buffer {
 /// [**glGetVertexAttrib**](crate::context::Context::oxidegl_get_vertex_attrib)
 /// with arguments [`GL_CURRENT_VERTEX_ATTRIB`](crate::enums::GL_CURRENT_VERTEX_ATTRIB)
 /// and `index`
-pub mod vertex_attrib {
-    use crate::context::Context;
-    use crate::dispatch::gl_types::*;
-    use crate::enums::VertexAttribPointerType;
-    impl Context {
-        pub fn oxidegl_vertex_attrib1d(&mut self, index: GLuint, x: GLdouble) {
-            panic!("command oxidegl_vertex_attrib1d not yet implemented");
-        }
-        pub unsafe fn oxidegl_vertex_attrib1dv(&mut self, index: GLuint, v: *const GLdouble) {
-            panic!("command oxidegl_vertex_attrib1dv not yet implemented");
-        }
-        pub fn oxidegl_vertex_attrib1f(&mut self, index: GLuint, x: GLfloat) {
-            panic!("command oxidegl_vertex_attrib1f not yet implemented");
-        }
-        pub unsafe fn oxidegl_vertex_attrib1fv(&mut self, index: GLuint, v: *const GLfloat) {
-            panic!("command oxidegl_vertex_attrib1fv not yet implemented");
-        }
-        pub fn oxidegl_vertex_attrib1s(&mut self, index: GLuint, x: GLshort) {
-            panic!("command oxidegl_vertex_attrib1s not yet implemented");
-        }
-        pub unsafe fn oxidegl_vertex_attrib1sv(&mut self, index: GLuint, v: *const GLshort) {
-            panic!("command oxidegl_vertex_attrib1sv not yet implemented");
-        }
-        pub fn oxidegl_vertex_attrib2d(&mut self, index: GLuint, x: GLdouble, y: GLdouble) {
-            panic!("command oxidegl_vertex_attrib2d not yet implemented");
-        }
-        pub unsafe fn oxidegl_vertex_attrib2dv(&mut self, index: GLuint, v: *const GLdouble) {
-            panic!("command oxidegl_vertex_attrib2dv not yet implemented");
-        }
-        pub fn oxidegl_vertex_attrib2f(&mut self, index: GLuint, x: GLfloat, y: GLfloat) {
-            panic!("command oxidegl_vertex_attrib2f not yet implemented");
-        }
-        pub unsafe fn oxidegl_vertex_attrib2fv(&mut self, index: GLuint, v: *const GLfloat) {
-            panic!("command oxidegl_vertex_attrib2fv not yet implemented");
-        }
-        pub fn oxidegl_vertex_attrib2s(&mut self, index: GLuint, x: GLshort, y: GLshort) {
-            panic!("command oxidegl_vertex_attrib2s not yet implemented");
-        }
-        pub unsafe fn oxidegl_vertex_attrib2sv(&mut self, index: GLuint, v: *const GLshort) {
-            panic!("command oxidegl_vertex_attrib2sv not yet implemented");
-        }
-        pub fn oxidegl_vertex_attrib3d(
-            &mut self,
-            index: GLuint,
-            x: GLdouble,
-            y: GLdouble,
-            z: GLdouble,
-        ) {
-            panic!("command oxidegl_vertex_attrib3d not yet implemented");
-        }
-        pub unsafe fn oxidegl_vertex_attrib3dv(&mut self, index: GLuint, v: *const GLdouble) {
-            panic!("command oxidegl_vertex_attrib3dv not yet implemented");
-        }
-        pub fn oxidegl_vertex_attrib3f(
-            &mut self,
-            index: GLuint,
-            x: GLfloat,
-            y: GLfloat,
-            z: GLfloat,
-        ) {
-            panic!("command oxidegl_vertex_attrib3f not yet implemented");
-        }
-        pub unsafe fn oxidegl_vertex_attrib3fv(&mut self, index: GLuint, v: *const GLfloat) {
-            panic!("command oxidegl_vertex_attrib3fv not yet implemented");
-        }
-        pub fn oxidegl_vertex_attrib3s(
-            &mut self,
-            index: GLuint,
-            x: GLshort,
-            y: GLshort,
-            z: GLshort,
-        ) {
-            panic!("command oxidegl_vertex_attrib3s not yet implemented");
-        }
-        pub unsafe fn oxidegl_vertex_attrib3sv(&mut self, index: GLuint, v: *const GLshort) {
-            panic!("command oxidegl_vertex_attrib3sv not yet implemented");
-        }
-        pub unsafe fn oxidegl_vertex_attrib4_nbv(&mut self, index: GLuint, v: *const GLbyte) {
-            panic!("command oxidegl_vertex_attrib4_nbv not yet implemented");
-        }
-        pub unsafe fn oxidegl_vertex_attrib4_niv(&mut self, index: GLuint, v: *const GLint) {
-            panic!("command oxidegl_vertex_attrib4_niv not yet implemented");
-        }
-        pub unsafe fn oxidegl_vertex_attrib4_nsv(&mut self, index: GLuint, v: *const GLshort) {
-            panic!("command oxidegl_vertex_attrib4_nsv not yet implemented");
-        }
-        pub fn oxidegl_vertex_attrib4_nub(
-            &mut self,
-            index: GLuint,
-            x: GLubyte,
-            y: GLubyte,
-            z: GLubyte,
-            w: GLubyte,
-        ) {
-            panic!("command oxidegl_vertex_attrib4_nub not yet implemented");
-        }
-        pub unsafe fn oxidegl_vertex_attrib4_nubv(&mut self, index: GLuint, v: *const GLubyte) {
-            panic!("command oxidegl_vertex_attrib4_nubv not yet implemented");
-        }
-        pub unsafe fn oxidegl_vertex_attrib4_nuiv(&mut self, index: GLuint, v: *const GLuint) {
-            panic!("command oxidegl_vertex_attrib4_nuiv not yet implemented");
-        }
-        pub unsafe fn oxidegl_vertex_attrib4_nusv(&mut self, index: GLuint, v: *const GLushort) {
-            panic!("command oxidegl_vertex_attrib4_nusv not yet implemented");
-        }
-        pub unsafe fn oxidegl_vertex_attrib4bv(&mut self, index: GLuint, v: *const GLbyte) {
-            panic!("command oxidegl_vertex_attrib4bv not yet implemented");
-        }
-        pub fn oxidegl_vertex_attrib4d(
-            &mut self,
-            index: GLuint,
-            x: GLdouble,
-            y: GLdouble,
-            z: GLdouble,
-            w: GLdouble,
-        ) {
-            panic!("command oxidegl_vertex_attrib4d not yet implemented");
-        }
-        pub unsafe fn oxidegl_vertex_attrib4dv(&mut self, index: GLuint, v: *const GLdouble) {
-            panic!("command oxidegl_vertex_attrib4dv not yet implemented");
-        }
-        pub fn oxidegl_vertex_attrib4f(
-            &mut self,
-            index: GLuint,
-            x: GLfloat,
-            y: GLfloat,
-            z: GLfloat,
-            w: GLfloat,
-        ) {
-            panic!("command oxidegl_vertex_attrib4f not yet implemented");
-        }
-        pub unsafe fn oxidegl_vertex_attrib4fv(&mut self, index: GLuint, v: *const GLfloat) {
-            panic!("command oxidegl_vertex_attrib4fv not yet implemented");
-        }
-        pub unsafe fn oxidegl_vertex_attrib4iv(&mut self, index: GLuint, v: *const GLint) {
-            panic!("command oxidegl_vertex_attrib4iv not yet implemented");
-        }
-        pub fn oxidegl_vertex_attrib4s(
-            &mut self,
-            index: GLuint,
-            x: GLshort,
-            y: GLshort,
-            z: GLshort,
-            w: GLshort,
-        ) {
-            panic!("command oxidegl_vertex_attrib4s not yet implemented");
-        }
-        pub unsafe fn oxidegl_vertex_attrib4sv(&mut self, index: GLuint, v: *const GLshort) {
-            panic!("command oxidegl_vertex_attrib4sv not yet implemented");
-        }
-        pub unsafe fn oxidegl_vertex_attrib4ubv(&mut self, index: GLuint, v: *const GLubyte) {
-            panic!("command oxidegl_vertex_attrib4ubv not yet implemented");
-        }
-        pub unsafe fn oxidegl_vertex_attrib4uiv(&mut self, index: GLuint, v: *const GLuint) {
-            panic!("command oxidegl_vertex_attrib4uiv not yet implemented");
-        }
-        pub unsafe fn oxidegl_vertex_attrib4usv(&mut self, index: GLuint, v: *const GLushort) {
-            panic!("command oxidegl_vertex_attrib4usv not yet implemented");
-        }
-        pub fn oxidegl_vertex_attrib_i1i(&mut self, index: GLuint, x: GLint) {
-            panic!("command oxidegl_vertex_attrib_i1i not yet implemented");
-        }
-        pub fn oxidegl_vertex_attrib_i2i(&mut self, index: GLuint, x: GLint, y: GLint) {
-            panic!("command oxidegl_vertex_attrib_i2i not yet implemented");
-        }
-        pub fn oxidegl_vertex_attrib_i3i(&mut self, index: GLuint, x: GLint, y: GLint, z: GLint) {
-            panic!("command oxidegl_vertex_attrib_i3i not yet implemented");
-        }
-        pub fn oxidegl_vertex_attrib_i4i(
-            &mut self,
-            index: GLuint,
-            x: GLint,
-            y: GLint,
-            z: GLint,
-            w: GLint,
-        ) {
-            panic!("command oxidegl_vertex_attrib_i4i not yet implemented");
-        }
-        pub fn oxidegl_vertex_attrib_i1ui(&mut self, index: GLuint, x: GLuint) {
-            panic!("command oxidegl_vertex_attrib_i1ui not yet implemented");
-        }
-        pub fn oxidegl_vertex_attrib_i2ui(&mut self, index: GLuint, x: GLuint, y: GLuint) {
-            panic!("command oxidegl_vertex_attrib_i2ui not yet implemented");
-        }
-        pub fn oxidegl_vertex_attrib_i3ui(
-            &mut self,
-            index: GLuint,
-            x: GLuint,
-            y: GLuint,
-            z: GLuint,
-        ) {
-            panic!("command oxidegl_vertex_attrib_i3ui not yet implemented");
-        }
-        pub fn oxidegl_vertex_attrib_i4ui(
-            &mut self,
-            index: GLuint,
-            x: GLuint,
-            y: GLuint,
-            z: GLuint,
-            w: GLuint,
-        ) {
-            panic!("command oxidegl_vertex_attrib_i4ui not yet implemented");
-        }
-        pub unsafe fn oxidegl_vertex_attrib_i1iv(&mut self, index: GLuint, v: *const GLint) {
-            panic!("command oxidegl_vertex_attrib_i1iv not yet implemented");
-        }
-        pub unsafe fn oxidegl_vertex_attrib_i2iv(&mut self, index: GLuint, v: *const GLint) {
-            panic!("command oxidegl_vertex_attrib_i2iv not yet implemented");
-        }
-        pub unsafe fn oxidegl_vertex_attrib_i3iv(&mut self, index: GLuint, v: *const GLint) {
-            panic!("command oxidegl_vertex_attrib_i3iv not yet implemented");
-        }
-        pub unsafe fn oxidegl_vertex_attrib_i4iv(&mut self, index: GLuint, v: *const GLint) {
-            panic!("command oxidegl_vertex_attrib_i4iv not yet implemented");
-        }
-        pub unsafe fn oxidegl_vertex_attrib_i1uiv(&mut self, index: GLuint, v: *const GLuint) {
-            panic!("command oxidegl_vertex_attrib_i1uiv not yet implemented");
-        }
-        pub unsafe fn oxidegl_vertex_attrib_i2uiv(&mut self, index: GLuint, v: *const GLuint) {
-            panic!("command oxidegl_vertex_attrib_i2uiv not yet implemented");
-        }
-        pub unsafe fn oxidegl_vertex_attrib_i3uiv(&mut self, index: GLuint, v: *const GLuint) {
-            panic!("command oxidegl_vertex_attrib_i3uiv not yet implemented");
-        }
-        pub unsafe fn oxidegl_vertex_attrib_i4uiv(&mut self, index: GLuint, v: *const GLuint) {
-            panic!("command oxidegl_vertex_attrib_i4uiv not yet implemented");
-        }
-        pub unsafe fn oxidegl_vertex_attrib_i4bv(&mut self, index: GLuint, v: *const GLbyte) {
-            panic!("command oxidegl_vertex_attrib_i4bv not yet implemented");
-        }
-        pub unsafe fn oxidegl_vertex_attrib_i4sv(&mut self, index: GLuint, v: *const GLshort) {
-            panic!("command oxidegl_vertex_attrib_i4sv not yet implemented");
-        }
-        pub unsafe fn oxidegl_vertex_attrib_i4ubv(&mut self, index: GLuint, v: *const GLubyte) {
-            panic!("command oxidegl_vertex_attrib_i4ubv not yet implemented");
-        }
-        pub unsafe fn oxidegl_vertex_attrib_i4usv(&mut self, index: GLuint, v: *const GLushort) {
-            panic!("command oxidegl_vertex_attrib_i4usv not yet implemented");
-        }
-        pub fn oxidegl_vertex_attrib_p1ui(
-            &mut self,
-            index: GLuint,
-            r#type: VertexAttribPointerType,
-            normalized: GLboolean,
-            value: GLuint,
-        ) {
-            panic!("command oxidegl_vertex_attrib_p1ui not yet implemented");
-        }
-        pub fn oxidegl_vertex_attrib_p2ui(
-            &mut self,
-            index: GLuint,
-            r#type: VertexAttribPointerType,
-            normalized: GLboolean,
-            value: GLuint,
-        ) {
-            panic!("command oxidegl_vertex_attrib_p2ui not yet implemented");
-        }
-        pub fn oxidegl_vertex_attrib_p3ui(
-            &mut self,
-            index: GLuint,
-            r#type: VertexAttribPointerType,
-            normalized: GLboolean,
-            value: GLuint,
-        ) {
-            panic!("command oxidegl_vertex_attrib_p3ui not yet implemented");
-        }
-        pub fn oxidegl_vertex_attrib_p4ui(
-            &mut self,
-            index: GLuint,
-            r#type: VertexAttribPointerType,
-            normalized: GLboolean,
-            value: GLuint,
-        ) {
-            panic!("command oxidegl_vertex_attrib_p4ui not yet implemented");
-        }
-        pub fn oxidegl_vertex_attrib_l1d(&mut self, index: GLuint, x: GLdouble) {
-            panic!("command oxidegl_vertex_attrib_l1d not yet implemented");
-        }
-        pub fn oxidegl_vertex_attrib_l2d(&mut self, index: GLuint, x: GLdouble, y: GLdouble) {
-            panic!("command oxidegl_vertex_attrib_l2d not yet implemented");
-        }
-        pub fn oxidegl_vertex_attrib_l3d(
-            &mut self,
-            index: GLuint,
-            x: GLdouble,
-            y: GLdouble,
-            z: GLdouble,
-        ) {
-            panic!("command oxidegl_vertex_attrib_l3d not yet implemented");
-        }
-        pub fn oxidegl_vertex_attrib_l4d(
-            &mut self,
-            index: GLuint,
-            x: GLdouble,
-            y: GLdouble,
-            z: GLdouble,
-            w: GLdouble,
-        ) {
-            panic!("command oxidegl_vertex_attrib_l4d not yet implemented");
-        }
-        pub unsafe fn oxidegl_vertex_attrib_l1dv(&mut self, index: GLuint, v: *const GLdouble) {
-            panic!("command oxidegl_vertex_attrib_l1dv not yet implemented");
-        }
-        pub unsafe fn oxidegl_vertex_attrib_l2dv(&mut self, index: GLuint, v: *const GLdouble) {
-            panic!("command oxidegl_vertex_attrib_l2dv not yet implemented");
-        }
-        pub unsafe fn oxidegl_vertex_attrib_l3dv(&mut self, index: GLuint, v: *const GLdouble) {
-            panic!("command oxidegl_vertex_attrib_l3dv not yet implemented");
-        }
-        pub unsafe fn oxidegl_vertex_attrib_l4dv(&mut self, index: GLuint, v: *const GLdouble) {
-            panic!("command oxidegl_vertex_attrib_l4dv not yet implemented");
-        }
+impl Context {
+    pub fn oxidegl_vertex_attrib1d(&mut self, index: GLuint, x: GLdouble) {
+        panic!("command oxidegl_vertex_attrib1d not yet implemented");
+    }
+    pub unsafe fn oxidegl_vertex_attrib1dv(&mut self, index: GLuint, v: *const GLdouble) {
+        panic!("command oxidegl_vertex_attrib1dv not yet implemented");
+    }
+    pub fn oxidegl_vertex_attrib1f(&mut self, index: GLuint, x: GLfloat) {
+        panic!("command oxidegl_vertex_attrib1f not yet implemented");
+    }
+    pub unsafe fn oxidegl_vertex_attrib1fv(&mut self, index: GLuint, v: *const GLfloat) {
+        panic!("command oxidegl_vertex_attrib1fv not yet implemented");
+    }
+    pub fn oxidegl_vertex_attrib1s(&mut self, index: GLuint, x: GLshort) {
+        panic!("command oxidegl_vertex_attrib1s not yet implemented");
+    }
+    pub unsafe fn oxidegl_vertex_attrib1sv(&mut self, index: GLuint, v: *const GLshort) {
+        panic!("command oxidegl_vertex_attrib1sv not yet implemented");
+    }
+    pub fn oxidegl_vertex_attrib2d(&mut self, index: GLuint, x: GLdouble, y: GLdouble) {
+        panic!("command oxidegl_vertex_attrib2d not yet implemented");
+    }
+    pub unsafe fn oxidegl_vertex_attrib2dv(&mut self, index: GLuint, v: *const GLdouble) {
+        panic!("command oxidegl_vertex_attrib2dv not yet implemented");
+    }
+    pub fn oxidegl_vertex_attrib2f(&mut self, index: GLuint, x: GLfloat, y: GLfloat) {
+        panic!("command oxidegl_vertex_attrib2f not yet implemented");
+    }
+    pub unsafe fn oxidegl_vertex_attrib2fv(&mut self, index: GLuint, v: *const GLfloat) {
+        panic!("command oxidegl_vertex_attrib2fv not yet implemented");
+    }
+    pub fn oxidegl_vertex_attrib2s(&mut self, index: GLuint, x: GLshort, y: GLshort) {
+        panic!("command oxidegl_vertex_attrib2s not yet implemented");
+    }
+    pub unsafe fn oxidegl_vertex_attrib2sv(&mut self, index: GLuint, v: *const GLshort) {
+        panic!("command oxidegl_vertex_attrib2sv not yet implemented");
+    }
+    pub fn oxidegl_vertex_attrib3d(
+        &mut self,
+        index: GLuint,
+        x: GLdouble,
+        y: GLdouble,
+        z: GLdouble,
+    ) {
+        panic!("command oxidegl_vertex_attrib3d not yet implemented");
+    }
+    pub unsafe fn oxidegl_vertex_attrib3dv(&mut self, index: GLuint, v: *const GLdouble) {
+        panic!("command oxidegl_vertex_attrib3dv not yet implemented");
+    }
+    pub fn oxidegl_vertex_attrib3f(&mut self, index: GLuint, x: GLfloat, y: GLfloat, z: GLfloat) {
+        panic!("command oxidegl_vertex_attrib3f not yet implemented");
+    }
+    pub unsafe fn oxidegl_vertex_attrib3fv(&mut self, index: GLuint, v: *const GLfloat) {
+        panic!("command oxidegl_vertex_attrib3fv not yet implemented");
+    }
+    pub fn oxidegl_vertex_attrib3s(&mut self, index: GLuint, x: GLshort, y: GLshort, z: GLshort) {
+        panic!("command oxidegl_vertex_attrib3s not yet implemented");
+    }
+    pub unsafe fn oxidegl_vertex_attrib3sv(&mut self, index: GLuint, v: *const GLshort) {
+        panic!("command oxidegl_vertex_attrib3sv not yet implemented");
+    }
+    pub unsafe fn oxidegl_vertex_attrib4_nbv(&mut self, index: GLuint, v: *const GLbyte) {
+        panic!("command oxidegl_vertex_attrib4_nbv not yet implemented");
+    }
+    pub unsafe fn oxidegl_vertex_attrib4_niv(&mut self, index: GLuint, v: *const GLint) {
+        panic!("command oxidegl_vertex_attrib4_niv not yet implemented");
+    }
+    pub unsafe fn oxidegl_vertex_attrib4_nsv(&mut self, index: GLuint, v: *const GLshort) {
+        panic!("command oxidegl_vertex_attrib4_nsv not yet implemented");
+    }
+    pub fn oxidegl_vertex_attrib4_nub(
+        &mut self,
+        index: GLuint,
+        x: GLubyte,
+        y: GLubyte,
+        z: GLubyte,
+        w: GLubyte,
+    ) {
+        panic!("command oxidegl_vertex_attrib4_nub not yet implemented");
+    }
+    pub unsafe fn oxidegl_vertex_attrib4_nubv(&mut self, index: GLuint, v: *const GLubyte) {
+        panic!("command oxidegl_vertex_attrib4_nubv not yet implemented");
+    }
+    pub unsafe fn oxidegl_vertex_attrib4_nuiv(&mut self, index: GLuint, v: *const GLuint) {
+        panic!("command oxidegl_vertex_attrib4_nuiv not yet implemented");
+    }
+    pub unsafe fn oxidegl_vertex_attrib4_nusv(&mut self, index: GLuint, v: *const GLushort) {
+        panic!("command oxidegl_vertex_attrib4_nusv not yet implemented");
+    }
+    pub unsafe fn oxidegl_vertex_attrib4bv(&mut self, index: GLuint, v: *const GLbyte) {
+        panic!("command oxidegl_vertex_attrib4bv not yet implemented");
+    }
+    pub fn oxidegl_vertex_attrib4d(
+        &mut self,
+        index: GLuint,
+        x: GLdouble,
+        y: GLdouble,
+        z: GLdouble,
+        w: GLdouble,
+    ) {
+        panic!("command oxidegl_vertex_attrib4d not yet implemented");
+    }
+    pub unsafe fn oxidegl_vertex_attrib4dv(&mut self, index: GLuint, v: *const GLdouble) {
+        panic!("command oxidegl_vertex_attrib4dv not yet implemented");
+    }
+    pub fn oxidegl_vertex_attrib4f(
+        &mut self,
+        index: GLuint,
+        x: GLfloat,
+        y: GLfloat,
+        z: GLfloat,
+        w: GLfloat,
+    ) {
+        panic!("command oxidegl_vertex_attrib4f not yet implemented");
+    }
+    pub unsafe fn oxidegl_vertex_attrib4fv(&mut self, index: GLuint, v: *const GLfloat) {
+        panic!("command oxidegl_vertex_attrib4fv not yet implemented");
+    }
+    pub unsafe fn oxidegl_vertex_attrib4iv(&mut self, index: GLuint, v: *const GLint) {
+        panic!("command oxidegl_vertex_attrib4iv not yet implemented");
+    }
+    pub fn oxidegl_vertex_attrib4s(
+        &mut self,
+        index: GLuint,
+        x: GLshort,
+        y: GLshort,
+        z: GLshort,
+        w: GLshort,
+    ) {
+        panic!("command oxidegl_vertex_attrib4s not yet implemented");
+    }
+    pub unsafe fn oxidegl_vertex_attrib4sv(&mut self, index: GLuint, v: *const GLshort) {
+        panic!("command oxidegl_vertex_attrib4sv not yet implemented");
+    }
+    pub unsafe fn oxidegl_vertex_attrib4ubv(&mut self, index: GLuint, v: *const GLubyte) {
+        panic!("command oxidegl_vertex_attrib4ubv not yet implemented");
+    }
+    pub unsafe fn oxidegl_vertex_attrib4uiv(&mut self, index: GLuint, v: *const GLuint) {
+        panic!("command oxidegl_vertex_attrib4uiv not yet implemented");
+    }
+    pub unsafe fn oxidegl_vertex_attrib4usv(&mut self, index: GLuint, v: *const GLushort) {
+        panic!("command oxidegl_vertex_attrib4usv not yet implemented");
+    }
+    pub fn oxidegl_vertex_attrib_i1i(&mut self, index: GLuint, x: GLint) {
+        panic!("command oxidegl_vertex_attrib_i1i not yet implemented");
+    }
+    pub fn oxidegl_vertex_attrib_i2i(&mut self, index: GLuint, x: GLint, y: GLint) {
+        panic!("command oxidegl_vertex_attrib_i2i not yet implemented");
+    }
+    pub fn oxidegl_vertex_attrib_i3i(&mut self, index: GLuint, x: GLint, y: GLint, z: GLint) {
+        panic!("command oxidegl_vertex_attrib_i3i not yet implemented");
+    }
+    pub fn oxidegl_vertex_attrib_i4i(
+        &mut self,
+        index: GLuint,
+        x: GLint,
+        y: GLint,
+        z: GLint,
+        w: GLint,
+    ) {
+        panic!("command oxidegl_vertex_attrib_i4i not yet implemented");
+    }
+    pub fn oxidegl_vertex_attrib_i1ui(&mut self, index: GLuint, x: GLuint) {
+        panic!("command oxidegl_vertex_attrib_i1ui not yet implemented");
+    }
+    pub fn oxidegl_vertex_attrib_i2ui(&mut self, index: GLuint, x: GLuint, y: GLuint) {
+        panic!("command oxidegl_vertex_attrib_i2ui not yet implemented");
+    }
+    pub fn oxidegl_vertex_attrib_i3ui(&mut self, index: GLuint, x: GLuint, y: GLuint, z: GLuint) {
+        panic!("command oxidegl_vertex_attrib_i3ui not yet implemented");
+    }
+    pub fn oxidegl_vertex_attrib_i4ui(
+        &mut self,
+        index: GLuint,
+        x: GLuint,
+        y: GLuint,
+        z: GLuint,
+        w: GLuint,
+    ) {
+        panic!("command oxidegl_vertex_attrib_i4ui not yet implemented");
+    }
+    pub unsafe fn oxidegl_vertex_attrib_i1iv(&mut self, index: GLuint, v: *const GLint) {
+        panic!("command oxidegl_vertex_attrib_i1iv not yet implemented");
+    }
+    pub unsafe fn oxidegl_vertex_attrib_i2iv(&mut self, index: GLuint, v: *const GLint) {
+        panic!("command oxidegl_vertex_attrib_i2iv not yet implemented");
+    }
+    pub unsafe fn oxidegl_vertex_attrib_i3iv(&mut self, index: GLuint, v: *const GLint) {
+        panic!("command oxidegl_vertex_attrib_i3iv not yet implemented");
+    }
+    pub unsafe fn oxidegl_vertex_attrib_i4iv(&mut self, index: GLuint, v: *const GLint) {
+        panic!("command oxidegl_vertex_attrib_i4iv not yet implemented");
+    }
+    pub unsafe fn oxidegl_vertex_attrib_i1uiv(&mut self, index: GLuint, v: *const GLuint) {
+        panic!("command oxidegl_vertex_attrib_i1uiv not yet implemented");
+    }
+    pub unsafe fn oxidegl_vertex_attrib_i2uiv(&mut self, index: GLuint, v: *const GLuint) {
+        panic!("command oxidegl_vertex_attrib_i2uiv not yet implemented");
+    }
+    pub unsafe fn oxidegl_vertex_attrib_i3uiv(&mut self, index: GLuint, v: *const GLuint) {
+        panic!("command oxidegl_vertex_attrib_i3uiv not yet implemented");
+    }
+    pub unsafe fn oxidegl_vertex_attrib_i4uiv(&mut self, index: GLuint, v: *const GLuint) {
+        panic!("command oxidegl_vertex_attrib_i4uiv not yet implemented");
+    }
+    pub unsafe fn oxidegl_vertex_attrib_i4bv(&mut self, index: GLuint, v: *const GLbyte) {
+        panic!("command oxidegl_vertex_attrib_i4bv not yet implemented");
+    }
+    pub unsafe fn oxidegl_vertex_attrib_i4sv(&mut self, index: GLuint, v: *const GLshort) {
+        panic!("command oxidegl_vertex_attrib_i4sv not yet implemented");
+    }
+    pub unsafe fn oxidegl_vertex_attrib_i4ubv(&mut self, index: GLuint, v: *const GLubyte) {
+        panic!("command oxidegl_vertex_attrib_i4ubv not yet implemented");
+    }
+    pub unsafe fn oxidegl_vertex_attrib_i4usv(&mut self, index: GLuint, v: *const GLushort) {
+        panic!("command oxidegl_vertex_attrib_i4usv not yet implemented");
+    }
+    pub fn oxidegl_vertex_attrib_p1ui(
+        &mut self,
+        index: GLuint,
+        r#type: VertexAttribPointerType,
+        normalized: GLboolean,
+        value: GLuint,
+    ) {
+        panic!("command oxidegl_vertex_attrib_p1ui not yet implemented");
+    }
+    pub fn oxidegl_vertex_attrib_p2ui(
+        &mut self,
+        index: GLuint,
+        r#type: VertexAttribPointerType,
+        normalized: GLboolean,
+        value: GLuint,
+    ) {
+        panic!("command oxidegl_vertex_attrib_p2ui not yet implemented");
+    }
+    pub fn oxidegl_vertex_attrib_p3ui(
+        &mut self,
+        index: GLuint,
+        r#type: VertexAttribPointerType,
+        normalized: GLboolean,
+        value: GLuint,
+    ) {
+        panic!("command oxidegl_vertex_attrib_p3ui not yet implemented");
+    }
+    pub fn oxidegl_vertex_attrib_p4ui(
+        &mut self,
+        index: GLuint,
+        r#type: VertexAttribPointerType,
+        normalized: GLboolean,
+        value: GLuint,
+    ) {
+        panic!("command oxidegl_vertex_attrib_p4ui not yet implemented");
+    }
+    pub fn oxidegl_vertex_attrib_l1d(&mut self, index: GLuint, x: GLdouble) {
+        panic!("command oxidegl_vertex_attrib_l1d not yet implemented");
+    }
+    pub fn oxidegl_vertex_attrib_l2d(&mut self, index: GLuint, x: GLdouble, y: GLdouble) {
+        panic!("command oxidegl_vertex_attrib_l2d not yet implemented");
+    }
+    pub fn oxidegl_vertex_attrib_l3d(
+        &mut self,
+        index: GLuint,
+        x: GLdouble,
+        y: GLdouble,
+        z: GLdouble,
+    ) {
+        panic!("command oxidegl_vertex_attrib_l3d not yet implemented");
+    }
+    pub fn oxidegl_vertex_attrib_l4d(
+        &mut self,
+        index: GLuint,
+        x: GLdouble,
+        y: GLdouble,
+        z: GLdouble,
+        w: GLdouble,
+    ) {
+        panic!("command oxidegl_vertex_attrib_l4d not yet implemented");
+    }
+    pub unsafe fn oxidegl_vertex_attrib_l1dv(&mut self, index: GLuint, v: *const GLdouble) {
+        panic!("command oxidegl_vertex_attrib_l1dv not yet implemented");
+    }
+    pub unsafe fn oxidegl_vertex_attrib_l2dv(&mut self, index: GLuint, v: *const GLdouble) {
+        panic!("command oxidegl_vertex_attrib_l2dv not yet implemented");
+    }
+    pub unsafe fn oxidegl_vertex_attrib_l3dv(&mut self, index: GLuint, v: *const GLdouble) {
+        panic!("command oxidegl_vertex_attrib_l3dv not yet implemented");
+    }
+    pub unsafe fn oxidegl_vertex_attrib_l4dv(&mut self, index: GLuint, v: *const GLdouble) {
+        panic!("command oxidegl_vertex_attrib_l4dv not yet implemented");
     }
 }
 /// ### Parameters
@@ -12319,21 +11884,17 @@ pub mod vertex_attrib {
 /// ### Associated Gets
 /// [**glGet**](crate::context::Context::oxidegl_get) with arguments [`GL_MAX_VERTEX_ATTRIB_BINDINGS`](crate::enums::GL_MAX_VERTEX_ATTRIB_BINDINGS),
 /// [`GL_VERTEX_BINDING_DIVISOR`](crate::enums::GL_VERTEX_BINDING_DIVISOR).
-pub mod vertex_attrib_binding {
-    use crate::context::Context;
-    use crate::dispatch::gl_types::*;
-    impl Context {
-        pub fn oxidegl_vertex_attrib_binding(&mut self, attribindex: GLuint, bindingindex: GLuint) {
-            panic!("command oxidegl_vertex_attrib_binding not yet implemented");
-        }
-        pub fn oxidegl_vertex_array_attrib_binding(
-            &mut self,
-            vaobj: GLuint,
-            attribindex: GLuint,
-            bindingindex: GLuint,
-        ) {
-            panic!("command oxidegl_vertex_array_attrib_binding not yet implemented");
-        }
+impl Context {
+    pub fn oxidegl_vertex_attrib_binding(&mut self, attribindex: GLuint, bindingindex: GLuint) {
+        panic!("command oxidegl_vertex_attrib_binding not yet implemented");
+    }
+    pub fn oxidegl_vertex_array_attrib_binding(
+        &mut self,
+        vaobj: GLuint,
+        attribindex: GLuint,
+        bindingindex: GLuint,
+    ) {
+        panic!("command oxidegl_vertex_array_attrib_binding not yet implemented");
     }
 }
 /// ### Parameters
@@ -12438,70 +11999,65 @@ pub mod vertex_attrib_binding {
 ///
 /// [**glGetVertexAttrib**](crate::context::Context::oxidegl_get_vertex_attrib)
 /// with argument [`GL_VERTEX_ATTRIB_RELATIVE_OFFSET`](crate::enums::GL_VERTEX_ATTRIB_RELATIVE_OFFSET).
-pub mod vertex_attrib_format {
-    use crate::context::Context;
-    use crate::dispatch::gl_types::*;
-    use crate::enums::{VertexAttribIType, VertexAttribLType, VertexAttribType};
-    impl Context {
-        pub fn oxidegl_vertex_attrib_format(
-            &mut self,
-            attribindex: GLuint,
-            size: GLint,
-            r#type: VertexAttribType,
-            normalized: GLboolean,
-            relativeoffset: GLuint,
-        ) {
-            panic!("command oxidegl_vertex_attrib_format not yet implemented");
-        }
-        pub fn oxidegl_vertex_attrib_i_format(
-            &mut self,
-            attribindex: GLuint,
-            size: GLint,
-            r#type: VertexAttribIType,
-            relativeoffset: GLuint,
-        ) {
-            panic!("command oxidegl_vertex_attrib_i_format not yet implemented");
-        }
-        pub fn oxidegl_vertex_attrib_l_format(
-            &mut self,
-            attribindex: GLuint,
-            size: GLint,
-            r#type: VertexAttribLType,
-            relativeoffset: GLuint,
-        ) {
-            panic!("command oxidegl_vertex_attrib_l_format not yet implemented");
-        }
-        pub fn oxidegl_vertex_array_attrib_format(
-            &mut self,
-            vaobj: GLuint,
-            attribindex: GLuint,
-            size: GLint,
-            r#type: VertexAttribType,
-            normalized: GLboolean,
-            relativeoffset: GLuint,
-        ) {
-            panic!("command oxidegl_vertex_array_attrib_format not yet implemented");
-        }
-        pub fn oxidegl_vertex_array_attrib_i_format(
-            &mut self,
-            vaobj: GLuint,
-            attribindex: GLuint,
-            size: GLint,
-            r#type: VertexAttribIType,
-            relativeoffset: GLuint,
-        ) {
-            panic!("command oxidegl_vertex_array_attrib_i_format not yet implemented");
-        }
-        pub fn oxidegl_vertex_array_attrib_l_format(
-            &mut self,
-            vaobj: GLuint,
-            attribindex: GLuint,
-            size: GLint,
-            r#type: VertexAttribLType,
-            relativeoffset: GLuint,
-        ) {
-            panic!("command oxidegl_vertex_array_attrib_l_format not yet implemented");
-        }
+impl Context {
+    pub fn oxidegl_vertex_attrib_format(
+        &mut self,
+        attribindex: GLuint,
+        size: GLint,
+        r#type: VertexAttribType,
+        normalized: GLboolean,
+        relativeoffset: GLuint,
+    ) {
+        panic!("command oxidegl_vertex_attrib_format not yet implemented");
+    }
+    pub fn oxidegl_vertex_attrib_i_format(
+        &mut self,
+        attribindex: GLuint,
+        size: GLint,
+        r#type: VertexAttribIType,
+        relativeoffset: GLuint,
+    ) {
+        panic!("command oxidegl_vertex_attrib_i_format not yet implemented");
+    }
+    pub fn oxidegl_vertex_attrib_l_format(
+        &mut self,
+        attribindex: GLuint,
+        size: GLint,
+        r#type: VertexAttribLType,
+        relativeoffset: GLuint,
+    ) {
+        panic!("command oxidegl_vertex_attrib_l_format not yet implemented");
+    }
+    pub fn oxidegl_vertex_array_attrib_format(
+        &mut self,
+        vaobj: GLuint,
+        attribindex: GLuint,
+        size: GLint,
+        r#type: VertexAttribType,
+        normalized: GLboolean,
+        relativeoffset: GLuint,
+    ) {
+        panic!("command oxidegl_vertex_array_attrib_format not yet implemented");
+    }
+    pub fn oxidegl_vertex_array_attrib_i_format(
+        &mut self,
+        vaobj: GLuint,
+        attribindex: GLuint,
+        size: GLint,
+        r#type: VertexAttribIType,
+        relativeoffset: GLuint,
+    ) {
+        panic!("command oxidegl_vertex_array_attrib_i_format not yet implemented");
+    }
+    pub fn oxidegl_vertex_array_attrib_l_format(
+        &mut self,
+        vaobj: GLuint,
+        attribindex: GLuint,
+        size: GLint,
+        r#type: VertexAttribLType,
+        relativeoffset: GLuint,
+    ) {
+        panic!("command oxidegl_vertex_array_attrib_l_format not yet implemented");
     }
 }
 /// ### Parameters
@@ -12638,42 +12194,37 @@ pub mod vertex_attrib_format {
 ///
 /// [**glGetVertexAttribPointerv**](crate::context::Context::oxidegl_get_vertex_attrib_pointerv)
 /// with arguments `index` and [`GL_VERTEX_ATTRIB_ARRAY_POINTER`](crate::enums::GL_VERTEX_ATTRIB_ARRAY_POINTER)
-pub mod vertex_attrib_pointer {
-    use crate::context::Context;
-    use crate::dispatch::gl_types::*;
-    use crate::enums::{VertexAttribIType, VertexAttribLType, VertexAttribPointerType};
-    impl Context {
-        pub unsafe fn oxidegl_vertex_attrib_pointer(
-            &mut self,
-            index: GLuint,
-            size: GLint,
-            r#type: VertexAttribPointerType,
-            normalized: GLboolean,
-            stride: GLsizei,
-            pointer: *const GLvoid,
-        ) {
-            panic!("command oxidegl_vertex_attrib_pointer not yet implemented");
-        }
-        pub unsafe fn oxidegl_vertex_attrib_i_pointer(
-            &mut self,
-            index: GLuint,
-            size: GLint,
-            r#type: VertexAttribIType,
-            stride: GLsizei,
-            pointer: *const GLvoid,
-        ) {
-            panic!("command oxidegl_vertex_attrib_i_pointer not yet implemented");
-        }
-        pub unsafe fn oxidegl_vertex_attrib_l_pointer(
-            &mut self,
-            index: GLuint,
-            size: GLint,
-            r#type: VertexAttribLType,
-            stride: GLsizei,
-            pointer: *const GLvoid,
-        ) {
-            panic!("command oxidegl_vertex_attrib_l_pointer not yet implemented");
-        }
+impl Context {
+    pub unsafe fn oxidegl_vertex_attrib_pointer(
+        &mut self,
+        index: GLuint,
+        size: GLint,
+        r#type: VertexAttribPointerType,
+        normalized: GLboolean,
+        stride: GLsizei,
+        pointer: *const GLvoid,
+    ) {
+        panic!("command oxidegl_vertex_attrib_pointer not yet implemented");
+    }
+    pub unsafe fn oxidegl_vertex_attrib_i_pointer(
+        &mut self,
+        index: GLuint,
+        size: GLint,
+        r#type: VertexAttribIType,
+        stride: GLsizei,
+        pointer: *const GLvoid,
+    ) {
+        panic!("command oxidegl_vertex_attrib_i_pointer not yet implemented");
+    }
+    pub unsafe fn oxidegl_vertex_attrib_l_pointer(
+        &mut self,
+        index: GLuint,
+        size: GLint,
+        r#type: VertexAttribLType,
+        stride: GLsizei,
+        pointer: *const GLvoid,
+    ) {
+        panic!("command oxidegl_vertex_attrib_l_pointer not yet implemented");
     }
 }
 /// ### Parameters
@@ -12707,21 +12258,17 @@ pub mod vertex_attrib_pointer {
 /// ### Associated Gets
 /// [**glGet**](crate::context::Context::oxidegl_get) with arguments [`GL_MAX_VERTEX_ATTRIB_BINDINGS`](crate::enums::GL_MAX_VERTEX_ATTRIB_BINDINGS),
 /// [`GL_VERTEX_BINDING_DIVISOR`](crate::enums::GL_VERTEX_BINDING_DIVISOR).
-pub mod vertex_binding_divisor {
-    use crate::context::Context;
-    use crate::dispatch::gl_types::*;
-    impl Context {
-        pub fn oxidegl_vertex_binding_divisor(&mut self, bindingindex: GLuint, divisor: GLuint) {
-            panic!("command oxidegl_vertex_binding_divisor not yet implemented");
-        }
-        pub fn oxidegl_vertex_array_binding_divisor(
-            &mut self,
-            vaobj: GLuint,
-            bindingindex: GLuint,
-            divisor: GLuint,
-        ) {
-            panic!("command oxidegl_vertex_array_binding_divisor not yet implemented");
-        }
+impl Context {
+    pub fn oxidegl_vertex_binding_divisor(&mut self, bindingindex: GLuint, divisor: GLuint) {
+        panic!("command oxidegl_vertex_binding_divisor not yet implemented");
+    }
+    pub fn oxidegl_vertex_array_binding_divisor(
+        &mut self,
+        vaobj: GLuint,
+        bindingindex: GLuint,
+        divisor: GLuint,
+    ) {
+        panic!("command oxidegl_vertex_array_binding_divisor not yet implemented");
     }
 }
 /// ### Parameters
@@ -12789,41 +12336,21 @@ pub mod vertex_binding_divisor {
 /// [**glGet**](crate::context::Context::oxidegl_get) with argument [`GL_VIEWPORT_BOUNDS_RANGE`](crate::enums::GL_VIEWPORT_BOUNDS_RANGE)
 ///
 /// [**glGet**](crate::context::Context::oxidegl_get) with argument [`GL_VIEWPORT_SUBPIXEL_BITS`](crate::enums::GL_VIEWPORT_SUBPIXEL_BITS)
-pub mod viewport_indexed {
-    use crate::context::Context;
-    use crate::dispatch::gl_types::*;
-    impl Context {
-        pub fn oxidegl_viewport_indexedf(
-            &mut self,
-            index: GLuint,
-            x: GLfloat,
-            y: GLfloat,
-            w: GLfloat,
-            h: GLfloat,
-        ) {
-            panic!("command oxidegl_viewport_indexedf not yet implemented");
-        }
-        pub unsafe fn oxidegl_viewport_indexedfv(&mut self, index: GLuint, v: *const GLfloat) {
-            panic!("command oxidegl_viewport_indexedfv not yet implemented");
-        }
+impl Context {
+    pub fn oxidegl_viewport_indexedf(
+        &mut self,
+        index: GLuint,
+        x: GLfloat,
+        y: GLfloat,
+        w: GLfloat,
+        h: GLfloat,
+    ) {
+        panic!("command oxidegl_viewport_indexedf not yet implemented");
+    }
+    pub unsafe fn oxidegl_viewport_indexedfv(&mut self, index: GLuint, v: *const GLfloat) {
+        panic!("command oxidegl_viewport_indexedfv not yet implemented");
     }
 }
-
-use crate::context::Context;
-use crate::dispatch::gl_types::*;
-use crate::enums::{
-    AtomicCounterBufferPName, AttributeType, ClearBufferMask, ClipControlDepth, ClipControlOrigin,
-    CopyImageSubDataTarget, DebugSeverity, DebugSource, DebugType, DepthFunction, DrawElementsType,
-    FramebufferTarget, FrontFaceDirection, GetPointervPName, HintMode, HintTarget, InternalFormat,
-    LogicOp, ObjectIdentifier, PipelineParameterName, PixelFormat, PixelType, PolygonMode,
-    PrecisionType, PrimitiveType, ProgramInterface, ProgramInterfacePName, ProgramParameterPName,
-    ProgramResourceProperty, ProgramStagePName, QueryParameterName, QueryTarget,
-    RenderbufferTarget, ShaderParameterName, ShaderType, SizedInternalFormat, StencilFunction,
-    StencilOp, SubroutineParameterName, SyncBehaviorFlags, SyncParameterName, TextureTarget,
-    TextureUnit, TransformFeedbackBufferMode, TriangleFace, UniformBlockPName, UniformPName,
-    UniformType, UseProgramStageMask, VertexArrayPName, VertexAttribPointerType,
-    VertexProvokingMode,
-};
 impl Context {
     /// ### Parameters
     /// `pipeline`

@@ -495,6 +495,32 @@ pub fn write_enum_impl<T: Write>(
 }
 pub fn write_placeholder_impl<T: Write>(w: &mut T, v: &[FnCollection<'_>]) -> Result<()> {
     let mut delay = Vec::new();
+    let mut seen = HashSet::new();
+    let enum_uses = v
+        .iter()
+        .flat_map(|i| i.entries.iter())
+        .flat_map(|e| {
+            let GLAPIEntry::Command { params, .. } = e else {
+                panic!()
+            };
+            params.iter()
+        })
+        .filter_map(|p| {
+            let GLTypes::EnumWrapped(ref s) = p.parameter_type else {
+                return None;
+            };
+            if seen.insert(s) {
+                Some(s.to_owned())
+            } else {
+                None
+            }
+        })
+        .collect::<Vec<String>>()
+        .join(",");
+    writeln!(
+        w,
+        "\n{CONTEXT_USE}\n{TYPES_USE}\nuse {ENUMS_PATH}{{{enum_uses}}};\n"
+    )?;
     for item in v {
         match item.entries.len() {
             0 => continue,
@@ -507,38 +533,7 @@ pub fn write_placeholder_impl<T: Write>(w: &mut T, v: &[FnCollection<'_>]) -> Re
         if let Some(doc) = &item.docs {
             write!(w, "{doc}")?;
         }
-        let mut seen = HashSet::new();
-        let enum_uses = item
-            .entries
-            .iter()
-            .flat_map(|e| {
-                let GLAPIEntry::Command { params, .. } = e else {
-                    panic!()
-                };
-                params.iter()
-            })
-            .filter_map(|p| {
-                let GLTypes::EnumWrapped(ref s) = p.parameter_type else {
-                    return None;
-                };
-                if seen.insert(s) {
-                    Some(s.to_owned())
-                } else {
-                    None
-                }
-            })
-            .collect::<Vec<String>>()
-            .join(",");
-        writeln!(
-            w,
-            "pub mod {} {{\n{CONTEXT_USE}\n{TYPES_USE}\nuse {ENUMS_PATH}{{{enum_uses}}};\nimpl {CONTEXT_STRUCT_NAME} {{",
-            &snake_case_from_title_case(
-                item.name
-                    .as_ref()
-                    .context("item did not have name when it should have")?
-            )
-            .trim_start_matches("gl_")
-        )?;
+        writeln!(w, "impl {CONTEXT_STRUCT_NAME} {{")?;
         for func in item.entries.iter() {
             let GLAPIEntry::Command {
                 return_type,
@@ -558,33 +553,11 @@ pub fn write_placeholder_impl<T: Write>(w: &mut T, v: &[FnCollection<'_>]) -> Re
                 )
             )?;
         }
-        writeln!(w, "\n}}\n}}")?;
+        writeln!(w, "\n}}")?;
     }
 
     if !delay.is_empty() {
-        let mut seen = HashSet::new();
-        let enum_uses = delay
-            .iter()
-            .flat_map(|i| i.entries.iter())
-            .flat_map(|e| {
-                let GLAPIEntry::Command { params, .. } = e else {
-                    panic!()
-                };
-                params.iter()
-            })
-            .filter_map(|p| {
-                let GLTypes::EnumWrapped(ref s) = p.parameter_type else {
-                    return None;
-                };
-                if seen.insert(s) {
-                    Some(s.to_owned())
-                } else {
-                    None
-                }
-            })
-            .collect::<Vec<String>>()
-            .join(",");
-        writeln!(w, "\n{CONTEXT_USE}\n{TYPES_USE}\nuse {ENUMS_PATH}{{{enum_uses}}};\nimpl {CONTEXT_STRUCT_NAME} {{")?;
+        writeln!(w, "impl {CONTEXT_STRUCT_NAME} {{")?;
         for individual in delay {
             let Some(GLAPIEntry::Command {
                 return_type,

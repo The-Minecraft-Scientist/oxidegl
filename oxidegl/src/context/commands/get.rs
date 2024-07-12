@@ -9,10 +9,7 @@ use crate::{
 use crate::{
     context::Context,
     dispatch::conversions::{GlDstType, StateQueryWrite},
-    enums::{
-        GetPName::{self, ContextFlags, ContextProfileMask, NumExtensions},
-        StringName,
-    },
+    enums::GetPName::{self, ContextFlags, ContextProfileMask, NumExtensions},
 };
 
 impl Context {
@@ -360,7 +357,7 @@ impl Context {
         index: GLuint,
         data: *mut GLboolean,
     ) {
-        panic!("command oxidegl_get_booleani_v not yet implemented");
+        self.get(target, data, Some(index));
     }
 
     pub unsafe fn oxidegl_get_integeri_v(
@@ -369,11 +366,11 @@ impl Context {
         index: GLuint,
         data: *mut GLint,
     ) {
-        panic!("command oxidegl_get_integeri_v not yet implemented");
+        self.get(target, data, Some(index));
     }
 
     pub unsafe fn oxidegl_get_integer64v(&mut self, pname: GetPName, data: *mut GLint64) {
-        panic!("command oxidegl_get_integer64v not yet implemented");
+        self.get(pname, data, None);
     }
     pub unsafe fn oxidegl_get_integer64i_v(
         &mut self,
@@ -381,7 +378,7 @@ impl Context {
         index: GLuint,
         data: *mut GLint64,
     ) {
-        panic!("command oxidegl_get_integer64i_v not yet implemented");
+        self.get(target, data, Some(index));
     }
 
     pub unsafe fn oxidegl_get_floati_v(
@@ -390,7 +387,7 @@ impl Context {
         index: GLuint,
         data: *mut GLfloat,
     ) {
-        panic!("command oxidegl_get_floati_v not yet implemented");
+        self.get(target, data, Some(index));
     }
 
     pub unsafe fn oxidegl_get_doublei_v(
@@ -399,20 +396,7 @@ impl Context {
         index: GLuint,
         data: *mut GLdouble,
     ) {
-        panic!("command oxidegl_get_doublei_v not yet implemented");
-    }
-    fn get_string(name: StringName) -> *const GLubyte {
-        const VENDOR: &[u8] = b"Charles Liske\0";
-        const RENDERER: &[u8] = b"OxideGL\0";
-        const VERSION: &[u8] = b"4.6.0\0";
-        match name {
-            StringName::Vendor => VENDOR.as_ptr(),
-            StringName::Renderer => RENDERER.as_ptr(),
-            StringName::Version | StringName::ShadingLanguageVersion => VERSION.as_ptr(),
-            StringName::Extensions => {
-                panic!("unrecognized StringName")
-            }
-        }
+        self.get(target, data, Some(index));
     }
 }
 
@@ -487,10 +471,27 @@ impl Context {
 /// always returns a compatible version number. The release number always describes
 /// the server.
 pub mod get_string {
+    use log::trace;
+
     use crate::context::Context;
     use crate::dispatch::gl_types::{GLubyte, GLuint};
     use crate::enums::StringName;
     impl Context {
+        fn get_string(name: StringName) -> *const GLubyte {
+            const VENDOR: &[u8] = b"Charles Liske\0";
+            const RENDERER: &[u8] = b"OxideGL\0";
+            const VERSION: &[u8] = b"4.6.0\0";
+
+            trace!(target: "get", "glGetString {:#0x}", name as u32);
+            match name {
+                StringName::Vendor => VENDOR.as_ptr(),
+                StringName::Renderer => RENDERER.as_ptr(),
+                StringName::Version | StringName::ShadingLanguageVersion => VERSION.as_ptr(),
+                StringName::Extensions => {
+                    panic!("OxideGL does not support any extensions!")
+                }
+            }
+        }
         pub(crate) fn oxidegl_get_string(&mut self, name: StringName) -> *const GLubyte {
             Self::get_string(name)
         }
@@ -499,7 +500,6 @@ pub mod get_string {
             name: StringName,
             index: GLuint,
         ) -> *const GLubyte {
-            //TODO: this is probably wrong
             Self::get_string(name)
         }
     }

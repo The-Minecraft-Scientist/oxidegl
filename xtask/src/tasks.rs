@@ -31,6 +31,7 @@ fn complete_task(t: Task) {
 #[command(version, about, long_about = None)]
 pub enum Task {
     /// Build liboxidegl.dylib
+    #[command(name = "build")]
     BuildOxideGL,
 
     /// Build OxideGL GLFW (requires XCode command line tools for clang, cmake and make)
@@ -39,10 +40,9 @@ pub enum Task {
     /// Generate OxideGL rust GL bindings/placeholder impls
     GenerateBindings,
 
-    /// Run a "test". A test is a name=relative_path_to_binary pair given in tests.txt.
-    /// Paths given are relative to the workspace root.
-    RunTest,
-
+    // /// Run a "test". A test is a name=relative_path_to_binary pair given in tests.txt.
+    // /// Paths given are relative to the workspace root.
+    // RunTest,
     /// Init GLFW git submodule if it hasn't been already
     GetGLFW,
 
@@ -87,15 +87,15 @@ pub trait TaskTrait: Sized {
 
 #[derive(Args, Clone, Eq, PartialEq, Hash, Debug)]
 pub struct BuildOxideGL {
-    /// Build OxideGL with debug assertions
+    /// Build OxideGL with debug assertions, even in release mode
     #[arg(short, long, default_value_t = true)]
     debug_assertions: bool,
     /// Build OxideGL with the "release" profile instead of "dev"
     #[arg(short, long, default_value_t = false)]
     release: bool,
     /// Build OxideGL targetting the current CPU's featureset instead of the more conservative default
-    #[arg(short, long, default_value_t = false)]
-    target_native_cpu: bool,
+    #[arg(short = 'n', long, default_value_t = false)]
+    target_cpu_native: bool,
     /// Maximum logging level to compile OxideGL with (valid options are: "off", "error", "warn", "info", "debug", and "trace")
     #[arg(short, long, default_value = "trace")]
     logging_level: String,
@@ -106,7 +106,29 @@ impl TaskTrait for BuildOxideGL {
     }
 
     fn perform(&self) -> Result<()> {
-        todo!()
+        let mut c = Command::new("cargo");
+        c.arg("build");
+
+        if self.release {
+            c.arg("-r");
+        }
+
+        c.args(["--features", &format!("max_log_{}", self.logging_level)]);
+        if self.debug_assertions {
+            c.args(["--config", "build-override.debug-assertions=true"]);
+        }
+
+        if self.target_cpu_native {
+            c.args([
+                "--config",
+                "build.rustflags=[\"-C\", \"target-cpu=native\"]",
+            ]);
+        }
+        c.current_dir("oxidegl");
+        if !c.spawn()?.wait()?.success() {
+            bail!("failed to compile OxideGL!");
+        }
+        Ok(())
     }
 }
 
@@ -247,16 +269,16 @@ fn rustfmt_file(path: impl AsRef<Path>) -> Result<()> {
     Ok(())
 }
 
-#[derive(clap::Args, Clone, Eq, PartialEq, Hash, Debug)]
-pub struct RunTest {
-    #[arg(short, long, default_value = "glfw-triangle")]
-    test_name: String,
-}
-impl TaskTrait for RunTest {
-    fn perform(&self) -> Result<()> {
-        todo!()
-    }
-}
+// #[derive(clap::Args, Clone, Eq, PartialEq, Hash, Debug)]
+// pub struct RunTest {
+//     #[arg(short, long, default_value = "glfw-triangle")]
+//     test_name: String,
+// }
+// impl TaskTrait for RunTest {
+//     fn perform(&self) -> Result<()> {
+//         todo!()
+//     }
+// }
 macro_rules! stub_arg {
     ($name:ident) => {
         #[derive(clap::Args, Clone, Eq, PartialEq, Hash, Debug)]

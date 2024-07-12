@@ -68,6 +68,8 @@ unsafe extern "C" fn oxidegl_set_current_context(ctx: Option<CtxRef>) {
 unsafe extern "C" fn oxidegl_swap_buffers(_ctx: ManuallyDrop<CtxRef>) {
     println!("oxideGl swap buffers called");
 }
+#[no_mangle]
+unsafe extern "C" fn oxidegl_platform_init() {}
 
 #[no_mangle]
 unsafe extern "C" fn oxidegl_create_context(
@@ -79,8 +81,8 @@ unsafe extern "C" fn oxidegl_create_context(
     stencil_format: GLenum,
     stencil_type: GLenum,
 ) -> *mut c_void {
-    // Safety: ptr is a pointer to a valid NSView.
-    // It is retained because we need onwership of it until we've injected our layer. (which happens in PlatformState::new)
+    // Safety: caller ensures ptr is a pointer to a valid NSView.
+    // It is retained because we need it to live until we've injected our layer. (which happens in PlatformState::new)
     let ctx = unsafe { Context::new(&Retained::retain(view).unwrap()) };
 
     Box::into_raw(Box::new(ctx)).cast()
@@ -89,6 +91,7 @@ unsafe extern "C" fn oxidegl_create_context(
 #[repr(transparent)]
 pub struct CtxRef(NonNull<Context>);
 impl CtxRef {
+    //Safety: caller ensures ptr upholds the invariants specified by Unique, namely that it is an exclusive pointer with mutable access to a Box<Context>
     unsafe fn from_void(ptr: *mut c_void) -> Option<Self> {
         Some(Self(NonNull::new(ptr.cast())?))
     }
@@ -113,7 +116,7 @@ impl DerefMut for CtxRef {
 }
 impl Drop for CtxRef {
     fn drop(&mut self) {
-        // Safety: We are basically a Box, it's fine to recover the Box<Context> from this pointer (no to mention that this function diverges)
+        // Safety: We are basically a Box, it's fine to recover the Box<Context> from this pointer (not to mention that this function diverges)
         let _ = unsafe { Box::from_raw(self.0.as_ptr()) };
         panic!("OxideGL just dropped your OpenGL Context!! This is really bad, time to quit!!")
     }
