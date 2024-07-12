@@ -1,4 +1,4 @@
-use log::{debug, trace};
+use log::{debug};
 
 #[allow(clippy::wildcard_imports)]
 use crate::{

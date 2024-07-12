@@ -1,15 +1,12 @@
-use log::{debug, trace, Log};
+use log::{debug, trace};
 use objc2::rc::{Id, Retained};
 use objc2_app_kit::NSView;
 use platform::PlatformState;
 use std::cell::Cell;
-use std::mem::ManuallyDrop;
-use std::ops::{Deref, DerefMut};
 use std::os::raw::c_void;
 use std::pin::Pin;
 use std::ptr::NonNull;
 use std::sync::atomic::compiler_fence;
-use std::thread::LocalKey;
 
 use crate::dispatch::gl_types::GLenum;
 
