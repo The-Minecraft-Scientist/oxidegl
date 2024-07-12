@@ -6,7 +6,6 @@ use std::cell::Cell;
 use std::os::raw::c_void;
 use std::pin::Pin;
 use std::ptr::NonNull;
-use std::sync::atomic::compiler_fence;
 
 use crate::dispatch::gl_types::GLenum;
 
@@ -50,7 +49,7 @@ impl Context {
 }
 // This function is only used by GL dispatch. It is always advantageous for it to be inlined in that usage
 #[allow(clippy::inline_always)]
-//#[inline(always)]
+#[inline(always)]
 pub fn with_ctx<Ret, Func: for<'a> Fn(Pin<&'a mut Context>) -> Ret>(f: Func) -> Ret {
     let mut ptr: NonNull<Context> = CTX.take().expect("No context set");
 
@@ -59,7 +58,6 @@ pub fn with_ctx<Ret, Func: for<'a> Fn(Pin<&'a mut Context>) -> Ret>(f: Func) -> 
 
     let ret = f(p);
     CTX.set(Some(ptr));
-    compiler_fence(std::sync::atomic::Ordering::SeqCst);
     ret
 }
 
