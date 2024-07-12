@@ -456,7 +456,7 @@ pub fn get_vals<'a>(
 }
 pub fn write_dispatch_impl<T: Write>(w: &mut T, v: &[FnCollection<'_>]) -> Result<()> {
     writeln!(w, "// GL Commands")?;
-    writeln!(w, "{TYPES_USE}\n{WITH_CTX_USE}\n")?;
+    writeln!(w, "{TYPES_USE}\n{WITH_CTX_USE}\n{ENUM_UTILS_USE}\n")?;
     for item in v {
         for cmd in item.entries.iter() {
             let GLAPIEntry::Command {
@@ -634,16 +634,19 @@ fn print_placeholder_fn<'a>(name: &'a str, ret_type: GLTypes, params: &[Paramete
     )
 }
 
+fn sanitize_param_name(unsanitized: &str) -> String {
+    match unsanitized {
+        "type" => "r#type".to_owned(),
+        "ref" => "r#ref".to_owned(),
+        _ => unsanitized.to_owned(),
+    }
+}
 fn print_dispatch_fn<'a>(name: &'a str, ret_type: GLTypes, params: &[Parameter<'a>]) -> String {
     let is_unsafe = params.iter().any(|p| p.parameter_type.is_pointer());
     let paramnl = params
         .iter()
         .map(|p| {
-            let pname = match p.name {
-                "type" => "r#type".to_owned(),
-                "ref" => "r#ref".to_owned(),
-                _ => p.name.to_owned(),
-            };
+            let pname = sanitize_param_name(p.name);
             if let GLTypes::EnumWrapped(_) = p.parameter_type {
                 format!(
                     "{} {pname}.into_enum() {},",
@@ -656,13 +659,30 @@ fn print_dispatch_fn<'a>(name: &'a str, ret_type: GLTypes, params: &[Parameter<'
         })
         .collect::<Vec<String>>()
         .join("");
+    let snake_case_name = snake_case_from_title_case(name);
+
+    let params_trace = params
+        .iter()
+        .map(|p| format!("{}: {{:?}}", sanitize_param_name(p.name)))
+        .collect::<Vec<_>>()
+        .join(", ");
+
+    let params_string = params
+        .iter()
+        .map(|p| sanitize_param_name(p.name))
+        .collect::<Vec<_>>()
+        .join(", ");
+
     let body = format!(
-        "{{\n    with_ctx(|mut state|{} state.oxide{}({}){})\n}}",
+        "{{\n
+            ::log::trace!(\"{name} called, parameters: {params_trace} \", {params_string});
+            with_ctx(|mut state|{} state.oxide{}({}){})\n}}",
         if is_unsafe { " unsafe {" } else { "" },
-        snake_case_from_title_case(name),
+        snake_case_name,
         paramnl,
         if is_unsafe { " }" } else { "" },
     );
+
     if params.is_empty() {
         return format!(
             "#[no_mangle]\nunsafe extern \"C\" fn {}(){} {}",

@@ -69,7 +69,9 @@ unsafe extern "C" fn oxidegl_swap_buffers(_ctx: ManuallyDrop<CtxRef>) {
     println!("oxideGl swap buffers called");
 }
 #[no_mangle]
-unsafe extern "C" fn oxidegl_platform_init() {}
+unsafe extern "C" fn oxidegl_platform_init() {
+    simple_logger::init_with_env().expect("failed to initialize OxideGL's logger!");
+}
 
 #[no_mangle]
 unsafe extern "C" fn oxidegl_create_context(
@@ -81,7 +83,7 @@ unsafe extern "C" fn oxidegl_create_context(
     stencil_format: GLenum,
     stencil_type: GLenum,
 ) -> *mut c_void {
-    // Safety: caller ensures ptr is a pointer to a valid NSView.
+    // Safety: caller ensures ptr is a pointer to a valid, initialized NSView.
     // It is retained because we need it to live until we've injected our layer. (which happens in PlatformState::new)
     let ctx = unsafe { Context::new(&Retained::retain(view).unwrap()) };
 
