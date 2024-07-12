@@ -31,7 +31,7 @@ pub(crate) mod state;
 pub(crate) mod platform;
 
 thread_local! {
-    static CTX: Cell<Option<CtxRef>> = const {Cell::new(None)};
+    static CTX: Cell<Option<NonNull<Context>>> = const {Cell::new(None)};
 }
 #[derive(Debug)]
 #[repr(C)]
@@ -56,31 +56,19 @@ impl Context {
 pub fn with_ctx<Ret, Func: for<'a> Fn(Pin<&'a mut Context>) -> Ret>(f: Func) -> Ret {
     trace!("with_ctx called");
 
-    log::logger().flush();
+    let mut ptr: NonNull<Context> = CTX.get().expect("No context set");
 
-    let mut opt = CTX.take().expect("No context set");
-    let p = Pin::new(&mut *opt);
+    //SAFETY: we are the exclusive accessor of ptr.
+    let p = Pin::new(unsafe { ptr.as_mut() });
+
     let ret = f(p);
-    CTX.set(Some(opt));
+    CTX.set(Some(ptr));
     ret
 }
 
 #[no_mangle]
-unsafe extern "C" fn oxidegl_set_current_context(ctx: Option<CtxRef>) {
-    trace!(
-        "set context to {:?}",
-        ctx.as_ref().map(|p| p.0.as_ptr() as usize)
-    );
-    log::logger().flush();
-    if ctx
-        .as_ref()
-        .map_or(Some(false), |p| ctx.as_ref().map(|c| c.0 == p.0))
-        .unwrap_or(false)
-    {
-        //Need to forget about this context if it's a duplicate of the current one
-        let _ = ManuallyDrop::new(ctx);
-        return;
-    }
+unsafe extern "C" fn oxidegl_set_current_context(ctx: Option<NonNull<Context>>) {
+    trace!("set context to {:?}", ctx);
     CTX.set(ctx);
 }
 
@@ -112,6 +100,7 @@ unsafe extern "C" fn oxidegl_create_context(
 }
 
 #[repr(transparent)]
+#[derive(PartialEq)]
 pub struct CtxRef(NonNull<Context>);
 impl CtxRef {
     //Safety: caller ensures ptr upholds the invariants specified by Unique, namely that it is an exclusive pointer with mutable access to a Box<Context>

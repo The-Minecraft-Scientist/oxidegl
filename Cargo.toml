@@ -11,3 +11,4 @@ panic = "abort"
 codegen-units = 256
 # incremental = true
 lto = "thin"
+panic = "abort"
