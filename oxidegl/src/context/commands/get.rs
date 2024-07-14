@@ -3,13 +3,15 @@ use log::debug;
 #[allow(clippy::wildcard_imports)]
 use crate::dispatch::gl_types::*;
 
+#[allow(clippy::enum_glob_use)]
 use crate::{
     context::Context,
     dispatch::conversions::{GlDstType, StateQueryWrite},
-    enums::GetPName::{self, ContextFlags, ContextProfileMask, NumExtensions},
+    enums::GetPName::{self, *},
 };
 
 impl Context {
+    #[inline]
     pub unsafe fn oxidegl_get<T: GlDstType>(
         &self,
         parameter_name: GetPName,
@@ -39,19 +41,61 @@ impl Context {
                 {
                     crate::context::state::MAX_UNIFORM_BUFFER_BINDINGS.write_out(idx, ptr);
                 }
-                GetPName::PointSize => self.gl_state.point_size.write_out(idx, ptr),
-                GetPName::PointSizeRange => self
+                MaxTransformFeedbackBuffers => {
+                    crate::context::state::MAX_TRANSFORM_FEEDBACK_BUFFER_BINDINGS
+                        .write_out(idx, ptr);
+                }
+                //Buffer Bindings
+                VertexArrayBinding => {
+                    self.gl_state.bindings.array.write_out(idx, ptr);
+                }
+                CopyReadBufferBinding => self.gl_state.bindings.copy_read.write_out(idx, ptr),
+                CopyWriteBufferBinding => self.gl_state.bindings.copy_write.write_out(idx, ptr),
+                DispatchIndirectBufferBinding => {
+                    self.gl_state.bindings.dispatch_indirect.write_out(idx, ptr);
+                }
+                DrawIndirectBufferBinding => {
+                    self.gl_state.bindings.draw_indirect.write_out(idx, ptr);
+                }
+                ElementArrayBufferBinding => {
+                    self.gl_state.bindings.element_array.write_out(idx, ptr);
+                }
+                ParameterBufferBinding => self.gl_state.bindings.parameter.write_out(idx, ptr),
+                PixelPackBufferBinding => self.gl_state.bindings.pixel_pack.write_out(idx, ptr),
+                PixelUnpackBufferBinding => self.gl_state.bindings.pixel_unpack.write_out(idx, ptr),
+                QueryBufferBinding => self.gl_state.bindings.query.write_out(idx, ptr),
+                TextureBufferBinding => self.gl_state.bindings.texture.write_out(idx, ptr),
+
+                //Indexed buffer bindings
+                TransformFeedbackBufferBinding => self.gl_state.bindings.transform_feedback
+                    [idx.unwrap_or(0) as usize]
+                    .write_out(None, ptr),
+                ShaderStorageBufferBinding => self.gl_state.bindings.shader_storage
+                    [idx.unwrap_or(0) as usize]
+                    .write_out(None, ptr),
+                UniformBufferBinding => {
+                    self.gl_state.bindings.uniform[idx.unwrap_or(0) as usize].write_out(None, ptr);
+                }
+                AtomicCounterBufferBinding => {
+                    self.gl_state.bindings.atomic_counter[idx.unwrap_or(0) as usize]
+                        .write_out(None, ptr);
+                }
+
+                PointSize => self.gl_state.point_size.write_out(idx, ptr),
+                PointSizeRange => self
                     .gl_state
                     .characteristics
                     .point_size_range
                     .write_out(idx, ptr),
-                GetPName::PointSizeGranularity => {
+                PointSizeGranularity => {
                     self.gl_state
                         .characteristics
                         .point_size_granularity
                         .write_out(idx, ptr);
                 }
-                GetPName::LineWidth => self.gl_state.line_width.write_out(idx, ptr),
+                LineWidth => self.gl_state.line_width.write_out(idx, ptr),
+
+                //Context Attributes
                 NumExtensions => self
                     .gl_state
                     .characteristics
@@ -67,6 +111,9 @@ impl Context {
                     .characteristics
                     .context_profile_mask
                     .write_out(idx, ptr),
+
+                //Bindings
+
                 // GL_LINE_WIDTH_RANGE => self.gl_state.characteristics.line_width_range.into(), // GL_LINE_WIDTH_RANGE
                 // GL_LINE_WIDTH_GRANULARITY => {
                 //     self.gl_state.characteristics.line_width_granularity.into()

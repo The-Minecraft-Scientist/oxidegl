@@ -142,6 +142,8 @@ impl Context {
 /// ### Associated Gets
 /// [**glGet**](crate::context::Context::oxidegl_get) with argument [`GL_DEPTH_CLEAR_VALUE`](crate::enums::GL_DEPTH_CLEAR_VALUE)
 impl Context {
+    // Metal depth buffer is 32 bits so we might as well just truncate here instead of storing an f64
+    #[allow(clippy::cast_possible_truncation)]
     pub fn oxidegl_clear_depth(&mut self, depth: GLdouble) {
         self.gl_state.clear_depth = depth as f32;
         self.dirty_render_pass();

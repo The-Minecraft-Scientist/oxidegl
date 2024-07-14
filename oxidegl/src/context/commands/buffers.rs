@@ -1,14 +1,14 @@
-use std::num::NonZeroU32;
+use std::{num::NonZeroU32, os::raw::c_void};
 
 use log::debug;
 
 use crate::{
     context::Context,
     dispatch::{
-        conversions::UnsafeFromGLenum,
+        conversions::{GlDstType, SrcType, UnsafeFromGLenum},
         gl_types::{GLsizei, GLuint},
     },
-    enums::BufferTarget,
+    enums::{BufferAccess, BufferTarget, BufferUsage, MapBufferAccessMask},
 };
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -22,6 +22,11 @@ impl UnsafeFromGLenum for BufferName {
 
         #[cfg(not(debug_assertions))]
         return unsafe { core::mem::transmute(val) };
+    }
+}
+impl<Dst: GlDstType> SrcType<Dst> for Option<BufferName> {
+    fn cast(self) -> Dst {
+        Dst::from_uint(self.map_or(0, |s| s.0.get()))
     }
 }
 impl Context {
@@ -274,6 +279,25 @@ impl Context {
 
 pub struct Buffer {
     name: GLuint,
-    target: Option<BufferTarget>,
-    index: Option<GLuint>,
+    binding: BindingInfo,
+    size: usize,
+    usage: BufferUsage,
+    mapping: Option<MappingInfo>,
+}
+pub struct MappingInfo {
+    access: BufferAccess,
+    access_flags: MapBufferAccessMask,
+    mapped_ptr: *mut c_void,
+    mapped_ptr_offset: usize,
+    mapped_len: usize,
+}
+pub struct BindingInfo {
+    target: BufferTarget,
+    index: GLuint,
+}
+
+pub enum BufferNameState {
+    Named,
+    Empty,
+    Bound(Buffer),
 }

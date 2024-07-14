@@ -756,7 +756,7 @@ fn print_enum_group_enum<'a>(
             unsafe fn unsafe_from_gl_enum(val: u32) -> Self {{
                 #[cfg(debug_assertions)]
                 let Some(ret) = {name}::from_repr(val) else {{
-                    println!(\"Attempt to create a {name} from a GLenum with invalid value {{:#X}}\", val);
+                    println!(\"Attempt to create a {name} from a GLenum with invalid value {{val:#X}}\");
                     panic!();
                 }};
                 #[cfg(not(debug_assertions))]
@@ -786,7 +786,7 @@ fn print_enum_group_bitfield<'a>(
     writeln!(w, "bitflags! {{")?;
     writeln!(
         w,
-        "#[derive(Debug, Clone, Copy, PartialEq, Eq)]\n#[repr(transparent)]"
+        "#[derive(Debug, Clone, Copy, Default, PartialEq, Eq)]\n#[repr(transparent)]"
     )?;
     writeln!(w, "pub struct {name}: u32 {{")?;
     for e in group.enum_members.iter() {
@@ -806,7 +806,7 @@ fn print_enum_group_bitfield<'a>(
             unsafe fn unsafe_from_gl_enum(val: u32) -> Self {{
                 #[cfg(debug_assertions)]
                 let Some(ret) = {name}::from_bits(val) else {{
-                    println!(\"Attempt to create a {name} from a GLenum with an invalid bit set! {{:#X}}\", val);
+                    println!(\"Attempt to create a {name} from a GLenum with an invalid bit set! {{val:#X}}\");
                     panic!();
                 }};
                 #[cfg(not(debug_assertions))]
