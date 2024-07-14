@@ -20,7 +20,7 @@ where
 }
 
 /// Trait that describes a type that may be returned from a glGet* function.
-pub(crate) trait GlDstType: Copy {
+pub trait GlDstType: Copy {
     fn from_uint(val: u32) -> Self;
     fn from_ulong(val: u64) -> Self;
     fn from_int(val: i32) -> Self;
@@ -106,6 +106,18 @@ impl<Dst: GlDstType> SrcType<Dst> for i64 {
     #[inline]
     fn cast(self) -> Dst {
         Dst::from_long(self)
+    }
+}
+impl<Dst: GlDstType> SrcType<Dst> for usize {
+    #[inline]
+    fn cast(self) -> Dst {
+        Dst::from_ulong(self as u64)
+    }
+}
+impl<Dst: GlDstType> SrcType<Dst> for isize {
+    #[inline]
+    fn cast(self) -> Dst {
+        Dst::from_long(self as i64)
     }
 }
 impl<Dst: GlDstType> SrcType<Dst> for f32 {

@@ -26,6 +26,9 @@ objc2-foundation = "0.2.2"
 log = "0.4.21"
 simple_logger = "5.0.0"
 bitflags = "2.6.0"
+hashbrown = "0.14.5"
+ahash = "0.8.11"
+concat-idents = "1.1.5"
 
 
 [features]

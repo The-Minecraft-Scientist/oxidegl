@@ -38,6 +38,12 @@ pub struct Context {
     gl_state: GLState,
     platform_state: PlatformState,
 }
+impl Context {
+    #[inline]
+    pub(crate) fn dirty_render_pass(&mut self) {
+        self.dirty_components |= NeedsRefreshBits::RENDER_PASS;
+    }
+}
 
 impl Context {
     pub(crate) fn new(view: &Id<NSView>) -> Self {

@@ -10,3 +10,13 @@ mod dispatch;
 
 #[allow(non_upper_case_globals, unused)]
 pub mod enums;
+
+#[macro_export]
+macro_rules! debug_unreachable {
+    (unsafe $($msg:tt)*) => {
+        #[cfg(debug_assertions)]
+        unreachable!($($msg)*);
+        #[cfg(not(debug_assertions))]
+        unsafe {core::hint::unreachable_unchecked()}
+    };
+}

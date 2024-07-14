@@ -1,5 +1,5 @@
 use crate::{
-    context::{Context},
+    context::Context,
     dispatch::gl_types::{GLdouble, GLfloat, GLint},
     enums::ClearBufferMask,
 };
@@ -58,7 +58,8 @@ impl Context {
     /// [**glGet**](crate::context::Context::oxidegl_get) with argument [`GL_STENCIL_CLEAR_VALUE`](crate::enums::GL_STENCIL_CLEAR_VALUE)
 
     pub fn oxidegl_clear(&mut self, mask: ClearBufferMask) {
-        panic!("command oxidegl_clear not yet implemented");
+        self.gl_state.clear_mask = mask;
+        self.dirty_render_pass();
     }
     /// ### Parameters
     /// `red`
@@ -94,7 +95,8 @@ impl Context {
         blue: GLfloat,
         alpha: GLfloat,
     ) {
-        panic!("command oxidegl_clear_color not yet implemented");
+        self.gl_state.clear_color = [red, green, blue, alpha];
+        self.dirty_render_pass();
     }
     /// ### Parameters
     /// `s`
@@ -113,7 +115,8 @@ impl Context {
     /// [**glGet**](crate::context::Context::oxidegl_get) with argument [`GL_STENCIL_BITS`](crate::enums::GL_STENCIL_BITS)
 
     pub fn oxidegl_clear_stencil(&mut self, s: GLint) {
-        panic!("command oxidegl_clear_stencil not yet implemented");
+        self.gl_state.clear_stencil = s;
+        self.dirty_render_pass();
     }
 }
 
@@ -140,9 +143,11 @@ impl Context {
 /// [**glGet**](crate::context::Context::oxidegl_get) with argument [`GL_DEPTH_CLEAR_VALUE`](crate::enums::GL_DEPTH_CLEAR_VALUE)
 impl Context {
     pub fn oxidegl_clear_depth(&mut self, depth: GLdouble) {
-        panic!("command oxidegl_clear_depth not yet implemented");
+        self.gl_state.clear_depth = depth as f32;
+        self.dirty_render_pass();
     }
     pub fn oxidegl_clear_depthf(&mut self, d: GLfloat) {
-        panic!("command oxidegl_clear_depthf not yet implemented");
+        self.gl_state.clear_depth = d;
+        self.dirty_render_pass();
     }
 }

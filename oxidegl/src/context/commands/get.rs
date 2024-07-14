@@ -1,10 +1,7 @@
 use log::debug;
 
 #[allow(clippy::wildcard_imports)]
-use crate::{
-    //context::state::item::OxideGLItem,
-    dispatch::gl_types::*,
-};
+use crate::dispatch::gl_types::*;
 
 use crate::{
     context::Context,
@@ -13,21 +10,68 @@ use crate::{
 };
 
 impl Context {
-    fn get<T: GlDstType>(&self, parameter_name: GetPName, ptr: *mut T, idx: Option<GLuint>) {
+    pub unsafe fn oxidegl_get<T: GlDstType>(
+        &self,
+        parameter_name: GetPName,
+        ptr: *mut T,
+        idx: Option<GLuint>,
+    ) {
         debug!(target: "get", "glGet {:#0x}", parameter_name as u32);
-        //Safety: Parameters are guaranteed to exist by GL and we are allowed to have UB if they aren't
+        macro_rules! subst {
+            ($pref:ident {$($middle:ident),+} $tail:ident) => {
+                $(concat_idents::concat_idents!(enum_path = $pref, $middle, $tail, {
+                    crate::enums::GetPName::enum_path
+                } ))|+
+            };
+        }
+        // Safety: Parameters are guaranteed to uphold invariants needed to write to them by the GL spec and we are allowed to cause UB if they aren't
         unsafe {
             match parameter_name {
-                // GL_POINT_SIZE => self.gl_state.point_size.into(), // GL_POINT_SIZE
-                // GL_POINT_SIZE_RANGE => self.gl_state.characteristics.point_size_range.into(), // GL_POINT_SIZE_RANGE
-                // GL_POINT_SIZE_GRANULARITY => {
-                //     self.gl_state.characteristics.point_size_granularity
-                // } // GL_POINT_SIZE_GRANULARITY
-                // GL_LINE_WIDTH => self.gl_state.line_width.into(), // GL_LINE_WIDTH
+                subst!(Max{Combined, Compute, Vertex, TessControl, TessEvaluation, Fragment}AtomicCounterBuffers) =>
+                {
+                    crate::context::state::MAX_ATOMIC_COUNTER_BUFFER_BINDINGS.write_out(idx, ptr);
+                }
+                subst!(Max{Combined, Compute, Vertex, TessControl, TessEvaluation, Fragment}ShaderStorageBlocks) =>
+                {
+                    crate::context::state::MAX_SHADER_STORAGE_BUFFER_BINDINGS.write_out(idx, ptr);
+                }
+                subst!(Max{Combined, Compute, Vertex, TessControl, TessEvaluation, Fragment}UniformBlocks) =>
+                {
+                    crate::context::state::MAX_UNIFORM_BUFFER_BINDINGS.write_out(idx, ptr);
+                }
+                GetPName::PointSize => self.gl_state.point_size.write_out(idx, ptr),
+                GetPName::PointSizeRange => self
+                    .gl_state
+                    .characteristics
+                    .point_size_range
+                    .write_out(idx, ptr),
+                GetPName::PointSizeGranularity => {
+                    self.gl_state
+                        .characteristics
+                        .point_size_granularity
+                        .write_out(idx, ptr);
+                }
+                GetPName::LineWidth => self.gl_state.line_width.write_out(idx, ptr),
+                NumExtensions => self
+                    .gl_state
+                    .characteristics
+                    .num_extensions
+                    .write_out(idx, ptr),
+                ContextFlags => self
+                    .gl_state
+                    .characteristics
+                    .context_flags
+                    .write_out(idx, ptr),
+                ContextProfileMask => self
+                    .gl_state
+                    .characteristics
+                    .context_profile_mask
+                    .write_out(idx, ptr),
                 // GL_LINE_WIDTH_RANGE => self.gl_state.characteristics.line_width_range.into(), // GL_LINE_WIDTH_RANGE
                 // GL_LINE_WIDTH_GRANULARITY => {
                 //     self.gl_state.characteristics.line_width_granularity.into()
                 // } // GL_LINE_WIDTH_GRANULARITY
+
                 //GL_POLYGON_MODE => self.gl_state.polygon_mode.into(), // GL_POLYGON_MODE
                 //GL_CULL_FACE_MODE => self.gl_state.cull_face_mode.into(), // GL_CULL_FACE_MODE
                 // 0x0B46 => self.state.front_face.into(), // GL_FRONT_FACE
@@ -209,16 +253,7 @@ impl Context {
                 // 0x88EF => self.state.pixel_unpack_buffer_binding.into(), // GL_PIXEL_UNPACK_BUFFER_BINDING
                 // 0x821B => self.state.major_version.into(), // GL_MAJOR_VERSION
                 // 0x821C => self.state.minor_version.into(), // GL_MINOR_VERSION
-                NumExtensions => self
-                    .gl_state
-                    .characteristics
-                    .num_extensions
-                    .write_out(idx, ptr),
-                ContextFlags => self
-                    .gl_state
-                    .characteristics
-                    .context_flags
-                    .write_out(idx, ptr),
+
                 // 0x88FF => self.state.max_array_texture_layers.into(), // GL_MAX_ARRAY_TEXTURE_LAYERS
                 // 0x8904 => self.state.min_program_texel_offset.into(), // GL_MIN_PROGRAM_TEXEL_OFFSET
                 // 0x8905 => self.state.max_program_texel_offset.into(), // GL_MAX_PROGRAM_TEXEL_OFFSET
@@ -253,11 +288,6 @@ impl Context {
                 // 0x9123 => self.state.max_geometry_input_components.into(), // GL_MAX_GEOMETRY_INPUT_COMPONENTS
                 // 0x9124 => self.state.max_geometry_output_components.into(), // GL_MAX_GEOMETRY_OUTPUT_COMPONENTS
                 // 0x9125 => self.state.max_fragment_input_components.into(), // GL_MAX_FRAGMENT_INPUT_COMPONENTS
-                ContextProfileMask => self
-                    .gl_state
-                    .characteristics
-                    .context_profile_mask
-                    .write_out(idx, ptr),
                 // 0x8E4F => self.state.provoking_vertex.into(), // GL_PROVOKING_VERTEX
                 // 0x9111 => self.state.max_server_wait_timeout.into(), // GL_MAX_SERVER_WAIT_TIMEOUT
                 // 0x8E59 => self.state.max_sample_mask_words.into(), // GL_MAX_SAMPLE_MASK_WORDS
@@ -336,19 +366,23 @@ impl Context {
     }
 
     pub unsafe fn oxidegl_get_booleanv(&self, pname: GetPName, data: *mut GLboolean) {
-        self.get(pname, data, None);
+        // Safety: Caller ensures pointer validity
+        unsafe { self.oxidegl_get(pname, data, None) };
     }
 
     pub unsafe fn oxidegl_get_doublev(&self, pname: GetPName, data: *mut GLdouble) {
-        self.get(pname, data, None);
+        // Safety: Caller ensures pointer validity
+        unsafe { self.oxidegl_get(pname, data, None) };
     }
 
     pub unsafe fn oxidegl_get_floatv(&self, pname: GetPName, data: *mut GLfloat) {
-        self.get(pname, data, None);
+        // Safety: Caller ensures pointer validity
+        unsafe { self.oxidegl_get(pname, data, None) };
     }
 
     pub unsafe fn oxidegl_get_integerv(&self, pname: GetPName, data: *mut GLint) {
-        self.get(pname, data, None);
+        // Safety: Caller ensures pointer validity
+        unsafe { self.oxidegl_get(pname, data, None) };
     }
 
     pub unsafe fn oxidegl_get_booleani_v(
@@ -357,7 +391,8 @@ impl Context {
         index: GLuint,
         data: *mut GLboolean,
     ) {
-        self.get(target, data, Some(index));
+        // Safety: Caller ensures pointer validity
+        unsafe { self.oxidegl_get(target, data, Some(index)) };
     }
 
     pub unsafe fn oxidegl_get_integeri_v(
@@ -366,11 +401,13 @@ impl Context {
         index: GLuint,
         data: *mut GLint,
     ) {
-        self.get(target, data, Some(index));
+        // Safety: Caller ensures pointer validity
+        unsafe { self.oxidegl_get(target, data, Some(index)) };
     }
 
     pub unsafe fn oxidegl_get_integer64v(&mut self, pname: GetPName, data: *mut GLint64) {
-        self.get(pname, data, None);
+        // Safety: Caller ensures pointer validity
+        unsafe { self.oxidegl_get(pname, data, None) };
     }
     pub unsafe fn oxidegl_get_integer64i_v(
         &mut self,
@@ -378,7 +415,8 @@ impl Context {
         index: GLuint,
         data: *mut GLint64,
     ) {
-        self.get(target, data, Some(index));
+        // Safety: Caller ensures pointer validity
+        unsafe { self.oxidegl_get(target, data, Some(index)) };
     }
 
     pub unsafe fn oxidegl_get_floati_v(
@@ -387,7 +425,8 @@ impl Context {
         index: GLuint,
         data: *mut GLfloat,
     ) {
-        self.get(target, data, Some(index));
+        // Safety: Caller ensures pointer validity
+        unsafe { self.oxidegl_get(target, data, Some(index)) };
     }
 
     pub unsafe fn oxidegl_get_doublei_v(
@@ -396,7 +435,8 @@ impl Context {
         index: GLuint,
         data: *mut GLdouble,
     ) {
-        self.get(target, data, Some(index));
+        // Safety: Caller ensures pointer validity
+        unsafe { self.oxidegl_get(target, data, Some(index)) };
     }
 }
 
