@@ -4,3 +4,4 @@ generated
 /Cargo.lock
 *.DS_Store
 *install.sh
+bin
