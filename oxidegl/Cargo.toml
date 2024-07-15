@@ -5,17 +5,21 @@ edition = "2021"
 [lib]
 crate-type = ["cdylib"]
 
-
-[dependencies]
+# Lock MacOS-Only dependencies to the platform, ensuring an early compile error 
+# if someone tries to build this on a non-Mac system
+[target.'cfg(target_os = "macos")'.dependencies]
+# Objective C Base
 objc2 = "0.5.2"
-strum_macros = "0.26.3"
+# Need to speak Cocoa for interacting with window layers
 objc2-app-kit = { version = "0.2.2", features = [
     "NSView",
     "NSResponder",
     "NSScreen",
     "objc2-quartz-core",
 ] }
+# Need to speak Metal for... well... doing graphics
 objc2-metal = { version = "0.2.2", features = ["all"] }
+# Need to speak CoreAnimation for creating and setting backing layers
 objc2-quartz-core = { version = "0.2.2", features = [
     "objc2-metal",
     "CAMetalLayer",
@@ -23,14 +27,24 @@ objc2-quartz-core = { version = "0.2.2", features = [
 ] }
 objc2-foundation = "0.2.2"
 
+# Need access to raw vm_allocate for [MTLDevice newBufferWithBytesNoCopy];
+machx = "0.4.9"
+
+[dependencies]
+# Logging
 log = "0.4.21"
 simple_logger = "5.0.0"
+
+# Bitflags for GL Bitmasks
 bitflags = "2.6.0"
-hashbrown = "0.14.5"
+# Fast hashmap
 ahash = "0.8.11"
+# Macro utilities
 concat-idents = "1.1.5"
+# FromRepr used for checked GLenum wrapper creation
+strum_macros = "0.26.3"
 
-
+# Expose max log level features
 [features]
 max_log_trace = ["log/max_level_trace"]
 max_log_debug = ["log/max_level_debug"]

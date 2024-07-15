@@ -1,14 +1,16 @@
-use std::{num::NonZeroU32, os::raw::c_void};
+use std::{fmt::Debug, num::NonZeroU32, os::raw::c_void, ptr::NonNull};
 
 use log::debug;
+use objc2::{rc::Retained, runtime::ProtocolObject};
+use objc2_metal::MTLBuffer;
 
 use crate::{
     context::Context,
     dispatch::{
         conversions::{GlDstType, SrcType, UnsafeFromGLenum},
-        gl_types::{GLsizei, GLuint},
+        gl_types::{GLboolean, GLsizei, GLuint},
     },
-    enums::{BufferAccess, BufferTarget, BufferUsage, MapBufferAccessMask},
+    enums::{BufferAccess, BufferStorageMask, BufferTarget, BufferUsage, MapBufferAccessMask},
 };
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -275,27 +277,107 @@ impl Context {
     pub fn oxidegl_bind_buffer(&mut self, target: BufferTarget, buffer: GLuint) {
         panic!("command oxidegl_bind_buffer not yet implemented");
     }
+    /// ### Parameters
+    /// `buffer`
+    ///
+    /// > Specifies a value that may be the name of a buffer object.
+    ///
+    /// ### Description
+    /// [**glIsBuffer**](crate::context::Context::oxidegl_is_buffer) returns [`GL_TRUE`](crate::enums::GL_TRUE)
+    /// if `buffer` is currently the name of a buffer object. If `buffer` is zero,
+    /// or is a non-zero value that is not currently the name of a buffer object,
+    /// or if an error occurs, [**glIsBuffer**](crate::context::Context::oxidegl_is_buffer)
+    /// returns [`GL_FALSE`](crate::enums::GL_FALSE).
+    ///
+    /// A name returned by [**glGenBuffers**](crate::context::Context::oxidegl_gen_buffers),
+    /// but not yet associated with a buffer object by calling [**glBindBuffer**](crate::context::Context::oxidegl_bind_buffer),
+    /// is not the name of a buffer object.
+
+    pub fn oxidegl_is_buffer(&mut self, buffer: GLuint) -> GLboolean {
+        panic!("command oxidegl_is_buffer not yet implemented");
+    }
 }
 
-pub struct Buffer {
-    name: GLuint,
-    binding: BindingInfo,
-    size: usize,
-    usage: BufferUsage,
-    mapping: Option<MappingInfo>,
+#[derive(Debug)]
+/// Represents a GL buffer, tracking all of the state specified by the OpenGL spec, as well as a backing Metal buffer
+///
+/// ## States
+/// in OpenGL buffers have around three different states:
+/// * Named: in this state there exists a u32 that uniquely identifies this slot in the buffer list.
+/// As the reference page and spec note, the existence of a *name* does not imply the existence of a
+/// buffer *object*. Buffer names are created by [glGenBuffers](Context::oxidegl_gen_buffers). This intermediate "named" state
+/// can only be reached without DSA (glCreateBuffers initializes the buffers "as if [they] had been bound to an unspecified target")
+/// * Bound: in this state the "state vector" of the given buffer name is initialized and it is now a buffer object.
+/// Note that binding a buffer does not immediately allocate it. Buffers are bound via glBindBuffers, or created by glCreateBuffers
+/// * Allocated: in this state the buffer has been fully initialized and is ready for use by the GL. Reached by glBufferStorage
+pub(crate) struct Buffer {
+    pub(crate) name: BufferName,
+    pub(crate) current_binding: Option<BindingInfo>,
+    pub(crate) size: usize,
+    pub(crate) usage: BufferUsage,
+    pub(crate) access: BufferAccess,
+    pub(crate) access_flags: MapBufferAccessMask,
+    pub(crate) immutable_storage: bool,
+    pub(crate) storage_flags: BufferStorageMask,
+    pub(crate) allocation: Option<RealizedBufferInternal>,
 }
+#[derive(Debug)]
+/// Repre
+pub(crate) struct RealizedBufferInternal {
+    pub(crate) mapping: Option<MappingInfo>,
+    pub(crate) mtl: Retained<ProtocolObject<dyn MTLBuffer>>,
+}
+impl Buffer {
+    // fn get_best_storage_mode_for_access_hint(access: BufferAccess, usage_hint: BufferUsage) -> MTLStorageMode {
+    //     match usage_hint {
+    //         // CPU Upload once, GPU read a few times
+    //         BufferUsage::StreamDraw => todo!(),
+    //         // Created from GPU data once, CPU read a few times
+    //         BufferUsage::StreamRead => todo!(),
+    //         // Created from GPU once, GPU read a few times
+    //         BufferUsage::StreamCopy => todo!(),
+    //         // CPU upload once, GPU read many times
+    //         BufferUsage::StaticDraw => todo!(),
+    //         // GPU create once, CPU read many times
+    //         BufferUsage::StaticRead => todo!(),
+    //         // GPU create once, GPU read many times
+    //         BufferUsage::StaticCopy => todo!(),
+    //         // CPU upload many times GPU read many times
+    //         BufferUsage::DynamicDraw => todo!(),
+    //         // GPU create many times, CPU read many times
+    //         BufferUsage::DynamicRead => todo!(),
+    //         // GPU create many times, GPU read many times
+    //         BufferUsage::DynamicCopy => todo!(),
+    //     }
+    // }
+    //
+    pub(crate) fn new_default(name: BufferName) -> Self {
+        Self {
+            name,
+            current_binding: None,
+            size: 0,
+            usage: BufferUsage::StaticDraw,
+            access: BufferAccess::ReadWrite,
+            access_flags: MapBufferAccessMask::empty(),
+            immutable_storage: false,
+            storage_flags: BufferStorageMask::empty(),
+            allocation: None,
+        }
+    }
+}
+
+#[derive(Debug)]
 pub struct MappingInfo {
-    access: BufferAccess,
-    access_flags: MapBufferAccessMask,
-    mapped_ptr: *mut c_void,
-    mapped_ptr_offset: usize,
-    mapped_len: usize,
+    pub(crate) mapped_ptr: NonNull<c_void>,
+    pub(crate) mapped_ptr_offset: usize,
+    pub(crate) mapped_len: usize,
 }
+#[derive(Debug)]
 pub struct BindingInfo {
-    target: BufferTarget,
-    index: GLuint,
+    pub(crate) target: BufferTarget,
+    pub(crate) index: GLuint,
 }
-
+#[derive(Debug)]
 pub enum BufferNameState {
     Named,
     Empty,

@@ -5,6 +5,7 @@ use const_format::concatcp;
 use roxmltree::{Document, Node, ParsingOptions};
 use std::{
     collections::{HashMap, HashSet},
+    fs::read_to_string,
     hash::Hash,
     io::Write,
     path::PathBuf,
@@ -88,7 +89,12 @@ fn get_all_entries<'a>(reg: &'a Document<'a>) -> HashMap<&'a str, GLAPIEntry<'a>
                                 current_params.push(Parameter {
                                     name: param_name,
                                     parameter_type: param_type,
-                                    group: param_group.map(|a| a.value()).unwrap_or("").to_string(),
+                                    group: param_group
+                                        .map(|a| a.value())
+                                        .unwrap_or("")
+                                        .trim()
+                                        .trim_end_matches("ARB")
+                                        .to_string(),
                                 });
                             }
                             _ => {}
@@ -250,7 +256,7 @@ fn get_all_required_features<'a>(reg: &'a Document<'a>) -> OrderedFeatureStorage
     }
     feature_set
 }
-
+#[derive(Debug, Clone)]
 pub struct FnCollection<'a> {
     name: Option<String>,
     docs: Option<String>,
@@ -264,7 +270,6 @@ pub struct EnumGroup<'a> {
 #[allow(clippy::type_complexity)]
 pub fn get_vals<'a>(
     spec: &'a Document<'a>,
-    exclude_funcs: &[String],
 ) -> Result<(
     Vec<FnCollection<'a>>,
     Vec<GLAPIEntry<'a>>,
@@ -361,32 +366,35 @@ pub fn get_vals<'a>(
             continue;
         };
 
-        groups.split(',').map(|s| s.trim()).for_each(|group| {
-            match groups_map.entry(group) {
-                std::collections::hash_map::Entry::Vacant(v) => {
-                    v.insert(EnumGroup {
-                        enum_members: vec![enu.clone()],
-                        param_group_members: Vec::new(),
-                    });
-                }
+        groups
+            .split(',')
+            .map(|s| s.trim().trim_end_matches("ARB"))
+            .for_each(|group| {
+                match groups_map.entry(group) {
+                    std::collections::hash_map::Entry::Vacant(v) => {
+                        v.insert(EnumGroup {
+                            enum_members: vec![enu.clone()],
+                            param_group_members: Vec::new(),
+                        });
+                    }
 
-                std::collections::hash_map::Entry::Occupied(mut o) => {
-                    if !o.get().enum_members.iter().any(|v| {
-                        let GLAPIEntry::Enum { name: n, .. } = v else {
-                            return false;
+                    std::collections::hash_map::Entry::Occupied(mut o) => {
+                        if !o.get().enum_members.iter().any(|v| {
+                            let GLAPIEntry::Enum { name: n, .. } = v else {
+                                return false;
+                            };
+                            n == name
+                        }) && !o.get_mut().enum_members.iter().any(|v| {
+                            let GLAPIEntry::Enum { value: val, .. } = v else {
+                                panic!()
+                            };
+                            val == value
+                        }) {
+                            o.get_mut().enum_members.push(enu.clone());
                         };
-                        n == name
-                    }) && !o.get_mut().enum_members.iter().any(|v| {
-                        let GLAPIEntry::Enum { value: val, .. } = v else {
-                            panic!()
-                        };
-                        val == value
-                    }) {
-                        o.get_mut().enum_members.push(enu.clone());
-                    };
-                }
-            };
-        });
+                    }
+                };
+            });
     }
     {
         funcs
@@ -418,22 +426,16 @@ pub fn get_vals<'a>(
                 }
             });
     }
-    funcs.retain(|val: &FnCollection| {
-        val.name.as_ref().map(|n| (exclude_funcs.contains(n))) != Some(true)
-    });
+
     let mut new_map = HashMap::new();
     for (k, val) in groups_map.drain().filter(|(k, val)| {
-        (val.enum_members.len() + val.param_group_members.len() >= 3
-            && !val.param_group_members.is_empty()
-            && !k.contains("SGI")
-            && !k.contains("NV"))
+        (!val.param_group_members.is_empty() && !k.contains("SGI") && !k.contains("NV"))
             || matches!(*k, "RenderbufferParameterName")
     }) {
-        let name = k.trim_end_matches("ARB");
-        if name.is_empty() {
+        if k.is_empty() {
             continue;
         }
-        new_map.insert(name, val);
+        new_map.insert(k, val);
     }
     funcs
         .iter_mut()
@@ -500,6 +502,39 @@ pub fn write_enum_impl<T: Write>(
     Ok(())
 }
 pub fn write_placeholder_impl<T: Write>(w: &mut T, v: &[FnCollection<'_>]) -> Result<()> {
+    let mut funcs = v.to_vec();
+    // Handle exclusions for already implemented items
+    let excludes_file = read_to_string("xtask/implemented.txt")?;
+    let mut exclude_refpage_names = HashSet::new();
+    let mut exclude_function_names = HashSet::new();
+
+    for line in excludes_file.lines() {
+        let trimmed = line.trim_start_matches("p:");
+        if trimmed.len() < line.len() {
+            exclude_refpage_names.insert(trimmed);
+        }
+        let trimmed = line.trim_start_matches("f:");
+        if trimmed.len() < line.len() {
+            exclude_function_names.insert(trimmed);
+        }
+    }
+    dbg!(&exclude_function_names, &exclude_refpage_names);
+
+    funcs.retain(|val: &FnCollection| {
+        val.name
+            .as_ref()
+            .map(|n| (exclude_refpage_names.contains(n.as_str())))
+            != Some(true)
+    });
+    for collection in funcs.iter_mut() {
+        collection.entries.retain(|e| {
+            let GLAPIEntry::Command { name, .. } = e else {
+                panic!()
+            };
+            !exclude_function_names.contains(name)
+        })
+    }
+    let v = &funcs;
     let mut delay = Vec::new();
     let mut seen = HashSet::new();
     let enum_uses = v

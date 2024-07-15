@@ -43,6 +43,10 @@ impl Context {
     pub(crate) fn dirty_render_pass(&mut self) {
         self.dirty_components |= NeedsRefreshBits::RENDER_PASS;
     }
+    #[inline]
+    pub(crate) fn dirty_buffers(&mut self) {
+        self.dirty_components |= NeedsRefreshBits::BUFFERS;
+    }
 }
 
 impl Context {

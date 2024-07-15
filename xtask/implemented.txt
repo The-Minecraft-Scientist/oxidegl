@@ -1,0 +1,20 @@
+// Implemented GL functions. 
+// p: - omit all functions documented by an OpenGL Reference Page with the
+// name converted to snake_case e.g. glGetString becomes gl_get_string
+// f: - omit individual GL command by originalGlCommandName
+//glGet
+p:gl_get
+p:gl_get_string
+//TODO: getInternalformat
+
+//Buffers
+f:glCreateBuffers
+f:glBindBuffer
+f:glGenBuffers
+f:glIsBuffer
+
+//glClear and friends
+p:gl_clear
+p:gl_clear_depth
+f:glClearColor
+f:glClearStencil

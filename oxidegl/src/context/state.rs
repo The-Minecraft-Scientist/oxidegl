@@ -26,7 +26,7 @@ bitflags! {
     #[repr(transparent)]
     pub struct NeedsRefreshBits: u32 {
         const RENDER_PASS = 0b1;
-        const SAMPLERS = 0b10;
+        const BUFFERS = 1 << 1;
     }
 }
 

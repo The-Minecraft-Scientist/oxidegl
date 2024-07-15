@@ -1,25 +1,28 @@
 use crate::context::Context;
 use crate::dispatch::gl_types::*;
 use crate::enums::{
-    AtomicCounterBufferPName, AttributeType, BlendEquationModeEXT, BlendingFactor,
-    BlitFramebufferFilter, Buffer, BufferStorageMask, BufferStorageTarget, ClearBufferMask,
-    ClipControlDepth, ClipControlOrigin, ColorBuffer, ConditionalRenderMode,
-    CopyBufferSubDataTarget, CopyImageSubDataTarget, DebugSeverity, DebugSource, DebugType,
-    DepthFunction, DrawBufferMode, DrawElementsType, EnableCap, FramebufferAttachment,
-    FramebufferAttachmentParameterName, FramebufferParameterName, FramebufferTarget,
-    FrontFaceDirection, GetFramebufferParameter, GetPointervPName, GetTextureParameter, HintMode,
-    HintTarget, InternalFormat, InternalFormatPName, InvalidateFramebufferAttachment, LogicOp,
-    MapBufferAccessMask, MemoryBarrierMask, ObjectIdentifier, PatchParameterName,
-    PipelineParameterName, PixelFormat, PixelStoreParameter, PixelType, PolygonMode, PrecisionType,
-    PrimitiveType, ProgramInterface, ProgramInterfacePName, ProgramParameterPName,
-    ProgramResourceProperty, ProgramStagePName, QueryObjectParameterName, QueryParameterName,
+    AtomicCounterBufferPName, AttributeType, BindTransformFeedbackTarget, BlendEquationModeEXT,
+    BlendingFactor, BlitFramebufferFilter, Buffer, BufferAccess, BufferPName, BufferPointerName,
+    BufferStorageMask, BufferStorageTarget, BufferTarget, BufferUsage, ClampColorMode,
+    ClampColorTarget, ClearBufferMask, ClipControlDepth, ClipControlOrigin, ColorBuffer,
+    ConditionalRenderMode, CopyBufferSubDataTarget, CopyImageSubDataTarget, DebugSeverity,
+    DebugSource, DebugType, DepthFunction, DrawBufferMode, DrawElementsType, EnableCap,
+    FramebufferAttachment, FramebufferAttachmentParameterName, FramebufferParameterName,
+    FramebufferTarget, FrontFaceDirection, GetFramebufferParameter, GetPointervPName,
+    GetTextureParameter, HintMode, HintTarget, InternalFormat, InternalFormatPName,
+    InvalidateFramebufferAttachment, LogicOp, MapBufferAccessMask, MemoryBarrierMask,
+    ObjectIdentifier, PatchParameterName, PipelineParameterName, PixelFormat, PixelStoreParameter,
+    PixelType, PointParameterName, PolygonMode, PrecisionType, PrimitiveType, ProgramInterface,
+    ProgramInterfacePName, ProgramParameterPName, ProgramProperty, ProgramResourceProperty,
+    ProgramStagePName, QueryCounterTarget, QueryObjectParameterName, QueryParameterName,
     QueryTarget, ReadBufferMode, RenderbufferParameterName, RenderbufferTarget, SamplerParameterF,
-    SamplerParameterI, ShaderParameterName, ShaderType, SizedInternalFormat, StencilFunction,
-    StencilOp, SubroutineParameterName, SyncBehaviorFlags, SyncParameterName, TextureParameterName,
-    TextureTarget, TextureUnit, TransformFeedbackBufferMode, TransformFeedbackPName, TriangleFace,
-    UniformBlockPName, UniformPName, UniformType, UseProgramStageMask, VertexArrayPName,
-    VertexAttribEnum, VertexAttribIType, VertexAttribLType, VertexAttribPointerType,
-    VertexAttribType, VertexBufferObjectUsage, VertexProvokingMode,
+    SamplerParameterI, ShaderBinaryFormat, ShaderParameterName, ShaderType, SizedInternalFormat,
+    StencilFunction, StencilOp, SubroutineParameterName, SyncBehaviorFlags, SyncCondition,
+    SyncObjectMask, SyncParameterName, TextureParameterName, TextureTarget, TextureUnit,
+    TransformFeedbackBufferMode, TransformFeedbackPName, TriangleFace, UniformBlockPName,
+    UniformPName, UniformType, UseProgramStageMask, VertexArrayPName, VertexAttribEnum,
+    VertexAttribIType, VertexAttribLType, VertexAttribPointerProperty, VertexAttribPointerType,
+    VertexAttribProperty, VertexAttribType, VertexBufferObjectUsage, VertexProvokingMode,
 };
 
 /// ### Parameters
@@ -1251,10 +1254,10 @@ impl Context {
 impl Context {
     pub unsafe fn oxidegl_buffer_data(
         &mut self,
-        target: GLenum,
+        target: BufferTarget,
         size: GLsizeiptr,
         data: *const GLvoid,
-        usage: GLenum,
+        usage: BufferUsage,
     ) {
         panic!("command oxidegl_buffer_data not yet implemented");
     }
@@ -1517,7 +1520,7 @@ impl Context {
 impl Context {
     pub unsafe fn oxidegl_buffer_sub_data(
         &mut self,
-        target: GLenum,
+        target: BufferTarget,
         offset: GLintptr,
         size: GLsizeiptr,
         data: *const GLvoid,
@@ -1999,7 +2002,7 @@ impl Context {
 impl Context {
     pub unsafe fn oxidegl_clear_buffer_sub_data(
         &mut self,
-        target: GLenum,
+        target: BufferTarget,
         internalformat: SizedInternalFormat,
         offset: GLintptr,
         size: GLsizeiptr,
@@ -2022,7 +2025,6 @@ impl Context {
         panic!("command oxidegl_clear_named_buffer_sub_data not yet implemented");
     }
 }
-
 /// ### Parameters
 /// `buf`
 ///
@@ -2847,9 +2849,9 @@ impl Context {
 /// It is not necessary that `nearVal` be less than `farVal`. Reverse mappings
 /// such as `[inlineq]` `[inlineq]`
 ///
-/// The type of the `nearVal` and `farVal` parameters was changed from `GLclampf`
-/// to `GLfloat` for [**glDepthRangef**](crate::context::Context::oxidegl_depth_rangef)
-/// and from `GLclampd` to `GLdouble` for [**glDepthRange**](crate::context::Context::oxidegl_depth_range).
+/// The type of the `nearVal` and `farVal` parameters was changed from GLclampf
+/// to GLfloat for [**glDepthRangef**](crate::context::Context::oxidegl_depth_rangef)
+/// and from GLclampd to GLdouble for [**glDepthRange**](crate::context::Context::oxidegl_depth_range).
 /// This change is transparent to user code and is described in detail on
 /// the [**removedTypes**](crate::context::Context::oxideremoved_types) page.
 ///
@@ -3444,7 +3446,7 @@ impl Context {
 impl Context {
     pub fn oxidegl_flush_mapped_buffer_range(
         &mut self,
-        target: GLenum,
+        target: BufferTarget,
         offset: GLintptr,
         length: GLsizeiptr,
     ) {
@@ -3730,7 +3732,7 @@ impl Context {
 ///
 /// If `textarget` is [`GL_TEXTURE_3D`](crate::enums::GL_TEXTURE_3D), then
 /// `level` must be greater than or equal to zero and less than or equal to
-/// $`log_2`$ of the value of [`GL_MAX_3D_TEXTURE_SIZE`](crate::enums::GL_MAX_3D_TEXTURE_SIZE).
+/// $log_2$ of the value of [`GL_MAX_3D_TEXTURE_SIZE`](crate::enums::GL_MAX_3D_TEXTURE_SIZE).
 ///
 /// If `textarget` is one of [`GL_TEXTURE_CUBE_MAP_POSITIVE_X`](crate::enums::GL_TEXTURE_CUBE_MAP_POSITIVE_X),
 /// [`GL_TEXTURE_CUBE_MAP_POSITIVE_Y`](crate::enums::GL_TEXTURE_CUBE_MAP_POSITIVE_Y),
@@ -3739,10 +3741,10 @@ impl Context {
 /// [`GL_TEXTURE_CUBE_MAP_NEGATIVE_Y`](crate::enums::GL_TEXTURE_CUBE_MAP_NEGATIVE_Y),
 /// or [`GL_TEXTURE_CUBE_MAP_NEGATIVE_Z`](crate::enums::GL_TEXTURE_CUBE_MAP_NEGATIVE_Z),
 /// then `level` must be greater than or equal to zero and less than or equal
-/// to $`log_2`$ of the value of [`GL_MAX_CUBE_MAP_TEXTURE_SIZE`](crate::enums::GL_MAX_CUBE_MAP_TEXTURE_SIZE).
+/// to $log_2$ of the value of [`GL_MAX_CUBE_MAP_TEXTURE_SIZE`](crate::enums::GL_MAX_CUBE_MAP_TEXTURE_SIZE).
 ///
 /// For all other values of `textarget`, `level` must be greater than or equal
-/// to zero and less than or equal to $`log_2`$ of the value of [`GL_MAX_TEXTURE_SIZE`](crate::enums::GL_MAX_TEXTURE_SIZE).
+/// to zero and less than or equal to $log_2$ of the value of [`GL_MAX_TEXTURE_SIZE`](crate::enums::GL_MAX_TEXTURE_SIZE).
 ///
 /// `layer` specifies the layer of a 2-dimensional image within a 3-dimensional
 /// texture.
@@ -3873,11 +3875,11 @@ impl Context {
 /// multisample array, one- or two-dimensional array, or cube map array texture.
 ///
 /// If `texture` is a three-dimensional texture, then `level` must be greater
-/// than or equal to zero and less than or equal to $`log_2`$ of the value of
+/// than or equal to zero and less than or equal to $log_2$ of the value of
 /// [`GL_MAX_3D_TEXTURE_SIZE`](crate::enums::GL_MAX_3D_TEXTURE_SIZE).
 ///
 /// If `texture` is a two-dimensional array texture, then `level` must be greater
-/// than or equal to zero and less than or equal to $`log_2`$ of the value of
+/// than or equal to zero and less than or equal to $log_2$ of the value of
 /// [`GL_MAX_TEXTURE_SIZE`](crate::enums::GL_MAX_TEXTURE_SIZE).
 ///
 /// For cube map textures, `layer` is translated into a cube map face according
@@ -4071,16 +4073,16 @@ impl Context {
 impl Context {
     pub unsafe fn oxidegl_get_buffer_parameteriv(
         &mut self,
-        target: GLenum,
-        pname: GLenum,
+        target: BufferTarget,
+        pname: BufferPName,
         params: *mut GLint,
     ) {
         panic!("command oxidegl_get_buffer_parameteriv not yet implemented");
     }
     pub unsafe fn oxidegl_get_buffer_parameteri64v(
         &mut self,
-        target: GLenum,
-        pname: GLenum,
+        target: BufferTarget,
+        pname: BufferPName,
         params: *mut GLint64,
     ) {
         panic!("command oxidegl_get_buffer_parameteri64v not yet implemented");
@@ -4088,7 +4090,7 @@ impl Context {
     pub unsafe fn oxidegl_get_named_buffer_parameteriv(
         &mut self,
         buffer: GLuint,
-        pname: GLenum,
+        pname: BufferPName,
         params: *mut GLint,
     ) {
         panic!("command oxidegl_get_named_buffer_parameteriv not yet implemented");
@@ -4096,7 +4098,7 @@ impl Context {
     pub unsafe fn oxidegl_get_named_buffer_parameteri64v(
         &mut self,
         buffer: GLuint,
-        pname: GLenum,
+        pname: BufferPName,
         params: *mut GLint64,
     ) {
         panic!("command oxidegl_get_named_buffer_parameteri64v not yet implemented");
@@ -4164,8 +4166,8 @@ impl Context {
 impl Context {
     pub unsafe fn oxidegl_get_buffer_pointerv(
         &mut self,
-        target: GLenum,
-        pname: GLenum,
+        target: BufferTarget,
+        pname: BufferPointerName,
         params: *mut *mut GLvoid,
     ) {
         panic!("command oxidegl_get_buffer_pointerv not yet implemented");
@@ -4173,7 +4175,7 @@ impl Context {
     pub unsafe fn oxidegl_get_named_buffer_pointerv(
         &mut self,
         buffer: GLuint,
-        pname: GLenum,
+        pname: BufferPointerName,
         params: *mut *mut GLvoid,
     ) {
         panic!("command oxidegl_get_named_buffer_pointerv not yet implemented");
@@ -4244,7 +4246,7 @@ impl Context {
 impl Context {
     pub unsafe fn oxidegl_get_buffer_sub_data(
         &mut self,
-        target: GLenum,
+        target: BufferTarget,
         offset: GLintptr,
         size: GLsizeiptr,
         data: *mut GLvoid,
@@ -5577,12 +5579,12 @@ impl Context {
 ///
 /// | Layer number        | Cube Map Face        |
 /// |---------------------|----------------------|
-/// | 0                   | `GL_TEXTURE_CUBE_MAP_POSITIVE_X` |
-/// | 1                   | `GL_TEXTURE_CUBE_MAP_NEGATIVE_X` |
-/// | 2                   | `GL_TEXTURE_CUBE_MAP_POSITIVE_Y` |
-/// | 3                   | `GL_TEXTURE_CUBE_MAP_NEGATIVE_Y` |
-/// | 4                   | `GL_TEXTURE_CUBE_MAP_POSITIVE_Z` |
-/// | 5                   | `GL_TEXTURE_CUBE_MAP_NEGATIVE_Z` |
+/// | 0                   | GL_TEXTURE_CUBE_MAP_POSITIVE_X |
+/// | 1                   | GL_TEXTURE_CUBE_MAP_NEGATIVE_X |
+/// | 2                   | GL_TEXTURE_CUBE_MAP_POSITIVE_Y |
+/// | 3                   | GL_TEXTURE_CUBE_MAP_NEGATIVE_Y |
+/// | 4                   | GL_TEXTURE_CUBE_MAP_POSITIVE_Z |
+/// | 5                   | GL_TEXTURE_CUBE_MAP_NEGATIVE_Z |
 ///
 /// ### Notes
 /// If an error is generated, no change is made to the contents of `pixels`.
@@ -6185,8 +6187,8 @@ impl Context {
 /// > undergoing;( [`GL_TRANSFORM_FEEDBACK_ACTIVE`](crate::enums::GL_TRANSFORM_FEEDBACK_ACTIVE))
 ///
 ///
-/// The latter class, which includes [**`glGetTransformFeedbacki_v`**](crate::context::Context::oxidegl_get_transform_feedbacki_v)
-/// and [**`glGetTransformFeedbacki64_v`**](crate::context::Context::oxidegl_get_transform_feedbacki64_v)
+/// The latter class, which includes [**glGetTransformFeedbacki_v**](crate::context::Context::oxidegl_get_transform_feedbacki_v)
+/// and [**glGetTransformFeedbacki64_v**](crate::context::Context::oxidegl_get_transform_feedbacki64_v)
 /// functions, can be used to check what the current configuration of each
 /// of the buffer object regions bound to Transform Feedback Buffer binding
 /// points is. This allows you to query for the following information:
@@ -6635,7 +6637,7 @@ impl Context {
     pub unsafe fn oxidegl_get_vertex_attribdv(
         &mut self,
         index: GLuint,
-        pname: GLenum,
+        pname: VertexAttribProperty,
         params: *mut GLdouble,
     ) {
         panic!("command oxidegl_get_vertex_attribdv not yet implemented");
@@ -6643,7 +6645,7 @@ impl Context {
     pub unsafe fn oxidegl_get_vertex_attribfv(
         &mut self,
         index: GLuint,
-        pname: GLenum,
+        pname: VertexAttribProperty,
         params: *mut GLfloat,
     ) {
         panic!("command oxidegl_get_vertex_attribfv not yet implemented");
@@ -6651,7 +6653,7 @@ impl Context {
     pub unsafe fn oxidegl_get_vertex_attribiv(
         &mut self,
         index: GLuint,
-        pname: GLenum,
+        pname: VertexAttribProperty,
         params: *mut GLint,
     ) {
         panic!("command oxidegl_get_vertex_attribiv not yet implemented");
@@ -7052,10 +7054,18 @@ impl Context {
 /// [**glGet**](crate::context::Context::oxidegl_get) with `pname` [`GL_MIN_MAP_BUFFER_ALIGNMENT`](crate::enums::GL_MIN_MAP_BUFFER_ALIGNMENT).
 /// The value must be a power of two that is at least 64.
 impl Context {
-    pub fn oxidegl_map_buffer(&mut self, target: GLenum, access: GLenum) -> *mut GLvoid {
+    pub fn oxidegl_map_buffer(
+        &mut self,
+        target: BufferTarget,
+        access: BufferAccess,
+    ) -> *mut GLvoid {
         panic!("command oxidegl_map_buffer not yet implemented");
     }
-    pub fn oxidegl_map_named_buffer(&mut self, buffer: GLuint, access: GLenum) -> *mut GLvoid {
+    pub fn oxidegl_map_named_buffer(
+        &mut self,
+        buffer: GLuint,
+        access: BufferAccess,
+    ) -> *mut GLvoid {
         panic!("command oxidegl_map_named_buffer not yet implemented");
     }
 }
@@ -7225,7 +7235,7 @@ impl Context {
 impl Context {
     pub fn oxidegl_map_buffer_range(
         &mut self,
-        target: GLenum,
+        target: BufferTarget,
         offset: GLintptr,
         length: GLsizeiptr,
         access: MapBufferAccessMask,
@@ -7606,7 +7616,7 @@ impl Context {
 ///
 /// > If greater than 0, [`GL_PACK_IMAGE_HEIGHT`](crate::enums::GL_PACK_IMAGE_HEIGHT)
 /// > defines the number of pixels in an image three-dimensional texture volume,
-/// > where `image` is defined by all pixels sharing the same third dimension
+/// > where ``image'' is defined by all pixels sharing the same third dimension
 /// > index. If the first pixel of a row is placed at location `[inlineq]`
 ///
 ///
@@ -7693,7 +7703,7 @@ impl Context {
 ///
 /// > If greater than 0, [`GL_UNPACK_IMAGE_HEIGHT`](crate::enums::GL_UNPACK_IMAGE_HEIGHT)
 /// > defines the number of pixels in an image of a three-dimensional texture
-/// > volume. Where `image` is defined by all pixel sharing the same third
+/// > volume. Where ``image'' is defined by all pixel sharing the same third
 /// > dimension index. If the first pixel of a row is placed at location `[inlineq]`
 ///
 ///
@@ -7843,16 +7853,24 @@ impl Context {
 ///
 /// [**glGet**](crate::context::Context::oxidegl_get) with argument [`GL_POINT_SPRITE_COORD_ORIGIN`](crate::enums::GL_POINT_SPRITE_COORD_ORIGIN)
 impl Context {
-    pub fn oxidegl_point_parameterf(&mut self, pname: GLenum, param: GLfloat) {
+    pub fn oxidegl_point_parameterf(&mut self, pname: PointParameterName, param: GLfloat) {
         panic!("command oxidegl_point_parameterf not yet implemented");
     }
-    pub unsafe fn oxidegl_point_parameterfv(&mut self, pname: GLenum, params: *const GLfloat) {
+    pub unsafe fn oxidegl_point_parameterfv(
+        &mut self,
+        pname: PointParameterName,
+        params: *const GLfloat,
+    ) {
         panic!("command oxidegl_point_parameterfv not yet implemented");
     }
-    pub fn oxidegl_point_parameteri(&mut self, pname: GLenum, param: GLint) {
+    pub fn oxidegl_point_parameteri(&mut self, pname: PointParameterName, param: GLint) {
         panic!("command oxidegl_point_parameteri not yet implemented");
     }
-    pub unsafe fn oxidegl_point_parameteriv(&mut self, pname: GLenum, params: *const GLint) {
+    pub unsafe fn oxidegl_point_parameteriv(
+        &mut self,
+        pname: PointParameterName,
+        params: *const GLint,
+    ) {
         panic!("command oxidegl_point_parameteriv not yet implemented");
     }
 }
@@ -11377,7 +11395,7 @@ impl Context {
 /// [**glGetBufferParameter**](crate::context::Context::oxidegl_get_buffer_parameter)
 /// with argument [`GL_BUFFER_MAPPED`](crate::enums::GL_BUFFER_MAPPED).
 impl Context {
-    pub fn oxidegl_unmap_buffer(&mut self, target: GLenum) -> GLboolean {
+    pub fn oxidegl_unmap_buffer(&mut self, target: BufferTarget) -> GLboolean {
         panic!("command oxidegl_unmap_buffer not yet implemented");
     }
     pub fn oxidegl_unmap_named_buffer(&mut self, buffer: GLuint) -> GLboolean {
@@ -12514,7 +12532,6 @@ impl Context {
     ) {
         panic!("command oxidegl_bind_attrib_location not yet implemented");
     }
-
     /// ### Parameters
     /// `target`
     ///
@@ -12552,7 +12569,12 @@ impl Context {
     /// The [`GL_SHADER_STORAGE_BUFFER`](crate::enums::GL_SHADER_STORAGE_BUFFER)
     /// target is available only if the GL version is 4.3 or greater.
 
-    pub fn oxidegl_bind_buffer_base(&mut self, target: GLenum, index: GLuint, buffer: GLuint) {
+    pub fn oxidegl_bind_buffer_base(
+        &mut self,
+        target: BufferTarget,
+        index: GLuint,
+        buffer: GLuint,
+    ) {
         panic!("command oxidegl_bind_buffer_base not yet implemented");
     }
     /// ### Parameters
@@ -12603,7 +12625,7 @@ impl Context {
 
     pub fn oxidegl_bind_buffer_range(
         &mut self,
-        target: GLenum,
+        target: BufferTarget,
         index: GLuint,
         buffer: GLuint,
         offset: GLintptr,
@@ -12654,7 +12676,7 @@ impl Context {
 
     pub unsafe fn oxidegl_bind_buffers_base(
         &mut self,
-        target: GLenum,
+        target: BufferTarget,
         first: GLuint,
         count: GLsizei,
         buffers: *const GLuint,
@@ -12717,7 +12739,7 @@ impl Context {
 
     pub unsafe fn oxidegl_bind_buffers_range(
         &mut self,
-        target: GLenum,
+        target: BufferTarget,
         first: GLuint,
         count: GLsizei,
         buffers: *const GLuint,
@@ -13019,7 +13041,7 @@ impl Context {
         level: GLint,
         layered: GLboolean,
         layer: GLint,
-        access: GLenum,
+        access: BufferAccess,
         format: InternalFormat,
     ) {
         panic!("command oxidegl_bind_image_texture not yet implemented");
@@ -13454,7 +13476,11 @@ impl Context {
     /// ### Associated Gets
     /// [**glGet**](crate::context::Context::oxidegl_get) with argument [`GL_TRANSFORM_FEEDBACK_BINDING`](crate::enums::GL_TRANSFORM_FEEDBACK_BINDING)
 
-    pub fn oxidegl_bind_transform_feedback(&mut self, target: GLenum, id: GLuint) {
+    pub fn oxidegl_bind_transform_feedback(
+        &mut self,
+        target: BindTransformFeedbackTarget,
+        id: GLuint,
+    ) {
         panic!("command oxidegl_bind_transform_feedback not yet implemented");
     }
     /// ### Parameters
@@ -13496,7 +13522,7 @@ impl Context {
     ///
     /// ### Notes
     /// The type of the `red`, `green`, `blue`, and `alpha` parameters was changed
-    /// from `GLclampf` to `GLfloat`. This change is transparent to user code and is
+    /// from GLclampf to GLfloat. This change is transparent to user code and is
     /// described in detail on the [**removedTypes**](crate::context::Context::oxideremoved_types)
     /// page.
     ///
@@ -13535,10 +13561,9 @@ impl Context {
     /// ### Associated Gets
     /// [**glGet**](crate::context::Context::oxidegl_get) with argument [`GL_CLAMP_READ_COLOR`](crate::enums::GL_CLAMP_READ_COLOR).
 
-    pub fn oxidegl_clamp_color(&mut self, target: GLenum, clamp: GLenum) {
+    pub fn oxidegl_clamp_color(&mut self, target: ClampColorTarget, clamp: ClampColorMode) {
         panic!("command oxidegl_clamp_color not yet implemented");
     }
-
     /// ### Parameters
     /// `texture`
     ///
@@ -13769,7 +13794,7 @@ impl Context {
     pub fn oxidegl_client_wait_sync(
         &mut self,
         sync: GLsync,
-        flags: GLbitfield,
+        flags: SyncObjectMask,
         timeout: GLuint64,
     ) -> GLenum {
         panic!("command oxidegl_client_wait_sync not yet implemented");
@@ -13790,20 +13815,20 @@ impl Context {
     /// the clipping volume behavior and the clip coordinate to window coordinate
     /// transformation behavior.
     ///
-    /// The view volume is defined by $$z_{min} \leq `z_c` \leq `w_c`$$ where $z_{min}
-    ///= -`w_c`$ when `depth` is [`GL_NEGATIVE_ONE_TO_ONE`](crate::enums::GL_NEGATIVE_ONE_TO_ONE),
+    /// The view volume is defined by $$z_{min} \leq z_c \leq w_c$$ where $z_{min}
+    ///= -w_c$ when `depth` is [`GL_NEGATIVE_ONE_TO_ONE`](crate::enums::GL_NEGATIVE_ONE_TO_ONE),
     /// and $z_{min}= 0$ when `depth` is [`GL_ZERO_TO_ONE`](crate::enums::GL_ZERO_TO_ONE).
     ///
-    /// The normalized device coordinate $`y_d`$ is given by $$`y_d`={{ f \times `y_c`
-    ///} \over `w_c` }$$ where $f= 1$ when `origin` is [`GL_LOWER_LEFT`](crate::enums::GL_LOWER_LEFT),
+    /// The normalized device coordinate $y_d$ is given by $$y_d={{ f \times y_c
+    ///} \over w_c }$$ where $f= 1$ when `origin` is [`GL_LOWER_LEFT`](crate::enums::GL_LOWER_LEFT),
     /// and $f= -1$ when `origin` is [`GL_UPPER_LEFT`](crate::enums::GL_UPPER_LEFT).
     ///
-    /// The window coordinate $`z_w`$ is given by $$`z_w`= s \times `z_d`+ b$$ where
+    /// The window coordinate $z_w$ is given by $$z_w= s \times z_d+ b$$ where
     /// $s={{ f- n} \over 2 }$ and $b={ {n+ f} \over 2 }$ when `depth` is [`GL_NEGATIVE_ONE_TO_ONE`](crate::enums::GL_NEGATIVE_ONE_TO_ONE),
     /// and $s= f- n$ and $b= n$ when `depth` is [`GL_ZERO_TO_ONE`](crate::enums::GL_ZERO_TO_ONE).
     /// $n$ and $f$ are the near and far depth range values set with [**glDepthRange**](crate::context::Context::oxidegl_depth_range).
     ///
-    /// Finally, the polygon area computation defined by [**`gl_FrontFacing`**](crate::context::Context::oxidegl__front_facing)
+    /// Finally, the polygon area computation defined by [**gl_FrontFacing**](crate::context::Context::oxidegl__front_facing)
     /// to determine if a polygon is front- or back-facing has its sign negated
     /// when `origin` is [`GL_UPPER_LEFT`](crate::enums::GL_UPPER_LEFT).
     ///
@@ -13812,7 +13837,7 @@ impl Context {
     /// and a `depth` of [`GL_NEGATIVE_ONE_TO_ONE`](crate::enums::GL_NEGATIVE_ONE_TO_ONE).
     ///
     /// An `origin` of [`GL_UPPER_LEFT`](crate::enums::GL_UPPER_LEFT) and a `depth`
-    /// of [`GL_ZERO_TO_ONE`](crate::enums::GL_ZERO_TO_ONE) corresponds to `Direct3D`'s
+    /// of [`GL_ZERO_TO_ONE`](crate::enums::GL_ZERO_TO_ONE) corresponds to Direct3D's
     /// clip volume definition.
     ///
     /// An `origin` of [`GL_UPPER_LEFT`](crate::enums::GL_UPPER_LEFT) and a `depth`
@@ -14326,7 +14351,7 @@ impl Context {
     /// to another. [**glCopyImageSubData**](crate::context::Context::oxidegl_copy_image_sub_data)
     /// does not perform general-purpose conversions such as scaling, resizing,
     /// blending, color-space, or format conversions. It should be considered to
-    /// operate in a manner similar to a CPU memcpy. `CopyImageSubData` can copy
+    /// operate in a manner similar to a CPU memcpy. CopyImageSubData can copy
     /// between images with different internal formats, provided the formats are
     /// compatible.
     ///
@@ -14378,7 +14403,7 @@ impl Context {
     /// of slices to be copied with `srcDepth`. Cubemap textures always have six
     /// faces which are selected by a zero-based face index.
     ///
-    /// For the purposes of `CopyImageSubData`, two internal formats are considered
+    /// For the purposes of CopyImageSubData, two internal formats are considered
     /// compatible if any of the following conditions are met: the formats are
     /// > the same,
     ///
@@ -14617,7 +14642,6 @@ impl Context {
     ) {
         panic!("command oxidegl_copy_tex_image2_d not yet implemented");
     }
-
     /// ### Parameters
     /// `n`
     ///
@@ -15661,7 +15685,7 @@ impl Context {
     /// It is not necessary that the near plane distance be less than the far plane
     /// distance. Reverse mappings such as `[inlineq]` `[inlineq]`
     ///
-    /// The type of the `v` parameter was changed from `GLclampd` to `GLdouble`. This
+    /// The type of the `v` parameter was changed from GLclampd to GLdouble. This
     /// change is transparent to user code and is described in detail on the [**removedTypes**](crate::context::Context::oxideremoved_types)
     /// page.
     ///
@@ -15711,8 +15735,8 @@ impl Context {
     /// It is not necessary that the near plane distance be less than the far plane
     /// distance. Reverse mappings such as `[inlineq]` `[inlineq]`
     ///
-    /// The type of the `nearVal` and `farVal` parameters was changed from `GLclampd`
-    /// to `GLdouble`. This change is transparent to user code and is described in
+    /// The type of the `nearVal` and `farVal` parameters was changed from GLclampd
+    /// to GLdouble. This change is transparent to user code and is described in
     /// detail on the [**removedTypes**](crate::context::Context::oxideremoved_types)
     /// page.
     ///
@@ -16817,7 +16841,11 @@ impl Context {
     /// [**glFenceSync**](crate::context::Context::oxidegl_fence_sync) is only
     /// supported if the GL version is 3.2 or greater, or if the
 
-    pub fn oxidegl_fence_sync(&mut self, condition: GLenum, flags: SyncBehaviorFlags) -> GLsync {
+    pub fn oxidegl_fence_sync(
+        &mut self,
+        condition: SyncCondition,
+        flags: SyncBehaviorFlags,
+    ) -> GLsync {
         panic!("command oxidegl_fence_sync not yet implemented");
     }
     /// ### Description
@@ -17586,7 +17614,7 @@ impl Context {
     /// | [`GL_INT_VEC2`](crate::enums::GL_INT_VEC2)                  | [`ivec2`](crate::enums::ivec2)                     |
     /// | [`GL_INT_VEC3`](crate::enums::GL_INT_VEC3)                  | [`ivec3`](crate::enums::ivec3)                     |
     /// | [`GL_INT_VEC4`](crate::enums::GL_INT_VEC4)                  | [`ivec4`](crate::enums::ivec4)                     |
-    /// | [`GL_UNSIGNED_INT`](crate::enums::GL_UNSIGNED_INT)          | [`unsigned int`](`crate::enums::unsigned` int)       |
+    /// | [`GL_UNSIGNED_INT`](crate::enums::GL_UNSIGNED_INT)          | [`unsigned int`](crate::enums::unsigned int)       |
     /// | [`GL_UNSIGNED_INT_VEC2`](crate::enums::GL_UNSIGNED_INT_VEC2) | [`uvec2`](crate::enums::uvec2)                    |
     /// | [`GL_UNSIGNED_INT_VEC3`](crate::enums::GL_UNSIGNED_INT_VEC3) | [`uvec3`](crate::enums::uvec3)                    |
     /// | [`GL_UNSIGNED_INT_VEC4`](crate::enums::GL_UNSIGNED_INT_VEC4) | [`uvec4`](crate::enums::uvec4)                    |
@@ -18028,7 +18056,7 @@ impl Context {
     /// | [`GL_INT_VEC2`](crate::enums::GL_INT_VEC2)                  | [`ivec2`](crate::enums::ivec2)                     |
     /// | [`GL_INT_VEC3`](crate::enums::GL_INT_VEC3)                  | [`ivec3`](crate::enums::ivec3)                     |
     /// | [`GL_INT_VEC4`](crate::enums::GL_INT_VEC4)                  | [`ivec4`](crate::enums::ivec4)                     |
-    /// | [`GL_UNSIGNED_INT`](crate::enums::GL_UNSIGNED_INT)          | [`unsigned int`](`crate::enums::unsigned` int)       |
+    /// | [`GL_UNSIGNED_INT`](crate::enums::GL_UNSIGNED_INT)          | [`unsigned int`](crate::enums::unsigned int)       |
     /// | [`GL_UNSIGNED_INT_VEC2`](crate::enums::GL_UNSIGNED_INT_VEC2) | [`uvec2`](crate::enums::uvec2)                    |
     /// | [`GL_UNSIGNED_INT_VEC3`](crate::enums::GL_UNSIGNED_INT_VEC3) | [`uvec3`](crate::enums::uvec3)                    |
     /// | [`GL_UNSIGNED_INT_VEC4`](crate::enums::GL_UNSIGNED_INT_VEC4) | [`uvec4`](crate::enums::uvec4)                    |
@@ -18648,7 +18676,7 @@ impl Context {
     /// repeatedly returned, the context may be in the process of resetting.
     ///
     /// Reset notification behavior is determined at context creation time, and
-    /// may be queried by calling [**`GetIntegerv`**](crate::context::Context::oxide_get_integerv)
+    /// may be queried by calling [**GetIntegerv**](crate::context::Context::oxide_get_integerv)
     /// with the symbolic constant [`GL_RESET_NOTIFICATION_STRATEGY`](crate::enums::GL_RESET_NOTIFICATION_STRATEGY).
     ///
     /// If the reset notification behavior is [`GL_NO_RESET_NOTIFICATION`](crate::enums::GL_NO_RESET_NOTIFICATION),
@@ -19044,7 +19072,7 @@ impl Context {
     pub unsafe fn oxidegl_get_programiv(
         &mut self,
         program: GLuint,
-        pname: GLenum,
+        pname: ProgramProperty,
         params: *mut GLint,
     ) {
         panic!("command oxidegl_get_programiv not yet implemented");
@@ -19453,7 +19481,7 @@ impl Context {
     /// |---------------|---------------------------------------------------|
     /// | [`GL_NAME_LENGTH`](crate::enums::GL_NAME_LENGTH) | Any except [`GL_ATOMIC_COUNTER_BUFFER`](crate::enums::GL_ATOMIC_COUNTER_BUFFER) and [`GL_TRANSFORM_FEEDBACK_BUFFER`](crate::enums::GL_TRANSFORM_FEEDBACK_BUFFER) |
     /// | [`GL_TYPE`](crate::enums::GL_TYPE) | [`GL_UNIFORM`](crate::enums::GL_UNIFORM), [`GL_PROGRAM_INPUT`](crate::enums::GL_PROGRAM_INPUT), [`GL_PROGRAM_OUTPUT`](crate::enums::GL_PROGRAM_OUTPUT), [`GL_TRANSFORM_FEEDBACK_VARYING`](crate::enums::GL_TRANSFORM_FEEDBACK_VARYING), [`GL_BUFFER_VARIABLE`](crate::enums::GL_BUFFER_VARIABLE) |
-    /// | [`GL_ARRAY_SIZE`](crate::enums::GL_ARRAY_SIZE) | [`GL_UNIFORM`](crate::enums::GL_UNIFORM), [`GL_BUFFER_VARIABLE`](crate::enums::GL_BUFFER_VARIABLE), [`GL_PROGRAM_INPUT`](crate::enums::GL_PROGRAM_INPUT), [`GL_PROGRAM_OUTPUT, VERTEX_SUBROUTINE_UNIFORM`](`crate::enums::GL_PROGRAM_OUTPUT`, `VERTEX_SUBROUTINE_UNIFORM`), [`GL_TESS_CONTROL_SUBROUTINE_UNIFORM`](crate::enums::GL_TESS_CONTROL_SUBROUTINE_UNIFORM), [`GL_TESS_EVALUATION_SUBROUTINE_UNIFORM`](crate::enums::GL_TESS_EVALUATION_SUBROUTINE_UNIFORM), [`GL_GEOMETRY_SUBROUTINE_UNIFORM`](crate::enums::GL_GEOMETRY_SUBROUTINE_UNIFORM), [`GL_FRAGMENT_SUBROUTINE_UNIFORM`](crate::enums::GL_FRAGMENT_SUBROUTINE_UNIFORM), [`GL_COMPUTE_SUBROUTINE_UNIFORM`](crate::enums::GL_COMPUTE_SUBROUTINE_UNIFORM), [`GL_TRANSFORM_FEEDBACK_VARYING`](crate::enums::GL_TRANSFORM_FEEDBACK_VARYING) |
+    /// | [`GL_ARRAY_SIZE`](crate::enums::GL_ARRAY_SIZE) | [`GL_UNIFORM`](crate::enums::GL_UNIFORM), [`GL_BUFFER_VARIABLE`](crate::enums::GL_BUFFER_VARIABLE), [`GL_PROGRAM_INPUT`](crate::enums::GL_PROGRAM_INPUT), [`GL_PROGRAM_OUTPUT, VERTEX_SUBROUTINE_UNIFORM`](crate::enums::GL_PROGRAM_OUTPUT, VERTEX_SUBROUTINE_UNIFORM), [`GL_TESS_CONTROL_SUBROUTINE_UNIFORM`](crate::enums::GL_TESS_CONTROL_SUBROUTINE_UNIFORM), [`GL_TESS_EVALUATION_SUBROUTINE_UNIFORM`](crate::enums::GL_TESS_EVALUATION_SUBROUTINE_UNIFORM), [`GL_GEOMETRY_SUBROUTINE_UNIFORM`](crate::enums::GL_GEOMETRY_SUBROUTINE_UNIFORM), [`GL_FRAGMENT_SUBROUTINE_UNIFORM`](crate::enums::GL_FRAGMENT_SUBROUTINE_UNIFORM), [`GL_COMPUTE_SUBROUTINE_UNIFORM`](crate::enums::GL_COMPUTE_SUBROUTINE_UNIFORM), [`GL_TRANSFORM_FEEDBACK_VARYING`](crate::enums::GL_TRANSFORM_FEEDBACK_VARYING) |
     /// | [`GL_OFFSET`](crate::enums::GL_OFFSET) | [`GL_UNIFORM`](crate::enums::GL_UNIFORM), [`GL_BUFFER_VARIABLE`](crate::enums::GL_BUFFER_VARIABLE), [`GL_TRANSFORM_FEEDBACK_VARYING`](crate::enums::GL_TRANSFORM_FEEDBACK_VARYING) |
     /// | [`GL_BLOCK_INDEX`](crate::enums::GL_BLOCK_INDEX) | [`GL_UNIFORM`](crate::enums::GL_UNIFORM), [`GL_BUFFER_VARIABLE`](crate::enums::GL_BUFFER_VARIABLE) |
     /// | [`GL_ARRAY_STRIDE`](crate::enums::GL_ARRAY_STRIDE) | [`GL_UNIFORM`](crate::enums::GL_UNIFORM), [`GL_BUFFER_VARIABLE`](crate::enums::GL_BUFFER_VARIABLE) |
@@ -20645,7 +20673,7 @@ impl Context {
     /// `format`, `type` and `pixels` have the same meaning as for [**glGetTexImage**](crate::context::Context::oxidegl_get_tex_image).
     /// `bufSize` is the size of the buffer to receive the retrieved pixel data.
     ///
-    /// For cube map textures, the behavior is as though [**`GetTextureImage`**](crate::context::Context::oxide_get_texture_image)
+    /// For cube map textures, the behavior is as though [**GetTextureImage**](crate::context::Context::oxide_get_texture_image)
     /// were called, but only texels from the requested cube map faces (selected
     /// by `zoffset` and `depth`, as described below) were returned.
     ///
@@ -20668,12 +20696,12 @@ impl Context {
     ///
     /// | Layer number        | Cube Map Face        |
     /// |---------------------|----------------------|
-    /// | 0                   | `GL_TEXTURE_CUBE_MAP_POSITIVE_X` |
-    /// | 1                   | `GL_TEXTURE_CUBE_MAP_NEGATIVE_X` |
-    /// | 2                   | `GL_TEXTURE_CUBE_MAP_POSITIVE_Y` |
-    /// | 3                   | `GL_TEXTURE_CUBE_MAP_NEGATIVE_Y` |
-    /// | 4                   | `GL_TEXTURE_CUBE_MAP_POSITIVE_Z` |
-    /// | 5                   | `GL_TEXTURE_CUBE_MAP_NEGATIVE_Z` |
+    /// | 0                   | GL_TEXTURE_CUBE_MAP_POSITIVE_X |
+    /// | 1                   | GL_TEXTURE_CUBE_MAP_NEGATIVE_X |
+    /// | 2                   | GL_TEXTURE_CUBE_MAP_POSITIVE_Y |
+    /// | 3                   | GL_TEXTURE_CUBE_MAP_NEGATIVE_Y |
+    /// | 4                   | GL_TEXTURE_CUBE_MAP_POSITIVE_Z |
+    /// | 5                   | GL_TEXTURE_CUBE_MAP_NEGATIVE_Z |
     ///
     ///
     /// For cube map array textures, `zoffset` is the first layer-face to access,
@@ -21042,7 +21070,7 @@ impl Context {
     pub unsafe fn oxidegl_get_vertex_attrib_pointerv(
         &mut self,
         index: GLuint,
-        pname: GLenum,
+        pname: VertexAttribPointerProperty,
         pointer: *mut *mut GLvoid,
     ) {
         panic!("command oxidegl_get_vertex_attrib_pointerv not yet implemented");
@@ -21282,25 +21310,6 @@ impl Context {
         depth: GLsizei,
     ) {
         panic!("command oxidegl_invalidate_tex_sub_image not yet implemented");
-    }
-    /// ### Parameters
-    /// `buffer`
-    ///
-    /// > Specifies a value that may be the name of a buffer object.
-    ///
-    /// ### Description
-    /// [**glIsBuffer**](crate::context::Context::oxidegl_is_buffer) returns [`GL_TRUE`](crate::enums::GL_TRUE)
-    /// if `buffer` is currently the name of a buffer object. If `buffer` is zero,
-    /// or is a non-zero value that is not currently the name of a buffer object,
-    /// or if an error occurs, [**glIsBuffer**](crate::context::Context::oxidegl_is_buffer)
-    /// returns [`GL_FALSE`](crate::enums::GL_FALSE).
-    ///
-    /// A name returned by [**glGenBuffers**](crate::context::Context::oxidegl_gen_buffers),
-    /// but not yet associated with a buffer object by calling [**glBindBuffer**](crate::context::Context::oxidegl_bind_buffer),
-    /// is not the name of a buffer object.
-
-    pub fn oxidegl_is_buffer(&mut self, buffer: GLuint) -> GLboolean {
-        panic!("command oxidegl_is_buffer not yet implemented");
     }
     /// ### Parameters
     /// `framebuffer`
@@ -21908,7 +21917,7 @@ impl Context {
     /// fragment's samples is implementation dependent.
     ///
     /// ### Notes
-    /// The type of the `value` parameter was changed from `GLclampf` to `GLfloat`.
+    /// The type of the `value` parameter was changed from GLclampf to GLfloat.
     /// This change is transparent to user code and is described in detail on the
     /// [**removedTypes**](crate::context::Context::oxideremoved_types) page.
     ///
@@ -22747,7 +22756,7 @@ impl Context {
     /// [**glQueryCounter**](crate::context::Context::oxidegl_query_counter) is
     /// available only if the GL version is 3.3 or higher.
 
-    pub fn oxidegl_query_counter(&mut self, id: GLuint, target: GLenum) {
+    pub fn oxidegl_query_counter(&mut self, id: GLuint, target: QueryCounterTarget) {
         panic!("command oxidegl_query_counter not yet implemented");
     }
     /// ### Description
@@ -22804,7 +22813,7 @@ impl Context {
     /// allowing those operations to be performed on each sample.
     ///
     /// ### Notes
-    /// The type of the `value` parameter was changed from `GLclampf` to `GLfloat`.
+    /// The type of the `value` parameter was changed from GLclampf to GLfloat.
     /// This change is transparent to user code and is described in detail on the
     /// [**removedTypes**](crate::context::Context::oxideremoved_types) page.
     ///
@@ -22991,7 +23000,7 @@ impl Context {
         &mut self,
         count: GLsizei,
         shaders: *const GLuint,
-        binary_format: GLenum,
+        binary_format: ShaderBinaryFormat,
         binary: *const GLvoid,
         length: GLsizei,
     ) {
@@ -23142,8 +23151,8 @@ impl Context {
     /// `func` is a symbolic constant that determines the stencil comparison function.
     /// It accepts one of eight values, shown in the following list. `ref` is an
     /// integer reference value that is used in the stencil comparison. It is clamped
-    /// to the range `[inlineq]` `[inlineq]` `mask` is bitwise `ANDed` with both
-    /// the reference value and the stored stencil value, with the `ANDed` values
+    /// to the range `[inlineq]` `[inlineq]` `mask` is bitwise ANDed with both
+    /// the reference value and the stored stencil value, with the ANDed values
     /// participating in the comparison.
     ///
     /// If *stencil* represents the value stored in the corresponding stencil buffer
@@ -23258,8 +23267,8 @@ impl Context {
     /// `func` is a symbolic constant that determines the stencil comparison function.
     /// It accepts one of eight values, shown in the following list. `ref` is an
     /// integer reference value that is used in the stencil comparison. It is clamped
-    /// to the range `[inlineq]` `[inlineq]` `mask` is bitwise `ANDed` with both
-    /// the reference value and the stored stencil value, with the `ANDed` values
+    /// to the range `[inlineq]` `[inlineq]` `mask` is bitwise ANDed with both
+    /// the reference value and the stored stencil value, with the ANDed values
     /// participating in the comparison.
     ///
     /// If *stencil* represents the value stored in the corresponding stencil buffer
