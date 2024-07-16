@@ -16,22 +16,24 @@ pub mod enums;
 #[macro_export]
 macro_rules! debug_unreachable {
     (unsafe $($msg:tt)*) => {
+        {
         #[cfg(debug_assertions)]
         unreachable!($($msg)*);
         #[cfg(not(debug_assertions))]
         unsafe {core::hint::unreachable_unchecked()}
+        }
     };
 }
 pub trait OptionResultExt<T> {
     #[track_caller]
     /// # Safety
     /// Caller must ensure that:
-    /// This Result or Option is Some or Ok OR that it is acceptable to cause UB if this Result or Option is not Some
+    /// This Result or Option is Some or Ok OR that it is acceptable to cause UB if this Result or Option is not Some or Ok
     unsafe fn debug_expect(self, msg: &str) -> T;
     #[track_caller]
     /// # Safety
     /// Caller must ensure that:
-    /// This Result or Option is Some or Ok OR that it is acceptable to cause UB if this Result or Option is not Some
+    /// This Result or Option is Some or Ok OR that it is acceptable to cause UB if this Result or Option is not Some or Ok
     unsafe fn debug_unwrap(self) -> T;
 }
 impl<T, E: Error> OptionResultExt<T> for Result<T, E> {

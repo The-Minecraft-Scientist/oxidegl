@@ -8,12 +8,13 @@ use crate::{
     },
 };
 
-use super::commands::buffers::BufferName;
+use super::commands::buffers::{BufferList, BufferName};
 
 #[derive(Debug)]
 pub struct GLState {
     pub(crate) characteristics: Characteristics,
     pub(crate) bindings: BufferBindings,
+    pub(crate) buffer_list: BufferList,
     pub(crate) point_size: f32,
     pub(crate) line_width: f32,
     pub(crate) clear_color: [f32; 4],
@@ -73,8 +74,9 @@ impl GLState {
     pub fn default() -> Self {
         GLState {
             characteristics: Characteristics::new(),
-            bindings: BufferBindings::default(),
 
+            bindings: BufferBindings::default(),
+            buffer_list: BufferList::new(),
             point_size: 1.0,
             line_width: 1.0,
 

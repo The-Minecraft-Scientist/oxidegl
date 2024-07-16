@@ -7616,7 +7616,7 @@ impl Context {
 ///
 /// > If greater than 0, [`GL_PACK_IMAGE_HEIGHT`](crate::enums::GL_PACK_IMAGE_HEIGHT)
 /// > defines the number of pixels in an image three-dimensional texture volume,
-/// > where ``image'' is defined by all pixels sharing the same third dimension
+/// > where ``image`` is defined by all pixels sharing the same third dimension
 /// > index. If the first pixel of a row is placed at location `[inlineq]`
 ///
 ///
@@ -7703,7 +7703,7 @@ impl Context {
 ///
 /// > If greater than 0, [`GL_UNPACK_IMAGE_HEIGHT`](crate::enums::GL_UNPACK_IMAGE_HEIGHT)
 /// > defines the number of pixels in an image of a three-dimensional texture
-/// > volume. Where ``image'' is defined by all pixel sharing the same third
+/// > volume. Where ``image`` is defined by all pixel sharing the same third
 /// > dimension index. If the first pixel of a row is placed at location `[inlineq]`
 ///
 ///
@@ -15213,33 +15213,6 @@ impl Context {
         buf: *const GLchar,
     ) {
         panic!("command oxidegl_debug_message_insert not yet implemented");
-    }
-    /// ### Parameters
-    /// `n`
-    ///
-    /// > Specifies the number of buffer objects to be deleted.
-    ///
-    /// `buffers`
-    ///
-    /// > Specifies an array of buffer objects to be deleted.
-    ///
-    /// ### Description
-    /// [**glDeleteBuffers**](crate::context::Context::oxidegl_delete_buffers)
-    /// deletes `n` buffer objects named by the elements of the array `buffers`.
-    /// After a buffer object is deleted, it has no contents, and its name is
-    /// free for reuse (for example by [**glGenBuffers**](crate::context::Context::oxidegl_gen_buffers)
-    /// ). If a buffer object that is currently bound is deleted, the binding reverts
-    /// to 0 (the absence of any buffer object).
-    ///
-    /// [**glDeleteBuffers**](crate::context::Context::oxidegl_delete_buffers)
-    /// silently ignores 0's and names that do not correspond to existing buffer
-    /// objects.
-    ///
-    /// ### Associated Gets
-    /// [**glIsBuffer**](crate::context::Context::oxidegl_is_buffer)
-
-    pub unsafe fn oxidegl_delete_buffers(&mut self, n: GLsizei, buffers: *const GLuint) {
-        panic!("command oxidegl_delete_buffers not yet implemented");
     }
     /// ### Parameters
     /// `n`
