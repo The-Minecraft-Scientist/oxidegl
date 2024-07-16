@@ -33,22 +33,43 @@ pub trait GlDstType: Copy {
 pub trait SrcType<Dst: GlDstType>: Copy {
     fn cast(self) -> Dst;
 }
+
+pub trait IndexType {
+    fn get(self) -> Option<usize>;
+}
+impl IndexType for u32 {
+    fn get(self) -> Option<usize> {
+        Some(self as usize)
+    }
+}
+pub struct NoIndex;
+
+impl IndexType for NoIndex {
+    fn get(self) -> Option<usize> {
+        None
+    }
+}
+
 /// Trait that allows converting a value to an inferred Dst type according to the conversion rules given by the GL Spec
 /// and unsafely writing it to a type-erased allocation
 pub trait StateQueryWrite<Dst: GlDstType> {
     type It: SrcType<Dst>;
-    unsafe fn write_out(&self, idx: Option<u32>, ptr: *mut Dst);
+    unsafe fn write_out<I: IndexType>(&self, idx: I, ptr: *mut Dst);
+    unsafe fn write_noindex(&self, ptr: *mut Dst) {
+        // Safety: See Self::write_out
+        unsafe { self.write_out(NoIndex, ptr) };
+    }
 }
 
 impl<It: SrcType<Dst>, Dst: GlDstType> StateQueryWrite<Dst> for [It] {
     type It = It;
     #[inline]
-    unsafe fn write_out(&self, idx: Option<u32>, mut ptr: *mut Dst) {
+    unsafe fn write_out<I: IndexType>(&self, idx: I, mut ptr: *mut Dst) {
         debug_assert!(
             ptr.is_aligned(),
             "Destination pointer passed to write_out should have been aligned correctly!"
         );
-        if let Some(i) = idx {
+        if let Some(i) = idx.get() {
             debug_assert!(
                 (i as usize) < self.len(),
                 "Tried to read outside the bounds of a single item"
@@ -69,14 +90,15 @@ impl<It: SrcType<Dst>, Dst: GlDstType> StateQueryWrite<Dst> for [It] {
 impl<It: SrcType<Dst>, Dst: GlDstType> StateQueryWrite<Dst> for It {
     type It = Self;
     #[inline]
-    unsafe fn write_out(&self, idx: Option<u32>, ptr: *mut Dst) {
+    unsafe fn write_out<I: IndexType>(&self, idx: I, ptr: *mut Dst) {
+        let i = idx.get();
         debug_assert!(
-            idx.is_none() || idx.map(|v| v == 0) == Some(true),
-            "Tried to write outside the bounds of a single item"
+            i.is_none() || i.map(|v| v == 0) == Some(true),
+            "UB: Tried to read outside the bounds of a single item"
         );
         debug_assert!(
             ptr.is_aligned(),
-            "Destination pointer passed to write_out should have been aligned correctly!"
+            "UB: Destination pointer passed to write_out should have been aligned correctly!"
         );
         // Safety: caller ensures that Dst is the correct type for the allocation being written to
         unsafe { ptr::write(ptr, self.cast()) }

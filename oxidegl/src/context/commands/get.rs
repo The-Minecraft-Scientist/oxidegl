@@ -1,5 +1,6 @@
 use log::debug;
 
+use crate::dispatch::conversions::{IndexType, NoIndex};
 #[allow(clippy::wildcard_imports)]
 use crate::dispatch::gl_types::*;
 
@@ -12,11 +13,15 @@ use crate::{
 
 impl Context {
     #[inline]
-    pub unsafe fn oxidegl_get<T: GlDstType>(
+    ///
+    ///
+    /// # Safety
+    /// TODO
+    pub unsafe fn oxidegl_get<T: GlDstType, I: IndexType>(
         &self,
         parameter_name: GetPName,
         ptr: *mut T,
-        idx: Option<GLuint>,
+        idx: I,
     ) {
         debug!(target: "get", "glGet {:#0x}", parameter_name as u32);
         macro_rules! subst {
@@ -26,7 +31,7 @@ impl Context {
                 } ))|+
             };
         }
-        // Safety: Parameters are guaranteed to uphold invariants needed to write to them by the GL spec and we are allowed to cause UB if they aren't
+        // Safety: Parameters are guaranteed to uphold invariants needed to write to them by the GL spec and we are allowed to cause UB if they don't
         unsafe {
             match parameter_name {
                 subst!(Max{Combined, Compute, Vertex, TessControl, TessEvaluation, Fragment}AtomicCounterBuffers) =>
@@ -68,17 +73,18 @@ impl Context {
 
                 //Indexed buffer bindings
                 TransformFeedbackBufferBinding => self.gl_state.bindings.transform_feedback
-                    [idx.unwrap_or(0) as usize]
-                    .write_out(None, ptr),
+                    [idx.get().unwrap_or(0) as usize]
+                    .write_noindex(ptr),
                 ShaderStorageBufferBinding => self.gl_state.bindings.shader_storage
-                    [idx.unwrap_or(0) as usize]
-                    .write_out(None, ptr),
+                    [idx.get().unwrap_or(0) as usize]
+                    .write_noindex(ptr),
                 UniformBufferBinding => {
-                    self.gl_state.bindings.uniform[idx.unwrap_or(0) as usize].write_out(None, ptr);
+                    self.gl_state.bindings.uniform[idx.get().unwrap_or(0) as usize]
+                        .write_noindex(ptr);
                 }
                 AtomicCounterBufferBinding => {
-                    self.gl_state.bindings.atomic_counter[idx.unwrap_or(0) as usize]
-                        .write_out(None, ptr);
+                    self.gl_state.bindings.atomic_counter[idx.get().unwrap_or(0) as usize]
+                        .write_noindex(ptr);
                 }
 
                 PointSize => self.gl_state.point_size.write_out(idx, ptr),
@@ -411,25 +417,24 @@ impl Context {
             };
         }
     }
-
     pub unsafe fn oxidegl_get_booleanv(&self, pname: GetPName, data: *mut GLboolean) {
         // Safety: Caller ensures pointer validity
-        unsafe { self.oxidegl_get(pname, data, None) };
+        unsafe { self.oxidegl_get(pname, data, NoIndex) };
     }
 
     pub unsafe fn oxidegl_get_doublev(&self, pname: GetPName, data: *mut GLdouble) {
         // Safety: Caller ensures pointer validity
-        unsafe { self.oxidegl_get(pname, data, None) };
+        unsafe { self.oxidegl_get(pname, data, NoIndex) };
     }
 
     pub unsafe fn oxidegl_get_floatv(&self, pname: GetPName, data: *mut GLfloat) {
         // Safety: Caller ensures pointer validity
-        unsafe { self.oxidegl_get(pname, data, None) };
+        unsafe { self.oxidegl_get(pname, data, NoIndex) };
     }
 
     pub unsafe fn oxidegl_get_integerv(&self, pname: GetPName, data: *mut GLint) {
         // Safety: Caller ensures pointer validity
-        unsafe { self.oxidegl_get(pname, data, None) };
+        unsafe { self.oxidegl_get(pname, data, NoIndex) };
     }
 
     pub unsafe fn oxidegl_get_booleani_v(
@@ -439,7 +444,7 @@ impl Context {
         data: *mut GLboolean,
     ) {
         // Safety: Caller ensures pointer validity
-        unsafe { self.oxidegl_get(target, data, Some(index)) };
+        unsafe { self.oxidegl_get(target, data, index) };
     }
 
     pub unsafe fn oxidegl_get_integeri_v(
@@ -449,12 +454,12 @@ impl Context {
         data: *mut GLint,
     ) {
         // Safety: Caller ensures pointer validity
-        unsafe { self.oxidegl_get(target, data, Some(index)) };
+        unsafe { self.oxidegl_get(target, data, index) };
     }
 
     pub unsafe fn oxidegl_get_integer64v(&mut self, pname: GetPName, data: *mut GLint64) {
         // Safety: Caller ensures pointer validity
-        unsafe { self.oxidegl_get(pname, data, None) };
+        unsafe { self.oxidegl_get(pname, data, NoIndex) };
     }
     pub unsafe fn oxidegl_get_integer64i_v(
         &mut self,
@@ -463,7 +468,7 @@ impl Context {
         data: *mut GLint64,
     ) {
         // Safety: Caller ensures pointer validity
-        unsafe { self.oxidegl_get(target, data, Some(index)) };
+        unsafe { self.oxidegl_get(target, data, index) };
     }
 
     pub unsafe fn oxidegl_get_floati_v(
@@ -473,7 +478,7 @@ impl Context {
         data: *mut GLfloat,
     ) {
         // Safety: Caller ensures pointer validity
-        unsafe { self.oxidegl_get(target, data, Some(index)) };
+        unsafe { self.oxidegl_get(target, data, index) };
     }
 
     pub unsafe fn oxidegl_get_doublei_v(
@@ -483,7 +488,7 @@ impl Context {
         data: *mut GLdouble,
     ) {
         // Safety: Caller ensures pointer validity
-        unsafe { self.oxidegl_get(target, data, Some(index)) };
+        unsafe { self.oxidegl_get(target, data, index) };
     }
 }
 
