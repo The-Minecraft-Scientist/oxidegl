@@ -14,6 +14,8 @@ mod dispatch;
 pub mod enums;
 
 #[macro_export]
+/// [`unreachable!!`](unreachable!), but it produces to [`std::hint::unreachable_unchecked()`] in builds without debug assertions.
+/// Usages must start with the `unsafe` keyword to indicate that this macro has the same semantics as unreachable unchecked
 macro_rules! debug_unreachable {
     (unsafe $($msg:tt)*) => {
         {
@@ -24,7 +26,8 @@ macro_rules! debug_unreachable {
         }
     };
 }
-pub trait OptionResultExt<T> {
+
+pub(crate) trait OptionResultExt<T> {
     #[track_caller]
     /// # Safety
     /// Caller must ensure that:

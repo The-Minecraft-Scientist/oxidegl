@@ -1,6 +1,8 @@
-use std::ptr;
+use core::ptr;
+use std::num::NonZeroU32;
 
 use super::gl_types::GLenum;
+use core::fmt::Debug;
 
 pub trait UnsafeFromGLenum {
     unsafe fn unsafe_from_gl_enum(val: GLenum) -> Self;
@@ -34,19 +36,42 @@ pub trait SrcType<Dst: GlDstType>: Copy {
     fn cast(self) -> Dst;
 }
 
-pub trait IndexType {
+pub trait IndexType: Copy + Sized + Debug {
     fn get(self) -> Option<usize>;
+    fn get_numeric(self) -> usize {
+        self.get().unwrap_or(0)
+    }
 }
 impl IndexType for u32 {
     fn get(self) -> Option<usize> {
         Some(self as usize)
     }
 }
+impl IndexType for Option<u32> {
+    fn get(self) -> Option<usize> {
+        self.map(|v| v as usize)
+    }
+}
+impl IndexType for Option<NonZeroU32> {
+    fn get(self) -> Option<usize> {
+        self.map(|v| v.get() as usize)
+    }
+}
+impl IndexType for usize {
+    fn get(self) -> Option<usize> {
+        Some(self)
+    }
+}
+#[derive(Clone, Copy)]
 pub struct NoIndex;
-
 impl IndexType for NoIndex {
     fn get(self) -> Option<usize> {
         None
+    }
+}
+impl Debug for NoIndex {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.write_str("[unindexed]")
     }
 }
 

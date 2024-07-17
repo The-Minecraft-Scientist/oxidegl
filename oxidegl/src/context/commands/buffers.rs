@@ -1,14 +1,21 @@
-use std::{fmt::Debug, num::NonZeroU32, os::raw::c_void, ptr::NonNull};
+use core::slice;
+use std::{
+    fmt::Debug,
+    mem::{self, swap},
+    num::NonZeroU32,
+    os::raw::c_void,
+    ptr::NonNull,
+};
 
 use log::debug;
 use objc2::{rc::Retained, runtime::ProtocolObject};
 use objc2_metal::MTLBuffer;
 
 use crate::{
-    context::Context,
+    context::{state::NamedObject, Context},
     debug_unreachable,
     dispatch::{
-        conversions::{GLenumExt, GlDstType, SrcType, UnsafeFromGLenum},
+        conversions::{GlDstType, IndexType, NoIndex, SrcType, UnsafeFromGLenum},
         gl_types::{GLboolean, GLsizei, GLuint},
     },
     enums::{BufferAccess, BufferStorageMask, BufferTarget, BufferUsage, MapBufferAccessMask},
@@ -66,18 +73,20 @@ impl Context {
     /// [**glIsBuffer**](crate::context::Context::oxidegl_is_buffer)
 
     pub unsafe fn oxidegl_gen_buffers(&mut self, n: GLsizei, buffers: *mut GLuint) {
-        debug_assert!(n >= 0, "UB: cannot create a negative amount of buffers");
         debug_assert!(!buffers.is_null(), "UB: buffer array pointer was null");
         debug_assert!(
             buffers.is_aligned(),
             "UB: buffer array pointer was not sufficiently aligned"
         );
         debug!("writing {n} new buffer names to {buffers:?}");
-
+        let mut buffers = buffers.cast();
         for _ in 0..n {
-            let name = self.gl_state.buffer_list.new_buffer_name();
+            let name = self.gl_state.buffer_list.new_name();
+            // Safety: Caller ensures buffers is valid to write n buffer names to
+            unsafe { core::ptr::write(buffers, name) }
+            // Safety: See above, this pointer will point at most one item past the end of its allocation
+            unsafe { buffers = buffers.add(1) }
         }
-        panic!("command oxidegl_gen_buffers not yet implemented");
     }
 
     /// ### Parameters
@@ -96,12 +105,20 @@ impl Context {
     /// target.
 
     pub unsafe fn oxidegl_create_buffers(&mut self, n: GLsizei, buffers: *mut GLuint) {
-        debug_assert!(n >= 0, "UB: cannot create a negative amount of buffers");
         debug_assert!(!buffers.is_null(), "UB: buffer array pointer was null");
         debug_assert!(
             buffers.is_aligned(),
             "UB: buffer array pointer was not sufficiently aligned"
         );
+        debug!("writing {n} initialized buffer names to {buffers:?}");
+        let mut buffers = buffers.cast();
+        for _ in 0..n {
+            let name = self.gl_state.buffer_list.new_obj(Buffer::new_default);
+            // Safety: Caller ensures buffers is valid to write n buffer names to
+            unsafe { core::ptr::write(buffers, name) }
+            // Safety: See above, this pointer will point at most one item past the end of its allocation
+            unsafe { buffers = buffers.add(1) }
+        }
 
         panic!("command oxidegl_create_buffers not yet implemented");
     }
@@ -288,7 +305,7 @@ impl Context {
     /// [**glGet**](crate::context::Context::oxidegl_get) with argument [`GL_UNIFORM_BUFFER_BINDING`](crate::enums::GL_UNIFORM_BUFFER_BINDING)
 
     pub fn oxidegl_bind_buffer(&mut self, target: BufferTarget, buffer: GLuint) {
-        panic!("command oxidegl_bind_buffer not yet implemented");
+        self.oxidegl_bind_buffer_internal(BufferName::new(buffer), target, NoIndex);
     }
     /// ### Parameters
     /// `buffer`
@@ -307,10 +324,7 @@ impl Context {
     /// is not the name of a buffer object.
 
     pub fn oxidegl_is_buffer(&mut self, buffer: GLuint) -> GLboolean {
-        let Some(pname) = BufferName::new(buffer) else {
-            return false;
-        };
-        self.gl_state.buffer_list.is_buffer(pname)
+        BufferName::new(buffer).is_some_and(|name| self.gl_state.buffer_list.is_buffer(name))
     }
     /// ### Parameters
     /// `n`
@@ -337,13 +351,109 @@ impl Context {
     /// [**glIsBuffer**](crate::context::Context::oxidegl_is_buffer)
 
     pub unsafe fn oxidegl_delete_buffers(&mut self, n: GLsizei, buffers: *const GLuint) {
-        debug_assert!(n >= 0, "UB: cannot delete a negative amount of buffers");
         debug_assert!(!buffers.is_null(), "UB: buffer array pointer was null");
         debug_assert!(
             buffers.is_aligned(),
             "UB: buffer array pointer was not sufficiently aligned"
         );
-        panic!("command oxidegl_delete_buffers not yet implemented");
+        for &name in
+            // Safety: caller ensures that n and buffers form a valid reference to a u32 slice. Cast from [u32] to
+            // [Option<ReprTransparentStruct(NonZeroU32)>] is guaranteed to be valid by Option niche opt guarantees
+            unsafe {
+                slice::from_raw_parts(buffers.cast::<Option<BufferName>>(), n as usize)
+            }
+            .iter()
+            .flatten()
+        {
+            //Unbind buffer if it is bound
+            if let Some(Some(b)) = self
+                .gl_state
+                .buffer_list
+                .get_mut(name)
+                .map(|buf| buf.current_binding)
+            {
+                self.oxidegl_bind_buffer_internal(None, b.target, NonZeroU32::new(b.index));
+            }
+            self.gl_state.buffer_list.delete_buffer(name);
+            debug!("deleted buffer {name:?}");
+        }
+    }
+}
+
+impl Context {
+    fn oxidegl_bind_buffer_internal<I: IndexType>(
+        &mut self,
+        mut to_bind: Option<BufferName>,
+        target: BufferTarget,
+        idx: I,
+    ) {
+        self.dirty_buffers();
+        let bindings = &mut self.gl_state.bindings;
+        let r = match target {
+            // Safety: Caller ensures idx is in-bounds for indexed targets
+            BufferTarget::UniformBuffer => unsafe {
+                bindings.uniform.get_unchecked_mut(idx.get_numeric())
+            },
+            //Safety: see above
+            BufferTarget::AtomicCounterBuffer => unsafe {
+                bindings.atomic_counter.get_unchecked_mut(idx.get_numeric())
+            },
+            //Safety: see above
+            BufferTarget::ShaderStorageBuffer => unsafe {
+                bindings.shader_storage.get_unchecked_mut(idx.get_numeric())
+            },
+            //Safety: see above
+            BufferTarget::TransformFeedbackBuffer => unsafe {
+                bindings
+                    .transform_feedback
+                    .get_unchecked_mut(idx.get_numeric())
+            },
+            t => {
+                debug_assert!(
+                    idx.get().is_none(),
+                    "UB: Tried to bind at an index of a non-indexed binding target"
+                );
+                &mut match t {
+                    BufferTarget::ArrayBuffer => bindings.array,
+                    BufferTarget::ElementArrayBuffer => bindings.element_array,
+                    BufferTarget::PixelPackBuffer => bindings.pixel_pack,
+                    BufferTarget::PixelUnpackBuffer => bindings.pixel_unpack,
+                    BufferTarget::TextureBuffer => bindings.texture,
+                    BufferTarget::CopyReadBuffer => bindings.copy_read,
+                    BufferTarget::CopyWriteBuffer => bindings.copy_write,
+                    BufferTarget::DrawIndirectBuffer => bindings.draw_indirect,
+                    BufferTarget::DispatchIndirectBuffer => bindings.dispatch_indirect,
+                    BufferTarget::QueryBuffer => bindings.query,
+                    BufferTarget::ParameterBuffer => bindings.parameter,
+                    _ => {
+                        debug_unreachable!(unsafe)
+                    }
+                }
+            }
+        };
+        // Unbind the previously bound buffer's binding entry
+        // u32 is the common index type, so indices can't easily exceed u32::MAX
+        #[allow(clippy::cast_possible_truncation)]
+        if let Some(name) = to_bind {
+            // Safety: caller ensures buffer is valid
+            let r = unsafe { self.gl_state.buffer_list.get_unchecked_mut(name) };
+
+            r.current_binding = Some(BindingInfo {
+                target,
+                index: idx.get_numeric() as u32,
+            });
+        }
+
+        mem::swap(r, &mut to_bind);
+
+        // Unbind the previous buffer's binding entry
+        if let Some(name) = to_bind {
+            // Safety: all bound buffers are valid
+            let r = unsafe { self.gl_state.buffer_list.get_unchecked_mut(name) };
+            r.current_binding = None;
+        }
+
+        debug!("bound buffer {to_bind:?} to binding point {target:?} at index {idx:?}");
     }
 }
 
@@ -357,8 +467,8 @@ impl Context {
 /// buffer *object*. Buffer names are created by [glGenBuffers](Context::oxidegl_gen_buffers). This intermediate "named" state
 /// can only be reached without DSA (glCreateBuffers initializes the buffers "as if \[they] had been bound to an unspecified target")
 /// * Bound: in this state the "state vector" of the given buffer name is initialized and it is now a buffer object.
-/// Note that binding a buffer does not immediately allocate it. Buffers are bound via glBindBuffers, or created by glCreateBuffers
-/// * Allocated: in this state the buffer has been fully initialized and is ready for use by the GL. Reached by glBufferStorage
+/// Note that binding a buffer does not immediately allocate it. Buffers are bound via [glBindBuffer](Context::oxidegl_bind_buffer), or created by glCreateBuffers
+/// * Allocated: in this state the buffer has been fully initialized and is ready for use by the GL. Reached by [glBufferStorage](Context::oxidegl_buffer_storage)
 pub(crate) struct Buffer {
     pub(crate) name: BufferName,
     pub(crate) current_binding: Option<BindingInfo>,
@@ -425,7 +535,7 @@ pub struct MappingInfo {
     /// Length of the region of the buffer which has been mapped
     pub(crate) len: usize,
 }
-#[derive(Debug)]
+#[derive(Debug, Clone, Copy)]
 pub struct BindingInfo {
     /// The binding target this buffer is currently bound to
     pub(crate) target: BufferTarget,
@@ -433,109 +543,21 @@ pub struct BindingInfo {
     pub(crate) index: GLuint,
 }
 
-#[derive(Debug)]
-/// Tracks the state of a given buffer *name* throughout the GL server lifetime
-pub enum BufferNameState {
-    /// No buffer is present; the buffer previously resident in this name has been deleted
-    Empty,
-    /// Indeterminate state that lies between glGenBuffers and glBindBuffers for non-DSA access
-    Named,
-    /// This buffer name is *bound* to a buffer object with the given state
-    Bound(Buffer),
-}
-#[derive(Debug)]
-pub struct BufferList {
-    buffers: Vec<BufferNameState>,
-}
-impl BufferList {
-    pub(crate) fn new() -> Self {
-        Self {
-            buffers: Vec::with_capacity(32),
-        }
+impl NamedObject for Buffer {
+    type Name = BufferName;
+
+    fn name_to_idx(name: Self::Name) -> usize {
+        (name.0.get() - 1) as usize
     }
-    pub(crate) fn get_buffer(&self, name: BufferName) -> Option<&Buffer> {
-        self.buffers
-            .get((name.0.get() - 1) as usize)
-            .and_then(|name_state| match name_state {
-                BufferNameState::Bound(ref b) => Some(b),
-                _ => None,
-            })
-    }
-    pub(crate) unsafe fn get_buffer_unchecked(&self, name: BufferName) -> &Buffer {
-        // Safety: Caller ensures that the buffer at name exists in the buffer list
-        unsafe {
-            match self
-                .buffers
-                .get((name.0.get() - 1) as usize)
-                .debug_expect("UB: Tried to use a buffer name that didn't exist in the list!")
-            {
-                BufferNameState::Bound(ref b) => b,
-                _ => {
-                    debug_unreachable!(unsafe "UB: Tried to get a buffer with a name that has not yet been initialized")
-                }
-            }
-        }
-    }
-    pub(crate) fn get_buffer_mut(&mut self, name: BufferName) -> Option<&mut Buffer> {
-        self.buffers
-            .get_mut((name.0.get() - 1) as usize)
-            .and_then(|name_state| match name_state {
-                BufferNameState::Bound(b) => Some(b),
-                _ => None,
-            })
-    }
-    pub(crate) unsafe fn get_buffer_unchecked_mut(&mut self, name: BufferName) -> &mut Buffer {
-        // Safety: Caller ensures that the buffer at name exists in the buffer list
-        unsafe {
-            match self
-                .buffers
-                .get_mut((name.0.get() - 1) as usize)
-                .debug_expect("UB: Tried to use a buffer name that didn't exist in the list!")
-            {
-                BufferNameState::Bound(b) => b,
-                _ => {
-                    debug_unreachable!(unsafe "UB: Tried to get a buffer with a name that has not yet been initialized")
-                }
-            }
-        }
-    }
-    // Overflow is checked
+    //truncation is checked on debug_assertions
     #[allow(clippy::cast_possible_truncation)]
-    pub(crate) fn new_buffer_name(&mut self) -> BufferName {
-        debug_assert!(
-            self.buffers.len() < (u32::MAX - 1) as usize,
-            "UB: OxideGL does not allow generation of more than u32::MAX buffer names"
-        );
-        // Safety: 1 is added to self.buffers.len(), so it will not be 0. If someone manages to create u32::MAX buffer names
-        // with a release build of OxideGL they will have bigger problems to deal with than an integer overflow
-        let name = unsafe {
+    fn name_from_idx(idx: usize) -> Self::Name {
+        // Safety: 1 is added to self.buffers.len(), so it will not be 0. If someone manages to create u32::MAX object names
+        // with a release build of OxideGL they will probably have bigger problems to deal with than an integer overflow
+        unsafe {
             BufferName(
-                NonZeroU32::new((self.buffers.len() + 1) as u32)
-                    .debug_expect("Overflow in buffer name creation"),
+                NonZeroU32::new((idx + 1) as u32).debug_expect("Overflow in buffer name creation"),
             )
-        };
-        self.buffers.push(BufferNameState::Named);
-        name
-    }
-    // Overflow is checked
-    #[allow(clippy::cast_possible_truncation)]
-    pub(crate) fn new_buffer(&mut self, buf: Buffer) -> BufferName {
-        debug_assert!(
-            self.buffers.len() < (u32::MAX - 1) as usize,
-            "UB: OxideGL does not allow generation of more than u32::MAX buffer names"
-        );
-        // Safety: 1 is added to self.buffers.len(), so it will not be 0. If someone manages to create u32::MAX buffer names
-        // with a release build of OxideGL they will have bigger problems to deal with than an integer overflow
-        let name = unsafe {
-            BufferName(
-                NonZeroU32::new((self.buffers.len() + 1) as u32)
-                    .debug_expect("Overflow in buffer name creation"),
-            )
-        };
-        self.buffers.push(BufferNameState::Bound(buf));
-        name
-    }
-    pub(crate) fn is_buffer(&self, name: BufferName) -> bool {
-        self.get_buffer(name).is_some()
+        }
     }
 }

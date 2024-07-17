@@ -1,20 +1,22 @@
 use bitflags::bitflags;
+use log::debug;
 
 use crate::{
-    dispatch::gl_types::GLenum,
+    debug_unreachable,
+    dispatch::{conversions::IndexType, gl_types::GLenum},
     enums::{
-        ClearBufferMask, GL_CONTEXT_CORE_PROFILE_BIT, GL_CONTEXT_FLAG_FORWARD_COMPATIBLE_BIT,
-        GL_CONTEXT_FLAG_NO_ERROR_BIT,
+        BufferTarget, ClearBufferMask, GL_CONTEXT_CORE_PROFILE_BIT,
+        GL_CONTEXT_FLAG_FORWARD_COMPATIBLE_BIT, GL_CONTEXT_FLAG_NO_ERROR_BIT,
     },
 };
 
-use super::commands::buffers::{BufferList, BufferName};
+use super::commands::buffers::{Buffer, BufferName};
 
 #[derive(Debug)]
 pub struct GLState {
     pub(crate) characteristics: Characteristics,
     pub(crate) bindings: BufferBindings,
-    pub(crate) buffer_list: BufferList,
+    pub(crate) buffer_list: NamedObjectList<Buffer>,
     pub(crate) point_size: f32,
     pub(crate) line_width: f32,
     pub(crate) clear_color: [f32; 4],
@@ -76,7 +78,7 @@ impl GLState {
             characteristics: Characteristics::new(),
 
             bindings: BufferBindings::default(),
-            buffer_list: BufferList::new(),
+            buffer_list: NamedObjectList::new(),
             point_size: 1.0,
             line_width: 1.0,
 
@@ -109,6 +111,108 @@ impl Characteristics {
             context_flags: GL_CONTEXT_FLAG_FORWARD_COMPATIBLE_BIT | GL_CONTEXT_FLAG_NO_ERROR_BIT,
             context_profile_mask: GL_CONTEXT_CORE_PROFILE_BIT,
             ..Default::default()
+        }
+    }
+}
+
+#[derive(Debug)]
+/// Tracks the state of a given *name* throughout the GL server lifetime
+pub enum NameState<T> {
+    /// No object is present; the object previously resident in this name has been deleted
+    Empty,
+    /// Indeterminate state that lies between glGen* and glBind* for non-DSA access
+    Named,
+    /// This object name is *bound* to an object with the given state
+    Bound(T),
+}
+
+pub trait NamedObject {
+    type Name: Clone + Copy;
+    fn name_to_idx(name: Self::Name) -> usize;
+    fn name_from_idx(idx: usize) -> Self::Name;
+}
+
+#[derive(Debug)]
+pub struct NamedObjectList<T> {
+    objects: Vec<NameState<T>>,
+}
+
+impl<Obj: NamedObject> NamedObjectList<Obj> {
+    pub(crate) fn new() -> Self {
+        Self {
+            objects: Vec::with_capacity(32),
+        }
+    }
+    pub(crate) fn get(&self, name: Obj::Name) -> Option<&Obj> {
+        self.objects
+            .get(Obj::name_to_idx(name))
+            .and_then(|name_state| match name_state {
+                NameState::Bound(ref b) => Some(b),
+                _ => None,
+            })
+    }
+    pub(crate) unsafe fn get_unchecked(&self, name: Obj::Name) -> &Obj {
+        // Safety: Caller ensures that the buffer at name exists in the buffer list
+        unsafe {
+            match self.objects.get_unchecked(Obj::name_to_idx(name)) {
+                NameState::Bound(ref b) => b,
+                _ => {
+                    debug_unreachable!(unsafe "UB: Tried to get a buffer with a name that has not yet been initialized")
+                }
+            }
+        }
+    }
+    pub(crate) fn get_mut(&mut self, name: Obj::Name) -> Option<&mut Obj> {
+        self.objects
+            .get_mut(Obj::name_to_idx(name))
+            .and_then(|name_state| match name_state {
+                NameState::Bound(b) => Some(b),
+                _ => None,
+            })
+    }
+    pub(crate) unsafe fn get_unchecked_mut(&mut self, name: Obj::Name) -> &mut Obj {
+        // Safety: Caller ensures that the buffer at name exists in the buffer list
+        unsafe {
+            match self.objects.get_unchecked_mut(Obj::name_to_idx(name)) {
+                NameState::Bound(b) => b,
+                _ => {
+                    debug_unreachable!(unsafe "UB: Tried to get an object with a name that has not yet been initialized")
+                }
+            }
+        }
+    }
+    // Overflow is checked
+    #[allow(clippy::cast_possible_truncation)]
+    pub(crate) fn new_name(&mut self) -> Obj::Name {
+        debug_assert!(
+            self.objects.len() < (u32::MAX - 1) as usize,
+            "UB: OxideGL does not allow generation of more than u32::MAX object names"
+        );
+
+        let name = Obj::name_from_idx(self.objects.len());
+        self.objects.push(NameState::Named);
+        name
+    }
+    // Overflow is checked
+    #[allow(clippy::cast_possible_truncation)]
+    pub(crate) fn new_obj(&mut self, create: impl FnOnce(Obj::Name) -> Obj) -> Obj::Name {
+        debug_assert!(
+            self.objects.len() < (u32::MAX - 1) as usize,
+            "UB: OxideGL does not allow generation of more than u32::MAX object names"
+        );
+        let name = Obj::name_from_idx(self.objects.len());
+        self.objects.push(NameState::Bound(create(name)));
+        name
+    }
+    pub(crate) fn is_buffer(&self, name: Obj::Name) -> bool {
+        self.get(name).is_some()
+    }
+    pub(crate) fn delete_buffer(&mut self, name: Obj::Name) {
+        if let Some(entry) = self.objects.get_mut(Obj::name_to_idx(name)) {
+            let mut e = NameState::Empty;
+            core::mem::swap(entry, &mut e);
+            // make the drop explicit for clarity
+            drop(e);
         }
     }
 }
