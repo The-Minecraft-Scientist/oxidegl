@@ -1,7 +1,7 @@
 use core::slice;
 use std::{
     fmt::Debug,
-    mem::{self, swap},
+    mem::{self},
     num::NonZeroU32,
     os::raw::c_void,
     ptr::NonNull,

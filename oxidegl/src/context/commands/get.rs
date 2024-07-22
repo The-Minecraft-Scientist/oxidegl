@@ -1543,10 +1543,10 @@ impl Context {
                     self.gl_state.buffer_bindings.array.write_out(idx, ptr);
                 }
                 CopyReadBufferBinding => {
-                    self.gl_state.buffer_bindings.copy_read.write_out(idx, ptr)
+                    self.gl_state.buffer_bindings.copy_read.write_out(idx, ptr);
                 }
                 CopyWriteBufferBinding => {
-                    self.gl_state.buffer_bindings.copy_write.write_out(idx, ptr)
+                    self.gl_state.buffer_bindings.copy_write.write_out(idx, ptr);
                 }
                 DispatchIndirectBufferBinding => {
                     self.gl_state
@@ -1567,10 +1567,10 @@ impl Context {
                         .write_out(idx, ptr);
                 }
                 ParameterBufferBinding => {
-                    self.gl_state.buffer_bindings.parameter.write_out(idx, ptr)
+                    self.gl_state.buffer_bindings.parameter.write_out(idx, ptr);
                 }
                 PixelPackBufferBinding => {
-                    self.gl_state.buffer_bindings.pixel_pack.write_out(idx, ptr)
+                    self.gl_state.buffer_bindings.pixel_pack.write_out(idx, ptr);
                 }
                 PixelUnpackBufferBinding => self
                     .gl_state

@@ -1,7 +1,6 @@
 use std::{marker::PhantomData, num::NonZeroU32};
 
 use bitflags::bitflags;
-use log::debug;
 
 use crate::{
     debug_unreachable,
@@ -10,7 +9,7 @@ use crate::{
         gl_types::GLenum,
     },
     enums::{
-        BufferTarget, ClearBufferMask, GL_CONTEXT_CORE_PROFILE_BIT,
+        ClearBufferMask, GL_CONTEXT_CORE_PROFILE_BIT,
         GL_CONTEXT_FLAG_FORWARD_COMPATIBLE_BIT, GL_CONTEXT_FLAG_NO_ERROR_BIT,
     },
 };
