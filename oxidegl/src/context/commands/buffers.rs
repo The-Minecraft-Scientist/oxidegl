@@ -12,40 +12,18 @@ use objc2::{rc::Retained, runtime::ProtocolObject};
 use objc2_metal::MTLBuffer;
 
 use crate::{
-    context::{state::NamedObject, Context},
+    context::{
+        state::{NamedObject, ObjectName},
+        Context,
+    },
     debug_unreachable,
     dispatch::{
-        conversions::{GlDstType, IndexType, NoIndex, SrcType, UnsafeFromGLenum},
+        conversions::{IndexType, NoIndex},
         gl_types::{GLboolean, GLsizei, GLuint},
     },
     enums::{BufferAccess, BufferStorageMask, BufferTarget, BufferUsage, MapBufferAccessMask},
-    OptionResultExt,
 };
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-#[repr(transparent)]
-pub struct BufferName(NonZeroU32);
-impl BufferName {
-    pub fn new(val: u32) -> Option<Self> {
-        Some(Self(NonZeroU32::new(val)?))
-    }
-}
-
-impl UnsafeFromGLenum for BufferName {
-    #[inline]
-    unsafe fn unsafe_from_gl_enum(val: GLuint) -> Self {
-        #[cfg(debug_assertions)]
-        return Self(NonZeroU32::try_from(val).expect("0 is not a valid buffer name!"));
-
-        #[cfg(not(debug_assertions))]
-        return unsafe { core::mem::transmute(val) };
-    }
-}
-impl<Dst: GlDstType> SrcType<Dst> for Option<BufferName> {
-    fn cast(self) -> Dst {
-        Dst::from_uint(self.map_or(0, |s| s.0.get()))
-    }
-}
 impl Context {
     /// ### Parameters
     /// `n`
@@ -305,7 +283,7 @@ impl Context {
     /// [**glGet**](crate::context::Context::oxidegl_get) with argument [`GL_UNIFORM_BUFFER_BINDING`](crate::enums::GL_UNIFORM_BUFFER_BINDING)
 
     pub fn oxidegl_bind_buffer(&mut self, target: BufferTarget, buffer: GLuint) {
-        self.oxidegl_bind_buffer_internal(BufferName::new(buffer), target, NoIndex);
+        self.oxidegl_bind_buffer_internal(ObjectName::from_raw(buffer), target, NoIndex);
     }
     /// ### Parameters
     /// `buffer`
@@ -324,7 +302,7 @@ impl Context {
     /// is not the name of a buffer object.
 
     pub fn oxidegl_is_buffer(&mut self, buffer: GLuint) -> GLboolean {
-        BufferName::new(buffer).is_some_and(|name| self.gl_state.buffer_list.is_buffer(name))
+        ObjectName::from_raw(buffer).is_some_and(|name| self.gl_state.buffer_list.is_buffer(name))
     }
     /// ### Parameters
     /// `n`
@@ -360,7 +338,7 @@ impl Context {
             // Safety: caller ensures that n and buffers form a valid reference to a u32 slice. Cast from [u32] to
             // [Option<ReprTransparentStruct(NonZeroU32)>] is guaranteed to be valid by Option niche opt guarantees
             unsafe {
-                slice::from_raw_parts(buffers.cast::<Option<BufferName>>(), n as usize)
+                slice::from_raw_parts(buffers.cast::<Option<ObjectName<Buffer>>>(), n as usize)
             }
             .iter()
             .flatten()
@@ -383,12 +361,12 @@ impl Context {
 impl Context {
     fn oxidegl_bind_buffer_internal<I: IndexType>(
         &mut self,
-        mut to_bind: Option<BufferName>,
+        mut to_bind: Option<ObjectName<Buffer>>,
         target: BufferTarget,
         idx: I,
     ) {
         self.dirty_buffers();
-        let bindings = &mut self.gl_state.bindings;
+        let bindings = &mut self.gl_state.buffer_bindings;
         let r = match target {
             // Safety: Caller ensures idx is in-bounds for indexed targets
             BufferTarget::UniformBuffer => unsafe {
@@ -470,7 +448,7 @@ impl Context {
 /// Note that binding a buffer does not immediately allocate it. Buffers are bound via [glBindBuffer](Context::oxidegl_bind_buffer), or created by glCreateBuffers
 /// * Allocated: in this state the buffer has been fully initialized and is ready for use by the GL. Reached by [glBufferStorage](Context::oxidegl_buffer_storage)
 pub(crate) struct Buffer {
-    pub(crate) name: BufferName,
+    pub(crate) name: ObjectName<Self>,
     pub(crate) current_binding: Option<BindingInfo>,
     pub(crate) size: usize,
     pub(crate) usage: BufferUsage,
@@ -510,7 +488,7 @@ impl Buffer {
     //     }
     // }
     //
-    pub(crate) fn new_default(name: BufferName) -> Self {
+    pub(crate) fn new_default(name: ObjectName<Buffer>) -> Self {
         Self {
             name,
             current_binding: None,
@@ -543,21 +521,4 @@ pub struct BindingInfo {
     pub(crate) index: GLuint,
 }
 
-impl NamedObject for Buffer {
-    type Name = BufferName;
-
-    fn name_to_idx(name: Self::Name) -> usize {
-        (name.0.get() - 1) as usize
-    }
-    //truncation is checked on debug_assertions
-    #[allow(clippy::cast_possible_truncation)]
-    fn name_from_idx(idx: usize) -> Self::Name {
-        // Safety: 1 is added to self.buffers.len(), so it will not be 0. If someone manages to create u32::MAX object names
-        // with a release build of OxideGL they will probably have bigger problems to deal with than an integer overflow
-        unsafe {
-            BufferName(
-                NonZeroU32::new((idx + 1) as u32).debug_expect("Overflow in buffer name creation"),
-            )
-        }
-    }
-}
+impl NamedObject for Buffer {}

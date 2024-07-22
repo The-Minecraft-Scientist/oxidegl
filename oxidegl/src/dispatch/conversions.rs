@@ -65,6 +65,7 @@ impl IndexType for usize {
 #[derive(Clone, Copy)]
 pub struct NoIndex;
 impl IndexType for NoIndex {
+    #[inline]
     fn get(self) -> Option<usize> {
         None
     }
@@ -75,8 +76,8 @@ impl Debug for NoIndex {
     }
 }
 
-/// Trait that allows converting a value to an inferred Dst type according to the conversion rules given by the GL Spec
-/// and unsafely writing it to a type-erased allocation
+/// Trait that allows converting a value to an inferred Dst type according to the conversion rules
+/// given by the GL Spec for state entries and unsafely writing it to a type-erased allocation
 pub trait StateQueryWrite<Dst: GlDstType> {
     type It: SrcType<Dst>;
     unsafe fn write_out<I: IndexType>(&self, idx: I, ptr: *mut Dst);
@@ -96,12 +97,12 @@ impl<It: SrcType<Dst>, Dst: GlDstType> StateQueryWrite<Dst> for [It] {
         );
         if let Some(i) = idx.get() {
             debug_assert!(
-                (i as usize) < self.len(),
+                i < self.len(),
                 "Tried to read outside the bounds of a single item"
             );
             // Safety: Caller ensures ptr points to an allocation with the correct size and alignment to store a
             // single value of type Dst
-            unsafe { ptr::write(ptr, self.get_unchecked(i as usize).cast()) }
+            unsafe { ptr::write(ptr, self.get_unchecked(i).cast()) }
         }
         for item in self {
             // Safety: Caller ensures that ptr points to an allocation with the same size and alignment as this array.

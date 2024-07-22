@@ -1504,6 +1504,7 @@ impl Context {
     ///
     /// # Safety
     /// TODO
+    #[allow(clippy::too_many_lines)]
     pub unsafe fn oxidegl_get<T: GlDstType, I: IndexType>(
         &self,
         parameter_name: GetPName,
@@ -1539,38 +1540,60 @@ impl Context {
                 }
                 //Buffer Bindings
                 VertexArrayBinding => {
-                    self.gl_state.bindings.array.write_out(idx, ptr);
+                    self.gl_state.buffer_bindings.array.write_out(idx, ptr);
                 }
-                CopyReadBufferBinding => self.gl_state.bindings.copy_read.write_out(idx, ptr),
-                CopyWriteBufferBinding => self.gl_state.bindings.copy_write.write_out(idx, ptr),
+                CopyReadBufferBinding => {
+                    self.gl_state.buffer_bindings.copy_read.write_out(idx, ptr)
+                }
+                CopyWriteBufferBinding => {
+                    self.gl_state.buffer_bindings.copy_write.write_out(idx, ptr)
+                }
                 DispatchIndirectBufferBinding => {
-                    self.gl_state.bindings.dispatch_indirect.write_out(idx, ptr);
+                    self.gl_state
+                        .buffer_bindings
+                        .dispatch_indirect
+                        .write_out(idx, ptr);
                 }
                 DrawIndirectBufferBinding => {
-                    self.gl_state.bindings.draw_indirect.write_out(idx, ptr);
+                    self.gl_state
+                        .buffer_bindings
+                        .draw_indirect
+                        .write_out(idx, ptr);
                 }
                 ElementArrayBufferBinding => {
-                    self.gl_state.bindings.element_array.write_out(idx, ptr);
+                    self.gl_state
+                        .buffer_bindings
+                        .element_array
+                        .write_out(idx, ptr);
                 }
-                ParameterBufferBinding => self.gl_state.bindings.parameter.write_out(idx, ptr),
-                PixelPackBufferBinding => self.gl_state.bindings.pixel_pack.write_out(idx, ptr),
-                PixelUnpackBufferBinding => self.gl_state.bindings.pixel_unpack.write_out(idx, ptr),
-                QueryBufferBinding => self.gl_state.bindings.query.write_out(idx, ptr),
-                TextureBufferBinding => self.gl_state.bindings.texture.write_out(idx, ptr),
+                ParameterBufferBinding => {
+                    self.gl_state.buffer_bindings.parameter.write_out(idx, ptr)
+                }
+                PixelPackBufferBinding => {
+                    self.gl_state.buffer_bindings.pixel_pack.write_out(idx, ptr)
+                }
+                PixelUnpackBufferBinding => self
+                    .gl_state
+                    .buffer_bindings
+                    .pixel_unpack
+                    .write_out(idx, ptr),
+                QueryBufferBinding => self.gl_state.buffer_bindings.query.write_out(idx, ptr),
+                TextureBufferBinding => self.gl_state.buffer_bindings.texture.write_out(idx, ptr),
 
                 //Indexed buffer bindings
-                TransformFeedbackBufferBinding => self.gl_state.bindings.transform_feedback
+                TransformFeedbackBufferBinding => self.gl_state.buffer_bindings.transform_feedback
                     [idx.get().unwrap_or(0)]
                 .write_noindex(ptr),
                 ShaderStorageBufferBinding => {
-                    self.gl_state.bindings.shader_storage[idx.get().unwrap_or(0)]
+                    self.gl_state.buffer_bindings.shader_storage[idx.get().unwrap_or(0)]
                         .write_noindex(ptr);
                 }
                 UniformBufferBinding => {
-                    self.gl_state.bindings.uniform[idx.get().unwrap_or(0)].write_noindex(ptr);
+                    self.gl_state.buffer_bindings.uniform[idx.get().unwrap_or(0)]
+                        .write_noindex(ptr);
                 }
                 AtomicCounterBufferBinding => {
-                    self.gl_state.bindings.atomic_counter[idx.get().unwrap_or(0)]
+                    self.gl_state.buffer_bindings.atomic_counter[idx.get().unwrap_or(0)]
                         .write_noindex(ptr);
                 }
 

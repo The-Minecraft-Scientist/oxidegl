@@ -1,22 +1,28 @@
+use std::{marker::PhantomData, num::NonZeroU32};
+
 use bitflags::bitflags;
 use log::debug;
 
 use crate::{
     debug_unreachable,
-    dispatch::{conversions::IndexType, gl_types::GLenum},
+    dispatch::{
+        conversions::{GlDstType, IndexType, SrcType},
+        gl_types::GLenum,
+    },
     enums::{
         BufferTarget, ClearBufferMask, GL_CONTEXT_CORE_PROFILE_BIT,
         GL_CONTEXT_FLAG_FORWARD_COMPATIBLE_BIT, GL_CONTEXT_FLAG_NO_ERROR_BIT,
     },
 };
 
-use super::commands::buffers::{Buffer, BufferName};
+use super::commands::{buffers::Buffer, vaos::Vao};
 
 #[derive(Debug)]
 pub struct GLState {
     pub(crate) characteristics: Characteristics,
-    pub(crate) bindings: BufferBindings,
+    pub(crate) buffer_bindings: BufferBindings,
     pub(crate) buffer_list: NamedObjectList<Buffer>,
+    pub(crate) vao_list: NamedObjectList<Vao>,
     pub(crate) point_size: f32,
     pub(crate) line_width: f32,
     pub(crate) clear_color: [f32; 4],
@@ -41,44 +47,46 @@ pub const MAX_UNIFORM_BUFFER_BINDINGS: usize = 16;
 #[derive(Debug, Clone, Copy, Default)]
 pub struct BufferBindings {
     /// Vertex attribute buffer
-    pub(crate) array: Option<BufferName>,
+    pub(crate) array: Option<ObjectName<Buffer>>,
     /// Atomic counter storage
-    pub(crate) atomic_counter: [Option<BufferName>; MAX_ATOMIC_COUNTER_BUFFER_BINDINGS],
+    pub(crate) atomic_counter: [Option<ObjectName<Buffer>>; MAX_ATOMIC_COUNTER_BUFFER_BINDINGS],
     /// Buffer copy source
-    pub(crate) copy_read: Option<BufferName>,
+    pub(crate) copy_read: Option<ObjectName<Buffer>>,
     /// Buffer copy destination
-    pub(crate) copy_write: Option<BufferName>,
+    pub(crate) copy_write: Option<ObjectName<Buffer>>,
     /// Indirect compute dispatch commands
-    pub(crate) dispatch_indirect: Option<BufferName>,
+    pub(crate) dispatch_indirect: Option<ObjectName<Buffer>>,
     /// Indirect draw command arguments
-    pub(crate) draw_indirect: Option<BufferName>,
+    pub(crate) draw_indirect: Option<ObjectName<Buffer>>,
     /// Vertex array indices
-    pub(crate) element_array: Option<BufferName>,
+    pub(crate) element_array: Option<ObjectName<Buffer>>,
     /// Draw parameters
-    pub(crate) parameter: Option<BufferName>,
+    pub(crate) parameter: Option<ObjectName<Buffer>>,
     /// Pixel read target
-    pub(crate) pixel_pack: Option<BufferName>,
+    pub(crate) pixel_pack: Option<ObjectName<Buffer>>,
     /// Texture data source
-    pub(crate) pixel_unpack: Option<BufferName>,
+    pub(crate) pixel_unpack: Option<ObjectName<Buffer>>,
     /// Query results
-    pub(crate) query: Option<BufferName>,
+    pub(crate) query: Option<ObjectName<Buffer>>,
     /// Shader storage buffers
-    pub(crate) shader_storage: [Option<BufferName>; MAX_SHADER_STORAGE_BUFFER_BINDINGS],
+    pub(crate) shader_storage: [Option<ObjectName<Buffer>>; MAX_SHADER_STORAGE_BUFFER_BINDINGS],
     /// Texture data buffer
-    pub(crate) texture: Option<BufferName>,
+    pub(crate) texture: Option<ObjectName<Buffer>>,
     /// Transform feedback result buffers
-    pub(crate) transform_feedback: [Option<BufferName>; MAX_TRANSFORM_FEEDBACK_BUFFER_BINDINGS],
+    pub(crate) transform_feedback:
+        [Option<ObjectName<Buffer>>; MAX_TRANSFORM_FEEDBACK_BUFFER_BINDINGS],
     /// Uniform storage buffers
-    pub(crate) uniform: [Option<BufferName>; MAX_UNIFORM_BUFFER_BINDINGS],
+    pub(crate) uniform: [Option<ObjectName<Buffer>>; MAX_UNIFORM_BUFFER_BINDINGS],
 }
 
 impl GLState {
     pub fn default() -> Self {
         GLState {
             characteristics: Characteristics::new(),
-
-            bindings: BufferBindings::default(),
+            buffer_bindings: BufferBindings::default(),
             buffer_list: NamedObjectList::new(),
+
+            vao_list: NamedObjectList::new(),
             point_size: 1.0,
             line_width: 1.0,
 
@@ -125,13 +133,39 @@ pub enum NameState<T> {
     /// This object name is *bound* to an object with the given state
     Bound(T),
 }
-
-pub trait NamedObject {
-    type Name: Clone + Copy;
-    fn name_to_idx(name: Self::Name) -> usize;
-    fn name_from_idx(idx: usize) -> Self::Name;
+#[derive(Debug, PartialEq, Eq)]
+#[repr(transparent)]
+pub struct ObjectName<Obj>(NonZeroU32, PhantomData<for<'a> fn(&'a Obj) -> &'a Obj>);
+impl<T> Clone for ObjectName<T> {
+    fn clone(&self) -> Self {
+        *self
+    }
 }
-
+impl<T> Copy for ObjectName<T> {}
+impl<T> ObjectName<T> {
+    #[allow(clippy::cast_possible_truncation)]
+    #[inline]
+    unsafe fn from_idx(val: usize) -> Self {
+        Self(
+            //Safety: Caller ensures val is <= u32::MAX - 1
+            unsafe { NonZeroU32::new_unchecked((val + 1) as u32) },
+            PhantomData,
+        )
+    }
+    pub fn from_raw(name: u32) -> Option<Self> {
+        Some(Self(NonZeroU32::new(name)?, PhantomData))
+    }
+    #[inline]
+    pub fn to_idx(self) -> usize {
+        (self.0.get() - 1) as usize
+    }
+}
+pub trait NamedObject {}
+impl<Dst: GlDstType, T> SrcType<Dst> for Option<ObjectName<T>> {
+    fn cast(self) -> Dst {
+        Dst::from_uint(self.map_or(0, |v| v.0.get()))
+    }
+}
 #[derive(Debug)]
 pub struct NamedObjectList<T> {
     objects: Vec<NameState<T>>,
@@ -143,18 +177,18 @@ impl<Obj: NamedObject> NamedObjectList<Obj> {
             objects: Vec::with_capacity(32),
         }
     }
-    pub(crate) fn get(&self, name: Obj::Name) -> Option<&Obj> {
+    pub(crate) fn get(&self, name: ObjectName<Obj>) -> Option<&Obj> {
         self.objects
-            .get(Obj::name_to_idx(name))
+            .get(name.to_idx())
             .and_then(|name_state| match name_state {
                 NameState::Bound(ref b) => Some(b),
                 _ => None,
             })
     }
-    pub(crate) unsafe fn get_unchecked(&self, name: Obj::Name) -> &Obj {
+    pub(crate) unsafe fn get_unchecked(&self, name: ObjectName<Obj>) -> &Obj {
         // Safety: Caller ensures that the buffer at name exists in the buffer list
         unsafe {
-            match self.objects.get_unchecked(Obj::name_to_idx(name)) {
+            match self.objects.get_unchecked(name.to_idx()) {
                 NameState::Bound(ref b) => b,
                 _ => {
                     debug_unreachable!(unsafe "UB: Tried to get a buffer with a name that has not yet been initialized")
@@ -162,18 +196,18 @@ impl<Obj: NamedObject> NamedObjectList<Obj> {
             }
         }
     }
-    pub(crate) fn get_mut(&mut self, name: Obj::Name) -> Option<&mut Obj> {
+    pub(crate) fn get_mut(&mut self, name: ObjectName<Obj>) -> Option<&mut Obj> {
         self.objects
-            .get_mut(Obj::name_to_idx(name))
+            .get_mut(name.to_idx())
             .and_then(|name_state| match name_state {
                 NameState::Bound(b) => Some(b),
                 _ => None,
             })
     }
-    pub(crate) unsafe fn get_unchecked_mut(&mut self, name: Obj::Name) -> &mut Obj {
+    pub(crate) unsafe fn get_unchecked_mut(&mut self, name: ObjectName<Obj>) -> &mut Obj {
         // Safety: Caller ensures that the buffer at name exists in the buffer list
         unsafe {
-            match self.objects.get_unchecked_mut(Obj::name_to_idx(name)) {
+            match self.objects.get_unchecked_mut(name.to_idx()) {
                 NameState::Bound(b) => b,
                 _ => {
                     debug_unreachable!(unsafe "UB: Tried to get an object with a name that has not yet been initialized")
@@ -183,32 +217,37 @@ impl<Obj: NamedObject> NamedObjectList<Obj> {
     }
     // Overflow is checked
     #[allow(clippy::cast_possible_truncation)]
-    pub(crate) fn new_name(&mut self) -> Obj::Name {
+    pub(crate) fn new_name(&mut self) -> ObjectName<Obj> {
         debug_assert!(
             self.objects.len() < (u32::MAX - 1) as usize,
             "UB: OxideGL does not allow generation of more than u32::MAX object names"
         );
 
-        let name = Obj::name_from_idx(self.objects.len());
+        // Safety: see assertion
+        let name = unsafe { ObjectName::from_idx(self.objects.len()) };
         self.objects.push(NameState::Named);
         name
     }
     // Overflow is checked
     #[allow(clippy::cast_possible_truncation)]
-    pub(crate) fn new_obj(&mut self, create: impl FnOnce(Obj::Name) -> Obj) -> Obj::Name {
+    pub(crate) fn new_obj(
+        &mut self,
+        create: impl FnOnce(ObjectName<Obj>) -> Obj,
+    ) -> ObjectName<Obj> {
         debug_assert!(
             self.objects.len() < (u32::MAX - 1) as usize,
             "UB: OxideGL does not allow generation of more than u32::MAX object names"
         );
-        let name = Obj::name_from_idx(self.objects.len());
+        // Safety: see assertion
+        let name = unsafe { ObjectName::from_idx(self.objects.len()) };
         self.objects.push(NameState::Bound(create(name)));
         name
     }
-    pub(crate) fn is_buffer(&self, name: Obj::Name) -> bool {
+    pub(crate) fn is_buffer(&self, name: ObjectName<Obj>) -> bool {
         self.get(name).is_some()
     }
-    pub(crate) fn delete_buffer(&mut self, name: Obj::Name) {
-        if let Some(entry) = self.objects.get_mut(Obj::name_to_idx(name)) {
+    pub(crate) fn delete_buffer(&mut self, name: ObjectName<Obj>) {
+        if let Some(entry) = self.objects.get_mut(name.to_idx()) {
             let mut e = NameState::Empty;
             core::mem::swap(entry, &mut e);
             // make the drop explicit for clarity
