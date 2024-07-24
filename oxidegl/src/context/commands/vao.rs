@@ -9,11 +9,10 @@ use crate::{
         Context,
     },
     dispatch::{
-        conversions::{CurrentBinding, GLenumExt, IndexType, MaybeObjectName},
+        conversions::{CurrentBinding, IndexType, MaybeObjectName},
         gl_types::{GLboolean, GLenum, GLint, GLsizei, GLuint},
     },
     enums::{VertexAttribIType, VertexAttribType},
-    OptionResultExt,
 };
 
 /// ### Parameters
