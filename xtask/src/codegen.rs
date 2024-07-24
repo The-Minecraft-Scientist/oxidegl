@@ -429,7 +429,10 @@ pub fn get_vals<'a>(
 
     let mut new_map = HashMap::new();
     for (k, val) in groups_map.drain().filter(|(k, val)| {
-        (!val.param_group_members.is_empty() && !k.contains("SGI") && !k.contains("NV"))
+        (!val.param_group_members.is_empty()
+            && !k.contains("SGI")
+            && !k.contains("NV")
+            && val.enum_members.len() > 1)
             || matches!(*k, "RenderbufferParameterName")
     }) {
         if k.is_empty() {

@@ -108,11 +108,13 @@ impl TaskTrait for BuildOxideGL {
     }
 
     fn perform(&self) -> Result<()> {
+        println!("Building OxideGL");
         let mut c = Command::new("cargo");
         c.arg("build");
 
         if self.release {
             c.arg("-r");
+            c.env("OXIDEGL_RELEASE", "1");
         }
 
         c.args(["--features", &format!("max_log_{}", self.logging_level)]);
@@ -139,6 +141,7 @@ impl TaskTrait for BuildOxideGL {
                 ),
                 "/usr/local/lib/liboxidegl.dylib",
             )?;
+            println!("Installed OxideGL to /user/local/lib/liboxidegl.dylib");
         }
         Ok(())
     }
@@ -181,6 +184,10 @@ impl TaskTrait for GenGLFWBuild {
                 p.as_os_str().to_str().unwrap()
             )
         }
+        println!(
+            "Generated out of tree build directory for OxideGL-GLFW at {:?}",
+            &p.canonicalize().unwrap()
+        );
         Ok(())
     }
 }
@@ -213,6 +220,7 @@ impl TaskTrait for BuildGLFW {
         if !out.status.success() {
             bail!("error from make");
         }
+        println!("Built OxideGL-GLFW");
         Ok(())
     }
 }
@@ -250,13 +258,16 @@ impl TaskTrait for GenerateBindings {
                 write_placeholder_impl(&mut writer, &funcs)?;
                 drop(writer);
                 rustfmt_file(path_to_write)?;
+                println!("generated unimplemented.rs placeholder");
             }
+
             if self.dispatch {
                 let path_to_write = out_dir.join("gl_core.rs");
                 let mut writer = open_file_writer(&path_to_write)?;
                 write_dispatch_impl(&mut writer, &funcs)?;
                 drop(writer);
                 rustfmt_file(path_to_write)?;
+                println!("generated gl_core.rs dispatch");
             }
             if self.enums {
                 let path_to_write = out_dir.join("enums.rs");
@@ -264,6 +275,7 @@ impl TaskTrait for GenerateBindings {
                 write_enum_impl(&mut writer, &enums, &group_map)?;
                 drop(writer);
                 rustfmt_file(path_to_write)?;
+                println!("generated enums.rs enums and groups");
             }
         }
 
@@ -273,7 +285,7 @@ impl TaskTrait for GenerateBindings {
 fn rustfmt_file(path: impl AsRef<Path>) -> Result<()> {
     let mut s = Command::new("rustfmt").arg(path.as_ref()).spawn()?;
     if !s.wait()?.success() {
-        bail!("rustfmt did not exit successfully! this means we generated malformed code");
+        bail!("rustfmt did not exit successfully! this means codegen generated malformed code!");
     }
     Ok(())
 }
@@ -335,14 +347,7 @@ impl TaskTrait for GetXcodeCommandLineTools {
     }
 }
 fn submodule_init(paths: &[&str]) -> Result<()> {
-    println!(
-        "initializing git submodule(s) at: {}",
-        paths
-            .iter()
-            .flat_map(|v| [*v, "\n"])
-            .scan(None, |state, item| { std::mem::replace(state, Some(item)) })
-            .collect::<String>()
-    );
+    println!("Checking submodule(s) at: {}", paths.join(", "));
     if !process::Command::new("git")
         .args(["submodule", "update", "--init", "--recursive", "--"])
         .args(paths)

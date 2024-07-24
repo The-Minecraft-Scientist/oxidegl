@@ -9,7 +9,7 @@ fn main() -> Result<()> {
     // Parent directory of xtask manifest dir is workspace root
     let xtask_dir = env!("CARGO_MANIFEST_DIR");
     set_current_dir(PathBuf::from(xtask_dir).parent().unwrap()).unwrap();
-    dbg!(&args);
+    println!("{:#?}", &args);
     args.command.execute()
 }
 #[derive(Parser, Debug)]
