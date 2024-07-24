@@ -5,6 +5,6 @@ pub mod unimplemented;
 
 pub mod clear;
 
-pub mod buffers;
+pub mod buffer;
 
-pub mod vaos;
+pub mod vao;
