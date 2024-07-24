@@ -2304,7 +2304,6 @@ int gladLoadGLLoader(GLADloadproc load) {
   if (glGetString(GL_VERSION) == NULL)
     return 0;
   find_coreGL();
-  printf("major: %d, minor: %d", GLVersion.major, GLVersion.minor);
   load_GL_VERSION_1_0(load);
   load_GL_VERSION_1_1(load);
   load_GL_VERSION_1_2(load);
