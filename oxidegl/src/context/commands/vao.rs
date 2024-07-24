@@ -367,21 +367,15 @@ impl Context {
 
         let mut bindingindex = idx;
         for (&name, (&offset, &stride)) in buffers.iter().zip(offsets.iter().zip(strides.iter())) {
+            let r = vao.get_binding_mut(bindingindex);
             debug_assert!(
                 stride <= MAX_VERTEX_ATTRIBUTE_STRIDE as u32,
                 "UB: Tried to bind vertex attribute buffer with too large of a stride"
             );
-            //checked on debug assertions
-            #[allow(clippy::cast_possible_truncation)]
-            if let Some(name) = name {
-                vao.buffer_bindings[bindingindex as usize] = Some(AttributeBufferBinding::new(
-                    name,
-                    offset as usize,
-                    stride as u16,
-                ));
-            } else {
-                vao.buffer_bindings[bindingindex as usize] = None;
-            }
+            r.buf = name;
+            r.offset = offset as usize;
+            r.stride = stride as u16;
+
             bindingindex += 1;
         }
     }
@@ -784,6 +778,66 @@ impl Context {
         vao.attribs[index as usize] = None;
     }
 }
+
+/// ### Parameters
+/// `vaobj`
+///
+/// > Specifies the name of the vertex array object for [**glVertexArrayBindingDivisor**](crate::context::Context::oxidegl_vertex_array_binding_divisor)
+/// > function.
+///
+/// `bindingindex`
+///
+/// > The index of the binding whose divisor to modify.
+///
+/// `divisor`
+///
+/// > The new value for the instance step rate to apply.
+///
+/// ### Description
+/// [**glVertexBindingDivisor**](crate::context::Context::oxidegl_vertex_binding_divisor)
+/// and [**glVertexArrayBindingDivisor**](crate::context::Context::oxidegl_vertex_array_binding_divisor)
+/// modify the rate at which generic vertex attributes advance when rendering
+/// multiple instances of primitives in a single draw command. If `divisor`
+/// is zero, the attributes using the buffer bound to `bindingindex` advance
+/// once per vertex. If `divisor` is non-zero, the attributes advance once
+/// per `divisor` instances of the set(s) of vertices being rendered. An attribute
+/// is referred to as *instanced* if the corresponding `divisor` value is non-zero.
+///
+/// [**glVertexBindingDivisor**](crate::context::Context::oxidegl_vertex_binding_divisor)
+/// uses currently bound vertex array object, whereas [**glVertexArrayBindingDivisor**](crate::context::Context::oxidegl_vertex_array_binding_divisor)
+/// updates state of the vertex array object with ID `vaobj`.
+///
+/// ### Associated Gets
+/// [**glGet**](crate::context::Context::oxidegl_get) with arguments [`GL_MAX_VERTEX_ATTRIB_BINDINGS`](crate::enums::GL_MAX_VERTEX_ATTRIB_BINDINGS),
+/// [`GL_VERTEX_BINDING_DIVISOR`](crate::enums::GL_VERTEX_BINDING_DIVISOR).
+impl Context {
+    pub fn oxidegl_vertex_binding_divisor(&mut self, bindingindex: GLuint, divisor: GLuint) {
+        self.vertex_binding_divisor_internal(CurrentBinding, bindingindex, divisor);
+    }
+    pub fn oxidegl_vertex_array_binding_divisor(
+        &mut self,
+        vaobj: GLuint,
+        bindingindex: GLuint,
+        divisor: GLuint,
+    ) {
+        self.vertex_binding_divisor_internal(vaobj, bindingindex, divisor);
+    }
+}
+
+impl Context {
+    #[inline]
+    pub(crate) fn vertex_binding_divisor_internal(
+        &mut self,
+        vao: impl MaybeObjectName<Vao>,
+        binding_index: u32,
+        divisor: u32,
+    ) {
+        let vao = self
+            .get_vao(vao)
+            .expect("UB: Tried to set attribute divisor on an uninitialized or unbound VAO");
+        vao.get_binding_mut(binding_index).divisor = NonZeroU32::new(divisor);
+    }
+}
 pub const MAX_VERTEX_ATTRIBUTES: usize = 32;
 pub const MAX_VERTEX_ATTRIB_BUFFER_BINDINGS: usize = 16;
 pub const MAX_VERTEX_ATTRIBUTE_STRIDE: u16 = 2048;
@@ -792,7 +846,7 @@ pub const MAX_VERTEX_ATTRIBUTE_STRIDE: u16 = 2048;
 pub struct Vao {
     name: ObjectName<Self>,
     attribs: [Option<GLVertexAttrib>; MAX_VERTEX_ATTRIBUTES],
-    buffer_bindings: [Option<AttributeBufferBinding>; MAX_VERTEX_ATTRIB_BUFFER_BINDINGS],
+    buffer_bindings: [AttributeBufferBinding; MAX_VERTEX_ATTRIB_BUFFER_BINDINGS],
 }
 impl Vao {
     // array index is never > u8::MAX
@@ -801,8 +855,14 @@ impl Vao {
         Self {
             name,
             attribs: [None; MAX_VERTEX_ATTRIBUTES],
-            buffer_bindings: [None; MAX_VERTEX_ATTRIB_BUFFER_BINDINGS],
+            buffer_bindings: [AttributeBufferBinding::new_default();
+                MAX_VERTEX_ATTRIB_BUFFER_BINDINGS],
         }
+    }
+    fn get_binding_mut(&mut self, idx: u32) -> &mut AttributeBufferBinding {
+        self.buffer_bindings
+            .get_mut(idx as usize)
+            .expect("UB: attribute buffer binding point out of bounds")
     }
 }
 impl NamedObject for Vao {}
@@ -814,7 +874,6 @@ pub struct GLVertexAttrib {
     relative_offset: u16,
     integral_cast: IntegralCastBehavior,
     component_type: VertexAttribType,
-    divisor: Option<NonZeroU32>,
 }
 
 impl GLVertexAttrib {
@@ -825,7 +884,6 @@ impl GLVertexAttrib {
         relative_offset: u16,
         integral_cast: IntegralCastBehavior,
         component_type: VertexAttribType,
-        divisor: Option<NonZeroU32>,
     ) -> Self {
         let normalize = integral_cast == IntegralCastBehavior::Normalize;
         Self {
@@ -834,7 +892,6 @@ impl GLVertexAttrib {
             relative_offset,
             integral_cast,
             component_type,
-            divisor,
         }
     }
     pub fn validate(&self) {
@@ -877,7 +934,6 @@ impl GLVertexAttrib {
             0,
             IntegralCastBehavior::Native,
             VertexAttribType::Float,
-            None,
         )
     }
     #[inline]
@@ -922,16 +978,18 @@ impl GLVertexAttrib {
 
 #[derive(Debug, Clone, Copy)]
 pub struct AttributeBufferBinding {
-    buf: ObjectName<Buffer>,
+    buf: Option<ObjectName<Buffer>>,
     offset: usize,
     stride: u16,
+    divisor: Option<NonZeroU32>,
 }
 impl AttributeBufferBinding {
-    pub fn new(name: ObjectName<Buffer>, offset: usize, stride: u16) -> Self {
+    pub fn new_default() -> Self {
         Self {
-            buf: name,
-            offset,
-            stride,
+            buf: None,
+            offset: 0,
+            stride: 16,
+            divisor: None,
         }
     }
 }

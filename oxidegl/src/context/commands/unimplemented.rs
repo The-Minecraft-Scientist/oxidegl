@@ -11797,50 +11797,7 @@ impl Context {
         panic!("command oxidegl_vertex_attrib_l_pointer not yet implemented");
     }
 }
-/// ### Parameters
-/// `vaobj`
-///
-/// > Specifies the name of the vertex array object for [**glVertexArrayBindingDivisor**](crate::context::Context::oxidegl_vertex_array_binding_divisor)
-/// > function.
-///
-/// `bindingindex`
-///
-/// > The index of the binding whose divisor to modify.
-///
-/// `divisor`
-///
-/// > The new value for the instance step rate to apply.
-///
-/// ### Description
-/// [**glVertexBindingDivisor**](crate::context::Context::oxidegl_vertex_binding_divisor)
-/// and [**glVertexArrayBindingDivisor**](crate::context::Context::oxidegl_vertex_array_binding_divisor)
-/// modify the rate at which generic vertex attributes advance when rendering
-/// multiple instances of primitives in a single draw command. If `divisor`
-/// is zero, the attributes using the buffer bound to `bindingindex` advance
-/// once per vertex. If `divisor` is non-zero, the attributes advance once
-/// per `divisor` instances of the set(s) of vertices being rendered. An attribute
-/// is referred to as *instanced* if the corresponding `divisor` value is non-zero.
-///
-/// [**glVertexBindingDivisor**](crate::context::Context::oxidegl_vertex_binding_divisor)
-/// uses currently bound vertex array object, whereas [**glVertexArrayBindingDivisor**](crate::context::Context::oxidegl_vertex_array_binding_divisor)
-/// updates state of the vertex array object with ID `vaobj`.
-///
-/// ### Associated Gets
-/// [**glGet**](crate::context::Context::oxidegl_get) with arguments [`GL_MAX_VERTEX_ATTRIB_BINDINGS`](crate::enums::GL_MAX_VERTEX_ATTRIB_BINDINGS),
-/// [`GL_VERTEX_BINDING_DIVISOR`](crate::enums::GL_VERTEX_BINDING_DIVISOR).
-impl Context {
-    pub fn oxidegl_vertex_binding_divisor(&mut self, bindingindex: GLuint, divisor: GLuint) {
-        panic!("command oxidegl_vertex_binding_divisor not yet implemented");
-    }
-    pub fn oxidegl_vertex_array_binding_divisor(
-        &mut self,
-        vaobj: GLuint,
-        bindingindex: GLuint,
-        divisor: GLuint,
-    ) {
-        panic!("command oxidegl_vertex_array_binding_divisor not yet implemented");
-    }
-}
+
 /// ### Parameters
 /// `index`
 ///
