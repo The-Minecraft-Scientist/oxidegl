@@ -1,3 +1,4 @@
+use core::slice;
 use std::num::NonZeroU32;
 
 use log::debug;
@@ -11,7 +12,7 @@ use crate::{
     },
     dispatch::{
         conversions::{CurrentBinding, MaybeObjectName},
-        gl_types::{GLboolean, GLenum, GLint, GLsizei, GLuint},
+        gl_types::{GLboolean, GLenum, GLint, GLintptr, GLsizei, GLuint},
     },
     enums::{VertexAttribIType, VertexAttribType},
 };
@@ -150,7 +151,7 @@ impl Context {
         self.oxidegl_vertex_attrib_format_internal(
             attribindex,
             size as u32,
-            // Safety: transmute is safe because the allowed values of VertexAttribIType are
+            // Safety: transmute is sound because the allowed values of VertexAttribIType are
             // a strict subset of the allowed values of VertexAttribType, and the two are otherwise valid to transmute between
             unsafe { core::mem::transmute::<VertexAttribIType, VertexAttribType>(r#type) },
             relativeoffset,
@@ -189,7 +190,7 @@ impl Context {
         self.oxidegl_vertex_attrib_format_internal(
             attribindex,
             size as u32,
-            // Safety: transmute is safe because the allowed values of VertexAttribIType are
+            // Safety: transmute is sound because the allowed values of VertexAttribIType are
             // a strict subset of the allowed values of VertexAttribType, and the two are otherwise valid to transmute between
             unsafe { core::mem::transmute::<VertexAttribIType, VertexAttribType>(r#type) },
             relativeoffset,
@@ -229,13 +230,19 @@ impl Context {
         let Some(vao) = self.get_vao(maybe_name) else {
             panic!("UB: Tried to set vertex attribute properties on a nonexistent VAO")
         };
-        let attrib = &mut vao.attribs[attrib_index as usize];
+        let mut attrib = if let Some(a) = vao.attribs[attrib_index as usize] {
+            a
+        } else {
+            GLVertexAttrib::new_default(attrib_index as u8)
+        };
         // Caller ensures num_components is in-bounds
         attrib.components = num_components as u8;
         attrib.component_type = r#type;
         // Caller ensures relative_offset is inbounds i.e. it is strictly less than MAX_VERTEX_ATTRIBUTE_STRIDE
         attrib.relative_offset = relative_offset as u16;
         debug!("updated vertex attribute format at index {attrib_index} of {:#?} to {:?}{num_components} with relative offset {relative_offset} and integer behavior {integer_behavior:?}", vao.name, r#type);
+        vao.attribs[attrib_index as usize] = Some(attrib);
+
         #[cfg(debug_assertions)]
         attrib.validate();
     }
@@ -246,6 +253,246 @@ impl Context {
         } else {
             self.gl_state.vao_list.get_mut(self.gl_state.vao_binding?)
         }
+    }
+}
+
+/// ### Parameters
+/// `vaobj`
+///
+/// > Specifies the name of the vertex array object to be used by [**glVertexArrayVertexBuffer**](crate::context::Context::oxidegl_vertex_array_vertex_buffer)
+/// > function.
+///
+/// `bindingindex`
+///
+/// > The index of the vertex buffer binding point to which to bind the buffer.
+///
+/// `buffer`
+///
+/// > The name of a buffer to bind to the vertex buffer binding point.
+///
+/// `offset`
+///
+/// > The offset of the first element of the buffer.
+///
+/// `stride`
+///
+/// > The distance between elements within the buffer.
+///
+/// ### Description
+/// [**glBindVertexBuffer**](crate::context::Context::oxidegl_bind_vertex_buffer)
+/// and [**glVertexArrayVertexBuffer**](crate::context::Context::oxidegl_vertex_array_vertex_buffer)
+/// bind the buffer named `buffer` to the vertex buffer binding point whose
+/// index is given by `bindingindex`. [**glBindVertexBuffer**](crate::context::Context::oxidegl_bind_vertex_buffer)
+/// modifies the binding of the currently bound vertex array object, whereas
+/// [**glVertexArrayVertexBuffer**](crate::context::Context::oxidegl_vertex_array_vertex_buffer)
+/// allows the caller to specify ID of the vertex array object with an argument
+/// named `vaobj`, for which the binding should be modified. `offset` and `stride`
+/// specify the offset of the first element within the buffer and the distance
+/// between elements within the buffer, respectively, and are both measured
+/// in basic machine units. `bindingindex` must be less than the value of [`GL_MAX_VERTEX_ATTRIB_BINDINGS`](crate::enums::GL_MAX_VERTEX_ATTRIB_BINDINGS).
+/// `offset` and `stride` must be greater than or equal to zero. If `buffer`
+/// is zero, then any buffer currently bound to the specified binding point
+/// is unbound.
+///
+/// If `buffer` is not the name of an existing buffer object, the GL first
+/// creates a new state vector, initialized with a zero-sized memory buffer
+/// and comprising all the state and with the same initial values as in case
+/// of [**glBindBuffer**](crate::context::Context::oxidegl_bind_buffer). `buffer`
+/// is then attached to the specified `bindingindex` of the vertex array object.
+///
+/// ### Associated Gets
+/// [**glGet**](crate::context::Context::oxidegl_get) with argument [`GL_MAX_VERTEX_ATTRIB_BINDINGS`](crate::enums::GL_MAX_VERTEX_ATTRIB_BINDINGS).
+impl Context {
+    pub fn oxidegl_bind_vertex_buffer(
+        &mut self,
+        bindingindex: GLuint,
+        buffer: GLuint,
+        offset: GLintptr,
+        stride: GLsizei,
+    ) {
+        self.oxidegl_vertex_array_vertex_buffers_internal(
+            CurrentBinding,
+            bindingindex,
+            &[ObjectName::from_raw(buffer)],
+            &[offset],
+            &[stride],
+        );
+    }
+    pub fn oxidegl_vertex_array_vertex_buffer(
+        &mut self,
+        vaobj: GLuint,
+        bindingindex: GLuint,
+        buffer: GLuint,
+        offset: GLintptr,
+        stride: GLsizei,
+    ) {
+        self.oxidegl_vertex_array_vertex_buffers_internal(
+            vaobj,
+            bindingindex,
+            &[ObjectName::from_raw(buffer)],
+            &[offset],
+            &[stride],
+        );
+    }
+}
+impl Context {
+    #[inline]
+    #[allow(
+        clippy::cast_possible_truncation,
+        clippy::cast_sign_loss,
+        clippy::cast_lossless
+    )]
+    pub(crate) fn oxidegl_vertex_array_vertex_buffers_internal(
+        &mut self,
+        vao: impl MaybeObjectName<Vao>,
+        idx: u32,
+        buffers: &[Option<ObjectName<Buffer>>],
+        offsets: &[GLintptr],
+        strides: &[GLsizei],
+    ) {
+        for &buffer in buffers {
+            if let Some(name) = buffer {
+                self.gl_state
+                    .buffer_list
+                    .ensure_init(name, Buffer::new_default);
+                debug_assert!(
+                    self.gl_state.buffer_list.is(name),
+                    "UB: Tried to bind an uninitialized buffer name to a VAO"
+                );
+            }
+        }
+        let vao = self
+            .get_vao(vao)
+            .expect("UB: Tried to bind a vertex buffer to unbound VAO");
+
+        let mut bindingindex = idx;
+        for (&name, (&offset, &stride)) in buffers.iter().zip(offsets.iter().zip(strides.iter())) {
+            debug_assert!(
+                stride <= MAX_VERTEX_ATTRIBUTE_STRIDE as u32,
+                "UB: Tried to bind vertex attribute buffer with too large of a stride"
+            );
+            //checked on debug assertions
+            #[allow(clippy::cast_possible_truncation)]
+            if let Some(name) = name {
+                vao.buffer_bindings[bindingindex as usize] = Some(AttributeBufferBinding::new(
+                    name,
+                    offset as usize,
+                    stride as u16,
+                ));
+            } else {
+                vao.buffer_bindings[bindingindex as usize] = None;
+            }
+            bindingindex += 1;
+        }
+    }
+}
+
+/// ### Parameters
+/// `vaobj`
+///
+/// > Specifies the name of the vertex array object for [**glVertexArrayVertexBuffers**](crate::context::Context::oxidegl_vertex_array_vertex_buffers).
+///
+/// `first`
+///
+/// > Specifies the first vertex buffer binding point to which a buffer object
+/// > is to be bound.
+///
+/// `count`
+///
+/// > Specifies the number of buffers to bind.
+///
+/// `buffers`
+///
+/// > Specifies the address of an array of names of existing buffer objects.
+///
+/// `offsets`
+///
+/// > Specifies the address of an array of offsets to associate with the binding
+/// > points.
+///
+/// `strides`
+///
+/// > Specifies the address of an array of strides to associate with the binding
+/// > points.
+///
+/// ### Description
+/// [**glBindVertexBuffers**](crate::context::Context::oxidegl_bind_vertex_buffers)
+/// and [**glVertexArrayVertexBuffers**](crate::context::Context::oxidegl_vertex_array_vertex_buffers)
+/// bind storage from an array of existing buffer objects to a specified number
+/// of consecutive vertex buffer binding points units in a vertex array object.
+/// For [**glBindVertexBuffers**](crate::context::Context::oxidegl_bind_vertex_buffers),
+/// the vertex array object is the currently bound vertex array object. For
+/// [**glVertexArrayVertexBuffers**](crate::context::Context::oxidegl_vertex_array_vertex_buffers),
+/// `vaobj` is the name of the vertex array object.
+///
+/// `count` existing buffer objects are bound to vertex buffer binding points
+/// numbered $first$ through $first+ count- 1$. If `buffers` is not NULL, it
+/// specifies an array of `count` values, each of which must be zero or the
+/// name of an existing buffer object. `offsets` and `strides` specify arrays
+/// of `count` values indicating the offset of the first element and stride
+/// between elements in each buffer, respectively. If `buffers` is NULL, each
+/// affected vertex buffer binding point from $first$ through $first+ count
+///- 1$ will be reset to have no bound buffer object. In this case, the offsets
+/// and strides associated with the binding points are set to default values,
+/// ignoring `offsets` and `strides`.
+///
+/// [**glBindVertexBuffers**](crate::context::Context::oxidegl_bind_vertex_buffers)
+/// is equivalent (assuming no errors are generated) to:
+///
+/// [**glVertexArrayVertexBuffers**](crate::context::Context::oxidegl_vertex_array_vertex_buffers)
+/// is equivalent to the pseudocode above, but replacing [**glBindVertexBuffers**](crate::context::Context::oxidegl_bind_vertex_buffers)
+/// (args) with [**glVertexArrayVertexBuffers**](crate::context::Context::oxidegl_vertex_array_vertex_buffers)
+/// (vaobj, args).
+///
+/// The values specified in `buffers`, `offsets`, and `strides` will be checked
+/// separately for each vertex buffer binding point. When a value for a specific
+/// vertex buffer binding point is invalid, the state for that binding point
+/// will be unchanged and an error will be generated. However, state for other
+/// vertex buffer binding points will still be changed if their corresponding
+/// values are valid.
+impl Context {
+    pub unsafe fn oxidegl_bind_vertex_buffers(
+        &mut self,
+        first: GLuint,
+        count: GLsizei,
+        buffers: *const GLuint,
+        offsets: *const GLintptr,
+        strides: *const GLsizei,
+    ) {
+        self.oxidegl_vertex_array_vertex_buffers_internal(
+            CurrentBinding,
+            first,
+            //Safety: slices invariants are upheld by the caller
+            unsafe {
+                slice::from_raw_parts(buffers.cast::<Option<ObjectName<Buffer>>>(), count as usize)
+            },
+            // Safety: see above ^
+            unsafe { slice::from_raw_parts(offsets, count as usize) },
+            // Safety: see above ^
+            unsafe { slice::from_raw_parts(strides, count as usize) },
+        );
+    }
+    pub unsafe fn oxidegl_vertex_array_vertex_buffers(
+        &mut self,
+        vaobj: GLuint,
+        first: GLuint,
+        count: GLsizei,
+        buffers: *const GLuint,
+        offsets: *const GLintptr,
+        strides: *const GLsizei,
+    ) {
+        self.oxidegl_vertex_array_vertex_buffers_internal(
+            vaobj,
+            first,
+            //Safety: slices invariants are upheld by the caller
+            unsafe {
+                slice::from_raw_parts(buffers.cast::<Option<ObjectName<Buffer>>>(), count as usize)
+            },
+            // Safety: see above ^
+            unsafe { slice::from_raw_parts(offsets, count as usize) },
+            // Safety: see above ^
+            unsafe { slice::from_raw_parts(strides, count as usize) },
+        );
     }
 }
 
@@ -377,6 +624,166 @@ impl Context {
     }
 }
 
+/// ### Parameters
+/// `vaobj`
+///
+/// > Specifies the name of the vertex array object for [**glDisableVertexArrayAttrib**](crate::context::Context::oxidegl_disable_vertex_array_attrib)
+/// > and [**glEnableVertexArrayAttrib**](crate::context::Context::oxidegl_enable_vertex_array_attrib)
+/// > functions.
+///
+/// `index`
+///
+/// > Specifies the index of the generic vertex attribute to be enabled or disabled.
+///
+/// ### Description
+/// [**glEnableVertexAttribArray**](crate::context::Context::oxidegl_enable_vertex_attrib_array)
+/// and [**glEnableVertexArrayAttrib**](crate::context::Context::oxidegl_enable_vertex_array_attrib)
+/// enable the generic vertex attribute array specified by `index`. [**glEnableVertexAttribArray**](crate::context::Context::oxidegl_enable_vertex_attrib_array)
+/// uses currently bound vertex array object for the operation, whereas [**glEnableVertexArrayAttrib**](crate::context::Context::oxidegl_enable_vertex_array_attrib)
+/// updates state of the vertex array object with ID `vaobj`.
+///
+/// [**glDisableVertexAttribArray**](crate::context::Context::oxidegl_disable_vertex_attrib_array)
+/// and [**glDisableVertexArrayAttrib**](crate::context::Context::oxidegl_disable_vertex_array_attrib)
+/// disable the generic vertex attribute array specified by `index`. [**glDisableVertexAttribArray**](crate::context::Context::oxidegl_disable_vertex_attrib_array)
+/// uses currently bound vertex array object for the operation, whereas [**glDisableVertexArrayAttrib**](crate::context::Context::oxidegl_disable_vertex_array_attrib)
+/// updates state of the vertex array object with ID `vaobj`.
+///
+/// By default, all client-side capabilities are disabled, including all generic
+/// vertex attribute arrays. If enabled, the values in the generic vertex attribute
+/// array will be accessed and used for rendering when calls are made to vertex
+/// array commands such as [**glDrawArrays**](crate::context::Context::oxidegl_draw_arrays),
+/// [**glDrawElements**](crate::context::Context::oxidegl_draw_elements), [**glDrawRangeElements**](crate::context::Context::oxidegl_draw_range_elements),
+/// [**glMultiDrawElements**](crate::context::Context::oxidegl_multi_draw_elements),
+/// or [**glMultiDrawArrays**](crate::context::Context::oxidegl_multi_draw_arrays).
+///
+/// ### Associated Gets
+/// [**glGet**](crate::context::Context::oxidegl_get) with argument [`GL_MAX_VERTEX_ATTRIBS`](crate::enums::GL_MAX_VERTEX_ATTRIBS)
+///
+/// [**glGetVertexAttrib**](crate::context::Context::oxidegl_get_vertex_attrib)
+/// with arguments `index` and [`GL_VERTEX_ATTRIB_ARRAY_ENABLED`](crate::enums::GL_VERTEX_ATTRIB_ARRAY_ENABLED)
+///
+/// [**glGetVertexAttribPointerv**](crate::context::Context::oxidegl_get_vertex_attrib_pointerv)
+/// with arguments `index` and [`GL_VERTEX_ATTRIB_ARRAY_POINTER`](crate::enums::GL_VERTEX_ATTRIB_ARRAY_POINTER)
+impl Context {
+    pub fn oxidegl_disable_vertex_attrib_array(&mut self, index: GLuint) {
+        self.disable_vertex_array_attrib(CurrentBinding, index);
+    }
+    pub fn oxidegl_enable_vertex_attrib_array(&mut self, index: GLuint) {
+        self.enable_vertex_array_attrib(CurrentBinding, index);
+    }
+    pub fn oxidegl_disable_vertex_array_attrib(&mut self, vaobj: GLuint, index: GLuint) {
+        self.disable_vertex_array_attrib(vaobj, index);
+    }
+    pub fn oxidegl_enable_vertex_array_attrib(&mut self, vaobj: GLuint, index: GLuint) {
+        self.enable_vertex_array_attrib(vaobj, index);
+    }
+}
+/// ### Parameters
+/// `vaobj`
+///
+/// > Specifies the name of the vertex array object for [**glVertexArrayAttribBinding**](crate::context::Context::oxidegl_vertex_array_attrib_binding).
+///
+/// `attribindex`
+///
+/// > The index of the attribute to associate with a vertex buffer binding.
+///
+/// `bindingindex`
+///
+/// > The index of the vertex buffer binding with which to associate the generic
+/// > vertex attribute.
+///
+/// ### Description
+/// [**glVertexAttribBinding**](crate::context::Context::oxidegl_vertex_attrib_binding)
+/// and [**glVertexArrayAttribBinding**](crate::context::Context::oxidegl_vertex_array_attrib_binding)
+/// establishes an association between the generic vertex attribute of a vertex
+/// array object whose index is given by `attribindex`, and a vertex buffer
+/// binding whose index is given by `bindingindex`. For [**glVertexAttribBinding**](crate::context::Context::oxidegl_vertex_attrib_binding),
+/// the vertex array object affected is that currently bound. For [**glVertexArrayAttribBinding**](crate::context::Context::oxidegl_vertex_array_attrib_binding),
+/// `vaobj` is the name of the vertex array object.
+///
+/// `attribindex` must be less than the value of [`GL_MAX_VERTEX_ATTRIBS`](crate::enums::GL_MAX_VERTEX_ATTRIBS)
+/// and `bindingindex` must be less than the value of [`GL_MAX_VERTEX_ATTRIB_BINDINGS`](crate::enums::GL_MAX_VERTEX_ATTRIB_BINDINGS).
+///
+/// ### Associated Gets
+/// [**glGet**](crate::context::Context::oxidegl_get) with arguments [`GL_MAX_VERTEX_ATTRIB_BINDINGS`](crate::enums::GL_MAX_VERTEX_ATTRIB_BINDINGS),
+/// [`GL_VERTEX_BINDING_DIVISOR`](crate::enums::GL_VERTEX_BINDING_DIVISOR).
+impl Context {
+    pub fn oxidegl_vertex_attrib_binding(&mut self, attribindex: GLuint, bindingindex: GLuint) {
+        self.gl_vertex_attrib_binding_internal(CurrentBinding, attribindex, bindingindex);
+    }
+    pub fn oxidegl_vertex_array_attrib_binding(
+        &mut self,
+        vaobj: GLuint,
+        attribindex: GLuint,
+        bindingindex: GLuint,
+    ) {
+        self.gl_vertex_attrib_binding_internal(vaobj, attribindex, bindingindex);
+    }
+}
+impl Context {
+    #[allow(clippy::cast_possible_truncation)]
+    pub(crate) fn gl_vertex_attrib_binding_internal(
+        &mut self,
+        vao: impl MaybeObjectName<Vao>,
+        attrib_index: u32,
+        binding_index: u32,
+    ) {
+        debug_assert!(
+            (attrib_index as usize) < MAX_VERTEX_ATTRIBUTES,
+            "UB: out of bounds attribute index"
+        );
+        debug_assert!(
+            (binding_index as usize) < MAX_VERTEX_ATTRIB_BUFFER_BINDINGS,
+            "UB: out of bounds attribute buffer binding index"
+        );
+        let vao = self
+            .get_vao(vao)
+            .expect("UB: Tried to set attribute/buffer bindings on a nonexistent VAO");
+        if let Some(a) = vao.attribs[attrib_index as usize].as_mut() {
+            a.buffer_idx = binding_index as u8;
+        }
+    }
+}
+impl Context {
+    #[allow(clippy::cast_possible_truncation)]
+    pub(crate) fn enable_vertex_array_attrib(
+        &mut self,
+        vao: impl MaybeObjectName<Vao>,
+        index: GLuint,
+    ) {
+        let vao = self
+            .get_vao(vao)
+            .expect("UB: VAO not present when trying to toggle vertex attrib");
+        debug!(
+            "enabling vertex attribute at index {index} of {:?}",
+            vao.name
+        );
+        debug_assert!(
+            (index as usize) < MAX_VERTEX_ATTRIBUTES,
+            "UB: tried to enable more than the maximum vertex attribute count"
+        );
+        vao.attribs[index as usize] = Some(GLVertexAttrib::new_default(index as u8));
+    }
+    #[allow(clippy::cast_possible_truncation)]
+    pub(crate) fn disable_vertex_array_attrib(
+        &mut self,
+        vao: impl MaybeObjectName<Vao>,
+        index: GLuint,
+    ) {
+        let vao = self
+            .get_vao(vao)
+            .expect("UB: VAO not present when trying to toggle vertex attrib");
+        debug!(
+            "enabling vertex attribute at index {index} of {:?}",
+            vao.name
+        );
+        debug_assert!(
+            (index as usize) < MAX_VERTEX_ATTRIBUTES,
+            "UB: tried to enable more than the maximum vertex attribute count"
+        );
+        vao.attribs[index as usize] = None;
+    }
+}
 pub const MAX_VERTEX_ATTRIBUTES: usize = 32;
 pub const MAX_VERTEX_ATTRIB_BUFFER_BINDINGS: usize = 16;
 pub const MAX_VERTEX_ATTRIBUTE_STRIDE: u16 = 2048;
@@ -384,7 +791,7 @@ pub const MAX_VERTEX_ATTRIBUTE_STRIDE: u16 = 2048;
 #[derive(Debug)]
 pub struct Vao {
     name: ObjectName<Self>,
-    attribs: [GLVertexAttrib; MAX_VERTEX_ATTRIBUTES],
+    attribs: [Option<GLVertexAttrib>; MAX_VERTEX_ATTRIBUTES],
     buffer_bindings: [Option<AttributeBufferBinding>; MAX_VERTEX_ATTRIB_BUFFER_BINDINGS],
 }
 impl Vao {
@@ -393,7 +800,7 @@ impl Vao {
     fn new_default(name: ObjectName<Self>) -> Self {
         Self {
             name,
-            attribs: std::array::from_fn(|idx| GLVertexAttrib::new_default(idx as u8)),
+            attribs: [None; MAX_VERTEX_ATTRIBUTES],
             buffer_bindings: [None; MAX_VERTEX_ATTRIB_BUFFER_BINDINGS],
         }
     }
@@ -406,7 +813,6 @@ pub struct GLVertexAttrib {
     buffer_idx: u8,
     relative_offset: u16,
     integral_cast: IntegralCastBehavior,
-    stride: u16,
     component_type: VertexAttribType,
     divisor: Option<NonZeroU32>,
 }
@@ -420,7 +826,6 @@ impl GLVertexAttrib {
         integral_cast: IntegralCastBehavior,
         component_type: VertexAttribType,
         divisor: Option<NonZeroU32>,
-        stride: u16,
     ) -> Self {
         let normalize = integral_cast == IntegralCastBehavior::Normalize;
         Self {
@@ -428,7 +833,6 @@ impl GLVertexAttrib {
             buffer_idx,
             relative_offset,
             integral_cast,
-            stride,
             component_type,
             divisor,
         }
@@ -462,8 +866,8 @@ impl GLVertexAttrib {
             "UB: size is GL_BGRA but normalize is false"
         );
         assert!(
-            self.stride <= MAX_VERTEX_ATTRIBUTE_STRIDE,
-            "UB: Stride may not be larger than MAX_VERTEX_ATTRIBUTE_STRIDE"
+            self.relative_offset < MAX_VERTEX_ATTRIBUTE_STRIDE,
+            "UB: relative offset greater than maximum stride"
         );
     }
     pub fn new_default(idx: u8) -> Self {
@@ -474,7 +878,6 @@ impl GLVertexAttrib {
             IntegralCastBehavior::Native,
             VertexAttribType::Float,
             None,
-            16,
         )
     }
     #[inline]
@@ -520,8 +923,17 @@ impl GLVertexAttrib {
 #[derive(Debug, Clone, Copy)]
 pub struct AttributeBufferBinding {
     buf: ObjectName<Buffer>,
-    offset: u64,
+    offset: usize,
     stride: u16,
+}
+impl AttributeBufferBinding {
+    pub fn new(name: ObjectName<Buffer>, offset: usize, stride: u16) -> Self {
+        Self {
+            buf: name,
+            offset,
+            stride,
+        }
+    }
 }
 
 macro_rules! generate_attr_match_branch {

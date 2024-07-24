@@ -335,7 +335,7 @@ impl<Obj: NamedObject> NamedObjectList<Obj> {
         let mut names = names.cast();
         for _ in 0..n {
             let name = self.new_obj(create_func);
-            // Safety: Caller ensures names is valid to write n object names to names to
+            // Safety: Caller ensures names is valid to write n object names to
             unsafe { core::ptr::write(names, name) }
             // Safety: See above, this pointer will point at most one item past the end of its allocation
             unsafe { names = names.add(1) }
@@ -344,5 +344,15 @@ impl<Obj: NamedObject> NamedObjectList<Obj> {
     #[inline]
     pub(crate) fn is_obj(&self, name: GLuint) -> GLboolean {
         ObjectName::from_raw(name).is_some_and(|name| self.is(name))
+    }
+    #[inline]
+    pub(crate) fn ensure_init(
+        &mut self,
+        name: ObjectName<Obj>,
+        default: impl Fn(ObjectName<Obj>) -> Obj + Copy,
+    ) {
+        if let Some(NameState::Named) = self.objects.get(name.to_idx()) {
+            self.objects[name.to_idx()] = NameState::Bound(default(name));
+        }
     }
 }

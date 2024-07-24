@@ -314,6 +314,16 @@ impl Context {
         idx: I,
     ) {
         self.dirty_buffers();
+        if let Some(maybe_named) = to_bind {
+            self.gl_state
+                .buffer_list
+                .ensure_init(maybe_named, Buffer::new_default);
+            debug_assert!(
+                self.gl_state.buffer_list.is(maybe_named),
+                "UB: Tried to bind an uninitialized buffer name to a VAO"
+            );
+        }
+
         let bindings = &mut self.gl_state.buffer_bindings;
         let r = match target {
             // Safety: Caller ensures idx is in-bounds for indexed targets

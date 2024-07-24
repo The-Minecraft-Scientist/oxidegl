@@ -1,7 +1,7 @@
 use core::ptr;
 use std::num::NonZeroU32;
 
-use crate::context::state::ObjectName;
+use crate::context::state::{NamedObject, ObjectName};
 
 use super::gl_types::GLenum;
 use core::fmt::Debug;
@@ -43,6 +43,11 @@ pub trait MaybeObjectName<T> {
 impl<T> MaybeObjectName<T> for ObjectName<T> {
     fn get(self) -> Option<ObjectName<T>> {
         Some(self)
+    }
+}
+impl<T: NamedObject> MaybeObjectName<T> for u32 {
+    fn get(self) -> Option<ObjectName<T>> {
+        Some(ObjectName::from_raw(self).expect("raw name was not a valid object name"))
     }
 }
 pub struct CurrentBinding;

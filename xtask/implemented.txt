@@ -23,6 +23,11 @@ f:glClearStencil
 
 //VAOs
 p:gl_vertex_attrib_format
+p:gl_bind_vertex_buffer
+p:gl_bind_vertex_buffers
+p:gl_enable_vertex_attrib_array
+p:gl_vertex_attrib_binding
+
 f:glCreateVertexArrays
 f:glGenVertexArrays
 f:glBindVertexArray
