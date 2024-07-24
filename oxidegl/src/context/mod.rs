@@ -1,11 +1,10 @@
-use objc2::rc::{Id};
+use objc2::rc::Id;
 use objc2_app_kit::NSView;
 use platform::PlatformState;
 use state::NeedsRefreshBits;
 use std::cell::Cell;
 use std::pin::Pin;
 use std::ptr::NonNull;
-
 
 use self::platform::MetalComponents;
 use self::state::GLState;

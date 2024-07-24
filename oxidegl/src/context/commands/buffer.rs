@@ -45,7 +45,7 @@ impl Context {
 
     pub unsafe fn oxidegl_gen_buffers(&mut self, n: GLsizei, buffers: *mut GLuint) {
         // Safety: Caller ensures validity
-        unsafe { self.gl_state.buffer_list.generic_gen(n, buffers) }
+        unsafe { self.gl_state.buffer_list.gen_obj(n, buffers) }
     }
 
     /// ### Parameters
@@ -68,7 +68,7 @@ impl Context {
         unsafe {
             self.gl_state
                 .buffer_list
-                .generic_create(Buffer::new_default, n, buffers);
+                .create_obj(Buffer::new_default, n, buffers);
         }
     }
 
@@ -273,7 +273,7 @@ impl Context {
     /// is not the name of a buffer object.
 
     pub fn oxidegl_is_buffer(&mut self, buffer: GLuint) -> GLboolean {
-        self.gl_state.buffer_list.raw_is(buffer)
+        self.gl_state.buffer_list.is_obj(buffer)
     }
     /// ### Parameters
     /// `n`
@@ -301,9 +301,7 @@ impl Context {
     pub unsafe fn oxidegl_delete_buffers(&mut self, n: GLsizei, buffers: *const GLuint) {
         // Safety: Caller ensures validity
         unsafe {
-            self.gl_state
-                .buffer_list
-                .generic_delete_multiple(n, buffers);
+            self.gl_state.buffer_list.delete_objects(n, buffers);
         }
     }
 }

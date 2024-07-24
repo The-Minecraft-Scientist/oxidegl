@@ -169,6 +169,7 @@ impl<T: NamedObject> ObjectName<T> {
 }
 
 pub trait NamedObject {}
+
 impl<Dst: GlDstType, T> SrcType<Dst> for Option<ObjectName<T>> {
     fn cast(self) -> Dst {
         Dst::from_uint(self.map_or(0, |v| v.0.get()))
@@ -185,6 +186,7 @@ impl<Obj: NamedObject> NamedObjectList<Obj> {
             objects: Vec::with_capacity(32),
         }
     }
+    #[inline]
     pub(crate) fn get(&self, name: ObjectName<Obj>) -> Option<&Obj> {
         self.objects
             .get(name.to_idx())
@@ -193,6 +195,7 @@ impl<Obj: NamedObject> NamedObjectList<Obj> {
                 _ => None,
             })
     }
+    #[inline]
     pub(crate) unsafe fn get_unchecked(&self, name: ObjectName<Obj>) -> &Obj {
         // Safety: Caller ensures that the object at name exists in the list
         unsafe {
@@ -207,6 +210,7 @@ impl<Obj: NamedObject> NamedObjectList<Obj> {
             }
         }
     }
+    #[inline]
     pub(crate) fn get_mut(&mut self, name: ObjectName<Obj>) -> Option<&mut Obj> {
         self.objects
             .get_mut(name.to_idx())
@@ -215,6 +219,7 @@ impl<Obj: NamedObject> NamedObjectList<Obj> {
                 _ => None,
             })
     }
+    #[inline]
     pub(crate) unsafe fn get_unchecked_mut(&mut self, name: ObjectName<Obj>) -> &mut Obj {
         // Safety: Caller ensures that the object at name exists in the list
         unsafe {
@@ -231,6 +236,7 @@ impl<Obj: NamedObject> NamedObjectList<Obj> {
     }
     // Overflow is checked
     #[allow(clippy::cast_possible_truncation)]
+    #[inline]
     pub(crate) fn new_name(&mut self) -> ObjectName<Obj> {
         debug_assert!(
             self.objects.len() < (u32::MAX - 1) as usize,
@@ -244,6 +250,7 @@ impl<Obj: NamedObject> NamedObjectList<Obj> {
     }
     // Overflow is checked
     #[allow(clippy::cast_possible_truncation)]
+    #[inline]
     pub(crate) fn new_obj(
         &mut self,
         create: impl FnOnce(ObjectName<Obj>) -> Obj,
@@ -257,6 +264,7 @@ impl<Obj: NamedObject> NamedObjectList<Obj> {
         self.objects.push(NameState::Bound(create(name)));
         name
     }
+    #[inline]
     pub(crate) fn is(&self, name: ObjectName<Obj>) -> bool {
         self.get(name).is_some()
     }
@@ -269,7 +277,7 @@ impl<Obj: NamedObject> NamedObjectList<Obj> {
         }
     }
     #[inline]
-    pub(crate) unsafe fn generic_delete_multiple(&mut self, n: GLsizei, to_delete: *const GLuint) {
+    pub(crate) unsafe fn delete_objects(&mut self, n: GLsizei, to_delete: *const GLuint) {
         debug_assert!(
             !to_delete.is_null(),
             "UB: object name array pointer was null"
@@ -292,7 +300,7 @@ impl<Obj: NamedObject> NamedObjectList<Obj> {
         }
     }
     #[inline]
-    pub(crate) unsafe fn generic_gen(&mut self, n: GLsizei, names: *mut GLuint) {
+    pub(crate) unsafe fn gen_obj(&mut self, n: GLsizei, names: *mut GLuint) {
         debug_assert!(!names.is_null(), "UB: object name array pointer was null");
         debug_assert!(
             names.is_aligned(),
@@ -309,7 +317,7 @@ impl<Obj: NamedObject> NamedObjectList<Obj> {
         }
     }
     #[inline]
-    pub(crate) unsafe fn generic_create(
+    pub(crate) unsafe fn create_obj(
         &mut self,
         create_func: impl Fn(ObjectName<Obj>) -> Obj + Copy,
         n: GLsizei,
@@ -334,7 +342,7 @@ impl<Obj: NamedObject> NamedObjectList<Obj> {
         }
     }
     #[inline]
-    pub(crate) fn raw_is(&self, name: GLuint) -> GLboolean {
+    pub(crate) fn is_obj(&self, name: GLuint) -> GLboolean {
         ObjectName::from_raw(name).is_some_and(|name| self.is(name))
     }
 }

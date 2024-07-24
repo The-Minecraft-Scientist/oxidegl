@@ -1539,7 +1539,9 @@ impl Context {
                         .write_out(idx, ptr);
                 }
                 //Buffer Bindings
-                VertexArrayBinding => {
+                // FIXME `VertexArray` actually refers to the current VAO binding, *not* the current `VertexArray*BufferBinding*`
+                // waiting on codegen update
+                VertexArray => {
                     self.gl_state.buffer_bindings.array.write_out(idx, ptr);
                 }
                 CopyReadBufferBinding => {

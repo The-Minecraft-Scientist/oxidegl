@@ -1,6 +1,8 @@
 use core::ptr;
 use std::num::NonZeroU32;
 
+use crate::context::state::ObjectName;
+
 use super::gl_types::GLenum;
 use core::fmt::Debug;
 
@@ -35,7 +37,20 @@ pub trait GlDstType: Copy {
 pub trait SrcType<Dst: GlDstType>: Copy {
     fn cast(self) -> Dst;
 }
-
+pub trait MaybeObjectName<T> {
+    fn get(self) -> Option<ObjectName<T>>;
+}
+impl<T> MaybeObjectName<T> for ObjectName<T> {
+    fn get(self) -> Option<ObjectName<T>> {
+        Some(self)
+    }
+}
+pub struct CurrentBinding;
+impl<T> MaybeObjectName<T> for CurrentBinding {
+    fn get(self) -> Option<ObjectName<T>> {
+        None
+    }
+}
 pub trait IndexType: Copy + Sized + Debug {
     fn get(self) -> Option<usize>;
     fn get_numeric(self) -> usize {
