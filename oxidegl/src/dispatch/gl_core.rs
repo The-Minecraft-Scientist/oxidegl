@@ -1,7 +1,7 @@
 // GL Commands
 use crate::context::with_ctx;
-use crate::dispatch::conversions::{GLenumExt, GlDstType, SrcType, UnsafeFromGLenum};
-use crate::dispatch::gl_types::*;
+use crate::dispatch::conversions::{GLenumExt};
+use crate::dispatch::gl_types::{GLDEBUGPROC, GLbitfield, GLboolean, GLbyte, GLchar, GLdouble, GLenum, GLfloat, GLint, GLint64, GLintptr, GLshort, GLsizei, GLsizeiptr, GLsync, GLubyte, GLuint, GLuint64, GLushort, GLvoid};
 
 #[no_mangle]
 unsafe extern "C" fn glActiveShaderProgram(pipeline: GLuint, program: GLuint) {
@@ -66,7 +66,7 @@ unsafe extern "C" fn glBeginQueryIndexed(target: GLenum, index: GLuint, id: GLui
         id
     );
     with_ctx(|mut state| {
-        state.oxidegl_begin_query_indexed(unsafe { target.into_enum() }, index, id)
+        state.oxidegl_begin_query_indexed(unsafe { target.into_enum() }, index, id);
     });
 }
 #[no_mangle]
@@ -85,7 +85,7 @@ unsafe extern "C" fn glBeginTransformFeedback(primitiveMode: GLenum) {
         primitiveMode
     );
     with_ctx(|mut state| {
-        state.oxidegl_begin_transform_feedback(unsafe { primitiveMode.into_enum() })
+        state.oxidegl_begin_transform_feedback(unsafe { primitiveMode.into_enum() });
     });
 }
 #[no_mangle]
@@ -121,7 +121,7 @@ unsafe extern "C" fn glBindBufferBase(target: GLenum, index: GLuint, buffer: GLu
         buffer
     );
     with_ctx(|mut state| {
-        state.oxidegl_bind_buffer_base(unsafe { target.into_enum() }, index, buffer)
+        state.oxidegl_bind_buffer_base(unsafe { target.into_enum() }, index, buffer);
     });
 }
 #[no_mangle]
@@ -134,7 +134,7 @@ unsafe extern "C" fn glBindBufferRange(
 ) {
     ::log::trace!("glBindBufferRange called, parameters: target: {:?}, index: {:?}, buffer: {:?}, offset: {:?}, size: {:?} ", target, index, buffer, offset, size);
     with_ctx(|mut state| {
-        state.oxidegl_bind_buffer_range(unsafe { target.into_enum() }, index, buffer, offset, size)
+        state.oxidegl_bind_buffer_range(unsafe { target.into_enum() }, index, buffer, offset, size);
     });
 }
 #[no_mangle]
@@ -146,7 +146,7 @@ unsafe extern "C" fn glBindBuffersBase(
 ) {
     ::log::trace!("glBindBuffersBase called, parameters: target: {:?}, first: {:?}, count: {:?}, buffers: {:?} ", target, first, count, buffers);
     with_ctx(|mut state| unsafe {
-        state.oxidegl_bind_buffers_base(target.into_enum(), first, count, buffers)
+        state.oxidegl_bind_buffers_base(target.into_enum(), first, count, buffers);
     });
 }
 #[no_mangle]
@@ -160,7 +160,7 @@ unsafe extern "C" fn glBindBuffersRange(
 ) {
     ::log::trace!("glBindBuffersRange called, parameters: target: {:?}, first: {:?}, count: {:?}, buffers: {:?}, offsets: {:?}, sizes: {:?} ", target, first, count, buffers, offsets, sizes);
     with_ctx(|mut state| unsafe {
-        state.oxidegl_bind_buffers_range(target.into_enum(), first, count, buffers, offsets, sizes)
+        state.oxidegl_bind_buffers_range(target.into_enum(), first, count, buffers, offsets, sizes);
     });
 }
 #[no_mangle]
@@ -182,7 +182,7 @@ unsafe extern "C" fn glBindFragDataLocationIndexed(
 ) {
     ::log::trace!("glBindFragDataLocationIndexed called, parameters: program: {:?}, colorNumber: {:?}, index: {:?}, name: {:?} ", program, colorNumber, index, name);
     with_ctx(|mut state| unsafe {
-        state.oxidegl_bind_frag_data_location_indexed(program, colorNumber, index, name)
+        state.oxidegl_bind_frag_data_location_indexed(program, colorNumber, index, name);
     });
 }
 #[no_mangle]
@@ -193,7 +193,7 @@ unsafe extern "C" fn glBindFramebuffer(target: GLenum, framebuffer: GLuint) {
         framebuffer
     );
     with_ctx(|mut state| {
-        state.oxidegl_bind_framebuffer(unsafe { target.into_enum() }, framebuffer)
+        state.oxidegl_bind_framebuffer(unsafe { target.into_enum() }, framebuffer);
     });
 }
 #[no_mangle]
@@ -216,7 +216,7 @@ unsafe extern "C" fn glBindImageTexture(
             layer,
             unsafe { access.into_enum() },
             unsafe { format.into_enum() },
-        )
+        );
     });
 }
 #[no_mangle]
@@ -327,7 +327,7 @@ unsafe extern "C" fn glVertexArrayVertexBuffer(
 ) {
     ::log::trace!("glVertexArrayVertexBuffer called, parameters: vaobj: {:?}, bindingindex: {:?}, buffer: {:?}, offset: {:?}, stride: {:?} ", vaobj, bindingindex, buffer, offset, stride);
     with_ctx(|mut state| {
-        state.oxidegl_vertex_array_vertex_buffer(vaobj, bindingindex, buffer, offset, stride)
+        state.oxidegl_vertex_array_vertex_buffer(vaobj, bindingindex, buffer, offset, stride);
     });
 }
 #[no_mangle]
@@ -340,7 +340,7 @@ unsafe extern "C" fn glBindVertexBuffers(
 ) {
     ::log::trace!("glBindVertexBuffers called, parameters: first: {:?}, count: {:?}, buffers: {:?}, offsets: {:?}, strides: {:?} ", first, count, buffers, offsets, strides);
     with_ctx(|mut state| unsafe {
-        state.oxidegl_bind_vertex_buffers(first, count, buffers, offsets, strides)
+        state.oxidegl_bind_vertex_buffers(first, count, buffers, offsets, strides);
     });
 }
 #[no_mangle]
@@ -354,7 +354,7 @@ unsafe extern "C" fn glVertexArrayVertexBuffers(
 ) {
     ::log::trace!("glVertexArrayVertexBuffers called, parameters: vaobj: {:?}, first: {:?}, count: {:?}, buffers: {:?}, offsets: {:?}, strides: {:?} ", vaobj, first, count, buffers, offsets, strides);
     with_ctx(|mut state| unsafe {
-        state.oxidegl_vertex_array_vertex_buffers(vaobj, first, count, buffers, offsets, strides)
+        state.oxidegl_vertex_array_vertex_buffers(vaobj, first, count, buffers, offsets, strides);
     });
 }
 #[no_mangle]
@@ -392,7 +392,7 @@ unsafe extern "C" fn glBlendEquationSeparate(modeRGB: GLenum, modeAlpha: GLenum)
     with_ctx(|mut state| {
         state.oxidegl_blend_equation_separate(unsafe { modeRGB.into_enum() }, unsafe {
             modeAlpha.into_enum()
-        })
+        });
     });
 }
 #[no_mangle]
@@ -406,7 +406,7 @@ unsafe extern "C" fn glBlendEquationSeparatei(buf: GLuint, modeRGB: GLenum, mode
     with_ctx(|mut state| {
         state.oxidegl_blend_equation_separatei(buf, unsafe { modeRGB.into_enum() }, unsafe {
             modeAlpha.into_enum()
-        })
+        });
     });
 }
 #[no_mangle]
@@ -419,7 +419,7 @@ unsafe extern "C" fn glBlendFunc(sfactor: GLenum, dfactor: GLenum) {
     with_ctx(|mut state| {
         state.oxidegl_blend_func(unsafe { sfactor.into_enum() }, unsafe {
             dfactor.into_enum()
-        })
+        });
     });
 }
 #[no_mangle]
@@ -431,7 +431,7 @@ unsafe extern "C" fn glBlendFunci(buf: GLuint, src: GLenum, dst: GLenum) {
         dst
     );
     with_ctx(|mut state| {
-        state.oxidegl_blend_funci(buf, unsafe { src.into_enum() }, unsafe { dst.into_enum() })
+        state.oxidegl_blend_funci(buf, unsafe { src.into_enum() }, unsafe { dst.into_enum() });
     });
 }
 #[no_mangle]
@@ -448,7 +448,7 @@ unsafe extern "C" fn glBlendFuncSeparate(
             unsafe { dfactorRGB.into_enum() },
             unsafe { sfactorAlpha.into_enum() },
             unsafe { dfactorAlpha.into_enum() },
-        )
+        );
     });
 }
 #[no_mangle]
@@ -467,7 +467,7 @@ unsafe extern "C" fn glBlendFuncSeparatei(
             unsafe { dstRGB.into_enum() },
             unsafe { srcAlpha.into_enum() },
             unsafe { dstAlpha.into_enum() },
-        )
+        );
     });
 }
 #[no_mangle]
@@ -496,7 +496,7 @@ unsafe extern "C" fn glBlitFramebuffer(
             dstY1,
             unsafe { mask.into_enum() },
             unsafe { filter.into_enum() },
-        )
+        );
     });
 }
 #[no_mangle]
@@ -529,7 +529,7 @@ unsafe extern "C" fn glBlitNamedFramebuffer(
             dstY1,
             unsafe { mask.into_enum() },
             unsafe { filter.into_enum() },
-        )
+        );
     });
 }
 #[no_mangle]
@@ -547,7 +547,7 @@ unsafe extern "C" fn glBufferData(
         usage
     );
     with_ctx(|mut state| unsafe {
-        state.oxidegl_buffer_data(target.into_enum(), size, data, usage.into_enum())
+        state.oxidegl_buffer_data(target.into_enum(), size, data, usage.into_enum());
     });
 }
 #[no_mangle]
@@ -565,7 +565,7 @@ unsafe extern "C" fn glNamedBufferData(
         usage
     );
     with_ctx(|mut state| unsafe {
-        state.oxidegl_named_buffer_data(buffer, size, data, usage.into_enum())
+        state.oxidegl_named_buffer_data(buffer, size, data, usage.into_enum());
     });
 }
 #[no_mangle]
@@ -583,7 +583,7 @@ unsafe extern "C" fn glBufferStorage(
         flags
     );
     with_ctx(|mut state| unsafe {
-        state.oxidegl_buffer_storage(target.into_enum(), size, data, flags.into_enum())
+        state.oxidegl_buffer_storage(target.into_enum(), size, data, flags.into_enum());
     });
 }
 #[no_mangle]
@@ -595,7 +595,7 @@ unsafe extern "C" fn glNamedBufferStorage(
 ) {
     ::log::trace!("glNamedBufferStorage called, parameters: buffer: {:?}, size: {:?}, data: {:?}, flags: {:?} ", buffer, size, data, flags);
     with_ctx(|mut state| unsafe {
-        state.oxidegl_named_buffer_storage(buffer, size, data, flags.into_enum())
+        state.oxidegl_named_buffer_storage(buffer, size, data, flags.into_enum());
     });
 }
 #[no_mangle]
@@ -613,7 +613,7 @@ unsafe extern "C" fn glBufferSubData(
         data
     );
     with_ctx(|mut state| unsafe {
-        state.oxidegl_buffer_sub_data(target.into_enum(), offset, size, data)
+        state.oxidegl_buffer_sub_data(target.into_enum(), offset, size, data);
     });
 }
 #[no_mangle]
@@ -625,7 +625,7 @@ unsafe extern "C" fn glNamedBufferSubData(
 ) {
     ::log::trace!("glNamedBufferSubData called, parameters: buffer: {:?}, offset: {:?}, size: {:?}, data: {:?} ", buffer, offset, size, data);
     with_ctx(|mut state| unsafe {
-        state.oxidegl_named_buffer_sub_data(buffer, offset, size, data)
+        state.oxidegl_named_buffer_sub_data(buffer, offset, size, data);
     });
 }
 #[no_mangle]
@@ -670,7 +670,7 @@ unsafe extern "C" fn glClearBufferiv(buffer: GLenum, drawbuffer: GLint, value: *
         value
     );
     with_ctx(|mut state| unsafe {
-        state.oxidegl_clear_bufferiv(buffer.into_enum(), drawbuffer, value)
+        state.oxidegl_clear_bufferiv(buffer.into_enum(), drawbuffer, value);
     });
 }
 #[no_mangle]
@@ -682,7 +682,7 @@ unsafe extern "C" fn glClearBufferuiv(buffer: GLenum, drawbuffer: GLint, value: 
         value
     );
     with_ctx(|mut state| unsafe {
-        state.oxidegl_clear_bufferuiv(buffer.into_enum(), drawbuffer, value)
+        state.oxidegl_clear_bufferuiv(buffer.into_enum(), drawbuffer, value);
     });
 }
 #[no_mangle]
@@ -694,7 +694,7 @@ unsafe extern "C" fn glClearBufferfv(buffer: GLenum, drawbuffer: GLint, value: *
         value
     );
     with_ctx(|mut state| unsafe {
-        state.oxidegl_clear_bufferfv(buffer.into_enum(), drawbuffer, value)
+        state.oxidegl_clear_bufferfv(buffer.into_enum(), drawbuffer, value);
     });
 }
 #[no_mangle]
@@ -706,7 +706,7 @@ unsafe extern "C" fn glClearBufferfi(
 ) {
     ::log::trace!("glClearBufferfi called, parameters: buffer: {:?}, drawbuffer: {:?}, depth: {:?}, stencil: {:?} ", buffer, drawbuffer, depth, stencil);
     with_ctx(|mut state| {
-        state.oxidegl_clear_bufferfi(unsafe { buffer.into_enum() }, drawbuffer, depth, stencil)
+        state.oxidegl_clear_bufferfi(unsafe { buffer.into_enum() }, drawbuffer, depth, stencil);
     });
 }
 #[no_mangle]
@@ -718,7 +718,7 @@ unsafe extern "C" fn glClearNamedFramebufferiv(
 ) {
     ::log::trace!("glClearNamedFramebufferiv called, parameters: framebuffer: {:?}, buffer: {:?}, drawbuffer: {:?}, value: {:?} ", framebuffer, buffer, drawbuffer, value);
     with_ctx(|mut state| unsafe {
-        state.oxidegl_clear_named_framebufferiv(framebuffer, buffer.into_enum(), drawbuffer, value)
+        state.oxidegl_clear_named_framebufferiv(framebuffer, buffer.into_enum(), drawbuffer, value);
     });
 }
 #[no_mangle]
@@ -730,7 +730,7 @@ unsafe extern "C" fn glClearNamedFramebufferuiv(
 ) {
     ::log::trace!("glClearNamedFramebufferuiv called, parameters: framebuffer: {:?}, buffer: {:?}, drawbuffer: {:?}, value: {:?} ", framebuffer, buffer, drawbuffer, value);
     with_ctx(|mut state| unsafe {
-        state.oxidegl_clear_named_framebufferuiv(framebuffer, buffer.into_enum(), drawbuffer, value)
+        state.oxidegl_clear_named_framebufferuiv(framebuffer, buffer.into_enum(), drawbuffer, value);
     });
 }
 #[no_mangle]
@@ -742,7 +742,7 @@ unsafe extern "C" fn glClearNamedFramebufferfv(
 ) {
     ::log::trace!("glClearNamedFramebufferfv called, parameters: framebuffer: {:?}, buffer: {:?}, drawbuffer: {:?}, value: {:?} ", framebuffer, buffer, drawbuffer, value);
     with_ctx(|mut state| unsafe {
-        state.oxidegl_clear_named_framebufferfv(framebuffer, buffer.into_enum(), drawbuffer, value)
+        state.oxidegl_clear_named_framebufferfv(framebuffer, buffer.into_enum(), drawbuffer, value);
     });
 }
 #[no_mangle]
@@ -761,7 +761,7 @@ unsafe extern "C" fn glClearNamedFramebufferfi(
             drawbuffer,
             depth,
             stencil,
-        )
+        );
     });
 }
 #[no_mangle]
@@ -780,7 +780,7 @@ unsafe extern "C" fn glClearBufferData(
             format.into_enum(),
             r#type.into_enum(),
             data,
-        )
+        );
     });
 }
 #[no_mangle]
@@ -799,7 +799,7 @@ unsafe extern "C" fn glClearNamedBufferData(
             format.into_enum(),
             r#type.into_enum(),
             data,
-        )
+        );
     });
 }
 #[no_mangle]
@@ -822,7 +822,7 @@ unsafe extern "C" fn glClearBufferSubData(
             format.into_enum(),
             r#type.into_enum(),
             data,
-        )
+        );
     });
 }
 #[no_mangle]
@@ -845,7 +845,7 @@ unsafe extern "C" fn glClearNamedBufferSubData(
             format.into_enum(),
             r#type.into_enum(),
             data,
-        )
+        );
     });
 }
 #[no_mangle]
@@ -884,7 +884,7 @@ unsafe extern "C" fn glClearTexImage(
 ) {
     ::log::trace!("glClearTexImage called, parameters: texture: {:?}, level: {:?}, format: {:?}, r#type: {:?}, data: {:?} ", texture, level, format, r#type, data);
     with_ctx(|mut state| unsafe {
-        state.oxidegl_clear_tex_image(texture, level, format.into_enum(), r#type.into_enum(), data)
+        state.oxidegl_clear_tex_image(texture, level, format.into_enum(), r#type.into_enum(), data);
     });
 }
 #[no_mangle]
@@ -915,7 +915,7 @@ unsafe extern "C" fn glClearTexSubImage(
             format.into_enum(),
             r#type.into_enum(),
             data,
-        )
+        );
     });
 }
 #[no_mangle]
@@ -940,7 +940,7 @@ unsafe extern "C" fn glClipControl(origin: GLenum, depth: GLenum) {
         depth
     );
     with_ctx(|mut state| {
-        state.oxidegl_clip_control(unsafe { origin.into_enum() }, unsafe { depth.into_enum() })
+        state.oxidegl_clip_control(unsafe { origin.into_enum() }, unsafe { depth.into_enum() });
     });
 }
 #[no_mangle]
@@ -1002,7 +1002,7 @@ unsafe extern "C" fn glCompressedTexImage1D(
             border,
             imageSize,
             data,
-        )
+        );
     });
 }
 #[no_mangle]
@@ -1027,7 +1027,7 @@ unsafe extern "C" fn glCompressedTexImage2D(
             border,
             imageSize,
             data,
-        )
+        );
     });
 }
 #[no_mangle]
@@ -1054,7 +1054,7 @@ unsafe extern "C" fn glCompressedTexImage3D(
             border,
             imageSize,
             data,
-        )
+        );
     });
 }
 #[no_mangle]
@@ -1077,7 +1077,7 @@ unsafe extern "C" fn glCompressedTexSubImage1D(
             format.into_enum(),
             imageSize,
             data,
-        )
+        );
     });
 }
 #[no_mangle]
@@ -1100,7 +1100,7 @@ unsafe extern "C" fn glCompressedTextureSubImage1D(
             format.into_enum(),
             imageSize,
             data,
-        )
+        );
     });
 }
 #[no_mangle]
@@ -1127,7 +1127,7 @@ unsafe extern "C" fn glCompressedTexSubImage2D(
             format.into_enum(),
             imageSize,
             data,
-        )
+        );
     });
 }
 #[no_mangle]
@@ -1154,7 +1154,7 @@ unsafe extern "C" fn glCompressedTextureSubImage2D(
             format.into_enum(),
             imageSize,
             data,
-        )
+        );
     });
 }
 #[no_mangle]
@@ -1185,7 +1185,7 @@ unsafe extern "C" fn glCompressedTexSubImage3D(
             format.into_enum(),
             imageSize,
             data,
-        )
+        );
     });
 }
 #[no_mangle]
@@ -1216,7 +1216,7 @@ unsafe extern "C" fn glCompressedTextureSubImage3D(
             format.into_enum(),
             imageSize,
             data,
-        )
+        );
     });
 }
 #[no_mangle]
@@ -1235,7 +1235,7 @@ unsafe extern "C" fn glCopyBufferSubData(
             readOffset,
             writeOffset,
             size,
-        )
+        );
     });
 }
 #[no_mangle]
@@ -1254,7 +1254,7 @@ unsafe extern "C" fn glCopyNamedBufferSubData(
             readOffset,
             writeOffset,
             size,
-        )
+        );
     });
 }
 #[no_mangle]
@@ -1293,7 +1293,7 @@ unsafe extern "C" fn glCopyImageSubData(
             srcWidth,
             srcHeight,
             srcDepth,
-        )
+        );
     });
 }
 #[no_mangle]
@@ -1316,7 +1316,7 @@ unsafe extern "C" fn glCopyTexImage1D(
             y,
             width,
             border,
-        )
+        );
     });
 }
 #[no_mangle]
@@ -1341,7 +1341,7 @@ unsafe extern "C" fn glCopyTexImage2D(
             width,
             height,
             border,
-        )
+        );
     });
 }
 #[no_mangle]
@@ -1362,7 +1362,7 @@ unsafe extern "C" fn glCopyTexSubImage1D(
             x,
             y,
             width,
-        )
+        );
     });
 }
 #[no_mangle]
@@ -1376,7 +1376,7 @@ unsafe extern "C" fn glCopyTextureSubImage1D(
 ) {
     ::log::trace!("glCopyTextureSubImage1D called, parameters: texture: {:?}, level: {:?}, xoffset: {:?}, x: {:?}, y: {:?}, width: {:?} ", texture, level, xoffset, x, y, width);
     with_ctx(|mut state| {
-        state.oxidegl_copy_texture_sub_image1_d(texture, level, xoffset, x, y, width)
+        state.oxidegl_copy_texture_sub_image1_d(texture, level, xoffset, x, y, width);
     });
 }
 #[no_mangle]
@@ -1401,7 +1401,7 @@ unsafe extern "C" fn glCopyTexSubImage2D(
             y,
             width,
             height,
-        )
+        );
     });
 }
 #[no_mangle]
@@ -1419,7 +1419,7 @@ unsafe extern "C" fn glCopyTextureSubImage2D(
     with_ctx(|mut state| {
         state.oxidegl_copy_texture_sub_image2_d(
             texture, level, xoffset, yoffset, x, y, width, height,
-        )
+        );
     });
 }
 #[no_mangle]
@@ -1446,7 +1446,7 @@ unsafe extern "C" fn glCopyTexSubImage3D(
             y,
             width,
             height,
-        )
+        );
     });
 }
 #[no_mangle]
@@ -1465,7 +1465,7 @@ unsafe extern "C" fn glCopyTextureSubImage3D(
     with_ctx(|mut state| {
         state.oxidegl_copy_texture_sub_image3_d(
             texture, level, xoffset, yoffset, zoffset, x, y, width, height,
-        )
+        );
     });
 }
 #[no_mangle]
@@ -1609,7 +1609,7 @@ unsafe extern "C" fn glDebugMessageControl(
             count,
             ids,
             enabled,
-        )
+        );
     });
 }
 #[no_mangle]
@@ -1630,7 +1630,7 @@ unsafe extern "C" fn glDebugMessageInsert(
             severity.into_enum(),
             length,
             buf,
-        )
+        );
     });
 }
 #[no_mangle]
@@ -1831,7 +1831,7 @@ unsafe extern "C" fn glDrawArraysInstanced(
             first,
             count,
             instancecount,
-        )
+        );
     });
 }
 #[no_mangle]
@@ -1850,7 +1850,7 @@ unsafe extern "C" fn glDrawArraysInstancedBaseInstance(
             count,
             instancecount,
             baseinstance,
-        )
+        );
     });
 }
 #[no_mangle]
@@ -1866,7 +1866,7 @@ unsafe extern "C" fn glNamedFramebufferDrawBuffer(framebuffer: GLuint, buf: GLen
         buf
     );
     with_ctx(|mut state| {
-        state.oxidegl_named_framebuffer_draw_buffer(framebuffer, unsafe { buf.into_enum() })
+        state.oxidegl_named_framebuffer_draw_buffer(framebuffer, unsafe { buf.into_enum() });
     });
 }
 #[no_mangle]
@@ -1887,7 +1887,7 @@ unsafe extern "C" fn glNamedFramebufferDrawBuffers(framebuffer: GLuint, n: GLsiz
         bufs
     );
     with_ctx(|mut state| {
-        state.oxidegl_named_framebuffer_draw_buffers(framebuffer, n, unsafe { bufs.into_enum() })
+        state.oxidegl_named_framebuffer_draw_buffers(framebuffer, n, unsafe { bufs.into_enum() });
     });
 }
 #[no_mangle]
@@ -1905,7 +1905,7 @@ unsafe extern "C" fn glDrawElements(
         indices
     );
     with_ctx(|mut state| unsafe {
-        state.oxidegl_draw_elements(mode.into_enum(), count, r#type.into_enum(), indices)
+        state.oxidegl_draw_elements(mode.into_enum(), count, r#type.into_enum(), indices);
     });
 }
 #[no_mangle]
@@ -1924,7 +1924,7 @@ unsafe extern "C" fn glDrawElementsBaseVertex(
             r#type.into_enum(),
             indices,
             basevertex,
-        )
+        );
     });
 }
 #[no_mangle]
@@ -1936,7 +1936,7 @@ unsafe extern "C" fn glDrawElementsIndirect(mode: GLenum, r#type: GLenum, indire
         indirect
     );
     with_ctx(|mut state| unsafe {
-        state.oxidegl_draw_elements_indirect(mode.into_enum(), r#type.into_enum(), indirect)
+        state.oxidegl_draw_elements_indirect(mode.into_enum(), r#type.into_enum(), indirect);
     });
 }
 #[no_mangle]
@@ -1955,7 +1955,7 @@ unsafe extern "C" fn glDrawElementsInstanced(
             r#type.into_enum(),
             indices,
             instancecount,
-        )
+        );
     });
 }
 #[no_mangle]
@@ -1976,7 +1976,7 @@ unsafe extern "C" fn glDrawElementsInstancedBaseInstance(
             indices,
             instancecount,
             baseinstance,
-        )
+        );
     });
 }
 #[no_mangle]
@@ -1997,7 +1997,7 @@ unsafe extern "C" fn glDrawElementsInstancedBaseVertex(
             indices,
             instancecount,
             basevertex,
-        )
+        );
     });
 }
 #[no_mangle]
@@ -2020,7 +2020,7 @@ unsafe extern "C" fn glDrawElementsInstancedBaseVertexBaseInstance(
             instancecount,
             basevertex,
             baseinstance,
-        )
+        );
     });
 }
 #[no_mangle]
@@ -2041,7 +2041,7 @@ unsafe extern "C" fn glDrawRangeElements(
             count,
             r#type.into_enum(),
             indices,
-        )
+        );
     });
 }
 #[no_mangle]
@@ -2064,7 +2064,7 @@ unsafe extern "C" fn glDrawRangeElementsBaseVertex(
             r#type.into_enum(),
             indices,
             basevertex,
-        )
+        );
     });
 }
 #[no_mangle]
@@ -2088,7 +2088,7 @@ unsafe extern "C" fn glDrawTransformFeedbackInstanced(
             unsafe { mode.into_enum() },
             id,
             instancecount,
-        )
+        );
     });
 }
 #[no_mangle]
@@ -2100,7 +2100,7 @@ unsafe extern "C" fn glDrawTransformFeedbackStream(mode: GLenum, id: GLuint, str
         stream
     );
     with_ctx(|mut state| {
-        state.oxidegl_draw_transform_feedback_stream(unsafe { mode.into_enum() }, id, stream)
+        state.oxidegl_draw_transform_feedback_stream(unsafe { mode.into_enum() }, id, stream);
     });
 }
 #[no_mangle]
@@ -2117,7 +2117,7 @@ unsafe extern "C" fn glDrawTransformFeedbackStreamInstanced(
             id,
             stream,
             instancecount,
-        )
+        );
     });
 }
 #[no_mangle]
@@ -2214,7 +2214,7 @@ unsafe extern "C" fn glFlushMappedBufferRange(
         length
     );
     with_ctx(|mut state| {
-        state.oxidegl_flush_mapped_buffer_range(unsafe { target.into_enum() }, offset, length)
+        state.oxidegl_flush_mapped_buffer_range(unsafe { target.into_enum() }, offset, length);
     });
 }
 #[no_mangle]
@@ -2239,7 +2239,7 @@ unsafe extern "C" fn glFramebufferParameteri(target: GLenum, pname: GLenum, para
             unsafe { target.into_enum() },
             unsafe { pname.into_enum() },
             param,
-        )
+        );
     });
 }
 #[no_mangle]
@@ -2250,7 +2250,7 @@ unsafe extern "C" fn glNamedFramebufferParameteri(
 ) {
     ::log::trace!("glNamedFramebufferParameteri called, parameters: framebuffer: {:?}, pname: {:?}, param: {:?} ", framebuffer, pname, param);
     with_ctx(|mut state| {
-        state.oxidegl_named_framebuffer_parameteri(framebuffer, unsafe { pname.into_enum() }, param)
+        state.oxidegl_named_framebuffer_parameteri(framebuffer, unsafe { pname.into_enum() }, param);
     });
 }
 #[no_mangle]
@@ -2267,7 +2267,7 @@ unsafe extern "C" fn glFramebufferRenderbuffer(
             unsafe { attachment.into_enum() },
             renderbuffertarget,
             renderbuffer,
-        )
+        );
     });
 }
 #[no_mangle]
@@ -2284,7 +2284,7 @@ unsafe extern "C" fn glNamedFramebufferRenderbuffer(
             unsafe { attachment.into_enum() },
             renderbuffertarget,
             renderbuffer,
-        )
+        );
     });
 }
 #[no_mangle]
@@ -2303,7 +2303,7 @@ unsafe extern "C" fn glFramebufferTexture1D(
             unsafe { textarget.into_enum() },
             texture,
             level,
-        )
+        );
     });
 }
 #[no_mangle]
@@ -2322,7 +2322,7 @@ unsafe extern "C" fn glFramebufferTexture2D(
             unsafe { textarget.into_enum() },
             texture,
             level,
-        )
+        );
     });
 }
 #[no_mangle]
@@ -2343,7 +2343,7 @@ unsafe extern "C" fn glFramebufferTexture3D(
             texture,
             level,
             zoffset,
-        )
+        );
     });
 }
 #[no_mangle]
@@ -2360,7 +2360,7 @@ unsafe extern "C" fn glFramebufferTexture(
             unsafe { attachment.into_enum() },
             texture,
             level,
-        )
+        );
     });
 }
 #[no_mangle]
@@ -2377,7 +2377,7 @@ unsafe extern "C" fn glNamedFramebufferTexture(
             unsafe { attachment.into_enum() },
             texture,
             level,
-        )
+        );
     });
 }
 #[no_mangle]
@@ -2396,7 +2396,7 @@ unsafe extern "C" fn glFramebufferTextureLayer(
             texture,
             level,
             layer,
-        )
+        );
     });
 }
 #[no_mangle]
@@ -2415,7 +2415,7 @@ unsafe extern "C" fn glNamedFramebufferTextureLayer(
             texture,
             level,
             layer,
-        )
+        );
     });
 }
 #[no_mangle]
@@ -2524,7 +2524,7 @@ unsafe extern "C" fn glGetBooleanv(pname: GLenum, data: *mut GLboolean) {
         pname,
         data
     );
-    with_ctx(|mut state| unsafe { state.oxidegl_get_booleanv(pname.into_enum(), data) });
+    with_ctx(|state| unsafe { state.oxidegl_get_booleanv(pname.into_enum(), data) });
 }
 #[no_mangle]
 unsafe extern "C" fn glGetDoublev(pname: GLenum, data: *mut GLdouble) {
@@ -2533,7 +2533,7 @@ unsafe extern "C" fn glGetDoublev(pname: GLenum, data: *mut GLdouble) {
         pname,
         data
     );
-    with_ctx(|mut state| unsafe { state.oxidegl_get_doublev(pname.into_enum(), data) });
+    with_ctx(|state| unsafe { state.oxidegl_get_doublev(pname.into_enum(), data) });
 }
 #[no_mangle]
 unsafe extern "C" fn glGetFloatv(pname: GLenum, data: *mut GLfloat) {
@@ -2542,7 +2542,7 @@ unsafe extern "C" fn glGetFloatv(pname: GLenum, data: *mut GLfloat) {
         pname,
         data
     );
-    with_ctx(|mut state| unsafe { state.oxidegl_get_floatv(pname.into_enum(), data) });
+    with_ctx(|state| unsafe { state.oxidegl_get_floatv(pname.into_enum(), data) });
 }
 #[no_mangle]
 unsafe extern "C" fn glGetIntegerv(pname: GLenum, data: *mut GLint) {
@@ -2551,7 +2551,7 @@ unsafe extern "C" fn glGetIntegerv(pname: GLenum, data: *mut GLint) {
         pname,
         data
     );
-    with_ctx(|mut state| unsafe { state.oxidegl_get_integerv(pname.into_enum(), data) });
+    with_ctx(|state| unsafe { state.oxidegl_get_integerv(pname.into_enum(), data) });
 }
 #[no_mangle]
 unsafe extern "C" fn glGetBooleani_v(target: GLenum, index: GLuint, data: *mut GLboolean) {
@@ -2591,7 +2591,7 @@ unsafe extern "C" fn glGetInteger64i_v(target: GLenum, index: GLuint, data: *mut
         data
     );
     with_ctx(|mut state| unsafe {
-        state.oxidegl_get_integer64i_v(target.into_enum(), index, data)
+        state.oxidegl_get_integer64i_v(target.into_enum(), index, data);
     });
 }
 #[no_mangle]
@@ -2628,7 +2628,7 @@ unsafe extern "C" fn glGetActiveAtomicCounterBufferiv(
             bufferIndex,
             pname.into_enum(),
             params,
-        )
+        );
     });
 }
 #[no_mangle]
@@ -2651,7 +2651,7 @@ unsafe extern "C" fn glGetActiveAttrib(
             size,
             r#type.into_enum(),
             name,
-        )
+        );
     });
 }
 #[no_mangle]
@@ -2672,7 +2672,7 @@ unsafe extern "C" fn glGetActiveSubroutineName(
             bufSize,
             length,
             name,
-        )
+        );
     });
 }
 #[no_mangle]
@@ -2691,7 +2691,7 @@ unsafe extern "C" fn glGetActiveSubroutineUniformiv(
             index,
             pname.into_enum(),
             values,
-        )
+        );
     });
 }
 #[no_mangle]
@@ -2712,7 +2712,7 @@ unsafe extern "C" fn glGetActiveSubroutineUniformName(
             bufSize,
             length,
             name,
-        )
+        );
     });
 }
 #[no_mangle]
@@ -2735,7 +2735,7 @@ unsafe extern "C" fn glGetActiveUniform(
             size,
             r#type.into_enum(),
             name,
-        )
+        );
     });
 }
 #[no_mangle]
@@ -2752,7 +2752,7 @@ unsafe extern "C" fn glGetActiveUniformBlockiv(
             uniformBlockIndex,
             pname.into_enum(),
             params,
-        )
+        );
     });
 }
 #[no_mangle]
@@ -2771,7 +2771,7 @@ unsafe extern "C" fn glGetActiveUniformBlockName(
             bufSize,
             length,
             uniformBlockName,
-        )
+        );
     });
 }
 #[no_mangle]
@@ -2784,7 +2784,7 @@ unsafe extern "C" fn glGetActiveUniformName(
 ) {
     ::log::trace!("glGetActiveUniformName called, parameters: program: {:?}, uniformIndex: {:?}, bufSize: {:?}, length: {:?}, uniformName: {:?} ", program, uniformIndex, bufSize, length, uniformName);
     with_ctx(|mut state| unsafe {
-        state.oxidegl_get_active_uniform_name(program, uniformIndex, bufSize, length, uniformName)
+        state.oxidegl_get_active_uniform_name(program, uniformIndex, bufSize, length, uniformName);
     });
 }
 #[no_mangle]
@@ -2803,7 +2803,7 @@ unsafe extern "C" fn glGetActiveUniformsiv(
             uniformIndices,
             pname.into_enum(),
             params,
-        )
+        );
     });
 }
 #[no_mangle]
@@ -2815,7 +2815,7 @@ unsafe extern "C" fn glGetAttachedShaders(
 ) {
     ::log::trace!("glGetAttachedShaders called, parameters: program: {:?}, maxCount: {:?}, count: {:?}, shaders: {:?} ", program, maxCount, count, shaders);
     with_ctx(|mut state| unsafe {
-        state.oxidegl_get_attached_shaders(program, maxCount, count, shaders)
+        state.oxidegl_get_attached_shaders(program, maxCount, count, shaders);
     });
 }
 #[no_mangle]
@@ -2836,7 +2836,7 @@ unsafe extern "C" fn glGetBufferParameteriv(target: GLenum, pname: GLenum, param
         params
     );
     with_ctx(|mut state| unsafe {
-        state.oxidegl_get_buffer_parameteriv(target.into_enum(), pname.into_enum(), params)
+        state.oxidegl_get_buffer_parameteriv(target.into_enum(), pname.into_enum(), params);
     });
 }
 #[no_mangle]
@@ -2848,7 +2848,7 @@ unsafe extern "C" fn glGetBufferParameteri64v(target: GLenum, pname: GLenum, par
         params
     );
     with_ctx(|mut state| unsafe {
-        state.oxidegl_get_buffer_parameteri64v(target.into_enum(), pname.into_enum(), params)
+        state.oxidegl_get_buffer_parameteri64v(target.into_enum(), pname.into_enum(), params);
     });
 }
 #[no_mangle]
@@ -2864,7 +2864,7 @@ unsafe extern "C" fn glGetNamedBufferParameteriv(
         params
     );
     with_ctx(|mut state| unsafe {
-        state.oxidegl_get_named_buffer_parameteriv(buffer, pname.into_enum(), params)
+        state.oxidegl_get_named_buffer_parameteriv(buffer, pname.into_enum(), params);
     });
 }
 #[no_mangle]
@@ -2875,7 +2875,7 @@ unsafe extern "C" fn glGetNamedBufferParameteri64v(
 ) {
     ::log::trace!("glGetNamedBufferParameteri64v called, parameters: buffer: {:?}, pname: {:?}, params: {:?} ", buffer, pname, params);
     with_ctx(|mut state| unsafe {
-        state.oxidegl_get_named_buffer_parameteri64v(buffer, pname.into_enum(), params)
+        state.oxidegl_get_named_buffer_parameteri64v(buffer, pname.into_enum(), params);
     });
 }
 #[no_mangle]
@@ -2887,7 +2887,7 @@ unsafe extern "C" fn glGetBufferPointerv(target: GLenum, pname: GLenum, params: 
         params
     );
     with_ctx(|mut state| unsafe {
-        state.oxidegl_get_buffer_pointerv(target.into_enum(), pname, params)
+        state.oxidegl_get_buffer_pointerv(target.into_enum(), pname, params);
     });
 }
 #[no_mangle]
@@ -2913,7 +2913,7 @@ unsafe extern "C" fn glGetBufferSubData(
 ) {
     ::log::trace!("glGetBufferSubData called, parameters: target: {:?}, offset: {:?}, size: {:?}, data: {:?} ", target, offset, size, data);
     with_ctx(|mut state| unsafe {
-        state.oxidegl_get_buffer_sub_data(target.into_enum(), offset, size, data)
+        state.oxidegl_get_buffer_sub_data(target.into_enum(), offset, size, data);
     });
 }
 #[no_mangle]
@@ -2925,7 +2925,7 @@ unsafe extern "C" fn glGetNamedBufferSubData(
 ) {
     ::log::trace!("glGetNamedBufferSubData called, parameters: buffer: {:?}, offset: {:?}, size: {:?}, data: {:?} ", buffer, offset, size, data);
     with_ctx(|mut state| unsafe {
-        state.oxidegl_get_named_buffer_sub_data(buffer, offset, size, data)
+        state.oxidegl_get_named_buffer_sub_data(buffer, offset, size, data);
     });
 }
 #[no_mangle]
@@ -2937,7 +2937,7 @@ unsafe extern "C" fn glGetCompressedTexImage(target: GLenum, level: GLint, img: 
         img
     );
     with_ctx(|mut state| unsafe {
-        state.oxidegl_get_compressed_tex_image(target.into_enum(), level, img)
+        state.oxidegl_get_compressed_tex_image(target.into_enum(), level, img);
     });
 }
 #[no_mangle]
@@ -2949,7 +2949,7 @@ unsafe extern "C" fn glGetCompressedTextureImage(
 ) {
     ::log::trace!("glGetCompressedTextureImage called, parameters: texture: {:?}, level: {:?}, bufSize: {:?}, pixels: {:?} ", texture, level, bufSize, pixels);
     with_ctx(|mut state| unsafe {
-        state.oxidegl_get_compressed_texture_image(texture, level, bufSize, pixels)
+        state.oxidegl_get_compressed_texture_image(texture, level, bufSize, pixels);
     });
 }
 #[no_mangle]
@@ -2961,7 +2961,7 @@ unsafe extern "C" fn glGetnCompressedTexImage(
 ) {
     ::log::trace!("glGetnCompressedTexImage called, parameters: target: {:?}, lod: {:?}, bufSize: {:?}, pixels: {:?} ", target, lod, bufSize, pixels);
     with_ctx(|mut state| unsafe {
-        state.oxidegl_getn_compressed_tex_image(target.into_enum(), lod, bufSize, pixels)
+        state.oxidegl_getn_compressed_tex_image(target.into_enum(), lod, bufSize, pixels);
     });
 }
 #[no_mangle]
@@ -2981,7 +2981,7 @@ unsafe extern "C" fn glGetCompressedTextureSubImage(
     with_ctx(|mut state| unsafe {
         state.oxidegl_get_compressed_texture_sub_image(
             texture, level, xoffset, yoffset, zoffset, width, height, depth, bufSize, pixels,
-        )
+        );
     });
 }
 #[no_mangle]
@@ -3046,7 +3046,7 @@ unsafe extern "C" fn glGetFramebufferAttachmentParameteriv(
             attachment.into_enum(),
             pname.into_enum(),
             params,
-        )
+        );
     });
 }
 #[no_mangle]
@@ -3063,7 +3063,7 @@ unsafe extern "C" fn glGetNamedFramebufferAttachmentParameteriv(
             attachment.into_enum(),
             pname.into_enum(),
             params,
-        )
+        );
     });
 }
 #[no_mangle]
@@ -3079,7 +3079,7 @@ unsafe extern "C" fn glGetFramebufferParameteriv(
         params
     );
     with_ctx(|mut state| unsafe {
-        state.oxidegl_get_framebuffer_parameteriv(target.into_enum(), pname.into_enum(), params)
+        state.oxidegl_get_framebuffer_parameteriv(target.into_enum(), pname.into_enum(), params);
     });
 }
 #[no_mangle]
@@ -3090,7 +3090,7 @@ unsafe extern "C" fn glGetNamedFramebufferParameteriv(
 ) {
     ::log::trace!("glGetNamedFramebufferParameteriv called, parameters: framebuffer: {:?}, pname: {:?}, param: {:?} ", framebuffer, pname, param);
     with_ctx(|mut state| unsafe {
-        state.oxidegl_get_named_framebuffer_parameteriv(framebuffer, pname.into_enum(), param)
+        state.oxidegl_get_named_framebuffer_parameteriv(framebuffer, pname.into_enum(), param);
     });
 }
 #[no_mangle]
@@ -3114,7 +3114,7 @@ unsafe extern "C" fn glGetInternalformativ(
             pname.into_enum(),
             count,
             params,
-        )
+        );
     });
 }
 #[no_mangle]
@@ -3133,7 +3133,7 @@ unsafe extern "C" fn glGetInternalformati64v(
             pname.into_enum(),
             count,
             params,
-        )
+        );
     });
 }
 #[no_mangle]
@@ -3156,7 +3156,7 @@ unsafe extern "C" fn glGetObjectLabel(
 ) {
     ::log::trace!("glGetObjectLabel called, parameters: identifier: {:?}, name: {:?}, bufSize: {:?}, length: {:?}, label: {:?} ", identifier, name, bufSize, length, label);
     with_ctx(|mut state| unsafe {
-        state.oxidegl_get_object_label(identifier.into_enum(), name, bufSize, length, label)
+        state.oxidegl_get_object_label(identifier.into_enum(), name, bufSize, length, label);
     });
 }
 #[no_mangle]
@@ -3168,7 +3168,7 @@ unsafe extern "C" fn glGetObjectPtrLabel(
 ) {
     ::log::trace!("glGetObjectPtrLabel called, parameters: ptr: {:?}, bufSize: {:?}, length: {:?}, label: {:?} ", ptr, bufSize, length, label);
     with_ctx(|mut state| unsafe {
-        state.oxidegl_get_object_ptr_label(ptr, bufSize, length, label)
+        state.oxidegl_get_object_ptr_label(ptr, bufSize, length, label);
     });
 }
 #[no_mangle]
@@ -3189,7 +3189,7 @@ unsafe extern "C" fn glGetProgramiv(program: GLuint, pname: GLenum, params: *mut
         params
     );
     with_ctx(|mut state| unsafe {
-        state.oxidegl_get_programiv(program, pname.into_enum(), params)
+        state.oxidegl_get_programiv(program, pname.into_enum(), params);
     });
 }
 #[no_mangle]
@@ -3202,7 +3202,7 @@ unsafe extern "C" fn glGetProgramBinary(
 ) {
     ::log::trace!("glGetProgramBinary called, parameters: program: {:?}, bufSize: {:?}, length: {:?}, binaryFormat: {:?}, binary: {:?} ", program, bufSize, length, binaryFormat, binary);
     with_ctx(|mut state| unsafe {
-        state.oxidegl_get_program_binary(program, bufSize, length, binaryFormat, binary)
+        state.oxidegl_get_program_binary(program, bufSize, length, binaryFormat, binary);
     });
 }
 #[no_mangle]
@@ -3214,7 +3214,7 @@ unsafe extern "C" fn glGetProgramInfoLog(
 ) {
     ::log::trace!("glGetProgramInfoLog called, parameters: program: {:?}, bufSize: {:?}, length: {:?}, infoLog: {:?} ", program, bufSize, length, infoLog);
     with_ctx(|mut state| unsafe {
-        state.oxidegl_get_program_info_log(program, bufSize, length, infoLog)
+        state.oxidegl_get_program_info_log(program, bufSize, length, infoLog);
     });
 }
 #[no_mangle]
@@ -3231,7 +3231,7 @@ unsafe extern "C" fn glGetProgramInterfaceiv(
             programInterface.into_enum(),
             pname.into_enum(),
             params,
-        )
+        );
     });
 }
 #[no_mangle]
@@ -3243,7 +3243,7 @@ unsafe extern "C" fn glGetProgramPipelineiv(pipeline: GLuint, pname: GLenum, par
         params
     );
     with_ctx(|mut state| unsafe {
-        state.oxidegl_get_program_pipelineiv(pipeline, pname.into_enum(), params)
+        state.oxidegl_get_program_pipelineiv(pipeline, pname.into_enum(), params);
     });
 }
 #[no_mangle]
@@ -3255,7 +3255,7 @@ unsafe extern "C" fn glGetProgramPipelineInfoLog(
 ) {
     ::log::trace!("glGetProgramPipelineInfoLog called, parameters: pipeline: {:?}, bufSize: {:?}, length: {:?}, infoLog: {:?} ", pipeline, bufSize, length, infoLog);
     with_ctx(|mut state| unsafe {
-        state.oxidegl_get_program_pipeline_info_log(pipeline, bufSize, length, infoLog)
+        state.oxidegl_get_program_pipeline_info_log(pipeline, bufSize, length, infoLog);
     });
 }
 #[no_mangle]
@@ -3280,7 +3280,7 @@ unsafe extern "C" fn glGetProgramResourceiv(
             count,
             length,
             params,
-        )
+        );
     });
 }
 #[no_mangle]
@@ -3338,7 +3338,7 @@ unsafe extern "C" fn glGetProgramResourceName(
             bufSize,
             length,
             name,
-        )
+        );
     });
 }
 #[no_mangle]
@@ -3355,7 +3355,7 @@ unsafe extern "C" fn glGetProgramStageiv(
             shadertype.into_enum(),
             pname.into_enum(),
             values,
-        )
+        );
     });
 }
 #[no_mangle]
@@ -3367,7 +3367,7 @@ unsafe extern "C" fn glGetQueryIndexediv(
 ) {
     ::log::trace!("glGetQueryIndexediv called, parameters: target: {:?}, index: {:?}, pname: {:?}, params: {:?} ", target, index, pname, params);
     with_ctx(|mut state| unsafe {
-        state.oxidegl_get_query_indexediv(target.into_enum(), index, pname.into_enum(), params)
+        state.oxidegl_get_query_indexediv(target.into_enum(), index, pname.into_enum(), params);
     });
 }
 #[no_mangle]
@@ -3379,7 +3379,7 @@ unsafe extern "C" fn glGetQueryiv(target: GLenum, pname: GLenum, params: *mut GL
         params
     );
     with_ctx(|mut state| unsafe {
-        state.oxidegl_get_queryiv(target.into_enum(), pname.into_enum(), params)
+        state.oxidegl_get_queryiv(target.into_enum(), pname.into_enum(), params);
     });
 }
 #[no_mangle]
@@ -3391,7 +3391,7 @@ unsafe extern "C" fn glGetQueryObjectiv(id: GLuint, pname: GLenum, params: *mut 
         params
     );
     with_ctx(|mut state| unsafe {
-        state.oxidegl_get_query_objectiv(id, pname.into_enum(), params)
+        state.oxidegl_get_query_objectiv(id, pname.into_enum(), params);
     });
 }
 #[no_mangle]
@@ -3403,7 +3403,7 @@ unsafe extern "C" fn glGetQueryObjectuiv(id: GLuint, pname: GLenum, params: *mut
         params
     );
     with_ctx(|mut state| unsafe {
-        state.oxidegl_get_query_objectuiv(id, pname.into_enum(), params)
+        state.oxidegl_get_query_objectuiv(id, pname.into_enum(), params);
     });
 }
 #[no_mangle]
@@ -3415,7 +3415,7 @@ unsafe extern "C" fn glGetQueryObjecti64v(id: GLuint, pname: GLenum, params: *mu
         params
     );
     with_ctx(|mut state| unsafe {
-        state.oxidegl_get_query_objecti64v(id, pname.into_enum(), params)
+        state.oxidegl_get_query_objecti64v(id, pname.into_enum(), params);
     });
 }
 #[no_mangle]
@@ -3427,7 +3427,7 @@ unsafe extern "C" fn glGetQueryObjectui64v(id: GLuint, pname: GLenum, params: *m
         params
     );
     with_ctx(|mut state| unsafe {
-        state.oxidegl_get_query_objectui64v(id, pname.into_enum(), params)
+        state.oxidegl_get_query_objectui64v(id, pname.into_enum(), params);
     });
 }
 #[no_mangle]
@@ -3439,7 +3439,7 @@ unsafe extern "C" fn glGetQueryBufferObjecti64v(
 ) {
     ::log::trace!("glGetQueryBufferObjecti64v called, parameters: id: {:?}, buffer: {:?}, pname: {:?}, offset: {:?} ", id, buffer, pname, offset);
     with_ctx(|mut state| {
-        state.oxidegl_get_query_buffer_objecti64v(id, buffer, unsafe { pname.into_enum() }, offset)
+        state.oxidegl_get_query_buffer_objecti64v(id, buffer, unsafe { pname.into_enum() }, offset);
     });
 }
 #[no_mangle]
@@ -3451,7 +3451,7 @@ unsafe extern "C" fn glGetQueryBufferObjectiv(
 ) {
     ::log::trace!("glGetQueryBufferObjectiv called, parameters: id: {:?}, buffer: {:?}, pname: {:?}, offset: {:?} ", id, buffer, pname, offset);
     with_ctx(|mut state| {
-        state.oxidegl_get_query_buffer_objectiv(id, buffer, unsafe { pname.into_enum() }, offset)
+        state.oxidegl_get_query_buffer_objectiv(id, buffer, unsafe { pname.into_enum() }, offset);
     });
 }
 #[no_mangle]
@@ -3463,7 +3463,7 @@ unsafe extern "C" fn glGetQueryBufferObjectui64v(
 ) {
     ::log::trace!("glGetQueryBufferObjectui64v called, parameters: id: {:?}, buffer: {:?}, pname: {:?}, offset: {:?} ", id, buffer, pname, offset);
     with_ctx(|mut state| {
-        state.oxidegl_get_query_buffer_objectui64v(id, buffer, unsafe { pname.into_enum() }, offset)
+        state.oxidegl_get_query_buffer_objectui64v(id, buffer, unsafe { pname.into_enum() }, offset);
     });
 }
 #[no_mangle]
@@ -3475,7 +3475,7 @@ unsafe extern "C" fn glGetQueryBufferObjectuiv(
 ) {
     ::log::trace!("glGetQueryBufferObjectuiv called, parameters: id: {:?}, buffer: {:?}, pname: {:?}, offset: {:?} ", id, buffer, pname, offset);
     with_ctx(|mut state| {
-        state.oxidegl_get_query_buffer_objectuiv(id, buffer, unsafe { pname.into_enum() }, offset)
+        state.oxidegl_get_query_buffer_objectuiv(id, buffer, unsafe { pname.into_enum() }, offset);
     });
 }
 #[no_mangle]
@@ -3491,7 +3491,7 @@ unsafe extern "C" fn glGetRenderbufferParameteriv(
         params
     );
     with_ctx(|mut state| unsafe {
-        state.oxidegl_get_renderbuffer_parameteriv(target, pname.into_enum(), params)
+        state.oxidegl_get_renderbuffer_parameteriv(target, pname.into_enum(), params);
     });
 }
 #[no_mangle]
@@ -3502,7 +3502,7 @@ unsafe extern "C" fn glGetNamedRenderbufferParameteriv(
 ) {
     ::log::trace!("glGetNamedRenderbufferParameteriv called, parameters: renderbuffer: {:?}, pname: {:?}, params: {:?} ", renderbuffer, pname, params);
     with_ctx(|mut state| unsafe {
-        state.oxidegl_get_named_renderbuffer_parameteriv(renderbuffer, pname.into_enum(), params)
+        state.oxidegl_get_named_renderbuffer_parameteriv(renderbuffer, pname.into_enum(), params);
     });
 }
 #[no_mangle]
@@ -3514,7 +3514,7 @@ unsafe extern "C" fn glGetSamplerParameteriv(sampler: GLuint, pname: GLenum, par
         params
     );
     with_ctx(|mut state| unsafe {
-        state.oxidegl_get_sampler_parameteriv(sampler, pname.into_enum(), params)
+        state.oxidegl_get_sampler_parameteriv(sampler, pname.into_enum(), params);
     });
 }
 #[no_mangle]
@@ -3526,7 +3526,7 @@ unsafe extern "C" fn glGetSamplerParameterIiv(sampler: GLuint, pname: GLenum, pa
         params
     );
     with_ctx(|mut state| unsafe {
-        state.oxidegl_get_sampler_parameter_iiv(sampler, pname.into_enum(), params)
+        state.oxidegl_get_sampler_parameter_iiv(sampler, pname.into_enum(), params);
     });
 }
 #[no_mangle]
@@ -3538,7 +3538,7 @@ unsafe extern "C" fn glGetSamplerParameterfv(sampler: GLuint, pname: GLenum, par
         params
     );
     with_ctx(|mut state| unsafe {
-        state.oxidegl_get_sampler_parameterfv(sampler, pname.into_enum(), params)
+        state.oxidegl_get_sampler_parameterfv(sampler, pname.into_enum(), params);
     });
 }
 #[no_mangle]
@@ -3554,7 +3554,7 @@ unsafe extern "C" fn glGetSamplerParameterIuiv(
         params
     );
     with_ctx(|mut state| unsafe {
-        state.oxidegl_get_sampler_parameter_iuiv(sampler, pname.into_enum(), params)
+        state.oxidegl_get_sampler_parameter_iuiv(sampler, pname.into_enum(), params);
     });
 }
 #[no_mangle]
@@ -3576,7 +3576,7 @@ unsafe extern "C" fn glGetShaderInfoLog(
 ) {
     ::log::trace!("glGetShaderInfoLog called, parameters: shader: {:?}, bufSize: {:?}, length: {:?}, infoLog: {:?} ", shader, bufSize, length, infoLog);
     with_ctx(|mut state| unsafe {
-        state.oxidegl_get_shader_info_log(shader, bufSize, length, infoLog)
+        state.oxidegl_get_shader_info_log(shader, bufSize, length, infoLog);
     });
 }
 #[no_mangle]
@@ -3593,7 +3593,7 @@ unsafe extern "C" fn glGetShaderPrecisionFormat(
             precisiontype.into_enum(),
             range,
             precision,
-        )
+        );
     });
 }
 #[no_mangle]
@@ -3605,7 +3605,7 @@ unsafe extern "C" fn glGetShaderSource(
 ) {
     ::log::trace!("glGetShaderSource called, parameters: shader: {:?}, bufSize: {:?}, length: {:?}, source: {:?} ", shader, bufSize, length, source);
     with_ctx(|mut state| unsafe {
-        state.oxidegl_get_shader_source(shader, bufSize, length, source)
+        state.oxidegl_get_shader_source(shader, bufSize, length, source);
     });
 }
 #[no_mangle]
@@ -3659,7 +3659,7 @@ unsafe extern "C" fn glGetSynciv(
 ) {
     ::log::trace!("glGetSynciv called, parameters: sync: {:?}, pname: {:?}, count: {:?}, length: {:?}, values: {:?} ", sync, pname, count, length, values);
     with_ctx(|mut state| unsafe {
-        state.oxidegl_get_synciv(sync, pname.into_enum(), count, length, values)
+        state.oxidegl_get_synciv(sync, pname.into_enum(), count, length, values);
     });
 }
 #[no_mangle]
@@ -3678,7 +3678,7 @@ unsafe extern "C" fn glGetTexImage(
             format.into_enum(),
             r#type.into_enum(),
             pixels,
-        )
+        );
     });
 }
 #[no_mangle]
@@ -3699,7 +3699,7 @@ unsafe extern "C" fn glGetTextureImage(
             r#type.into_enum(),
             bufSize,
             pixels,
-        )
+        );
     });
 }
 #[no_mangle]
@@ -3720,7 +3720,7 @@ unsafe extern "C" fn glGetnTexImage(
             r#type.into_enum(),
             bufSize,
             pixels,
-        )
+        );
     });
 }
 #[no_mangle]
@@ -3737,7 +3737,7 @@ unsafe extern "C" fn glGetTexLevelParameterfv(
             level,
             pname.into_enum(),
             params,
-        )
+        );
     });
 }
 #[no_mangle]
@@ -3754,7 +3754,7 @@ unsafe extern "C" fn glGetTexLevelParameteriv(
             level,
             pname.into_enum(),
             params,
-        )
+        );
     });
 }
 #[no_mangle]
@@ -3766,7 +3766,7 @@ unsafe extern "C" fn glGetTextureLevelParameterfv(
 ) {
     ::log::trace!("glGetTextureLevelParameterfv called, parameters: texture: {:?}, level: {:?}, pname: {:?}, params: {:?} ", texture, level, pname, params);
     with_ctx(|mut state| unsafe {
-        state.oxidegl_get_texture_level_parameterfv(texture, level, pname.into_enum(), params)
+        state.oxidegl_get_texture_level_parameterfv(texture, level, pname.into_enum(), params);
     });
 }
 #[no_mangle]
@@ -3778,7 +3778,7 @@ unsafe extern "C" fn glGetTextureLevelParameteriv(
 ) {
     ::log::trace!("glGetTextureLevelParameteriv called, parameters: texture: {:?}, level: {:?}, pname: {:?}, params: {:?} ", texture, level, pname, params);
     with_ctx(|mut state| unsafe {
-        state.oxidegl_get_texture_level_parameteriv(texture, level, pname.into_enum(), params)
+        state.oxidegl_get_texture_level_parameteriv(texture, level, pname.into_enum(), params);
     });
 }
 #[no_mangle]
@@ -3790,7 +3790,7 @@ unsafe extern "C" fn glGetTexParameterfv(target: GLenum, pname: GLenum, params: 
         params
     );
     with_ctx(|mut state| unsafe {
-        state.oxidegl_get_tex_parameterfv(target.into_enum(), pname.into_enum(), params)
+        state.oxidegl_get_tex_parameterfv(target.into_enum(), pname.into_enum(), params);
     });
 }
 #[no_mangle]
@@ -3802,7 +3802,7 @@ unsafe extern "C" fn glGetTexParameteriv(target: GLenum, pname: GLenum, params: 
         params
     );
     with_ctx(|mut state| unsafe {
-        state.oxidegl_get_tex_parameteriv(target.into_enum(), pname.into_enum(), params)
+        state.oxidegl_get_tex_parameteriv(target.into_enum(), pname.into_enum(), params);
     });
 }
 #[no_mangle]
@@ -3814,7 +3814,7 @@ unsafe extern "C" fn glGetTexParameterIiv(target: GLenum, pname: GLenum, params:
         params
     );
     with_ctx(|mut state| unsafe {
-        state.oxidegl_get_tex_parameter_iiv(target.into_enum(), pname.into_enum(), params)
+        state.oxidegl_get_tex_parameter_iiv(target.into_enum(), pname.into_enum(), params);
     });
 }
 #[no_mangle]
@@ -3826,7 +3826,7 @@ unsafe extern "C" fn glGetTexParameterIuiv(target: GLenum, pname: GLenum, params
         params
     );
     with_ctx(|mut state| unsafe {
-        state.oxidegl_get_tex_parameter_iuiv(target.into_enum(), pname.into_enum(), params)
+        state.oxidegl_get_tex_parameter_iuiv(target.into_enum(), pname.into_enum(), params);
     });
 }
 #[no_mangle]
@@ -3838,7 +3838,7 @@ unsafe extern "C" fn glGetTextureParameterfv(texture: GLuint, pname: GLenum, par
         params
     );
     with_ctx(|mut state| unsafe {
-        state.oxidegl_get_texture_parameterfv(texture, pname.into_enum(), params)
+        state.oxidegl_get_texture_parameterfv(texture, pname.into_enum(), params);
     });
 }
 #[no_mangle]
@@ -3850,7 +3850,7 @@ unsafe extern "C" fn glGetTextureParameterIiv(texture: GLuint, pname: GLenum, pa
         params
     );
     with_ctx(|mut state| unsafe {
-        state.oxidegl_get_texture_parameter_iiv(texture, pname.into_enum(), params)
+        state.oxidegl_get_texture_parameter_iiv(texture, pname.into_enum(), params);
     });
 }
 #[no_mangle]
@@ -3866,7 +3866,7 @@ unsafe extern "C" fn glGetTextureParameterIuiv(
         params
     );
     with_ctx(|mut state| unsafe {
-        state.oxidegl_get_texture_parameter_iuiv(texture, pname.into_enum(), params)
+        state.oxidegl_get_texture_parameter_iuiv(texture, pname.into_enum(), params);
     });
 }
 #[no_mangle]
@@ -3878,7 +3878,7 @@ unsafe extern "C" fn glGetTextureParameteriv(texture: GLuint, pname: GLenum, par
         params
     );
     with_ctx(|mut state| unsafe {
-        state.oxidegl_get_texture_parameteriv(texture, pname.into_enum(), params)
+        state.oxidegl_get_texture_parameteriv(texture, pname.into_enum(), params);
     });
 }
 #[no_mangle]
@@ -3911,7 +3911,7 @@ unsafe extern "C" fn glGetTextureSubImage(
             r#type.into_enum(),
             bufSize,
             pixels,
-        )
+        );
     });
 }
 #[no_mangle]
@@ -3923,7 +3923,7 @@ unsafe extern "C" fn glGetTransformFeedbackiv(xfb: GLuint, pname: GLenum, param:
         param
     );
     with_ctx(|mut state| unsafe {
-        state.oxidegl_get_transform_feedbackiv(xfb, pname.into_enum(), param)
+        state.oxidegl_get_transform_feedbackiv(xfb, pname.into_enum(), param);
     });
 }
 #[no_mangle]
@@ -3935,7 +3935,7 @@ unsafe extern "C" fn glGetTransformFeedbacki_v(
 ) {
     ::log::trace!("glGetTransformFeedbacki_v called, parameters: xfb: {:?}, pname: {:?}, index: {:?}, param: {:?} ", xfb, pname, index, param);
     with_ctx(|mut state| unsafe {
-        state.oxidegl_get_transform_feedbacki_v(xfb, pname.into_enum(), index, param)
+        state.oxidegl_get_transform_feedbacki_v(xfb, pname.into_enum(), index, param);
     });
 }
 #[no_mangle]
@@ -3947,7 +3947,7 @@ unsafe extern "C" fn glGetTransformFeedbacki64_v(
 ) {
     ::log::trace!("glGetTransformFeedbacki64_v called, parameters: xfb: {:?}, pname: {:?}, index: {:?}, param: {:?} ", xfb, pname, index, param);
     with_ctx(|mut state| unsafe {
-        state.oxidegl_get_transform_feedbacki64_v(xfb, pname.into_enum(), index, param)
+        state.oxidegl_get_transform_feedbacki64_v(xfb, pname.into_enum(), index, param);
     });
 }
 #[no_mangle]
@@ -3970,7 +3970,7 @@ unsafe extern "C" fn glGetTransformFeedbackVarying(
             size,
             r#type.into_enum(),
             name,
-        )
+        );
     });
 }
 #[no_mangle]
@@ -4022,7 +4022,7 @@ unsafe extern "C" fn glGetnUniformdv(
 ) {
     ::log::trace!("glGetnUniformdv called, parameters: program: {:?}, location: {:?}, bufSize: {:?}, params: {:?} ", program, location, bufSize, params);
     with_ctx(|mut state| unsafe {
-        state.oxidegl_getn_uniformdv(program, location, bufSize, params)
+        state.oxidegl_getn_uniformdv(program, location, bufSize, params);
     });
 }
 #[no_mangle]
@@ -4034,7 +4034,7 @@ unsafe extern "C" fn glGetnUniformfv(
 ) {
     ::log::trace!("glGetnUniformfv called, parameters: program: {:?}, location: {:?}, bufSize: {:?}, params: {:?} ", program, location, bufSize, params);
     with_ctx(|mut state| unsafe {
-        state.oxidegl_getn_uniformfv(program, location, bufSize, params)
+        state.oxidegl_getn_uniformfv(program, location, bufSize, params);
     });
 }
 #[no_mangle]
@@ -4046,7 +4046,7 @@ unsafe extern "C" fn glGetnUniformiv(
 ) {
     ::log::trace!("glGetnUniformiv called, parameters: program: {:?}, location: {:?}, bufSize: {:?}, params: {:?} ", program, location, bufSize, params);
     with_ctx(|mut state| unsafe {
-        state.oxidegl_getn_uniformiv(program, location, bufSize, params)
+        state.oxidegl_getn_uniformiv(program, location, bufSize, params);
     });
 }
 #[no_mangle]
@@ -4058,7 +4058,7 @@ unsafe extern "C" fn glGetnUniformuiv(
 ) {
     ::log::trace!("glGetnUniformuiv called, parameters: program: {:?}, location: {:?}, bufSize: {:?}, params: {:?} ", program, location, bufSize, params);
     with_ctx(|mut state| unsafe {
-        state.oxidegl_getn_uniformuiv(program, location, bufSize, params)
+        state.oxidegl_getn_uniformuiv(program, location, bufSize, params);
     });
 }
 #[no_mangle]
@@ -4084,7 +4084,7 @@ unsafe extern "C" fn glGetUniformIndices(
 ) {
     ::log::trace!("glGetUniformIndices called, parameters: program: {:?}, uniformCount: {:?}, uniformNames: {:?}, uniformIndices: {:?} ", program, uniformCount, uniformNames, uniformIndices);
     with_ctx(|mut state| unsafe {
-        state.oxidegl_get_uniform_indices(program, uniformCount, uniformNames, uniformIndices)
+        state.oxidegl_get_uniform_indices(program, uniformCount, uniformNames, uniformIndices);
     });
 }
 #[no_mangle]
@@ -4104,7 +4104,7 @@ unsafe extern "C" fn glGetUniformSubroutineuiv(
 ) {
     ::log::trace!("glGetUniformSubroutineuiv called, parameters: shadertype: {:?}, location: {:?}, params: {:?} ", shadertype, location, params);
     with_ctx(|mut state| unsafe {
-        state.oxidegl_get_uniform_subroutineuiv(shadertype.into_enum(), location, params)
+        state.oxidegl_get_uniform_subroutineuiv(shadertype.into_enum(), location, params);
     });
 }
 #[no_mangle]
@@ -4116,7 +4116,7 @@ unsafe extern "C" fn glGetVertexArrayIndexediv(
 ) {
     ::log::trace!("glGetVertexArrayIndexediv called, parameters: vaobj: {:?}, index: {:?}, pname: {:?}, param: {:?} ", vaobj, index, pname, param);
     with_ctx(|mut state| unsafe {
-        state.oxidegl_get_vertex_array_indexediv(vaobj, index, pname.into_enum(), param)
+        state.oxidegl_get_vertex_array_indexediv(vaobj, index, pname.into_enum(), param);
     });
 }
 #[no_mangle]
@@ -4128,7 +4128,7 @@ unsafe extern "C" fn glGetVertexArrayIndexed64iv(
 ) {
     ::log::trace!("glGetVertexArrayIndexed64iv called, parameters: vaobj: {:?}, index: {:?}, pname: {:?}, param: {:?} ", vaobj, index, pname, param);
     with_ctx(|mut state| unsafe {
-        state.oxidegl_get_vertex_array_indexed64iv(vaobj, index, pname.into_enum(), param)
+        state.oxidegl_get_vertex_array_indexed64iv(vaobj, index, pname.into_enum(), param);
     });
 }
 #[no_mangle]
@@ -4140,7 +4140,7 @@ unsafe extern "C" fn glGetVertexArrayiv(vaobj: GLuint, pname: GLenum, param: *mu
         param
     );
     with_ctx(|mut state| unsafe {
-        state.oxidegl_get_vertex_arrayiv(vaobj, pname.into_enum(), param)
+        state.oxidegl_get_vertex_arrayiv(vaobj, pname.into_enum(), param);
     });
 }
 #[no_mangle]
@@ -4152,7 +4152,7 @@ unsafe extern "C" fn glGetVertexAttribdv(index: GLuint, pname: GLenum, params: *
         params
     );
     with_ctx(|mut state| unsafe {
-        state.oxidegl_get_vertex_attribdv(index, pname.into_enum(), params)
+        state.oxidegl_get_vertex_attribdv(index, pname.into_enum(), params);
     });
 }
 #[no_mangle]
@@ -4164,7 +4164,7 @@ unsafe extern "C" fn glGetVertexAttribfv(index: GLuint, pname: GLenum, params: *
         params
     );
     with_ctx(|mut state| unsafe {
-        state.oxidegl_get_vertex_attribfv(index, pname.into_enum(), params)
+        state.oxidegl_get_vertex_attribfv(index, pname.into_enum(), params);
     });
 }
 #[no_mangle]
@@ -4176,7 +4176,7 @@ unsafe extern "C" fn glGetVertexAttribiv(index: GLuint, pname: GLenum, params: *
         params
     );
     with_ctx(|mut state| unsafe {
-        state.oxidegl_get_vertex_attribiv(index, pname.into_enum(), params)
+        state.oxidegl_get_vertex_attribiv(index, pname.into_enum(), params);
     });
 }
 #[no_mangle]
@@ -4188,7 +4188,7 @@ unsafe extern "C" fn glGetVertexAttribIiv(index: GLuint, pname: GLenum, params: 
         params
     );
     with_ctx(|mut state| unsafe {
-        state.oxidegl_get_vertex_attrib_iiv(index, pname.into_enum(), params)
+        state.oxidegl_get_vertex_attrib_iiv(index, pname.into_enum(), params);
     });
 }
 #[no_mangle]
@@ -4200,7 +4200,7 @@ unsafe extern "C" fn glGetVertexAttribIuiv(index: GLuint, pname: GLenum, params:
         params
     );
     with_ctx(|mut state| unsafe {
-        state.oxidegl_get_vertex_attrib_iuiv(index, pname.into_enum(), params)
+        state.oxidegl_get_vertex_attrib_iuiv(index, pname.into_enum(), params);
     });
 }
 #[no_mangle]
@@ -4212,7 +4212,7 @@ unsafe extern "C" fn glGetVertexAttribLdv(index: GLuint, pname: GLenum, params: 
         params
     );
     with_ctx(|mut state| unsafe {
-        state.oxidegl_get_vertex_attrib_ldv(index, pname.into_enum(), params)
+        state.oxidegl_get_vertex_attrib_ldv(index, pname.into_enum(), params);
     });
 }
 #[no_mangle]
@@ -4228,7 +4228,7 @@ unsafe extern "C" fn glGetVertexAttribPointerv(
         pointer
     );
     with_ctx(|mut state| unsafe {
-        state.oxidegl_get_vertex_attrib_pointerv(index, pname, pointer)
+        state.oxidegl_get_vertex_attrib_pointerv(index, pname, pointer);
     });
 }
 #[no_mangle]
@@ -4239,7 +4239,7 @@ unsafe extern "C" fn glHint(target: GLenum, mode: GLenum) {
         mode
     );
     with_ctx(|mut state| {
-        state.oxidegl_hint(unsafe { target.into_enum() }, unsafe { mode.into_enum() })
+        state.oxidegl_hint(unsafe { target.into_enum() }, unsafe { mode.into_enum() });
     });
 }
 #[no_mangle]
@@ -4276,7 +4276,7 @@ unsafe extern "C" fn glInvalidateFramebuffer(
             unsafe { target.into_enum() },
             numAttachments,
             unsafe { attachments.into_enum() },
-        )
+        );
     });
 }
 #[no_mangle]
@@ -4289,7 +4289,7 @@ unsafe extern "C" fn glInvalidateNamedFramebufferData(
     with_ctx(|mut state| {
         state.oxidegl_invalidate_named_framebuffer_data(framebuffer, numAttachments, unsafe {
             attachments.into_enum()
-        })
+        });
     });
 }
 #[no_mangle]
@@ -4312,7 +4312,7 @@ unsafe extern "C" fn glInvalidateSubFramebuffer(
             y,
             width,
             height,
-        )
+        );
     });
 }
 #[no_mangle]
@@ -4335,7 +4335,7 @@ unsafe extern "C" fn glInvalidateNamedFramebufferSubData(
             y,
             width,
             height,
-        )
+        );
     });
 }
 #[no_mangle]
@@ -4362,7 +4362,7 @@ unsafe extern "C" fn glInvalidateTexSubImage(
     with_ctx(|mut state| {
         state.oxidegl_invalidate_tex_sub_image(
             texture, level, xoffset, yoffset, zoffset, width, height, depth,
-        )
+        );
     });
 }
 #[no_mangle]
@@ -4539,7 +4539,7 @@ unsafe extern "C" fn glMultiDrawArrays(
 ) {
     ::log::trace!("glMultiDrawArrays called, parameters: mode: {:?}, first: {:?}, count: {:?}, drawcount: {:?} ", mode, first, count, drawcount);
     with_ctx(|mut state| unsafe {
-        state.oxidegl_multi_draw_arrays(mode.into_enum(), first, count, drawcount)
+        state.oxidegl_multi_draw_arrays(mode.into_enum(), first, count, drawcount);
     });
 }
 #[no_mangle]
@@ -4551,7 +4551,7 @@ unsafe extern "C" fn glMultiDrawArraysIndirect(
 ) {
     ::log::trace!("glMultiDrawArraysIndirect called, parameters: mode: {:?}, indirect: {:?}, drawcount: {:?}, stride: {:?} ", mode, indirect, drawcount, stride);
     with_ctx(|mut state| unsafe {
-        state.oxidegl_multi_draw_arrays_indirect(mode.into_enum(), indirect, drawcount, stride)
+        state.oxidegl_multi_draw_arrays_indirect(mode.into_enum(), indirect, drawcount, stride);
     });
 }
 #[no_mangle]
@@ -4570,7 +4570,7 @@ unsafe extern "C" fn glMultiDrawElements(
             r#type.into_enum(),
             indices,
             drawcount,
-        )
+        );
     });
 }
 #[no_mangle]
@@ -4591,7 +4591,7 @@ unsafe extern "C" fn glMultiDrawElementsBaseVertex(
             indices,
             drawcount,
             basevertex,
-        )
+        );
     });
 }
 #[no_mangle]
@@ -4610,7 +4610,7 @@ unsafe extern "C" fn glMultiDrawElementsIndirect(
             indirect,
             drawcount,
             stride,
-        )
+        );
     });
 }
 #[no_mangle]
@@ -4622,7 +4622,7 @@ unsafe extern "C" fn glObjectLabel(
 ) {
     ::log::trace!("glObjectLabel called, parameters: identifier: {:?}, name: {:?}, length: {:?}, label: {:?} ", identifier, name, length, label);
     with_ctx(|mut state| unsafe {
-        state.oxidegl_object_label(identifier.into_enum(), name, length, label)
+        state.oxidegl_object_label(identifier.into_enum(), name, length, label);
     });
 }
 #[no_mangle]
@@ -4725,7 +4725,7 @@ unsafe extern "C" fn glPolygonMode(face: GLenum, mode: GLenum) {
         mode
     );
     with_ctx(|mut state| {
-        state.oxidegl_polygon_mode(unsafe { face.into_enum() }, unsafe { mode.into_enum() })
+        state.oxidegl_polygon_mode(unsafe { face.into_enum() }, unsafe { mode.into_enum() });
     });
 }
 #[no_mangle]
@@ -4759,7 +4759,7 @@ unsafe extern "C" fn glProgramBinary(
 ) {
     ::log::trace!("glProgramBinary called, parameters: program: {:?}, binaryFormat: {:?}, binary: {:?}, length: {:?} ", program, binaryFormat, binary, length);
     with_ctx(|mut state| unsafe {
-        state.oxidegl_program_binary(program, binaryFormat, binary, length)
+        state.oxidegl_program_binary(program, binaryFormat, binary, length);
     });
 }
 #[no_mangle]
@@ -4771,7 +4771,7 @@ unsafe extern "C" fn glProgramParameteri(program: GLuint, pname: GLenum, value: 
         value
     );
     with_ctx(|mut state| {
-        state.oxidegl_program_parameteri(program, unsafe { pname.into_enum() }, value)
+        state.oxidegl_program_parameteri(program, unsafe { pname.into_enum() }, value);
     });
 }
 #[no_mangle]
@@ -4793,7 +4793,7 @@ unsafe extern "C" fn glProgramUniform1iv(
 ) {
     ::log::trace!("glProgramUniform1iv called, parameters: program: {:?}, location: {:?}, count: {:?}, value: {:?} ", program, location, count, value);
     with_ctx(|mut state| unsafe {
-        state.oxidegl_program_uniform1iv(program, location, count, value)
+        state.oxidegl_program_uniform1iv(program, location, count, value);
     });
 }
 #[no_mangle]
@@ -4815,7 +4815,7 @@ unsafe extern "C" fn glProgramUniform1fv(
 ) {
     ::log::trace!("glProgramUniform1fv called, parameters: program: {:?}, location: {:?}, count: {:?}, value: {:?} ", program, location, count, value);
     with_ctx(|mut state| unsafe {
-        state.oxidegl_program_uniform1fv(program, location, count, value)
+        state.oxidegl_program_uniform1fv(program, location, count, value);
     });
 }
 #[no_mangle]
@@ -4837,7 +4837,7 @@ unsafe extern "C" fn glProgramUniform1uiv(
 ) {
     ::log::trace!("glProgramUniform1uiv called, parameters: program: {:?}, location: {:?}, count: {:?}, value: {:?} ", program, location, count, value);
     with_ctx(|mut state| unsafe {
-        state.oxidegl_program_uniform1uiv(program, location, count, value)
+        state.oxidegl_program_uniform1uiv(program, location, count, value);
     });
 }
 #[no_mangle]
@@ -4860,7 +4860,7 @@ unsafe extern "C" fn glProgramUniform2iv(
 ) {
     ::log::trace!("glProgramUniform2iv called, parameters: program: {:?}, location: {:?}, count: {:?}, value: {:?} ", program, location, count, value);
     with_ctx(|mut state| unsafe {
-        state.oxidegl_program_uniform2iv(program, location, count, value)
+        state.oxidegl_program_uniform2iv(program, location, count, value);
     });
 }
 #[no_mangle]
@@ -4888,7 +4888,7 @@ unsafe extern "C" fn glProgramUniform2fv(
 ) {
     ::log::trace!("glProgramUniform2fv called, parameters: program: {:?}, location: {:?}, count: {:?}, value: {:?} ", program, location, count, value);
     with_ctx(|mut state| unsafe {
-        state.oxidegl_program_uniform2fv(program, location, count, value)
+        state.oxidegl_program_uniform2fv(program, location, count, value);
     });
 }
 #[no_mangle]
@@ -4905,7 +4905,7 @@ unsafe extern "C" fn glProgramUniform2uiv(
 ) {
     ::log::trace!("glProgramUniform2uiv called, parameters: program: {:?}, location: {:?}, count: {:?}, value: {:?} ", program, location, count, value);
     with_ctx(|mut state| unsafe {
-        state.oxidegl_program_uniform2uiv(program, location, count, value)
+        state.oxidegl_program_uniform2uiv(program, location, count, value);
     });
 }
 #[no_mangle]
@@ -4928,7 +4928,7 @@ unsafe extern "C" fn glProgramUniform3iv(
 ) {
     ::log::trace!("glProgramUniform3iv called, parameters: program: {:?}, location: {:?}, count: {:?}, value: {:?} ", program, location, count, value);
     with_ctx(|mut state| unsafe {
-        state.oxidegl_program_uniform3iv(program, location, count, value)
+        state.oxidegl_program_uniform3iv(program, location, count, value);
     });
 }
 #[no_mangle]
@@ -4951,7 +4951,7 @@ unsafe extern "C" fn glProgramUniform3fv(
 ) {
     ::log::trace!("glProgramUniform3fv called, parameters: program: {:?}, location: {:?}, count: {:?}, value: {:?} ", program, location, count, value);
     with_ctx(|mut state| unsafe {
-        state.oxidegl_program_uniform3fv(program, location, count, value)
+        state.oxidegl_program_uniform3fv(program, location, count, value);
     });
 }
 #[no_mangle]
@@ -4974,7 +4974,7 @@ unsafe extern "C" fn glProgramUniform3uiv(
 ) {
     ::log::trace!("glProgramUniform3uiv called, parameters: program: {:?}, location: {:?}, count: {:?}, value: {:?} ", program, location, count, value);
     with_ctx(|mut state| unsafe {
-        state.oxidegl_program_uniform3uiv(program, location, count, value)
+        state.oxidegl_program_uniform3uiv(program, location, count, value);
     });
 }
 #[no_mangle]
@@ -4998,7 +4998,7 @@ unsafe extern "C" fn glProgramUniform4iv(
 ) {
     ::log::trace!("glProgramUniform4iv called, parameters: program: {:?}, location: {:?}, count: {:?}, value: {:?} ", program, location, count, value);
     with_ctx(|mut state| unsafe {
-        state.oxidegl_program_uniform4iv(program, location, count, value)
+        state.oxidegl_program_uniform4iv(program, location, count, value);
     });
 }
 #[no_mangle]
@@ -5022,7 +5022,7 @@ unsafe extern "C" fn glProgramUniform4fv(
 ) {
     ::log::trace!("glProgramUniform4fv called, parameters: program: {:?}, location: {:?}, count: {:?}, value: {:?} ", program, location, count, value);
     with_ctx(|mut state| unsafe {
-        state.oxidegl_program_uniform4fv(program, location, count, value)
+        state.oxidegl_program_uniform4fv(program, location, count, value);
     });
 }
 #[no_mangle]
@@ -5046,7 +5046,7 @@ unsafe extern "C" fn glProgramUniform4uiv(
 ) {
     ::log::trace!("glProgramUniform4uiv called, parameters: program: {:?}, location: {:?}, count: {:?}, value: {:?} ", program, location, count, value);
     with_ctx(|mut state| unsafe {
-        state.oxidegl_program_uniform4uiv(program, location, count, value)
+        state.oxidegl_program_uniform4uiv(program, location, count, value);
     });
 }
 #[no_mangle]
@@ -5059,7 +5059,7 @@ unsafe extern "C" fn glProgramUniformMatrix2fv(
 ) {
     ::log::trace!("glProgramUniformMatrix2fv called, parameters: program: {:?}, location: {:?}, count: {:?}, transpose: {:?}, value: {:?} ", program, location, count, transpose, value);
     with_ctx(|mut state| unsafe {
-        state.oxidegl_program_uniform_matrix2fv(program, location, count, transpose, value)
+        state.oxidegl_program_uniform_matrix2fv(program, location, count, transpose, value);
     });
 }
 #[no_mangle]
@@ -5072,7 +5072,7 @@ unsafe extern "C" fn glProgramUniformMatrix3fv(
 ) {
     ::log::trace!("glProgramUniformMatrix3fv called, parameters: program: {:?}, location: {:?}, count: {:?}, transpose: {:?}, value: {:?} ", program, location, count, transpose, value);
     with_ctx(|mut state| unsafe {
-        state.oxidegl_program_uniform_matrix3fv(program, location, count, transpose, value)
+        state.oxidegl_program_uniform_matrix3fv(program, location, count, transpose, value);
     });
 }
 #[no_mangle]
@@ -5085,7 +5085,7 @@ unsafe extern "C" fn glProgramUniformMatrix4fv(
 ) {
     ::log::trace!("glProgramUniformMatrix4fv called, parameters: program: {:?}, location: {:?}, count: {:?}, transpose: {:?}, value: {:?} ", program, location, count, transpose, value);
     with_ctx(|mut state| unsafe {
-        state.oxidegl_program_uniform_matrix4fv(program, location, count, transpose, value)
+        state.oxidegl_program_uniform_matrix4fv(program, location, count, transpose, value);
     });
 }
 #[no_mangle]
@@ -5098,7 +5098,7 @@ unsafe extern "C" fn glProgramUniformMatrix2x3fv(
 ) {
     ::log::trace!("glProgramUniformMatrix2x3fv called, parameters: program: {:?}, location: {:?}, count: {:?}, transpose: {:?}, value: {:?} ", program, location, count, transpose, value);
     with_ctx(|mut state| unsafe {
-        state.oxidegl_program_uniform_matrix2x3fv(program, location, count, transpose, value)
+        state.oxidegl_program_uniform_matrix2x3fv(program, location, count, transpose, value);
     });
 }
 #[no_mangle]
@@ -5111,7 +5111,7 @@ unsafe extern "C" fn glProgramUniformMatrix3x2fv(
 ) {
     ::log::trace!("glProgramUniformMatrix3x2fv called, parameters: program: {:?}, location: {:?}, count: {:?}, transpose: {:?}, value: {:?} ", program, location, count, transpose, value);
     with_ctx(|mut state| unsafe {
-        state.oxidegl_program_uniform_matrix3x2fv(program, location, count, transpose, value)
+        state.oxidegl_program_uniform_matrix3x2fv(program, location, count, transpose, value);
     });
 }
 #[no_mangle]
@@ -5124,7 +5124,7 @@ unsafe extern "C" fn glProgramUniformMatrix2x4fv(
 ) {
     ::log::trace!("glProgramUniformMatrix2x4fv called, parameters: program: {:?}, location: {:?}, count: {:?}, transpose: {:?}, value: {:?} ", program, location, count, transpose, value);
     with_ctx(|mut state| unsafe {
-        state.oxidegl_program_uniform_matrix2x4fv(program, location, count, transpose, value)
+        state.oxidegl_program_uniform_matrix2x4fv(program, location, count, transpose, value);
     });
 }
 #[no_mangle]
@@ -5137,7 +5137,7 @@ unsafe extern "C" fn glProgramUniformMatrix4x2fv(
 ) {
     ::log::trace!("glProgramUniformMatrix4x2fv called, parameters: program: {:?}, location: {:?}, count: {:?}, transpose: {:?}, value: {:?} ", program, location, count, transpose, value);
     with_ctx(|mut state| unsafe {
-        state.oxidegl_program_uniform_matrix4x2fv(program, location, count, transpose, value)
+        state.oxidegl_program_uniform_matrix4x2fv(program, location, count, transpose, value);
     });
 }
 #[no_mangle]
@@ -5150,7 +5150,7 @@ unsafe extern "C" fn glProgramUniformMatrix3x4fv(
 ) {
     ::log::trace!("glProgramUniformMatrix3x4fv called, parameters: program: {:?}, location: {:?}, count: {:?}, transpose: {:?}, value: {:?} ", program, location, count, transpose, value);
     with_ctx(|mut state| unsafe {
-        state.oxidegl_program_uniform_matrix3x4fv(program, location, count, transpose, value)
+        state.oxidegl_program_uniform_matrix3x4fv(program, location, count, transpose, value);
     });
 }
 #[no_mangle]
@@ -5163,7 +5163,7 @@ unsafe extern "C" fn glProgramUniformMatrix4x3fv(
 ) {
     ::log::trace!("glProgramUniformMatrix4x3fv called, parameters: program: {:?}, location: {:?}, count: {:?}, transpose: {:?}, value: {:?} ", program, location, count, transpose, value);
     with_ctx(|mut state| unsafe {
-        state.oxidegl_program_uniform_matrix4x3fv(program, location, count, transpose, value)
+        state.oxidegl_program_uniform_matrix4x3fv(program, location, count, transpose, value);
     });
 }
 #[no_mangle]
@@ -5186,7 +5186,7 @@ unsafe extern "C" fn glPushDebugGroup(
         message
     );
     with_ctx(|mut state| unsafe {
-        state.oxidegl_push_debug_group(source.into_enum(), id, length, message)
+        state.oxidegl_push_debug_group(source.into_enum(), id, length, message);
     });
 }
 #[no_mangle]
@@ -5211,7 +5211,7 @@ unsafe extern "C" fn glNamedFramebufferReadBuffer(framebuffer: GLuint, src: GLen
         src
     );
     with_ctx(|mut state| {
-        state.oxidegl_named_framebuffer_read_buffer(framebuffer, unsafe { src.into_enum() })
+        state.oxidegl_named_framebuffer_read_buffer(framebuffer, unsafe { src.into_enum() });
     });
 }
 #[no_mangle]
@@ -5234,7 +5234,7 @@ unsafe extern "C" fn glReadPixels(
             format.into_enum(),
             r#type.into_enum(),
             pixels,
-        )
+        );
     });
 }
 #[no_mangle]
@@ -5259,7 +5259,7 @@ unsafe extern "C" fn glReadnPixels(
             r#type.into_enum(),
             bufSize,
             data,
-        )
+        );
     });
 }
 #[no_mangle]
@@ -5281,7 +5281,7 @@ unsafe extern "C" fn glRenderbufferStorage(
             unsafe { internalformat.into_enum() },
             width,
             height,
-        )
+        );
     });
 }
 #[no_mangle]
@@ -5298,7 +5298,7 @@ unsafe extern "C" fn glNamedRenderbufferStorage(
             unsafe { internalformat.into_enum() },
             width,
             height,
-        )
+        );
     });
 }
 #[no_mangle]
@@ -5317,7 +5317,7 @@ unsafe extern "C" fn glRenderbufferStorageMultisample(
             unsafe { internalformat.into_enum() },
             width,
             height,
-        )
+        );
     });
 }
 #[no_mangle]
@@ -5336,7 +5336,7 @@ unsafe extern "C" fn glNamedRenderbufferStorageMultisample(
             unsafe { internalformat.into_enum() },
             width,
             height,
-        )
+        );
     });
 }
 #[no_mangle]
@@ -5371,7 +5371,7 @@ unsafe extern "C" fn glSamplerParameteri(sampler: GLuint, pname: GLenum, param: 
         param
     );
     with_ctx(|mut state| {
-        state.oxidegl_sampler_parameteri(sampler, unsafe { pname.into_enum() }, param)
+        state.oxidegl_sampler_parameteri(sampler, unsafe { pname.into_enum() }, param);
     });
 }
 #[no_mangle]
@@ -5383,7 +5383,7 @@ unsafe extern "C" fn glSamplerParameteriv(sampler: GLuint, pname: GLenum, param:
         param
     );
     with_ctx(|mut state| unsafe {
-        state.oxidegl_sampler_parameteriv(sampler, pname.into_enum(), param)
+        state.oxidegl_sampler_parameteriv(sampler, pname.into_enum(), param);
     });
 }
 #[no_mangle]
@@ -5395,7 +5395,7 @@ unsafe extern "C" fn glSamplerParameterf(sampler: GLuint, pname: GLenum, param: 
         param
     );
     with_ctx(|mut state| {
-        state.oxidegl_sampler_parameterf(sampler, unsafe { pname.into_enum() }, param)
+        state.oxidegl_sampler_parameterf(sampler, unsafe { pname.into_enum() }, param);
     });
 }
 #[no_mangle]
@@ -5407,7 +5407,7 @@ unsafe extern "C" fn glSamplerParameterfv(sampler: GLuint, pname: GLenum, param:
         param
     );
     with_ctx(|mut state| unsafe {
-        state.oxidegl_sampler_parameterfv(sampler, pname.into_enum(), param)
+        state.oxidegl_sampler_parameterfv(sampler, pname.into_enum(), param);
     });
 }
 #[no_mangle]
@@ -5419,7 +5419,7 @@ unsafe extern "C" fn glSamplerParameterIiv(sampler: GLuint, pname: GLenum, param
         param
     );
     with_ctx(|mut state| unsafe {
-        state.oxidegl_sampler_parameter_iiv(sampler, pname.into_enum(), param)
+        state.oxidegl_sampler_parameter_iiv(sampler, pname.into_enum(), param);
     });
 }
 #[no_mangle]
@@ -5431,7 +5431,7 @@ unsafe extern "C" fn glSamplerParameterIuiv(sampler: GLuint, pname: GLenum, para
         param
     );
     with_ctx(|mut state| unsafe {
-        state.oxidegl_sampler_parameter_iuiv(sampler, pname.into_enum(), param)
+        state.oxidegl_sampler_parameter_iuiv(sampler, pname.into_enum(), param);
     });
 }
 #[no_mangle]
@@ -5485,7 +5485,7 @@ unsafe extern "C" fn glShaderBinary(
 ) {
     ::log::trace!("glShaderBinary called, parameters: count: {:?}, shaders: {:?}, binaryFormat: {:?}, binary: {:?}, length: {:?} ", count, shaders, binaryFormat, binary, length);
     with_ctx(|mut state| unsafe {
-        state.oxidegl_shader_binary(count, shaders, binaryFormat, binary, length)
+        state.oxidegl_shader_binary(count, shaders, binaryFormat, binary, length);
     });
 }
 #[no_mangle]
@@ -5512,7 +5512,7 @@ unsafe extern "C" fn glShaderStorageBlockBinding(
 ) {
     ::log::trace!("glShaderStorageBlockBinding called, parameters: program: {:?}, storageBlockIndex: {:?}, storageBlockBinding: {:?} ", program, storageBlockIndex, storageBlockBinding);
     with_ctx(|mut state| {
-        state.oxidegl_shader_storage_block_binding(program, storageBlockIndex, storageBlockBinding)
+        state.oxidegl_shader_storage_block_binding(program, storageBlockIndex, storageBlockBinding);
     });
 }
 #[no_mangle]
@@ -5534,7 +5534,7 @@ unsafe extern "C" fn glStencilFuncSeparate(face: GLenum, func: GLenum, r#ref: GL
             unsafe { func.into_enum() },
             r#ref,
             mask,
-        )
+        );
     });
 }
 #[no_mangle]
@@ -5564,7 +5564,7 @@ unsafe extern "C" fn glStencilOp(fail: GLenum, zfail: GLenum, zpass: GLenum) {
             unsafe { fail.into_enum() },
             unsafe { zfail.into_enum() },
             unsafe { zpass.into_enum() },
-        )
+        );
     });
 }
 #[no_mangle]
@@ -5581,7 +5581,7 @@ unsafe extern "C" fn glStencilOpSeparate(
             unsafe { sfail.into_enum() },
             unsafe { dpfail.into_enum() },
             unsafe { dppass.into_enum() },
-        )
+        );
     });
 }
 #[no_mangle]
@@ -5597,7 +5597,7 @@ unsafe extern "C" fn glTexBuffer(target: GLenum, internalformat: GLenum, buffer:
             unsafe { target.into_enum() },
             unsafe { internalformat.into_enum() },
             buffer,
-        )
+        );
     });
 }
 #[no_mangle]
@@ -5609,7 +5609,7 @@ unsafe extern "C" fn glTextureBuffer(texture: GLuint, internalformat: GLenum, bu
         buffer
     );
     with_ctx(|mut state| {
-        state.oxidegl_texture_buffer(texture, unsafe { internalformat.into_enum() }, buffer)
+        state.oxidegl_texture_buffer(texture, unsafe { internalformat.into_enum() }, buffer);
     });
 }
 #[no_mangle]
@@ -5628,7 +5628,7 @@ unsafe extern "C" fn glTexBufferRange(
             buffer,
             offset,
             size,
-        )
+        );
     });
 }
 #[no_mangle]
@@ -5647,7 +5647,7 @@ unsafe extern "C" fn glTextureBufferRange(
             buffer,
             offset,
             size,
-        )
+        );
     });
 }
 #[no_mangle]
@@ -5672,7 +5672,7 @@ unsafe extern "C" fn glTexImage1D(
             format.into_enum(),
             r#type.into_enum(),
             pixels,
-        )
+        );
     });
 }
 #[no_mangle]
@@ -5699,7 +5699,7 @@ unsafe extern "C" fn glTexImage2D(
             format.into_enum(),
             r#type.into_enum(),
             pixels,
-        )
+        );
     });
 }
 #[no_mangle]
@@ -5720,7 +5720,7 @@ unsafe extern "C" fn glTexImage2DMultisample(
             width,
             height,
             fixedsamplelocations,
-        )
+        );
     });
 }
 #[no_mangle]
@@ -5749,7 +5749,7 @@ unsafe extern "C" fn glTexImage3D(
             format.into_enum(),
             r#type.into_enum(),
             pixels,
-        )
+        );
     });
 }
 #[no_mangle]
@@ -5772,7 +5772,7 @@ unsafe extern "C" fn glTexImage3DMultisample(
             height,
             depth,
             fixedsamplelocations,
-        )
+        );
     });
 }
 #[no_mangle]
@@ -5788,7 +5788,7 @@ unsafe extern "C" fn glTexParameterf(target: GLenum, pname: GLenum, param: GLflo
             unsafe { target.into_enum() },
             unsafe { pname.into_enum() },
             param,
-        )
+        );
     });
 }
 #[no_mangle]
@@ -5800,7 +5800,7 @@ unsafe extern "C" fn glTexParameterfv(target: GLenum, pname: GLenum, params: *co
         params
     );
     with_ctx(|mut state| unsafe {
-        state.oxidegl_tex_parameterfv(target.into_enum(), pname.into_enum(), params)
+        state.oxidegl_tex_parameterfv(target.into_enum(), pname.into_enum(), params);
     });
 }
 #[no_mangle]
@@ -5816,7 +5816,7 @@ unsafe extern "C" fn glTexParameteri(target: GLenum, pname: GLenum, param: GLint
             unsafe { target.into_enum() },
             unsafe { pname.into_enum() },
             param,
-        )
+        );
     });
 }
 #[no_mangle]
@@ -5828,7 +5828,7 @@ unsafe extern "C" fn glTexParameteriv(target: GLenum, pname: GLenum, params: *co
         params
     );
     with_ctx(|mut state| unsafe {
-        state.oxidegl_tex_parameteriv(target.into_enum(), pname.into_enum(), params)
+        state.oxidegl_tex_parameteriv(target.into_enum(), pname.into_enum(), params);
     });
 }
 #[no_mangle]
@@ -5840,7 +5840,7 @@ unsafe extern "C" fn glTexParameterIiv(target: GLenum, pname: GLenum, params: *c
         params
     );
     with_ctx(|mut state| unsafe {
-        state.oxidegl_tex_parameter_iiv(target.into_enum(), pname.into_enum(), params)
+        state.oxidegl_tex_parameter_iiv(target.into_enum(), pname.into_enum(), params);
     });
 }
 #[no_mangle]
@@ -5852,7 +5852,7 @@ unsafe extern "C" fn glTexParameterIuiv(target: GLenum, pname: GLenum, params: *
         params
     );
     with_ctx(|mut state| unsafe {
-        state.oxidegl_tex_parameter_iuiv(target.into_enum(), pname.into_enum(), params)
+        state.oxidegl_tex_parameter_iuiv(target.into_enum(), pname.into_enum(), params);
     });
 }
 #[no_mangle]
@@ -5864,7 +5864,7 @@ unsafe extern "C" fn glTextureParameterf(texture: GLuint, pname: GLenum, param: 
         param
     );
     with_ctx(|mut state| {
-        state.oxidegl_texture_parameterf(texture, unsafe { pname.into_enum() }, param)
+        state.oxidegl_texture_parameterf(texture, unsafe { pname.into_enum() }, param);
     });
 }
 #[no_mangle]
@@ -5876,7 +5876,7 @@ unsafe extern "C" fn glTextureParameterfv(texture: GLuint, pname: GLenum, param:
         param
     );
     with_ctx(|mut state| unsafe {
-        state.oxidegl_texture_parameterfv(texture, pname.into_enum(), param)
+        state.oxidegl_texture_parameterfv(texture, pname.into_enum(), param);
     });
 }
 #[no_mangle]
@@ -5888,7 +5888,7 @@ unsafe extern "C" fn glTextureParameteri(texture: GLuint, pname: GLenum, param: 
         param
     );
     with_ctx(|mut state| {
-        state.oxidegl_texture_parameteri(texture, unsafe { pname.into_enum() }, param)
+        state.oxidegl_texture_parameteri(texture, unsafe { pname.into_enum() }, param);
     });
 }
 #[no_mangle]
@@ -5900,7 +5900,7 @@ unsafe extern "C" fn glTextureParameterIiv(texture: GLuint, pname: GLenum, param
         params
     );
     with_ctx(|mut state| unsafe {
-        state.oxidegl_texture_parameter_iiv(texture, pname.into_enum(), params)
+        state.oxidegl_texture_parameter_iiv(texture, pname.into_enum(), params);
     });
 }
 #[no_mangle]
@@ -5912,7 +5912,7 @@ unsafe extern "C" fn glTextureParameterIuiv(texture: GLuint, pname: GLenum, para
         params
     );
     with_ctx(|mut state| unsafe {
-        state.oxidegl_texture_parameter_iuiv(texture, pname.into_enum(), params)
+        state.oxidegl_texture_parameter_iuiv(texture, pname.into_enum(), params);
     });
 }
 #[no_mangle]
@@ -5924,7 +5924,7 @@ unsafe extern "C" fn glTextureParameteriv(texture: GLuint, pname: GLenum, param:
         param
     );
     with_ctx(|mut state| unsafe {
-        state.oxidegl_texture_parameteriv(texture, pname.into_enum(), param)
+        state.oxidegl_texture_parameteriv(texture, pname.into_enum(), param);
     });
 }
 #[no_mangle]
@@ -5941,7 +5941,7 @@ unsafe extern "C" fn glTexStorage1D(
             levels,
             unsafe { internalformat.into_enum() },
             width,
-        )
+        );
     });
 }
 #[no_mangle]
@@ -5958,7 +5958,7 @@ unsafe extern "C" fn glTextureStorage1D(
             levels,
             unsafe { internalformat.into_enum() },
             width,
-        )
+        );
     });
 }
 #[no_mangle]
@@ -5977,7 +5977,7 @@ unsafe extern "C" fn glTexStorage2D(
             unsafe { internalformat.into_enum() },
             width,
             height,
-        )
+        );
     });
 }
 #[no_mangle]
@@ -5996,7 +5996,7 @@ unsafe extern "C" fn glTextureStorage2D(
             unsafe { internalformat.into_enum() },
             width,
             height,
-        )
+        );
     });
 }
 #[no_mangle]
@@ -6017,7 +6017,7 @@ unsafe extern "C" fn glTexStorage2DMultisample(
             width,
             height,
             fixedsamplelocations,
-        )
+        );
     });
 }
 #[no_mangle]
@@ -6038,7 +6038,7 @@ unsafe extern "C" fn glTextureStorage2DMultisample(
             width,
             height,
             fixedsamplelocations,
-        )
+        );
     });
 }
 #[no_mangle]
@@ -6059,7 +6059,7 @@ unsafe extern "C" fn glTexStorage3D(
             width,
             height,
             depth,
-        )
+        );
     });
 }
 #[no_mangle]
@@ -6080,7 +6080,7 @@ unsafe extern "C" fn glTextureStorage3D(
             width,
             height,
             depth,
-        )
+        );
     });
 }
 #[no_mangle]
@@ -6103,7 +6103,7 @@ unsafe extern "C" fn glTexStorage3DMultisample(
             height,
             depth,
             fixedsamplelocations,
-        )
+        );
     });
 }
 #[no_mangle]
@@ -6126,7 +6126,7 @@ unsafe extern "C" fn glTextureStorage3DMultisample(
             height,
             depth,
             fixedsamplelocations,
-        )
+        );
     });
 }
 #[no_mangle]
@@ -6149,7 +6149,7 @@ unsafe extern "C" fn glTexSubImage1D(
             format.into_enum(),
             r#type.into_enum(),
             pixels,
-        )
+        );
     });
 }
 #[no_mangle]
@@ -6172,7 +6172,7 @@ unsafe extern "C" fn glTextureSubImage1D(
             format.into_enum(),
             r#type.into_enum(),
             pixels,
-        )
+        );
     });
 }
 #[no_mangle]
@@ -6199,7 +6199,7 @@ unsafe extern "C" fn glTexSubImage2D(
             format.into_enum(),
             r#type.into_enum(),
             pixels,
-        )
+        );
     });
 }
 #[no_mangle]
@@ -6226,7 +6226,7 @@ unsafe extern "C" fn glTextureSubImage2D(
             format.into_enum(),
             r#type.into_enum(),
             pixels,
-        )
+        );
     });
 }
 #[no_mangle]
@@ -6257,7 +6257,7 @@ unsafe extern "C" fn glTexSubImage3D(
             format.into_enum(),
             r#type.into_enum(),
             pixels,
-        )
+        );
     });
 }
 #[no_mangle]
@@ -6288,7 +6288,7 @@ unsafe extern "C" fn glTextureSubImage3D(
             format.into_enum(),
             r#type.into_enum(),
             pixels,
-        )
+        );
     });
 }
 #[no_mangle]
@@ -6318,7 +6318,7 @@ unsafe extern "C" fn glTextureView(
             numlevels,
             minlayer,
             numlayers,
-        )
+        );
     });
 }
 #[no_mangle]
@@ -6341,7 +6341,7 @@ unsafe extern "C" fn glTransformFeedbackBufferRange(
 ) {
     ::log::trace!("glTransformFeedbackBufferRange called, parameters: xfb: {:?}, index: {:?}, buffer: {:?}, offset: {:?}, size: {:?} ", xfb, index, buffer, offset, size);
     with_ctx(|mut state| {
-        state.oxidegl_transform_feedback_buffer_range(xfb, index, buffer, offset, size)
+        state.oxidegl_transform_feedback_buffer_range(xfb, index, buffer, offset, size);
     });
 }
 #[no_mangle]
@@ -6355,7 +6355,7 @@ unsafe extern "C" fn glTransformFeedbackVaryings(
     with_ctx(|mut state| {
         state.oxidegl_transform_feedback_varyings(program, count, varyings, unsafe {
             bufferMode.into_enum()
-        })
+        });
     });
 }
 #[no_mangle]
@@ -6537,7 +6537,7 @@ unsafe extern "C" fn glUniformMatrix2fv(
 ) {
     ::log::trace!("glUniformMatrix2fv called, parameters: location: {:?}, count: {:?}, transpose: {:?}, value: {:?} ", location, count, transpose, value);
     with_ctx(|mut state| unsafe {
-        state.oxidegl_uniform_matrix2fv(location, count, transpose, value)
+        state.oxidegl_uniform_matrix2fv(location, count, transpose, value);
     });
 }
 #[no_mangle]
@@ -6549,7 +6549,7 @@ unsafe extern "C" fn glUniformMatrix3fv(
 ) {
     ::log::trace!("glUniformMatrix3fv called, parameters: location: {:?}, count: {:?}, transpose: {:?}, value: {:?} ", location, count, transpose, value);
     with_ctx(|mut state| unsafe {
-        state.oxidegl_uniform_matrix3fv(location, count, transpose, value)
+        state.oxidegl_uniform_matrix3fv(location, count, transpose, value);
     });
 }
 #[no_mangle]
@@ -6561,7 +6561,7 @@ unsafe extern "C" fn glUniformMatrix4fv(
 ) {
     ::log::trace!("glUniformMatrix4fv called, parameters: location: {:?}, count: {:?}, transpose: {:?}, value: {:?} ", location, count, transpose, value);
     with_ctx(|mut state| unsafe {
-        state.oxidegl_uniform_matrix4fv(location, count, transpose, value)
+        state.oxidegl_uniform_matrix4fv(location, count, transpose, value);
     });
 }
 #[no_mangle]
@@ -6573,7 +6573,7 @@ unsafe extern "C" fn glUniformMatrix2x3fv(
 ) {
     ::log::trace!("glUniformMatrix2x3fv called, parameters: location: {:?}, count: {:?}, transpose: {:?}, value: {:?} ", location, count, transpose, value);
     with_ctx(|mut state| unsafe {
-        state.oxidegl_uniform_matrix2x3fv(location, count, transpose, value)
+        state.oxidegl_uniform_matrix2x3fv(location, count, transpose, value);
     });
 }
 #[no_mangle]
@@ -6585,7 +6585,7 @@ unsafe extern "C" fn glUniformMatrix3x2fv(
 ) {
     ::log::trace!("glUniformMatrix3x2fv called, parameters: location: {:?}, count: {:?}, transpose: {:?}, value: {:?} ", location, count, transpose, value);
     with_ctx(|mut state| unsafe {
-        state.oxidegl_uniform_matrix3x2fv(location, count, transpose, value)
+        state.oxidegl_uniform_matrix3x2fv(location, count, transpose, value);
     });
 }
 #[no_mangle]
@@ -6597,7 +6597,7 @@ unsafe extern "C" fn glUniformMatrix2x4fv(
 ) {
     ::log::trace!("glUniformMatrix2x4fv called, parameters: location: {:?}, count: {:?}, transpose: {:?}, value: {:?} ", location, count, transpose, value);
     with_ctx(|mut state| unsafe {
-        state.oxidegl_uniform_matrix2x4fv(location, count, transpose, value)
+        state.oxidegl_uniform_matrix2x4fv(location, count, transpose, value);
     });
 }
 #[no_mangle]
@@ -6609,7 +6609,7 @@ unsafe extern "C" fn glUniformMatrix4x2fv(
 ) {
     ::log::trace!("glUniformMatrix4x2fv called, parameters: location: {:?}, count: {:?}, transpose: {:?}, value: {:?} ", location, count, transpose, value);
     with_ctx(|mut state| unsafe {
-        state.oxidegl_uniform_matrix4x2fv(location, count, transpose, value)
+        state.oxidegl_uniform_matrix4x2fv(location, count, transpose, value);
     });
 }
 #[no_mangle]
@@ -6621,7 +6621,7 @@ unsafe extern "C" fn glUniformMatrix3x4fv(
 ) {
     ::log::trace!("glUniformMatrix3x4fv called, parameters: location: {:?}, count: {:?}, transpose: {:?}, value: {:?} ", location, count, transpose, value);
     with_ctx(|mut state| unsafe {
-        state.oxidegl_uniform_matrix3x4fv(location, count, transpose, value)
+        state.oxidegl_uniform_matrix3x4fv(location, count, transpose, value);
     });
 }
 #[no_mangle]
@@ -6633,7 +6633,7 @@ unsafe extern "C" fn glUniformMatrix4x3fv(
 ) {
     ::log::trace!("glUniformMatrix4x3fv called, parameters: location: {:?}, count: {:?}, transpose: {:?}, value: {:?} ", location, count, transpose, value);
     with_ctx(|mut state| unsafe {
-        state.oxidegl_uniform_matrix4x3fv(location, count, transpose, value)
+        state.oxidegl_uniform_matrix4x3fv(location, count, transpose, value);
     });
 }
 #[no_mangle]
@@ -6726,7 +6726,7 @@ unsafe extern "C" fn glUniformBlockBinding(
 ) {
     ::log::trace!("glUniformBlockBinding called, parameters: program: {:?}, uniformBlockIndex: {:?}, uniformBlockBinding: {:?} ", program, uniformBlockIndex, uniformBlockBinding);
     with_ctx(|mut state| {
-        state.oxidegl_uniform_block_binding(program, uniformBlockIndex, uniformBlockBinding)
+        state.oxidegl_uniform_block_binding(program, uniformBlockIndex, uniformBlockBinding);
     });
 }
 #[no_mangle]
@@ -6742,7 +6742,7 @@ unsafe extern "C" fn glUniformSubroutinesuiv(
         indices
     );
     with_ctx(|mut state| unsafe {
-        state.oxidegl_uniform_subroutinesuiv(shadertype.into_enum(), count, indices)
+        state.oxidegl_uniform_subroutinesuiv(shadertype.into_enum(), count, indices);
     });
 }
 #[no_mangle]
@@ -6772,7 +6772,7 @@ unsafe extern "C" fn glUseProgramStages(pipeline: GLuint, stages: GLenum, progra
         program
     );
     with_ctx(|mut state| {
-        state.oxidegl_use_program_stages(pipeline, unsafe { stages.into_enum() }, program)
+        state.oxidegl_use_program_stages(pipeline, unsafe { stages.into_enum() }, program);
     });
 }
 #[no_mangle]
@@ -7370,7 +7370,7 @@ unsafe extern "C" fn glVertexAttribP1ui(
 ) {
     ::log::trace!("glVertexAttribP1ui called, parameters: index: {:?}, r#type: {:?}, normalized: {:?}, value: {:?} ", index, r#type, normalized, value);
     with_ctx(|mut state| {
-        state.oxidegl_vertex_attrib_p1ui(index, unsafe { r#type.into_enum() }, normalized, value)
+        state.oxidegl_vertex_attrib_p1ui(index, unsafe { r#type.into_enum() }, normalized, value);
     });
 }
 #[no_mangle]
@@ -7382,7 +7382,7 @@ unsafe extern "C" fn glVertexAttribP2ui(
 ) {
     ::log::trace!("glVertexAttribP2ui called, parameters: index: {:?}, r#type: {:?}, normalized: {:?}, value: {:?} ", index, r#type, normalized, value);
     with_ctx(|mut state| {
-        state.oxidegl_vertex_attrib_p2ui(index, unsafe { r#type.into_enum() }, normalized, value)
+        state.oxidegl_vertex_attrib_p2ui(index, unsafe { r#type.into_enum() }, normalized, value);
     });
 }
 #[no_mangle]
@@ -7394,7 +7394,7 @@ unsafe extern "C" fn glVertexAttribP3ui(
 ) {
     ::log::trace!("glVertexAttribP3ui called, parameters: index: {:?}, r#type: {:?}, normalized: {:?}, value: {:?} ", index, r#type, normalized, value);
     with_ctx(|mut state| {
-        state.oxidegl_vertex_attrib_p3ui(index, unsafe { r#type.into_enum() }, normalized, value)
+        state.oxidegl_vertex_attrib_p3ui(index, unsafe { r#type.into_enum() }, normalized, value);
     });
 }
 #[no_mangle]
@@ -7406,7 +7406,7 @@ unsafe extern "C" fn glVertexAttribP4ui(
 ) {
     ::log::trace!("glVertexAttribP4ui called, parameters: index: {:?}, r#type: {:?}, normalized: {:?}, value: {:?} ", index, r#type, normalized, value);
     with_ctx(|mut state| {
-        state.oxidegl_vertex_attrib_p4ui(index, unsafe { r#type.into_enum() }, normalized, value)
+        state.oxidegl_vertex_attrib_p4ui(index, unsafe { r#type.into_enum() }, normalized, value);
     });
 }
 #[no_mangle]
@@ -7510,7 +7510,7 @@ unsafe extern "C" fn glVertexArrayAttribBinding(
 ) {
     ::log::trace!("glVertexArrayAttribBinding called, parameters: vaobj: {:?}, attribindex: {:?}, bindingindex: {:?} ", vaobj, attribindex, bindingindex);
     with_ctx(|mut state| {
-        state.oxidegl_vertex_array_attrib_binding(vaobj, attribindex, bindingindex)
+        state.oxidegl_vertex_array_attrib_binding(vaobj, attribindex, bindingindex);
     });
 }
 #[no_mangle]
@@ -7538,7 +7538,7 @@ unsafe extern "C" fn glVertexAttribFormat(
             unsafe { r#type.into_enum() },
             normalized,
             relativeoffset,
-        )
+        );
     });
 }
 #[no_mangle]
@@ -7555,7 +7555,7 @@ unsafe extern "C" fn glVertexAttribIFormat(
             size,
             unsafe { r#type.into_enum() },
             relativeoffset,
-        )
+        );
     });
 }
 #[no_mangle]
@@ -7567,7 +7567,7 @@ unsafe extern "C" fn glVertexAttribLFormat(
 ) {
     ::log::trace!("glVertexAttribLFormat called, parameters: attribindex: {:?}, size: {:?}, r#type: {:?}, relativeoffset: {:?} ", attribindex, size, r#type, relativeoffset);
     with_ctx(|mut state| {
-        state.oxidegl_vertex_attrib_l_format(attribindex, size, r#type, relativeoffset)
+        state.oxidegl_vertex_attrib_l_format(attribindex, size, r#type, relativeoffset);
     });
 }
 #[no_mangle]
@@ -7588,7 +7588,7 @@ unsafe extern "C" fn glVertexArrayAttribFormat(
             unsafe { r#type.into_enum() },
             normalized,
             relativeoffset,
-        )
+        );
     });
 }
 #[no_mangle]
@@ -7607,7 +7607,7 @@ unsafe extern "C" fn glVertexArrayAttribIFormat(
             size,
             unsafe { r#type.into_enum() },
             relativeoffset,
-        )
+        );
     });
 }
 #[no_mangle]
@@ -7620,7 +7620,7 @@ unsafe extern "C" fn glVertexArrayAttribLFormat(
 ) {
     ::log::trace!("glVertexArrayAttribLFormat called, parameters: vaobj: {:?}, attribindex: {:?}, size: {:?}, r#type: {:?}, relativeoffset: {:?} ", vaobj, attribindex, size, r#type, relativeoffset);
     with_ctx(|mut state| {
-        state.oxidegl_vertex_array_attrib_l_format(vaobj, attribindex, size, r#type, relativeoffset)
+        state.oxidegl_vertex_array_attrib_l_format(vaobj, attribindex, size, r#type, relativeoffset);
     });
 }
 #[no_mangle]
@@ -7641,7 +7641,7 @@ unsafe extern "C" fn glVertexAttribPointer(
             normalized,
             stride,
             pointer,
-        )
+        );
     });
 }
 #[no_mangle]
@@ -7654,7 +7654,7 @@ unsafe extern "C" fn glVertexAttribIPointer(
 ) {
     ::log::trace!("glVertexAttribIPointer called, parameters: index: {:?}, size: {:?}, r#type: {:?}, stride: {:?}, pointer: {:?} ", index, size, r#type, stride, pointer);
     with_ctx(|mut state| unsafe {
-        state.oxidegl_vertex_attrib_i_pointer(index, size, r#type.into_enum(), stride, pointer)
+        state.oxidegl_vertex_attrib_i_pointer(index, size, r#type.into_enum(), stride, pointer);
     });
 }
 #[no_mangle]
@@ -7667,7 +7667,7 @@ unsafe extern "C" fn glVertexAttribLPointer(
 ) {
     ::log::trace!("glVertexAttribLPointer called, parameters: index: {:?}, size: {:?}, r#type: {:?}, stride: {:?}, pointer: {:?} ", index, size, r#type, stride, pointer);
     with_ctx(|mut state| unsafe {
-        state.oxidegl_vertex_attrib_l_pointer(index, size, r#type, stride, pointer)
+        state.oxidegl_vertex_attrib_l_pointer(index, size, r#type, stride, pointer);
     });
 }
 #[no_mangle]
@@ -7755,7 +7755,7 @@ unsafe extern "C" fn glVertexAttribP1uiv(
 ) {
     ::log::trace!("glVertexAttribP1uiv called, parameters: index: {:?}, r#type: {:?}, normalized: {:?}, value: {:?} ", index, r#type, normalized, value);
     with_ctx(|mut state| unsafe {
-        state.oxidegl_vertex_attrib_p1uiv(index, r#type.into_enum(), normalized, value)
+        state.oxidegl_vertex_attrib_p1uiv(index, r#type.into_enum(), normalized, value);
     });
 }
 #[no_mangle]
@@ -7767,7 +7767,7 @@ unsafe extern "C" fn glVertexAttribP2uiv(
 ) {
     ::log::trace!("glVertexAttribP2uiv called, parameters: index: {:?}, r#type: {:?}, normalized: {:?}, value: {:?} ", index, r#type, normalized, value);
     with_ctx(|mut state| unsafe {
-        state.oxidegl_vertex_attrib_p2uiv(index, r#type.into_enum(), normalized, value)
+        state.oxidegl_vertex_attrib_p2uiv(index, r#type.into_enum(), normalized, value);
     });
 }
 #[no_mangle]
@@ -7779,7 +7779,7 @@ unsafe extern "C" fn glVertexAttribP3uiv(
 ) {
     ::log::trace!("glVertexAttribP3uiv called, parameters: index: {:?}, r#type: {:?}, normalized: {:?}, value: {:?} ", index, r#type, normalized, value);
     with_ctx(|mut state| unsafe {
-        state.oxidegl_vertex_attrib_p3uiv(index, r#type.into_enum(), normalized, value)
+        state.oxidegl_vertex_attrib_p3uiv(index, r#type.into_enum(), normalized, value);
     });
 }
 #[no_mangle]
@@ -7791,7 +7791,7 @@ unsafe extern "C" fn glVertexAttribP4uiv(
 ) {
     ::log::trace!("glVertexAttribP4uiv called, parameters: index: {:?}, r#type: {:?}, normalized: {:?}, value: {:?} ", index, r#type, normalized, value);
     with_ctx(|mut state| unsafe {
-        state.oxidegl_vertex_attrib_p4uiv(index, r#type.into_enum(), normalized, value)
+        state.oxidegl_vertex_attrib_p4uiv(index, r#type.into_enum(), normalized, value);
     });
 }
 #[no_mangle]
@@ -7891,7 +7891,7 @@ unsafe extern "C" fn glUniformMatrix2dv(
 ) {
     ::log::trace!("glUniformMatrix2dv called, parameters: location: {:?}, count: {:?}, transpose: {:?}, value: {:?} ", location, count, transpose, value);
     with_ctx(|mut state| unsafe {
-        state.oxidegl_uniform_matrix2dv(location, count, transpose, value)
+        state.oxidegl_uniform_matrix2dv(location, count, transpose, value);
     });
 }
 #[no_mangle]
@@ -7903,7 +7903,7 @@ unsafe extern "C" fn glUniformMatrix3dv(
 ) {
     ::log::trace!("glUniformMatrix3dv called, parameters: location: {:?}, count: {:?}, transpose: {:?}, value: {:?} ", location, count, transpose, value);
     with_ctx(|mut state| unsafe {
-        state.oxidegl_uniform_matrix3dv(location, count, transpose, value)
+        state.oxidegl_uniform_matrix3dv(location, count, transpose, value);
     });
 }
 #[no_mangle]
@@ -7915,7 +7915,7 @@ unsafe extern "C" fn glUniformMatrix4dv(
 ) {
     ::log::trace!("glUniformMatrix4dv called, parameters: location: {:?}, count: {:?}, transpose: {:?}, value: {:?} ", location, count, transpose, value);
     with_ctx(|mut state| unsafe {
-        state.oxidegl_uniform_matrix4dv(location, count, transpose, value)
+        state.oxidegl_uniform_matrix4dv(location, count, transpose, value);
     });
 }
 #[no_mangle]
@@ -7927,7 +7927,7 @@ unsafe extern "C" fn glUniformMatrix2x3dv(
 ) {
     ::log::trace!("glUniformMatrix2x3dv called, parameters: location: {:?}, count: {:?}, transpose: {:?}, value: {:?} ", location, count, transpose, value);
     with_ctx(|mut state| unsafe {
-        state.oxidegl_uniform_matrix2x3dv(location, count, transpose, value)
+        state.oxidegl_uniform_matrix2x3dv(location, count, transpose, value);
     });
 }
 #[no_mangle]
@@ -7939,7 +7939,7 @@ unsafe extern "C" fn glUniformMatrix2x4dv(
 ) {
     ::log::trace!("glUniformMatrix2x4dv called, parameters: location: {:?}, count: {:?}, transpose: {:?}, value: {:?} ", location, count, transpose, value);
     with_ctx(|mut state| unsafe {
-        state.oxidegl_uniform_matrix2x4dv(location, count, transpose, value)
+        state.oxidegl_uniform_matrix2x4dv(location, count, transpose, value);
     });
 }
 #[no_mangle]
@@ -7951,7 +7951,7 @@ unsafe extern "C" fn glUniformMatrix3x2dv(
 ) {
     ::log::trace!("glUniformMatrix3x2dv called, parameters: location: {:?}, count: {:?}, transpose: {:?}, value: {:?} ", location, count, transpose, value);
     with_ctx(|mut state| unsafe {
-        state.oxidegl_uniform_matrix3x2dv(location, count, transpose, value)
+        state.oxidegl_uniform_matrix3x2dv(location, count, transpose, value);
     });
 }
 #[no_mangle]
@@ -7963,7 +7963,7 @@ unsafe extern "C" fn glUniformMatrix3x4dv(
 ) {
     ::log::trace!("glUniformMatrix3x4dv called, parameters: location: {:?}, count: {:?}, transpose: {:?}, value: {:?} ", location, count, transpose, value);
     with_ctx(|mut state| unsafe {
-        state.oxidegl_uniform_matrix3x4dv(location, count, transpose, value)
+        state.oxidegl_uniform_matrix3x4dv(location, count, transpose, value);
     });
 }
 #[no_mangle]
@@ -7975,7 +7975,7 @@ unsafe extern "C" fn glUniformMatrix4x2dv(
 ) {
     ::log::trace!("glUniformMatrix4x2dv called, parameters: location: {:?}, count: {:?}, transpose: {:?}, value: {:?} ", location, count, transpose, value);
     with_ctx(|mut state| unsafe {
-        state.oxidegl_uniform_matrix4x2dv(location, count, transpose, value)
+        state.oxidegl_uniform_matrix4x2dv(location, count, transpose, value);
     });
 }
 #[no_mangle]
@@ -7987,7 +7987,7 @@ unsafe extern "C" fn glUniformMatrix4x3dv(
 ) {
     ::log::trace!("glUniformMatrix4x3dv called, parameters: location: {:?}, count: {:?}, transpose: {:?}, value: {:?} ", location, count, transpose, value);
     with_ctx(|mut state| unsafe {
-        state.oxidegl_uniform_matrix4x3dv(location, count, transpose, value)
+        state.oxidegl_uniform_matrix4x3dv(location, count, transpose, value);
     });
 }
 #[no_mangle]
@@ -8009,7 +8009,7 @@ unsafe extern "C" fn glProgramUniform1dv(
 ) {
     ::log::trace!("glProgramUniform1dv called, parameters: program: {:?}, location: {:?}, count: {:?}, value: {:?} ", program, location, count, value);
     with_ctx(|mut state| unsafe {
-        state.oxidegl_program_uniform1dv(program, location, count, value)
+        state.oxidegl_program_uniform1dv(program, location, count, value);
     });
 }
 #[no_mangle]
@@ -8037,7 +8037,7 @@ unsafe extern "C" fn glProgramUniform2dv(
 ) {
     ::log::trace!("glProgramUniform2dv called, parameters: program: {:?}, location: {:?}, count: {:?}, value: {:?} ", program, location, count, value);
     with_ctx(|mut state| unsafe {
-        state.oxidegl_program_uniform2dv(program, location, count, value)
+        state.oxidegl_program_uniform2dv(program, location, count, value);
     });
 }
 #[no_mangle]
@@ -8060,7 +8060,7 @@ unsafe extern "C" fn glProgramUniform3dv(
 ) {
     ::log::trace!("glProgramUniform3dv called, parameters: program: {:?}, location: {:?}, count: {:?}, value: {:?} ", program, location, count, value);
     with_ctx(|mut state| unsafe {
-        state.oxidegl_program_uniform3dv(program, location, count, value)
+        state.oxidegl_program_uniform3dv(program, location, count, value);
     });
 }
 #[no_mangle]
@@ -8084,7 +8084,7 @@ unsafe extern "C" fn glProgramUniform4dv(
 ) {
     ::log::trace!("glProgramUniform4dv called, parameters: program: {:?}, location: {:?}, count: {:?}, value: {:?} ", program, location, count, value);
     with_ctx(|mut state| unsafe {
-        state.oxidegl_program_uniform4dv(program, location, count, value)
+        state.oxidegl_program_uniform4dv(program, location, count, value);
     });
 }
 #[no_mangle]
@@ -8097,7 +8097,7 @@ unsafe extern "C" fn glProgramUniformMatrix2dv(
 ) {
     ::log::trace!("glProgramUniformMatrix2dv called, parameters: program: {:?}, location: {:?}, count: {:?}, transpose: {:?}, value: {:?} ", program, location, count, transpose, value);
     with_ctx(|mut state| unsafe {
-        state.oxidegl_program_uniform_matrix2dv(program, location, count, transpose, value)
+        state.oxidegl_program_uniform_matrix2dv(program, location, count, transpose, value);
     });
 }
 #[no_mangle]
@@ -8110,7 +8110,7 @@ unsafe extern "C" fn glProgramUniformMatrix3dv(
 ) {
     ::log::trace!("glProgramUniformMatrix3dv called, parameters: program: {:?}, location: {:?}, count: {:?}, transpose: {:?}, value: {:?} ", program, location, count, transpose, value);
     with_ctx(|mut state| unsafe {
-        state.oxidegl_program_uniform_matrix3dv(program, location, count, transpose, value)
+        state.oxidegl_program_uniform_matrix3dv(program, location, count, transpose, value);
     });
 }
 #[no_mangle]
@@ -8123,7 +8123,7 @@ unsafe extern "C" fn glProgramUniformMatrix4dv(
 ) {
     ::log::trace!("glProgramUniformMatrix4dv called, parameters: program: {:?}, location: {:?}, count: {:?}, transpose: {:?}, value: {:?} ", program, location, count, transpose, value);
     with_ctx(|mut state| unsafe {
-        state.oxidegl_program_uniform_matrix4dv(program, location, count, transpose, value)
+        state.oxidegl_program_uniform_matrix4dv(program, location, count, transpose, value);
     });
 }
 #[no_mangle]
@@ -8136,7 +8136,7 @@ unsafe extern "C" fn glProgramUniformMatrix2x3dv(
 ) {
     ::log::trace!("glProgramUniformMatrix2x3dv called, parameters: program: {:?}, location: {:?}, count: {:?}, transpose: {:?}, value: {:?} ", program, location, count, transpose, value);
     with_ctx(|mut state| unsafe {
-        state.oxidegl_program_uniform_matrix2x3dv(program, location, count, transpose, value)
+        state.oxidegl_program_uniform_matrix2x3dv(program, location, count, transpose, value);
     });
 }
 #[no_mangle]
@@ -8149,7 +8149,7 @@ unsafe extern "C" fn glProgramUniformMatrix3x2dv(
 ) {
     ::log::trace!("glProgramUniformMatrix3x2dv called, parameters: program: {:?}, location: {:?}, count: {:?}, transpose: {:?}, value: {:?} ", program, location, count, transpose, value);
     with_ctx(|mut state| unsafe {
-        state.oxidegl_program_uniform_matrix3x2dv(program, location, count, transpose, value)
+        state.oxidegl_program_uniform_matrix3x2dv(program, location, count, transpose, value);
     });
 }
 #[no_mangle]
@@ -8162,7 +8162,7 @@ unsafe extern "C" fn glProgramUniformMatrix2x4dv(
 ) {
     ::log::trace!("glProgramUniformMatrix2x4dv called, parameters: program: {:?}, location: {:?}, count: {:?}, transpose: {:?}, value: {:?} ", program, location, count, transpose, value);
     with_ctx(|mut state| unsafe {
-        state.oxidegl_program_uniform_matrix2x4dv(program, location, count, transpose, value)
+        state.oxidegl_program_uniform_matrix2x4dv(program, location, count, transpose, value);
     });
 }
 #[no_mangle]
@@ -8175,7 +8175,7 @@ unsafe extern "C" fn glProgramUniformMatrix4x2dv(
 ) {
     ::log::trace!("glProgramUniformMatrix4x2dv called, parameters: program: {:?}, location: {:?}, count: {:?}, transpose: {:?}, value: {:?} ", program, location, count, transpose, value);
     with_ctx(|mut state| unsafe {
-        state.oxidegl_program_uniform_matrix4x2dv(program, location, count, transpose, value)
+        state.oxidegl_program_uniform_matrix4x2dv(program, location, count, transpose, value);
     });
 }
 #[no_mangle]
@@ -8188,7 +8188,7 @@ unsafe extern "C" fn glProgramUniformMatrix3x4dv(
 ) {
     ::log::trace!("glProgramUniformMatrix3x4dv called, parameters: program: {:?}, location: {:?}, count: {:?}, transpose: {:?}, value: {:?} ", program, location, count, transpose, value);
     with_ctx(|mut state| unsafe {
-        state.oxidegl_program_uniform_matrix3x4dv(program, location, count, transpose, value)
+        state.oxidegl_program_uniform_matrix3x4dv(program, location, count, transpose, value);
     });
 }
 #[no_mangle]
@@ -8201,7 +8201,7 @@ unsafe extern "C" fn glProgramUniformMatrix4x3dv(
 ) {
     ::log::trace!("glProgramUniformMatrix4x3dv called, parameters: program: {:?}, location: {:?}, count: {:?}, transpose: {:?}, value: {:?} ", program, location, count, transpose, value);
     with_ctx(|mut state| unsafe {
-        state.oxidegl_program_uniform_matrix4x3dv(program, location, count, transpose, value)
+        state.oxidegl_program_uniform_matrix4x3dv(program, location, count, transpose, value);
     });
 }
 #[no_mangle]
@@ -8220,7 +8220,7 @@ unsafe extern "C" fn glSpecializeShader(
             numSpecializationConstants,
             pConstantIndex,
             pConstantValue,
-        )
+        );
     });
 }
 #[no_mangle]
@@ -8239,7 +8239,7 @@ unsafe extern "C" fn glMultiDrawArraysIndirectCount(
             drawcount,
             maxdrawcount,
             stride,
-        )
+        );
     });
 }
 #[no_mangle]
@@ -8260,7 +8260,7 @@ unsafe extern "C" fn glMultiDrawElementsIndirectCount(
             drawcount,
             maxdrawcount,
             stride,
-        )
+        );
     });
 }
 #[no_mangle]

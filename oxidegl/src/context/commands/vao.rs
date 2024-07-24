@@ -1,6 +1,5 @@
 use std::num::NonZeroU32;
 
-use log::debug;
 use objc2_metal::MTLAttributeFormat;
 
 use crate::{
@@ -220,7 +219,7 @@ impl Context {
     /// [**glCreateVertexArrays**](crate::context::Context::oxidegl_create_vertex_arrays)
     /// returns `n` previously unused vertex array object names in `arrays`, each
     /// representing a new vertex array object initialized to the default state.
-    pub unsafe fn oxidegl_create_vertex_arrays(&mut self, n: GLsizei, mut arrays: *mut GLuint) {
+    pub unsafe fn oxidegl_create_vertex_arrays(&mut self, n: GLsizei, arrays: *mut GLuint) {
         panic!("command oxidegl_create_vertex_arrays not yet implemented");
     }
 
