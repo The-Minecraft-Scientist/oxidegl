@@ -2073,19 +2073,31 @@ impl Context {
 /// always returns a compatible version number. The release number always describes
 /// the server.
 pub mod get_string {
-
     use log::debug;
 
     use crate::context::Context;
     use crate::dispatch::gl_types::{GLubyte, GLuint};
     use crate::enums::StringName;
     impl Context {
+        const COMMIT_HASH: &'static str = env!("OXIDEGL_COMMIT_HASH");
+        pub const VERSION_INFO: &'static str = {
+            {
+                if option_env!("OXIDEGL_RELEASE").is_some() {
+                    constcat::concat!("Release v", env!("CARGO_PKG_VERSION"))
+                } else {
+                    constcat::concat!("InDev commit #", Context::COMMIT_HASH)
+                }
+            }
+        };
         fn get_string(name: StringName) -> *const GLubyte {
             const VENDOR: &[u8] = b"Charles Liske\0";
             const RENDERER: &[u8] = b"OxideGL\0";
-            const VERSION: &[u8] = b"4.6.0\0";
 
-            debug!(target: "get", "glGetString {:#0x}", name as u32);
+            const VERSION_PREFIX: &[u8] = b"4.6.0 OxideGL ";
+            const VERSION: &[u8] =
+                constcat::concat_bytes!(VERSION_PREFIX, Context::VERSION_INFO.as_bytes(), &[0]);
+
+            debug!(target: "get", "glGetString {name:?}");
             match name {
                 StringName::Vendor => VENDOR.as_ptr(),
                 StringName::Renderer => RENDERER.as_ptr(),

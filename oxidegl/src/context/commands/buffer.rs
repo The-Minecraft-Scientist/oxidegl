@@ -1,11 +1,4 @@
-use core::slice;
-use std::{
-    fmt::Debug,
-    mem::{self},
-    num::NonZeroU32,
-    os::raw::c_void,
-    ptr::NonNull,
-};
+use core::{ffi::c_void, fmt::Debug, mem, num::NonZeroU32, ptr::NonNull, slice};
 
 use log::debug;
 use objc2::{rc::Retained, runtime::ProtocolObject};
@@ -97,8 +90,6 @@ impl Context {
             // Safety: See above, this pointer will point at most one item past the end of its allocation
             unsafe { buffers = buffers.add(1) }
         }
-
-        panic!("command oxidegl_create_buffers not yet implemented");
     }
 
     /// ### Parameters
@@ -343,15 +334,6 @@ impl Context {
             .iter()
             .flatten()
         {
-            //Unbind buffer if it is bound
-            if let Some(Some(b)) = self
-                .gl_state
-                .buffer_list
-                .get_mut(name)
-                .map(|buf| buf.current_binding)
-            {
-                self.oxidegl_bind_buffer_internal(None, b.target, NonZeroU32::new(b.index));
-            }
             self.gl_state.buffer_list.delete_buffer(name);
             debug!("deleted buffer {name:?}");
         }
@@ -361,7 +343,7 @@ impl Context {
 impl Context {
     fn oxidegl_bind_buffer_internal<I: IndexType>(
         &mut self,
-        mut to_bind: Option<ObjectName<Buffer>>,
+        to_bind: Option<ObjectName<Buffer>>,
         target: BufferTarget,
         idx: I,
     ) {
@@ -403,35 +385,13 @@ impl Context {
                     BufferTarget::DispatchIndirectBuffer => bindings.dispatch_indirect,
                     BufferTarget::QueryBuffer => bindings.query,
                     BufferTarget::ParameterBuffer => bindings.parameter,
-                    _ => {
-                        debug_unreachable!(unsafe)
-                    }
+                    #[allow(unused_unsafe)]
+                    _ => unsafe { debug_unreachable!() },
                 }
             }
         };
-        // Unbind the previously bound buffer's binding entry
-        // u32 is the common index type, so indices can't easily exceed u32::MAX
-        #[allow(clippy::cast_possible_truncation)]
-        if let Some(name) = to_bind {
-            // Safety: caller ensures buffer is valid
-            let r = unsafe { self.gl_state.buffer_list.get_unchecked_mut(name) };
-
-            r.current_binding = Some(BindingInfo {
-                target,
-                index: idx.get_numeric() as u32,
-            });
-        }
-
-        mem::swap(r, &mut to_bind);
-
-        // Unbind the previous buffer's binding entry
-        if let Some(name) = to_bind {
-            // Safety: all bound buffers are valid
-            let r = unsafe { self.gl_state.buffer_list.get_unchecked_mut(name) };
-            r.current_binding = None;
-        }
-
-        debug!("bound buffer {to_bind:?} to binding point {target:?} at index {idx:?}");
+        *r = to_bind;
+        debug!("bound buffer {to_bind:?} to target {target:?} at index {idx:?}");
     }
 }
 
@@ -449,7 +409,6 @@ impl Context {
 /// * Allocated: in this state the buffer has been fully initialized and is ready for use by the GL. Reached by [glBufferStorage](Context::oxidegl_buffer_storage)
 pub(crate) struct Buffer {
     pub(crate) name: ObjectName<Self>,
-    pub(crate) current_binding: Option<BindingInfo>,
     pub(crate) size: usize,
     pub(crate) usage: BufferUsage,
     pub(crate) access: BufferAccess,
@@ -459,7 +418,6 @@ pub(crate) struct Buffer {
     pub(crate) allocation: Option<RealizedBufferInternal>,
 }
 #[derive(Debug)]
-/// Repre
 pub(crate) struct RealizedBufferInternal {
     pub(crate) mapping: Option<MappingInfo>,
     pub(crate) mtl: Retained<ProtocolObject<dyn MTLBuffer>>,
@@ -491,7 +449,6 @@ impl Buffer {
     pub(crate) fn new_default(name: ObjectName<Buffer>) -> Self {
         Self {
             name,
-            current_binding: None,
             size: 0,
             usage: BufferUsage::StaticDraw,
             access: BufferAccess::ReadWrite,
@@ -512,13 +469,6 @@ pub struct MappingInfo {
     pub(crate) ptr_offset: usize,
     /// Length of the region of the buffer which has been mapped
     pub(crate) len: usize,
-}
-#[derive(Debug, Clone, Copy)]
-pub struct BindingInfo {
-    /// The binding target this buffer is currently bound to
-    pub(crate) target: BufferTarget,
-    /// The index of the binding of this buffer if the target is an indexed target, 0 if not
-    pub(crate) index: GLuint,
 }
 
 impl NamedObject for Buffer {}

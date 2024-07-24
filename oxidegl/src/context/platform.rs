@@ -35,7 +35,7 @@ impl MetalComponents {
         } else {
             unsafe { view.setLayer(Some(&layer)) };
         }
-        trace!("injected layer{:?} into window!", &layer);
+        trace!("injected layer {:?} into window!", &layer);
         //SAFETY: GL must be called from the main thread on Apple platforms
         let cscale = NSScreen::mainScreen(unsafe { MainThreadMarker::new_unchecked() })
             .unwrap()

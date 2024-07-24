@@ -6,6 +6,7 @@
 use std::error::Error;
 
 pub mod context;
+pub mod entry_point;
 
 #[allow(clippy::undocumented_unsafe_blocks)]
 mod dispatch;
@@ -14,15 +15,18 @@ mod dispatch;
 pub mod enums;
 
 #[macro_export]
-/// [`unreachable!!`](unreachable!), but it produces to [`std::hint::unreachable_unchecked()`] in builds without debug assertions.
+/// [`unreachable!`](unreachable!), but it reduces to [`std::hint::unreachable_unchecked()`] in builds without debug assertions.
 /// Usages must start with the `unsafe` keyword to indicate that this macro has the same semantics as unreachable unchecked
 macro_rules! debug_unreachable {
-    (unsafe $($msg:tt)*) => {
+    ($($msg:tt)*) => {
         {
-        #[cfg(debug_assertions)]
-        unreachable!($($msg)*);
-        #[cfg(not(debug_assertions))]
-        unsafe {core::hint::unreachable_unchecked()}
+            // Need to do something "unsafe" to advertise that this macro's semantics are unsafe in debug builds
+            #[allow(clippy::useless_transmute)]
+            let _: () = ::core::mem::transmute(());
+            #[cfg(debug_assertions)]
+            unreachable!($($msg)*);
+            #[cfg(not(debug_assertions))]
+            ::core::hint::unreachable_unchecked()
         }
     };
 }

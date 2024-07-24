@@ -5,16 +5,16 @@ use bitflags::bitflags;
 use crate::{
     debug_unreachable,
     dispatch::{
-        conversions::{GlDstType, IndexType, SrcType},
+        conversions::{GlDstType, SrcType},
         gl_types::GLenum,
     },
     enums::{
-        ClearBufferMask, GL_CONTEXT_CORE_PROFILE_BIT,
-        GL_CONTEXT_FLAG_FORWARD_COMPATIBLE_BIT, GL_CONTEXT_FLAG_NO_ERROR_BIT,
+        ClearBufferMask, GL_CONTEXT_CORE_PROFILE_BIT, GL_CONTEXT_FLAG_FORWARD_COMPATIBLE_BIT,
+        GL_CONTEXT_FLAG_NO_ERROR_BIT,
     },
 };
 
-use super::commands::{buffers::Buffer, vaos::Vao};
+use super::commands::{buffer::Buffer, vao::Vao};
 
 #[derive(Debug)]
 pub struct GLState {
@@ -22,6 +22,7 @@ pub struct GLState {
     pub(crate) buffer_bindings: BufferBindings,
     pub(crate) buffer_list: NamedObjectList<Buffer>,
     pub(crate) vao_list: NamedObjectList<Vao>,
+    pub(crate) vao_binding: Option<ObjectName<Vao>>,
     pub(crate) point_size: f32,
     pub(crate) line_width: f32,
     pub(crate) clear_color: [f32; 4],
@@ -86,6 +87,7 @@ impl GLState {
             buffer_list: NamedObjectList::new(),
 
             vao_list: NamedObjectList::new(),
+            vao_binding: None,
             point_size: 1.0,
             line_width: 1.0,
 
@@ -140,8 +142,9 @@ impl<T> Clone for ObjectName<T> {
         *self
     }
 }
+
 impl<T> Copy for ObjectName<T> {}
-impl<T> ObjectName<T> {
+impl<T: NamedObject> ObjectName<T> {
     #[allow(clippy::cast_possible_truncation)]
     #[inline]
     unsafe fn from_idx(val: usize) -> Self {
@@ -159,6 +162,7 @@ impl<T> ObjectName<T> {
         (self.0.get() - 1) as usize
     }
 }
+
 pub trait NamedObject {}
 impl<Dst: GlDstType, T> SrcType<Dst> for Option<ObjectName<T>> {
     fn cast(self) -> Dst {
@@ -185,12 +189,15 @@ impl<Obj: NamedObject> NamedObjectList<Obj> {
             })
     }
     pub(crate) unsafe fn get_unchecked(&self, name: ObjectName<Obj>) -> &Obj {
-        // Safety: Caller ensures that the buffer at name exists in the buffer list
+        // Safety: Caller ensures that the object at name exists in the list
         unsafe {
             match self.objects.get_unchecked(name.to_idx()) {
                 NameState::Bound(ref b) => b,
                 _ => {
-                    debug_unreachable!(unsafe "UB: Tried to get a buffer with a name that has not yet been initialized")
+                    // Safety: Caller ensures that the object at name is bound
+                    debug_unreachable!(
+                        "UB: Tried to get a buffer with a name that has not yet been initialized"
+                    )
                 }
             }
         }
@@ -204,12 +211,15 @@ impl<Obj: NamedObject> NamedObjectList<Obj> {
             })
     }
     pub(crate) unsafe fn get_unchecked_mut(&mut self, name: ObjectName<Obj>) -> &mut Obj {
-        // Safety: Caller ensures that the buffer at name exists in the buffer list
+        // Safety: Caller ensures that the object at name exists in the list
         unsafe {
             match self.objects.get_unchecked_mut(name.to_idx()) {
                 NameState::Bound(b) => b,
                 _ => {
-                    debug_unreachable!(unsafe "UB: Tried to get an object with a name that has not yet been initialized")
+                    // Safety: Caller ensures that the object at name is bound
+                    debug_unreachable!(
+                        "UB: Tried to get an object with a name that has not yet been initialized"
+                    )
                 }
             }
         }

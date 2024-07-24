@@ -27,9 +27,8 @@ pub(crate) mod commands;
 pub(crate) mod state;
 
 pub(crate) mod platform;
-
 thread_local! {
-    static CTX: Cell<Option<NonNull<Context>>> = const {Cell::new(None)};
+    pub(crate) static CTX: Cell<Option<NonNull<Context>>> = const {Cell::new(None)};
 }
 #[derive(Debug)]
 #[repr(C)]
@@ -72,37 +71,4 @@ pub fn with_ctx<Ret, Func: for<'a> Fn(Pin<&'a mut Context>) -> Ret>(f: Func) -> 
     let ret = f(p);
     CTX.set(Some(ptr));
     ret
-}
-
-#[no_mangle]
-unsafe extern "C" fn oxidegl_set_current_context(ctx: Option<NonNull<Context>>) {
-    trace!("set context to {:?}", ctx);
-    CTX.set(ctx);
-}
-
-#[no_mangle]
-unsafe extern "C" fn oxidegl_swap_buffers(_ctx: Option<NonNull<Context>>) {
-    debug!("swap buffers called");
-}
-#[no_mangle]
-unsafe extern "C" fn oxidegl_platform_init() {
-    simple_logger::init_with_env().expect("failed to initialize OxideGL's logger!");
-    debug!("OxideGL Logger initialized");
-}
-
-#[no_mangle]
-unsafe extern "C" fn oxidegl_create_context(
-    view: *mut NSView,
-    format: GLenum,
-    typ: GLenum,
-    depth_format: GLenum,
-    depth_type: GLenum,
-    stencil_format: GLenum,
-    stencil_type: GLenum,
-) -> *mut c_void {
-    // Safety: caller ensures ptr is a pointer to a valid, initialized NSView.
-    // It is retained because we need it to live until we've injected our layer. (which happens in PlatformState::new)
-    let ctx = unsafe { Context::new(&Retained::retain(view).unwrap()) };
-    debug!("Created context");
-    Box::into_raw(Box::new(ctx)).cast()
 }
