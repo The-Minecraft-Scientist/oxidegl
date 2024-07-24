@@ -1,7 +1,8 @@
 // Implemented GL functions. 
-// p: - omit all functions documented by an OpenGL Reference Page with the
-// name converted to snake_case e.g. glGetString becomes gl_get_string
-// f: - omit individual GL command by originalGlCommandName
+// p: - mark all functions documented by an OpenGL Reference Page with the
+// name converted to snake_case (e.g. glGetString becomes gl_get_string) as implemented
+// f: - mark individual GL command (by originalGlCommandName) as implemented.
+
 //glGet
 p:gl_get
 p:gl_get_string
@@ -9,12 +10,21 @@ p:gl_get_string
 
 //Buffers
 f:glCreateBuffers
-f:glBindBuffer
 f:glGenBuffers
+f:glBindBuffer
 f:glIsBuffer
+f:glDeleteBuffers
 
 //glClear and friends
 p:gl_clear
 p:gl_clear_depth
 f:glClearColor
 f:glClearStencil
+
+//VAOs
+p:gl_vertex_attrib_format
+f:glCreateVertexArrays
+f:glGenVertexArrays
+f:glBindVertexArray
+f:glIsVertexArray
+f:glDeleteVertexArrays

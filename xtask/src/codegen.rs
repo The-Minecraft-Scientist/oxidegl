@@ -521,7 +521,6 @@ pub fn write_placeholder_impl<T: Write>(w: &mut T, v: &[FnCollection<'_>]) -> Re
             exclude_function_names.insert(trimmed);
         }
     }
-    dbg!(&exclude_function_names, &exclude_refpage_names);
 
     funcs.retain(|val: &FnCollection| {
         val.name

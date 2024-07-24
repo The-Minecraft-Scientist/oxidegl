@@ -1,4 +1,4 @@
-use core::{ffi::c_void, fmt::Debug, mem, num::NonZeroU32, ptr::NonNull, slice};
+use core::{ffi::c_void, fmt::Debug, ptr::NonNull};
 
 use log::debug;
 use objc2::{rc::Retained, runtime::ProtocolObject};
@@ -44,20 +44,8 @@ impl Context {
     /// [**glIsBuffer**](crate::context::Context::oxidegl_is_buffer)
 
     pub unsafe fn oxidegl_gen_buffers(&mut self, n: GLsizei, buffers: *mut GLuint) {
-        debug_assert!(!buffers.is_null(), "UB: buffer array pointer was null");
-        debug_assert!(
-            buffers.is_aligned(),
-            "UB: buffer array pointer was not sufficiently aligned"
-        );
-        debug!("writing {n} new buffer names to {buffers:?}");
-        let mut buffers = buffers.cast();
-        for _ in 0..n {
-            let name = self.gl_state.buffer_list.new_name();
-            // Safety: Caller ensures buffers is valid to write n buffer names to
-            unsafe { core::ptr::write(buffers, name) }
-            // Safety: See above, this pointer will point at most one item past the end of its allocation
-            unsafe { buffers = buffers.add(1) }
-        }
+        // Safety: Caller ensures validity
+        unsafe { self.gl_state.buffer_list.generic_gen(n, buffers) }
     }
 
     /// ### Parameters
@@ -76,19 +64,11 @@ impl Context {
     /// target.
 
     pub unsafe fn oxidegl_create_buffers(&mut self, n: GLsizei, buffers: *mut GLuint) {
-        debug_assert!(!buffers.is_null(), "UB: buffer array pointer was null");
-        debug_assert!(
-            buffers.is_aligned(),
-            "UB: buffer array pointer was not sufficiently aligned"
-        );
-        debug!("writing {n} initialized buffer names to {buffers:?}");
-        let mut buffers = buffers.cast();
-        for _ in 0..n {
-            let name = self.gl_state.buffer_list.new_obj(Buffer::new_default);
-            // Safety: Caller ensures buffers is valid to write n buffer names to
-            unsafe { core::ptr::write(buffers, name) }
-            // Safety: See above, this pointer will point at most one item past the end of its allocation
-            unsafe { buffers = buffers.add(1) }
+        // Safety: Caller ensures validity
+        unsafe {
+            self.gl_state
+                .buffer_list
+                .generic_create(Buffer::new_default, n, buffers);
         }
     }
 
@@ -293,7 +273,7 @@ impl Context {
     /// is not the name of a buffer object.
 
     pub fn oxidegl_is_buffer(&mut self, buffer: GLuint) -> GLboolean {
-        ObjectName::from_raw(buffer).is_some_and(|name| self.gl_state.buffer_list.is_buffer(name))
+        self.gl_state.buffer_list.raw_is(buffer)
     }
     /// ### Parameters
     /// `n`
@@ -318,24 +298,12 @@ impl Context {
     ///
     /// ### Associated Gets
     /// [**glIsBuffer**](crate::context::Context::oxidegl_is_buffer)
-
     pub unsafe fn oxidegl_delete_buffers(&mut self, n: GLsizei, buffers: *const GLuint) {
-        debug_assert!(!buffers.is_null(), "UB: buffer array pointer was null");
-        debug_assert!(
-            buffers.is_aligned(),
-            "UB: buffer array pointer was not sufficiently aligned"
-        );
-        for &name in
-            // Safety: caller ensures that n and buffers form a valid reference to a u32 slice. Cast from [u32] to
-            // [Option<ReprTransparentStruct(NonZeroU32)>] is guaranteed to be valid by Option niche opt guarantees
-            unsafe {
-                slice::from_raw_parts(buffers.cast::<Option<ObjectName<Buffer>>>(), n as usize)
-            }
-            .iter()
-            .flatten()
-        {
-            self.gl_state.buffer_list.delete_buffer(name);
-            debug!("deleted buffer {name:?}");
+        // Safety: Caller ensures validity
+        unsafe {
+            self.gl_state
+                .buffer_list
+                .generic_delete_multiple(n, buffers);
         }
     }
 }
@@ -386,6 +354,7 @@ impl Context {
                     BufferTarget::QueryBuffer => bindings.query,
                     BufferTarget::ParameterBuffer => bindings.parameter,
                     #[allow(unused_unsafe)]
+                    // Safety: all other variants are covered
                     _ => unsafe { debug_unreachable!() },
                 }
             }

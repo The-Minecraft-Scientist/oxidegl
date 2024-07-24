@@ -1,12 +1,13 @@
-use std::{marker::PhantomData, num::NonZeroU32};
+use std::{any::type_name, marker::PhantomData, num::NonZeroU32};
 
 use bitflags::bitflags;
+use log::debug;
 
 use crate::{
     debug_unreachable,
     dispatch::{
         conversions::{GlDstType, SrcType},
-        gl_types::GLenum,
+        gl_types::{GLboolean, GLenum, GLsizei, GLuint},
     },
     enums::{
         ClearBufferMask, GL_CONTEXT_CORE_PROFILE_BIT, GL_CONTEXT_FLAG_FORWARD_COMPATIBLE_BIT,
@@ -134,7 +135,7 @@ pub enum NameState<T> {
     /// This object name is *bound* to an object with the given state
     Bound(T),
 }
-#[derive(Debug, PartialEq, Eq)]
+#[derive(PartialEq, Eq)]
 #[repr(transparent)]
 pub struct ObjectName<Obj>(NonZeroU32, PhantomData<for<'a> fn(&'a Obj) -> &'a Obj>);
 impl<T> Clone for ObjectName<T> {
@@ -142,7 +143,11 @@ impl<T> Clone for ObjectName<T> {
         *self
     }
 }
-
+impl<Obj> core::fmt::Debug for ObjectName<Obj> {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.pad(&format!("{} Name: {}", type_name::<Obj>(), self.0.get()))
+    }
+}
 impl<T> Copy for ObjectName<T> {}
 impl<T: NamedObject> ObjectName<T> {
     #[allow(clippy::cast_possible_truncation)]
@@ -252,15 +257,84 @@ impl<Obj: NamedObject> NamedObjectList<Obj> {
         self.objects.push(NameState::Bound(create(name)));
         name
     }
-    pub(crate) fn is_buffer(&self, name: ObjectName<Obj>) -> bool {
+    pub(crate) fn is(&self, name: ObjectName<Obj>) -> bool {
         self.get(name).is_some()
     }
-    pub(crate) fn delete_buffer(&mut self, name: ObjectName<Obj>) {
+    pub(crate) fn delete(&mut self, name: ObjectName<Obj>) {
         if let Some(entry) = self.objects.get_mut(name.to_idx()) {
             let mut e = NameState::Empty;
             core::mem::swap(entry, &mut e);
             // make the drop explicit for clarity
             drop(e);
         }
+    }
+    #[inline]
+    pub(crate) unsafe fn generic_delete_multiple(&mut self, n: GLsizei, to_delete: *const GLuint) {
+        debug_assert!(
+            !to_delete.is_null(),
+            "UB: object name array pointer was null"
+        );
+        debug_assert!(
+            to_delete.is_aligned(),
+            "UB: object name array pointer was not sufficiently aligned"
+        );
+        for &name in
+            // Safety: caller ensures that n and buffers form a valid reference to a u32 slice. Cast from [u32] to
+            // [Option<ReprTransparentStruct(NonZeroU32)>] is guaranteed to be valid by Option niche opt guarantees
+            unsafe {
+                core::slice::from_raw_parts(to_delete.cast::<Option<ObjectName<Obj>>>(), n as usize)
+            }
+            .iter()
+            .flatten()
+        {
+            self.delete(name);
+            debug!("deleted {} {name:?}", type_name::<Obj>());
+        }
+    }
+    #[inline]
+    pub(crate) unsafe fn generic_gen(&mut self, n: GLsizei, names: *mut GLuint) {
+        debug_assert!(!names.is_null(), "UB: object name array pointer was null");
+        debug_assert!(
+            names.is_aligned(),
+            "UB: object name array pointer was not sufficiently aligned"
+        );
+        debug!("writing {n} new {} names to {names:?}", type_name::<Obj>());
+        let mut names = names.cast();
+        for _ in 0..n {
+            let name = self.new_name();
+            // Safety: Caller ensures names is valid to write n buffer names to
+            unsafe { core::ptr::write(names, name) }
+            // Safety: See above, this pointer will point at most one item past the end of its allocation
+            unsafe { names = names.add(1) }
+        }
+    }
+    #[inline]
+    pub(crate) unsafe fn generic_create(
+        &mut self,
+        create_func: impl Fn(ObjectName<Obj>) -> Obj + Copy,
+        n: GLsizei,
+        names: *mut GLuint,
+    ) {
+        debug_assert!(!names.is_null(), "UB: object name array pointer was null");
+        debug_assert!(
+            names.is_aligned(),
+            "UB: object name array pointer was not sufficiently aligned"
+        );
+        debug!(
+            "writing {n} new initialized {} names to {names:?}",
+            type_name::<Obj>()
+        );
+        let mut names = names.cast();
+        for _ in 0..n {
+            let name = self.new_obj(create_func);
+            // Safety: Caller ensures names is valid to write n object names to names to
+            unsafe { core::ptr::write(names, name) }
+            // Safety: See above, this pointer will point at most one item past the end of its allocation
+            unsafe { names = names.add(1) }
+        }
+    }
+    #[inline]
+    pub(crate) fn raw_is(&self, name: GLuint) -> GLboolean {
+        ObjectName::from_raw(name).is_some_and(|name| self.is(name))
     }
 }
