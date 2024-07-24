@@ -1538,7 +1538,7 @@ impl Context {
                     crate::context::state::MAX_TRANSFORM_FEEDBACK_BUFFER_BINDINGS
                         .write_out(idx, ptr);
                 }
-                //Buffer Bindings
+                // Buffer Bindings
                 // FIXME `VertexArray` actually refers to the current VAO binding, *not* the current `VertexArray*BufferBinding*`
                 // waiting on codegen update
                 VertexArray => {

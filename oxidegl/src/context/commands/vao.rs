@@ -1,5 +1,6 @@
 use std::num::NonZeroU32;
 
+use log::debug;
 use objc2_metal::MTLAttributeFormat;
 
 use crate::{
@@ -9,11 +10,13 @@ use crate::{
         Context,
     },
     dispatch::{
-        conversions::{CurrentBinding, IndexType, MaybeObjectName},
+        conversions::{CurrentBinding, MaybeObjectName},
         gl_types::{GLboolean, GLenum, GLint, GLsizei, GLuint},
     },
     enums::{VertexAttribIType, VertexAttribType},
 };
+
+//TODO glGetVertexAttribiv
 
 /// ### Parameters
 /// `vaobj`
@@ -232,7 +235,7 @@ impl Context {
         attrib.component_type = r#type;
         // Caller ensures relative_offset is inbounds i.e. it is strictly less than MAX_VERTEX_ATTRIBUTE_STRIDE
         attrib.relative_offset = relative_offset as u16;
-
+        debug!("updated vertex attribute format at index {attrib_index} of {:#?} to {:?}{num_components} with relative offset {relative_offset} and integer behavior {integer_behavior:?}", vao.name, r#type);
         #[cfg(debug_assertions)]
         attrib.validate();
     }
