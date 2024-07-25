@@ -27,6 +27,7 @@ p:gl_bind_vertex_buffer
 p:gl_bind_vertex_buffers
 p:gl_enable_vertex_attrib_array
 p:gl_vertex_attrib_binding
+p:gl_vertex_attrib_pointer
 
 f:glCreateVertexArrays
 f:glGenVertexArrays

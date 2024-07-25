@@ -166,6 +166,9 @@ impl<T: NamedObject> ObjectName<T> {
     pub fn to_idx(self) -> usize {
         (self.0.get() - 1) as usize
     }
+    pub fn to_raw(self) -> u32 {
+        self.0.get()
+    }
 }
 
 pub trait NamedObject {}
