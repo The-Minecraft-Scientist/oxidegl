@@ -378,11 +378,11 @@ impl Context {
 /// ## Lifecycle
 /// in OpenGL buffers have around three different states:
 /// * Named: in this state there exists a u32 that uniquely identifies this slot in the buffer list.
-/// As the reference page and spec note, the existence of a *name* does not imply the existence of a
-/// buffer *object*. Buffer names are created by [glGenBuffers](Context::oxidegl_gen_buffers). This intermediate "named" state
-/// can only be reached without DSA (glCreateBuffers initializes the buffers "as if \[they] had been bound to an unspecified target")
+///   As the reference page and spec note, the existence of a *name* does not imply the existence of a
+///   buffer *object*. Buffer names are created by [glGenBuffers](Context::oxidegl_gen_buffers). This intermediate "named" state
+///   can only be reached without DSA (glCreateBuffers initializes the buffers "as if \[they] had been bound to an unspecified target")
 /// * Bound: in this state the "state vector" of the given buffer name is initialized and it is now a buffer object.
-/// Note that binding a buffer does not immediately allocate it. Buffers are bound via [glBindBuffer](Context::oxidegl_bind_buffer), or created by glCreateBuffers
+///   Note that binding a buffer does not immediately allocate it. Buffers are bound via [glBindBuffer](Context::oxidegl_bind_buffer), or created by glCreateBuffers
 /// * Allocated: in this state the buffer has been fully initialized and is ready for use by the GL. Reached by [glBufferStorage](Context::oxidegl_buffer_storage)
 pub(crate) struct Buffer {
     pub(crate) name: ObjectName<Self>,
