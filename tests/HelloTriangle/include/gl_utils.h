@@ -9,8 +9,9 @@
 #ifndef _GL_UTILS_H_
 #define _GL_UTILS_H_
 
-#include "glad/glad.h"  // include GLEW and new version of GL on Windows
-#include <GLFW/glfw3.h> // GLFW helper library
+#include "glad/glad.h" // need to include glad first so it defines _gl_h_ and GLFW doesn't screw us over by including NSGL headers
+
+#include "../../../oxidegl-glfw/include/GLFW/glfw3.h" // GLFW helper library
 #include <stdarg.h>
 
 #define GL_LOG_FILE "gl.log"
