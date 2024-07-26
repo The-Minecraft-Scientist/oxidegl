@@ -2,19 +2,22 @@ use core::{ffi::c_void, fmt::Debug, ptr::NonNull};
 
 use log::debug;
 use objc2::{rc::Retained, runtime::ProtocolObject};
-use objc2_metal::MTLBuffer;
+use objc2_metal::{MTLBuffer, MTLDevice, MTLResourceOptions};
 
 use crate::{
     context::{
-        state::{NamedObject, ObjectName},
+        state::{BufferBindings, NamedObject, ObjectName},
         Context,
     },
     debug_unreachable,
     dispatch::{
         conversions::{IndexType, NoIndex},
-        gl_types::{GLboolean, GLsizei, GLuint},
+        gl_types::{GLboolean, GLsizei, GLsizeiptr, GLuint, GLvoid},
     },
-    enums::{BufferAccess, BufferStorageMask, BufferTarget, BufferUsage, MapBufferAccessMask},
+    enums::{
+        BufferAccess, BufferStorageMask, BufferStorageTarget, BufferTarget, BufferUsage,
+        MapBufferAccessMask,
+    },
 };
 
 impl Context {
@@ -254,7 +257,7 @@ impl Context {
     /// [**glGet**](crate::context::Context::oxidegl_get) with argument [`GL_UNIFORM_BUFFER_BINDING`](crate::enums::GL_UNIFORM_BUFFER_BINDING)
 
     pub fn oxidegl_bind_buffer(&mut self, target: BufferTarget, buffer: GLuint) {
-        self.oxidegl_bind_buffer_internal(ObjectName::from_raw(buffer), target, NoIndex);
+        self.bind_buffer_internal(ObjectName::from_raw(buffer), target, NoIndex);
     }
     /// ### Parameters
     /// `buffer`
@@ -305,9 +308,272 @@ impl Context {
         }
     }
 }
+/// ### Parameters
+/// `target`
+///
+/// > Specifies the target to which the buffer object is bound for [**glBufferStorage**](crate::context::Context::oxidegl_buffer_storage),
+/// > which must be one of the buffer binding targets in the following table:
+///
+/// > | *Buffer Binding Target*                               | *Purpose*      |
+/// > |-------------------------------------------------------|----------------|
+/// > | [`GL_ARRAY_BUFFER`](crate::enums::GL_ARRAY_BUFFER)    | Vertex attributes |
+/// > | [`GL_ATOMIC_COUNTER_BUFFER`](crate::enums::GL_ATOMIC_COUNTER_BUFFER) | Atomic counter storage |
+/// > | [`GL_COPY_READ_BUFFER`](crate::enums::GL_COPY_READ_BUFFER) | Buffer copy source |
+/// > | [`GL_COPY_WRITE_BUFFER`](crate::enums::GL_COPY_WRITE_BUFFER) | Buffer copy destination |
+/// > | [`GL_DISPATCH_INDIRECT_BUFFER`](crate::enums::GL_DISPATCH_INDIRECT_BUFFER) | Indirect compute dispatch commands |
+/// > | [`GL_DRAW_INDIRECT_BUFFER`](crate::enums::GL_DRAW_INDIRECT_BUFFER) | Indirect command arguments |
+/// > | [`GL_ELEMENT_ARRAY_BUFFER`](crate::enums::GL_ELEMENT_ARRAY_BUFFER) | Vertex array indices |
+/// > | [`GL_PIXEL_PACK_BUFFER`](crate::enums::GL_PIXEL_PACK_BUFFER) | Pixel read target |
+/// > | [`GL_PIXEL_UNPACK_BUFFER`](crate::enums::GL_PIXEL_UNPACK_BUFFER) | Texture data source |
+/// > | [`GL_QUERY_BUFFER`](crate::enums::GL_QUERY_BUFFER)    | Query result buffer |
+/// > | [`GL_SHADER_STORAGE_BUFFER`](crate::enums::GL_SHADER_STORAGE_BUFFER) | Read-write storage for shaders |
+/// > | [`GL_TEXTURE_BUFFER`](crate::enums::GL_TEXTURE_BUFFER) | Texture data buffer |
+/// > | [`GL_TRANSFORM_FEEDBACK_BUFFER`](crate::enums::GL_TRANSFORM_FEEDBACK_BUFFER) | Transform feedback buffer |
+/// > | [`GL_UNIFORM_BUFFER`](crate::enums::GL_UNIFORM_BUFFER) | Uniform block storage |
+///
+/// `buffer`
+///
+/// > Specifies the name of the buffer object for [**glNamedBufferStorage**](crate::context::Context::oxidegl_named_buffer_storage)
+/// > function.
+///
+/// `size`
+///
+/// > Specifies the size in bytes of the buffer object's new data store.
+///
+/// `data`
+///
+/// > Specifies a pointer to data that will be copied into the data store for
+/// > initialization, or [`NULL`](crate::enums::NULL) if no data is to be copied.
+///
+/// `flags`
+///
+/// > Specifies the intended usage of the buffer's data store. Must be a bitwise
+/// > combination of the following flags. [`GL_DYNAMIC_STORAGE_BIT`](crate::enums::GL_DYNAMIC_STORAGE_BIT),
+/// > [`GL_MAP_READ_BIT`](crate::enums::GL_MAP_READ_BIT) [`GL_MAP_WRITE_BIT`](crate::enums::GL_MAP_WRITE_BIT),
+/// > [`GL_MAP_PERSISTENT_BIT`](crate::enums::GL_MAP_PERSISTENT_BIT), [`GL_MAP_COHERENT_BIT`](crate::enums::GL_MAP_COHERENT_BIT),
+/// > and [`GL_CLIENT_STORAGE_BIT`](crate::enums::GL_CLIENT_STORAGE_BIT).
+///
+/// ### Description
+/// [**glBufferStorage**](crate::context::Context::oxidegl_buffer_storage)
+/// and [**glNamedBufferStorage**](crate::context::Context::oxidegl_named_buffer_storage)
+/// create a new immutable data store. For [**glBufferStorage**](crate::context::Context::oxidegl_buffer_storage),
+/// the buffer object currently bound to `target` will be initialized. For
+/// [**glNamedBufferStorage**](crate::context::Context::oxidegl_named_buffer_storage),
+/// `buffer` is the name of the buffer object that will be configured. The
+/// size of the data store is specified by `size`. If an initial data is available,
+/// its address may be supplied in `data`. Otherwise, to create an uninitialized
+/// data store, `data` should be [`NULL`](crate::enums::NULL).
+///
+/// The `flags` parameters specifies the intended usage of the buffer's data
+/// store. It must be a bitwise combination of a subset of the following flags:
+/// [`GL_DYNAMIC_STORAGE_BIT`](crate::enums::GL_DYNAMIC_STORAGE_BIT)
+///
+/// > The contents of the data store may be updated after creation through calls
+/// > to [**glBufferSubData**](crate::context::Context::oxidegl_buffer_sub_data).
+/// > If this bit is not set, the buffer content may not be directly updated
+/// > by the client. The data argument may be used to specify the initial content
+/// > of the buffer's data store regardless of the presence of the [`GL_DYNAMIC_STORAGE_BIT`](crate::enums::GL_DYNAMIC_STORAGE_BIT).
+/// > Regardless of the presence of this bit, buffers may always be updated
+/// > with server-side calls such as [**glCopyBufferSubData**](crate::context::Context::oxidegl_copy_buffer_sub_data)
+/// > and [**glClearBufferSubData**](crate::context::Context::oxidegl_clear_buffer_sub_data).
+///
+/// [`GL_MAP_READ_BIT`](crate::enums::GL_MAP_READ_BIT)
+///
+/// > The data store may be mapped by the client for read access and a pointer
+/// > in the client's address space obtained that may be read from.
+///
+/// [`GL_MAP_WRITE_BIT`](crate::enums::GL_MAP_WRITE_BIT)
+///
+/// > The data store may be mapped by the client for write access and a pointer
+/// > in the client's address space obtained that may be written through.
+///
+/// [`GL_MAP_PERSISTENT_BIT`](crate::enums::GL_MAP_PERSISTENT_BIT)
+///
+/// > The client may request that the server read from or write to the buffer
+/// > while it is mapped. The client's pointer to the data store remains valid
+/// > so long as the data store is mapped, even during execution of drawing or
+/// > dispatch commands.
+///
+/// [`GL_MAP_COHERENT_BIT`](crate::enums::GL_MAP_COHERENT_BIT)
+///
+/// > Shared access to buffers that are simultaneously mapped for client access
+/// > and are used by the server will be coherent, so long as that mapping is
+/// > performed using [**glMapBufferRange**](crate::context::Context::oxidegl_map_buffer_range).
+/// > That is, data written to the store by either the client or server will
+/// > be immediately visible to the other with no further action taken by the
+/// > application. In particular,
+///
+/// >> If [`GL_MAP_COHERENT_BIT`](crate::enums::GL_MAP_COHERENT_BIT) is not set
+/// >> and the client performs a write followed by a call to the [**glMemoryBarrier**](crate::context::Context::oxidegl_memory_barrier)
+/// >> command with the [`GL_CLIENT_MAPPED_BUFFER_BARRIER_BIT`](crate::enums::GL_CLIENT_MAPPED_BUFFER_BARRIER_BIT)
+/// >> set, then in subsequent commands the server will see the writes.
+///
+/// >> If [`GL_MAP_COHERENT_BIT`](crate::enums::GL_MAP_COHERENT_BIT) is set and
+/// >> the client performs a write, then in subsequent commands the server will
+/// >> see the writes.
+///
+/// >> If [`GL_MAP_COHERENT_BIT`](crate::enums::GL_MAP_COHERENT_BIT) is not set
+/// >> and the server performs a write, the application must call [**glMemoryBarrier**](crate::context::Context::oxidegl_memory_barrier)
+/// >> with the [`GL_CLIENT_MAPPED_BUFFER_BARRIER_BIT`](crate::enums::GL_CLIENT_MAPPED_BUFFER_BARRIER_BIT)
+/// >> set and then call [**glFenceSync**](crate::context::Context::oxidegl_fence_sync)
+/// >> with [`GL_SYNC_GPU_COMMANDS_COMPLETE`](crate::enums::GL_SYNC_GPU_COMMANDS_COMPLETE)
+/// >> (or [**glFinish**](crate::context::Context::oxidegl_finish) ). Then the
+/// >> CPU will see the writes after the sync is complete.
+///
+/// >> If [`GL_MAP_COHERENT_BIT`](crate::enums::GL_MAP_COHERENT_BIT) is set and
+/// >> the server does a write, the app must call [**glFenceSync**](crate::context::Context::oxidegl_fence_sync)
+/// >> with [`GL_SYNC_GPU_COMMANDS_COMPLETE`](crate::enums::GL_SYNC_GPU_COMMANDS_COMPLETE)
+/// >> (or [**glFinish**](crate::context::Context::oxidegl_finish) ). Then the
+/// >> CPU will see the writes after the sync is complete.
+///
+/// [`GL_CLIENT_STORAGE_BIT`](crate::enums::GL_CLIENT_STORAGE_BIT)
+///
+/// > When all other criteria for the buffer storage allocation are met, this
+/// > bit may be used by an implementation to determine whether to use storage
+/// > that is local to the server or to the client to serve as the backing store
+/// > for the buffer.
+///
+///
+/// The allowed combinations of flags are subject to certain restrictions.
+/// They are as follows: If `flags` contains [`GL_MAP_PERSISTENT_BIT`](crate::enums::GL_MAP_PERSISTENT_BIT),
+/// > it must also contain at least one of [`GL_MAP_READ_BIT`](crate::enums::GL_MAP_READ_BIT)
+/// > or [`GL_MAP_WRITE_BIT`](crate::enums::GL_MAP_WRITE_BIT).
+///
+/// > If `flags` contains [`GL_MAP_COHERENT_BIT`](crate::enums::GL_MAP_COHERENT_BIT),
+/// > it must also contain [`GL_MAP_PERSISTENT_BIT`](crate::enums::GL_MAP_PERSISTENT_BIT).
+///
+///
+/// ### Notes
+/// [**glBufferStorage**](crate::context::Context::oxidegl_buffer_storage)
+/// is available only if the GL version is 4.4 or greater.
+///
+/// [**glNamedBufferStorage**](crate::context::Context::oxidegl_named_buffer_storage)
+/// is available only if the GL version is 4.5 or greater.
+///
+/// If `data` is [`NULL`](crate::enums::NULL), a data store of the specified
+/// size is still created, but its contents remain uninitialized and thus undefined.
+///
+/// ### Associated Gets
+/// [**glGetBufferSubData**](crate::context::Context::oxidegl_get_buffer_sub_data)
+///
+/// [**glGetBufferParameter**](crate::context::Context::oxidegl_get_buffer_parameter)
+/// with argument [`GL_BUFFER_SIZE`](crate::enums::GL_BUFFER_SIZE) or [`GL_BUFFER_USAGE`](crate::enums::GL_BUFFER_USAGE)
+impl Context {
+    pub unsafe fn oxidegl_buffer_storage(
+        &mut self,
+        target: BufferStorageTarget,
+        size: GLsizeiptr,
+        data: *const GLvoid,
+        flags: BufferStorageMask,
+    ) {
+        panic!("command oxidegl_buffer_storage not yet implemented");
+    }
+    pub unsafe fn oxidegl_named_buffer_storage(
+        &mut self,
+        buffer: GLuint,
+        size: GLsizeiptr,
+        data: *const GLvoid,
+        flags: BufferStorageMask,
+    ) {
+        panic!("command oxidegl_named_buffer_storage not yet implemented");
+    }
+}
+impl Context {
+    unsafe fn buffer_storage_internal(
+        &mut self,
+        // Not the right place to use MaybeObjectName because we need to abstract out which binding point this buffer is bound to (if any)
+        name: ObjectName<Buffer>,
+        size: GLsizeiptr,
+        data: *const GLvoid,
+        flags: BufferStorageMask,
+    ) {
+        self.gl_state
+            .buffer_list
+            .get_mut(name)
+            .expect("UB: buffer name not present in buffer list!");
+
+        assert!(size >= 0, "UB: Tried to create buffer with negative length");
+        #[allow(clippy::cast_sign_loss)]
+        let size = size as usize;
+        // TODO: lower-coherence storage modes (StorageModeManaged or single-upload StorageModePrivate).
+        // Shared backing buffers are going to annihilate perf with larger buffers
+        let options = MTLResourceOptions::MTLResourceStorageModeShared;
+
+        let maybe_ptr = NonNull::new(data.cast_mut());
+
+        let buffer;
+        if let Some(ptr) = maybe_ptr {
+            // Safety: caller ensures pointer validity, and that the slice implicitly formed by (data, size) is correctly initialized
+            buffer = unsafe {
+                self.platform_state
+                    .metal
+                    .device
+                    .newBufferWithBytes_length_options(ptr, size, options)
+            };
+        } else {
+            buffer = self
+                .platform_state
+                .metal
+                .device
+                .newBufferWithLength_options(size, options);
+        };
+        let buffer = buffer.expect("INTERNAL ERROR: Metal Buffer allocation failed");
+    }
+}
 
 impl Context {
-    fn oxidegl_bind_buffer_internal<I: IndexType>(
+    #[inline]
+    pub(crate) fn get_buffer_binding_mut<I: IndexType>(
+        &mut self,
+        target: BufferTarget,
+        idx: I,
+    ) -> &mut Option<ObjectName<Buffer>> {
+        match target {
+            BufferTarget::UniformBuffer => {
+                &mut self.gl_state.buffer_bindings.uniform[idx.get_numeric()]
+            }
+            BufferTarget::AtomicCounterBuffer => {
+                &mut self.gl_state.buffer_bindings.atomic_counter[idx.get_numeric()]
+            }
+            BufferTarget::ShaderStorageBuffer => {
+                &mut self.gl_state.buffer_bindings.shader_storage[idx.get_numeric()]
+            }
+            BufferTarget::TransformFeedbackBuffer => {
+                &mut self.gl_state.buffer_bindings.transform_feedback[idx.get_numeric()]
+            }
+            t => {
+                debug_assert!(
+                    idx.get().is_none(),
+                    "UB: Tried to bind at an index of a non-indexed binding target"
+                );
+                match t {
+                    BufferTarget::ArrayBuffer => &mut self.gl_state.buffer_bindings.array,
+                    BufferTarget::ElementArrayBuffer => {
+                        &mut self.gl_state.buffer_bindings.element_array
+                    }
+                    BufferTarget::PixelPackBuffer => &mut self.gl_state.buffer_bindings.pixel_pack,
+                    BufferTarget::PixelUnpackBuffer => {
+                        &mut self.gl_state.buffer_bindings.pixel_unpack
+                    }
+                    BufferTarget::TextureBuffer => &mut self.gl_state.buffer_bindings.texture,
+                    BufferTarget::CopyReadBuffer => &mut self.gl_state.buffer_bindings.copy_read,
+                    BufferTarget::CopyWriteBuffer => &mut self.gl_state.buffer_bindings.copy_write,
+                    BufferTarget::DrawIndirectBuffer => {
+                        &mut self.gl_state.buffer_bindings.draw_indirect
+                    }
+                    BufferTarget::DispatchIndirectBuffer => {
+                        &mut self.gl_state.buffer_bindings.dispatch_indirect
+                    }
+                    BufferTarget::QueryBuffer => &mut self.gl_state.buffer_bindings.query,
+                    BufferTarget::ParameterBuffer => &mut self.gl_state.buffer_bindings.parameter,
+                    #[allow(unused_unsafe)]
+                    // Safety: all other variants are covered
+                    _ => unsafe { debug_unreachable!() },
+                }
+            }
+        }
+    }
+    pub(crate) fn bind_buffer_internal<I: IndexType>(
         &mut self,
         to_bind: Option<ObjectName<Buffer>>,
         target: BufferTarget,
@@ -323,50 +589,8 @@ impl Context {
                 "UB: Tried to bind an uninitialized buffer name to a VAO"
             );
         }
+        let r = self.get_buffer_binding_mut(target, idx);
 
-        let bindings = &mut self.gl_state.buffer_bindings;
-        let r = match target {
-            // Safety: Caller ensures idx is in-bounds for indexed targets
-            BufferTarget::UniformBuffer => unsafe {
-                bindings.uniform.get_unchecked_mut(idx.get_numeric())
-            },
-            //Safety: see above
-            BufferTarget::AtomicCounterBuffer => unsafe {
-                bindings.atomic_counter.get_unchecked_mut(idx.get_numeric())
-            },
-            //Safety: see above
-            BufferTarget::ShaderStorageBuffer => unsafe {
-                bindings.shader_storage.get_unchecked_mut(idx.get_numeric())
-            },
-            //Safety: see above
-            BufferTarget::TransformFeedbackBuffer => unsafe {
-                bindings
-                    .transform_feedback
-                    .get_unchecked_mut(idx.get_numeric())
-            },
-            t => {
-                debug_assert!(
-                    idx.get().is_none(),
-                    "UB: Tried to bind at an index of a non-indexed binding target"
-                );
-                &mut match t {
-                    BufferTarget::ArrayBuffer => bindings.array,
-                    BufferTarget::ElementArrayBuffer => bindings.element_array,
-                    BufferTarget::PixelPackBuffer => bindings.pixel_pack,
-                    BufferTarget::PixelUnpackBuffer => bindings.pixel_unpack,
-                    BufferTarget::TextureBuffer => bindings.texture,
-                    BufferTarget::CopyReadBuffer => bindings.copy_read,
-                    BufferTarget::CopyWriteBuffer => bindings.copy_write,
-                    BufferTarget::DrawIndirectBuffer => bindings.draw_indirect,
-                    BufferTarget::DispatchIndirectBuffer => bindings.dispatch_indirect,
-                    BufferTarget::QueryBuffer => bindings.query,
-                    BufferTarget::ParameterBuffer => bindings.parameter,
-                    #[allow(unused_unsafe)]
-                    // Safety: all other variants are covered
-                    _ => unsafe { debug_unreachable!() },
-                }
-            }
-        };
         *r = to_bind;
         debug!("bound buffer {to_bind:?} to target {target:?} at index {idx:?}");
     }

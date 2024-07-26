@@ -12,8 +12,8 @@ pub struct PlatformState {
 }
 #[derive(Debug, Clone)]
 pub struct MetalComponents {
-    device: Retained<ProtocolObject<dyn MTLDevice>>,
-    layer: Retained<CAMetalLayer>,
+    pub device: Retained<ProtocolObject<dyn MTLDevice>>,
+    pub layer: Retained<CAMetalLayer>,
 }
 #[allow(clippy::undocumented_unsafe_blocks)]
 impl MetalComponents {

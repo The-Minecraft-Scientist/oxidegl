@@ -1069,6 +1069,7 @@ impl Context {
                 .expect("UB: vertex attrib not present after initialization in Vertex*Pointer");
             u32::from(attrib.compute_stride())
         };
+        #[allow(clippy::cast_possible_wrap)]
         self.oxidegl_bind_vertex_buffer(
             index,
             self.gl_state
