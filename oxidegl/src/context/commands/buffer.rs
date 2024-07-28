@@ -466,7 +466,15 @@ impl Context {
         data: *const GLvoid,
         flags: BufferStorageMask,
     ) {
-        panic!("command oxidegl_buffer_storage not yet implemented");
+        let binding = self
+            .get_buffer_binding_mut(
+                // Safety: BufferStorageTarget has the same set of valid values as BufferTarget
+                unsafe { core::mem::transmute::<BufferStorageTarget, BufferTarget>(target) },
+                NoIndex,
+            )
+            .expect("UB: tried to allocate storage for an unbound buffer binding");
+        // Safety: Caller ensures data pointer is correctly initialized
+        unsafe { self.buffer_storage_internal(binding, size, data, flags) };
     }
     pub unsafe fn oxidegl_named_buffer_storage(
         &mut self,
@@ -475,7 +483,13 @@ impl Context {
         data: *const GLvoid,
         flags: BufferStorageMask,
     ) {
-        panic!("command oxidegl_named_buffer_storage not yet implemented");
+        let name =
+            ObjectName::from_raw(buffer).expect("UB: Tried to allocate storage for buffer name 0");
+        debug!("Allocated {size} byte storage for {name:?}, initialized with ptr {data:?}");
+        // Safety: Caller ensures data pointer is correctly initialized
+        unsafe {
+            self.buffer_storage_internal(name, size, data, flags);
+        }
     }
 }
 impl Context {

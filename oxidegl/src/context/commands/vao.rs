@@ -364,7 +364,7 @@ impl Context {
         let vao = self
             .get_vao(vao)
             .expect("UB: Tried to bind a vertex buffer to unbound VAO");
-
+        let vao_name = vao.name;
         let mut bindingindex = idx;
         for (&name, (&offset, &stride)) in buffers.iter().zip(offsets.iter().zip(strides.iter())) {
             let r = vao.get_binding_mut(bindingindex);
@@ -372,6 +372,7 @@ impl Context {
                 stride <= MAX_VERTEX_ATTRIBUTE_STRIDE as u32,
                 "UB: Tried to bind vertex attribute buffer with too large of a stride"
             );
+            debug!("bound {name:?} to {:?} at binding index {bindingindex} with offset {offset} and stride {stride}", vao_name);
             r.buf = name;
             r.offset = offset as usize;
             r.stride = stride as u16;
@@ -570,6 +571,7 @@ impl Context {
             },
             "UB: Bound a non-zero invalid VAO name to the current vao bind point"
         );
+        debug!("bound {name:?}");
         self.gl_state.vao_binding = name;
     }
 
@@ -766,17 +768,21 @@ impl Context {
         attrib_index: u32,
         binding_index: u32,
     ) {
-        debug_assert!(
+        assert!(
             (attrib_index as usize) < MAX_VERTEX_ATTRIBUTES,
             "UB: out of bounds attribute index"
         );
-        debug_assert!(
+        assert!(
             (binding_index as usize) < MAX_VERTEX_ATTRIB_BUFFER_BINDINGS,
             "UB: out of bounds attribute buffer binding index"
         );
         let vao = self
             .get_vao(vao)
             .expect("UB: Tried to set attribute/buffer bindings on a nonexistent VAO");
+        debug!(
+            "binding vertex attribute index {attrib_index} to {:?} buffer binding {binding_index}",
+            vao.name
+        );
         if let Some(a) = vao.attribs[attrib_index as usize].as_mut() {
             a.buffer_idx = binding_index as u8;
         }
@@ -839,6 +845,7 @@ impl Context {
         let vao = self
             .get_vao(vao)
             .expect("UB: Tried to set attribute divisor on an uninitialized or unbound VAO");
+        debug!("setting vertex attribute binding divisor at buffer binding index {binding_index} to {divisor}");
         vao.get_binding_mut(binding_index).divisor = NonZeroU32::new(divisor);
     }
 }

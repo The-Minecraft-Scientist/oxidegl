@@ -4,4 +4,5 @@ generated
 /Cargo.lock
 *.DS_Store
 *install.sh
-bin
+/tests/HelloTriangle/bin/*
+*.log

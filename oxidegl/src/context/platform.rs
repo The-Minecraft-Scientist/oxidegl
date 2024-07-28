@@ -44,7 +44,7 @@ impl MetalComponents {
 
         unsafe { view.setLayer(Some(&layer)) };
         view.setWantsLayer(true);
-        debug!("OxideGL got device: {}", device.name());
+        debug!("OxideGL got Metal device: {}", device.name());
         Self { device, layer }
     }
 }

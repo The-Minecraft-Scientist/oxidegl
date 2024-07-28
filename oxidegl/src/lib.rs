@@ -77,3 +77,7 @@ impl<T> OptionResultExt<T> for Option<T> {
         return unsafe { self.unwrap_unchecked() };
     }
 }
+
+pub fn type_name<T>() -> &'static str {
+    std::any::type_name::<T>().split("::").last().unwrap()
+}

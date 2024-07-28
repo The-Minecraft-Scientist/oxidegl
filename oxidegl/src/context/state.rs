@@ -1,4 +1,4 @@
-use std::{any::type_name, marker::PhantomData, num::NonZeroU32};
+use std::{marker::PhantomData, num::NonZeroU32};
 
 use bitflags::bitflags;
 use log::debug;
@@ -13,6 +13,7 @@ use crate::{
         ClearBufferMask, GL_CONTEXT_CORE_PROFILE_BIT, GL_CONTEXT_FLAG_FORWARD_COMPATIBLE_BIT,
         GL_CONTEXT_FLAG_NO_ERROR_BIT,
     },
+    type_name,
 };
 
 use super::commands::{buffer::Buffer, vao::Vao};
@@ -145,7 +146,7 @@ impl<T> Clone for ObjectName<T> {
 }
 impl<Obj> core::fmt::Debug for ObjectName<Obj> {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        f.pad(&format!("{} Name: {}", type_name::<Obj>(), self.0.get()))
+        f.pad(&format!("{} #{}", type_name::<Obj>(), self.0.get()))
     }
 }
 impl<T> Copy for ObjectName<T> {}
@@ -299,7 +300,7 @@ impl<Obj: NamedObject> NamedObjectList<Obj> {
             .flatten()
         {
             self.delete(name);
-            debug!("deleted {} {name:?}", type_name::<Obj>());
+            debug!(target: "object alloc", "deleted {} {name:?}", type_name::<Obj>());
         }
     }
     #[inline]
@@ -309,7 +310,7 @@ impl<Obj: NamedObject> NamedObjectList<Obj> {
             names.is_aligned(),
             "UB: object name array pointer was not sufficiently aligned"
         );
-        debug!("writing {n} new {} names to {names:?}", type_name::<Obj>());
+        debug!(target: "object alloc", "writing {n} new {} names to {names:?}", type_name::<Obj>());
         let mut names = names.cast();
         for _ in 0..n {
             let name = self.new_name();
@@ -332,6 +333,7 @@ impl<Obj: NamedObject> NamedObjectList<Obj> {
             "UB: object name array pointer was not sufficiently aligned"
         );
         debug!(
+            target: "object alloc",
             "writing {n} new initialized {} names to {names:?}",
             type_name::<Obj>()
         );

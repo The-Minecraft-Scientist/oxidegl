@@ -43,7 +43,10 @@ ahash = "0.8.11"
 concat-idents = "1.1.5"
 # FromRepr used for checked GLenum wrapper creation
 strum_macros = "0.26.3"
+# Used for const str/[u8] appending for commit hash/version constants
 constcat = "0.5.0"
+# Used for glsl/spv -> MSL shader conversion
+naga = { version = "22.0.0", features = ["glsl-in", "spv-in", "msl-out"] }
 
 # Expose max log level features
 [features]
