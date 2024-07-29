@@ -1417,7 +1417,7 @@ impl From<TextureTarget> for u32 {
     }
 }
 impl<Dst: GlDstType> SrcType<Dst> for TextureTarget {
-    fn cast(self) -> Dst {
+    fn convert(self) -> Dst {
         Dst::from_uint(self as u32)
     }
 }
@@ -1447,7 +1447,7 @@ impl From<FrontFaceDirection> for u32 {
     }
 }
 impl<Dst: GlDstType> SrcType<Dst> for FrontFaceDirection {
-    fn cast(self) -> Dst {
+    fn convert(self) -> Dst {
         Dst::from_uint(self as u32)
     }
 }
@@ -1551,7 +1551,7 @@ impl From<UniformType> for u32 {
     }
 }
 impl<Dst: GlDstType> SrcType<Dst> for UniformType {
-    fn cast(self) -> Dst {
+    fn convert(self) -> Dst {
         Dst::from_uint(self as u32)
     }
 }
@@ -1590,7 +1590,7 @@ impl From<PrimitiveType> for u32 {
     }
 }
 impl<Dst: GlDstType> SrcType<Dst> for PrimitiveType {
-    fn cast(self) -> Dst {
+    fn convert(self) -> Dst {
         Dst::from_uint(self as u32)
     }
 }
@@ -1618,7 +1618,7 @@ impl From<ProgramParameterPName> for u32 {
     }
 }
 impl<Dst: GlDstType> SrcType<Dst> for ProgramParameterPName {
-    fn cast(self) -> Dst {
+    fn convert(self) -> Dst {
         Dst::from_uint(self as u32)
     }
 }
@@ -1679,7 +1679,7 @@ impl From<FramebufferAttachment> for u32 {
     }
 }
 impl<Dst: GlDstType> SrcType<Dst> for FramebufferAttachment {
-    fn cast(self) -> Dst {
+    fn convert(self) -> Dst {
         Dst::from_uint(self as u32)
     }
 }
@@ -1714,7 +1714,7 @@ impl From<BufferPName> for u32 {
     }
 }
 impl<Dst: GlDstType> SrcType<Dst> for BufferPName {
-    fn cast(self) -> Dst {
+    fn convert(self) -> Dst {
         Dst::from_uint(self as u32)
     }
 }
@@ -1750,7 +1750,7 @@ impl From<MapBufferAccessMask> for u32 {
     }
 }
 impl<Dst: GlDstType> SrcType<Dst> for MapBufferAccessMask {
-    fn cast(self) -> Dst {
+    fn convert(self) -> Dst {
         Dst::from_uint(self.bits())
     }
 }
@@ -1780,7 +1780,7 @@ impl From<VertexProvokingMode> for u32 {
     }
 }
 impl<Dst: GlDstType> SrcType<Dst> for VertexProvokingMode {
-    fn cast(self) -> Dst {
+    fn convert(self) -> Dst {
         Dst::from_uint(self as u32)
     }
 }
@@ -1850,7 +1850,7 @@ impl From<DrawBufferMode> for u32 {
     }
 }
 impl<Dst: GlDstType> SrcType<Dst> for DrawBufferMode {
-    fn cast(self) -> Dst {
+    fn convert(self) -> Dst {
         Dst::from_uint(self as u32)
     }
 }
@@ -1893,7 +1893,7 @@ impl From<AtomicCounterBufferPName> for u32 {
     }
 }
 impl<Dst: GlDstType> SrcType<Dst> for AtomicCounterBufferPName {
-    fn cast(self) -> Dst {
+    fn convert(self) -> Dst {
         Dst::from_uint(self as u32)
     }
 }
@@ -1922,7 +1922,7 @@ impl From<Buffer> for u32 {
     }
 }
 impl<Dst: GlDstType> SrcType<Dst> for Buffer {
-    fn cast(self) -> Dst {
+    fn convert(self) -> Dst {
         Dst::from_uint(self as u32)
     }
 }
@@ -1962,7 +1962,7 @@ impl From<GetTextureParameter> for u32 {
     }
 }
 impl<Dst: GlDstType> SrcType<Dst> for GetTextureParameter {
-    fn cast(self) -> Dst {
+    fn convert(self) -> Dst {
         Dst::from_uint(self as u32)
     }
 }
@@ -1993,7 +1993,7 @@ impl From<FramebufferParameterName> for u32 {
     }
 }
 impl<Dst: GlDstType> SrcType<Dst> for FramebufferParameterName {
-    fn cast(self) -> Dst {
+    fn convert(self) -> Dst {
         Dst::from_uint(self as u32)
     }
 }
@@ -2024,7 +2024,7 @@ impl From<DrawElementsType> for u32 {
     }
 }
 impl<Dst: GlDstType> SrcType<Dst> for DrawElementsType {
-    fn cast(self) -> Dst {
+    fn convert(self) -> Dst {
         Dst::from_uint(self as u32)
     }
 }
@@ -2053,7 +2053,7 @@ impl From<BufferAccess> for u32 {
     }
 }
 impl<Dst: GlDstType> SrcType<Dst> for BufferAccess {
-    fn cast(self) -> Dst {
+    fn convert(self) -> Dst {
         Dst::from_uint(self as u32)
     }
 }
@@ -2084,7 +2084,7 @@ impl From<PatchParameterName> for u32 {
     }
 }
 impl<Dst: GlDstType> SrcType<Dst> for PatchParameterName {
-    fn cast(self) -> Dst {
+    fn convert(self) -> Dst {
         Dst::from_uint(self as u32)
     }
 }
@@ -2114,7 +2114,7 @@ impl From<ClipControlDepth> for u32 {
     }
 }
 impl<Dst: GlDstType> SrcType<Dst> for ClipControlDepth {
-    fn cast(self) -> Dst {
+    fn convert(self) -> Dst {
         Dst::from_uint(self as u32)
     }
 }
@@ -2149,7 +2149,7 @@ impl From<UseProgramStageMask> for u32 {
     }
 }
 impl<Dst: GlDstType> SrcType<Dst> for UseProgramStageMask {
-    fn cast(self) -> Dst {
+    fn convert(self) -> Dst {
         Dst::from_uint(self.bits())
     }
 }
@@ -2179,7 +2179,7 @@ impl From<GetPointervPName> for u32 {
     }
 }
 impl<Dst: GlDstType> SrcType<Dst> for GetPointervPName {
-    fn cast(self) -> Dst {
+    fn convert(self) -> Dst {
         Dst::from_uint(self as u32)
     }
 }
@@ -2455,7 +2455,7 @@ impl From<GetPName> for u32 {
     }
 }
 impl<Dst: GlDstType> SrcType<Dst> for GetPName {
-    fn cast(self) -> Dst {
+    fn convert(self) -> Dst {
         Dst::from_uint(self as u32)
     }
 }
@@ -2497,7 +2497,7 @@ impl From<LogicOp> for u32 {
     }
 }
 impl<Dst: GlDstType> SrcType<Dst> for LogicOp {
-    fn cast(self) -> Dst {
+    fn convert(self) -> Dst {
         Dst::from_uint(self as u32)
     }
 }
@@ -2531,7 +2531,7 @@ impl From<StencilOp> for u32 {
     }
 }
 impl<Dst: GlDstType> SrcType<Dst> for StencilOp {
-    fn cast(self) -> Dst {
+    fn convert(self) -> Dst {
         Dst::from_uint(self as u32)
     }
 }
@@ -2565,7 +2565,7 @@ impl From<BufferStorageMask> for u32 {
     }
 }
 impl<Dst: GlDstType> SrcType<Dst> for BufferStorageMask {
-    fn cast(self) -> Dst {
+    fn convert(self) -> Dst {
         Dst::from_uint(self.bits())
     }
 }
@@ -2596,7 +2596,7 @@ impl From<StringName> for u32 {
     }
 }
 impl<Dst: GlDstType> SrcType<Dst> for StringName {
-    fn cast(self) -> Dst {
+    fn convert(self) -> Dst {
         Dst::from_uint(self as u32)
     }
 }
@@ -2627,7 +2627,7 @@ impl From<ClearBufferMask> for u32 {
     }
 }
 impl<Dst: GlDstType> SrcType<Dst> for ClearBufferMask {
-    fn cast(self) -> Dst {
+    fn convert(self) -> Dst {
         Dst::from_uint(self.bits())
     }
 }
@@ -2655,7 +2655,7 @@ impl From<TransformFeedbackBufferMode> for u32 {
     }
 }
 impl<Dst: GlDstType> SrcType<Dst> for TransformFeedbackBufferMode {
-    fn cast(self) -> Dst {
+    fn convert(self) -> Dst {
         Dst::from_uint(self as u32)
     }
 }
@@ -2685,7 +2685,7 @@ impl From<QueryObjectParameterName> for u32 {
     }
 }
 impl<Dst: GlDstType> SrcType<Dst> for QueryObjectParameterName {
-    fn cast(self) -> Dst {
+    fn convert(self) -> Dst {
         Dst::from_uint(self as u32)
     }
 }
@@ -2720,7 +2720,7 @@ impl From<SamplerParameterI> for u32 {
     }
 }
 impl<Dst: GlDstType> SrcType<Dst> for SamplerParameterI {
-    fn cast(self) -> Dst {
+    fn convert(self) -> Dst {
         Dst::from_uint(self as u32)
     }
 }
@@ -2840,7 +2840,7 @@ impl From<SizedInternalFormat> for u32 {
     }
 }
 impl<Dst: GlDstType> SrcType<Dst> for SizedInternalFormat {
-    fn cast(self) -> Dst {
+    fn convert(self) -> Dst {
         Dst::from_uint(self as u32)
     }
 }
@@ -2879,7 +2879,7 @@ impl From<VertexAttribPointerType> for u32 {
     }
 }
 impl<Dst: GlDstType> SrcType<Dst> for VertexAttribPointerType {
-    fn cast(self) -> Dst {
+    fn convert(self) -> Dst {
         Dst::from_uint(self as u32)
     }
 }
@@ -2916,7 +2916,7 @@ impl From<GetFramebufferParameter> for u32 {
     }
 }
 impl<Dst: GlDstType> SrcType<Dst> for GetFramebufferParameter {
-    fn cast(self) -> Dst {
+    fn convert(self) -> Dst {
         Dst::from_uint(self as u32)
     }
 }
@@ -2953,7 +2953,7 @@ impl From<CopyImageSubDataTarget> for u32 {
     }
 }
 impl<Dst: GlDstType> SrcType<Dst> for CopyImageSubDataTarget {
-    fn cast(self) -> Dst {
+    fn convert(self) -> Dst {
         Dst::from_uint(self as u32)
     }
 }
@@ -3021,7 +3021,7 @@ impl From<ColorBuffer> for u32 {
     }
 }
 impl<Dst: GlDstType> SrcType<Dst> for ColorBuffer {
-    fn cast(self) -> Dst {
+    fn convert(self) -> Dst {
         Dst::from_uint(self as u32)
     }
 }
@@ -3061,7 +3061,7 @@ impl From<CopyBufferSubDataTarget> for u32 {
     }
 }
 impl<Dst: GlDstType> SrcType<Dst> for CopyBufferSubDataTarget {
-    fn cast(self) -> Dst {
+    fn convert(self) -> Dst {
         Dst::from_uint(self as u32)
     }
 }
@@ -3095,7 +3095,7 @@ impl From<DepthFunction> for u32 {
     }
 }
 impl<Dst: GlDstType> SrcType<Dst> for DepthFunction {
-    fn cast(self) -> Dst {
+    fn convert(self) -> Dst {
         Dst::from_uint(self as u32)
     }
 }
@@ -3148,7 +3148,7 @@ impl From<ReadBufferMode> for u32 {
     }
 }
 impl<Dst: GlDstType> SrcType<Dst> for ReadBufferMode {
-    fn cast(self) -> Dst {
+    fn convert(self) -> Dst {
         Dst::from_uint(self as u32)
     }
 }
@@ -3179,7 +3179,7 @@ impl From<HintTarget> for u32 {
     }
 }
 impl<Dst: GlDstType> SrcType<Dst> for HintTarget {
-    fn cast(self) -> Dst {
+    fn convert(self) -> Dst {
         Dst::from_uint(self as u32)
     }
 }
@@ -3209,7 +3209,7 @@ impl From<SubroutineParameterName> for u32 {
     }
 }
 impl<Dst: GlDstType> SrcType<Dst> for SubroutineParameterName {
-    fn cast(self) -> Dst {
+    fn convert(self) -> Dst {
         Dst::from_uint(self as u32)
     }
 }
@@ -3237,7 +3237,7 @@ impl From<BlitFramebufferFilter> for u32 {
     }
 }
 impl<Dst: GlDstType> SrcType<Dst> for BlitFramebufferFilter {
-    fn cast(self) -> Dst {
+    fn convert(self) -> Dst {
         Dst::from_uint(self as u32)
     }
 }
@@ -3266,7 +3266,7 @@ impl From<TriangleFace> for u32 {
     }
 }
 impl<Dst: GlDstType> SrcType<Dst> for TriangleFace {
-    fn cast(self) -> Dst {
+    fn convert(self) -> Dst {
         Dst::from_uint(self as u32)
     }
 }
@@ -3303,7 +3303,7 @@ impl From<VertexArrayPName> for u32 {
     }
 }
 impl<Dst: GlDstType> SrcType<Dst> for VertexArrayPName {
-    fn cast(self) -> Dst {
+    fn convert(self) -> Dst {
         Dst::from_uint(self as u32)
     }
 }
@@ -3351,7 +3351,7 @@ impl From<PixelFormat> for u32 {
     }
 }
 impl<Dst: GlDstType> SrcType<Dst> for PixelFormat {
-    fn cast(self) -> Dst {
+    fn convert(self) -> Dst {
         Dst::from_uint(self as u32)
     }
 }
@@ -3385,7 +3385,7 @@ impl From<VertexAttribIType> for u32 {
     }
 }
 impl<Dst: GlDstType> SrcType<Dst> for VertexAttribIType {
-    fn cast(self) -> Dst {
+    fn convert(self) -> Dst {
         Dst::from_uint(self as u32)
     }
 }
@@ -3427,7 +3427,7 @@ impl From<BufferStorageTarget> for u32 {
     }
 }
 impl<Dst: GlDstType> SrcType<Dst> for BufferStorageTarget {
-    fn cast(self) -> Dst {
+    fn convert(self) -> Dst {
         Dst::from_uint(self as u32)
     }
 }
@@ -3458,7 +3458,7 @@ impl From<BlendEquationModeEXT> for u32 {
     }
 }
 impl<Dst: GlDstType> SrcType<Dst> for BlendEquationModeEXT {
-    fn cast(self) -> Dst {
+    fn convert(self) -> Dst {
         Dst::from_uint(self as u32)
     }
 }
@@ -3494,7 +3494,7 @@ impl From<RenderbufferParameterName> for u32 {
     }
 }
 impl<Dst: GlDstType> SrcType<Dst> for RenderbufferParameterName {
-    fn cast(self) -> Dst {
+    fn convert(self) -> Dst {
         Dst::from_uint(self as u32)
     }
 }
@@ -3535,7 +3535,7 @@ impl From<BufferTarget> for u32 {
     }
 }
 impl<Dst: GlDstType> SrcType<Dst> for BufferTarget {
-    fn cast(self) -> Dst {
+    fn convert(self) -> Dst {
         Dst::from_uint(self as u32)
     }
 }
@@ -3568,7 +3568,7 @@ impl From<ProgramStagePName> for u32 {
     }
 }
 impl<Dst: GlDstType> SrcType<Dst> for ProgramStagePName {
-    fn cast(self) -> Dst {
+    fn convert(self) -> Dst {
         Dst::from_uint(self as u32)
     }
 }
@@ -3598,7 +3598,7 @@ impl From<ProgramInterfacePName> for u32 {
     }
 }
 impl<Dst: GlDstType> SrcType<Dst> for ProgramInterfacePName {
-    fn cast(self) -> Dst {
+    fn convert(self) -> Dst {
         Dst::from_uint(self as u32)
     }
 }
@@ -3635,7 +3635,7 @@ impl From<VertexAttribEnum> for u32 {
     }
 }
 impl<Dst: GlDstType> SrcType<Dst> for VertexAttribEnum {
-    fn cast(self) -> Dst {
+    fn convert(self) -> Dst {
         Dst::from_uint(self as u32)
     }
 }
@@ -3673,7 +3673,7 @@ impl From<VertexAttribProperty> for u32 {
     }
 }
 impl<Dst: GlDstType> SrcType<Dst> for VertexAttribProperty {
-    fn cast(self) -> Dst {
+    fn convert(self) -> Dst {
         Dst::from_uint(self as u32)
     }
 }
@@ -3771,7 +3771,7 @@ impl From<InternalFormatPName> for u32 {
     }
 }
 impl<Dst: GlDstType> SrcType<Dst> for InternalFormatPName {
-    fn cast(self) -> Dst {
+    fn convert(self) -> Dst {
         Dst::from_uint(self as u32)
     }
 }
@@ -3800,7 +3800,7 @@ impl From<PolygonMode> for u32 {
     }
 }
 impl<Dst: GlDstType> SrcType<Dst> for PolygonMode {
-    fn cast(self) -> Dst {
+    fn convert(self) -> Dst {
         Dst::from_uint(self as u32)
     }
 }
@@ -3848,7 +3848,7 @@ impl From<ProgramInterface> for u32 {
     }
 }
 impl<Dst: GlDstType> SrcType<Dst> for ProgramInterface {
-    fn cast(self) -> Dst {
+    fn convert(self) -> Dst {
         Dst::from_uint(self as u32)
     }
 }
@@ -3901,7 +3901,7 @@ impl From<TextureParameterName> for u32 {
     }
 }
 impl<Dst: GlDstType> SrcType<Dst> for TextureParameterName {
-    fn cast(self) -> Dst {
+    fn convert(self) -> Dst {
         Dst::from_uint(self as u32)
     }
 }
@@ -3949,7 +3949,7 @@ impl From<ProgramProperty> for u32 {
     }
 }
 impl<Dst: GlDstType> SrcType<Dst> for ProgramProperty {
-    fn cast(self) -> Dst {
+    fn convert(self) -> Dst {
         Dst::from_uint(self as u32)
     }
 }
@@ -4015,7 +4015,7 @@ impl From<EnableCap> for u32 {
     }
 }
 impl<Dst: GlDstType> SrcType<Dst> for EnableCap {
-    fn cast(self) -> Dst {
+    fn convert(self) -> Dst {
         Dst::from_uint(self as u32)
     }
 }
@@ -4150,7 +4150,7 @@ impl From<InternalFormat> for u32 {
     }
 }
 impl<Dst: GlDstType> SrcType<Dst> for InternalFormat {
-    fn cast(self) -> Dst {
+    fn convert(self) -> Dst {
         Dst::from_uint(self as u32)
     }
 }
@@ -4191,7 +4191,7 @@ impl From<VertexAttribType> for u32 {
     }
 }
 impl<Dst: GlDstType> SrcType<Dst> for VertexAttribType {
-    fn cast(self) -> Dst {
+    fn convert(self) -> Dst {
         Dst::from_uint(self as u32)
     }
 }
@@ -4230,7 +4230,7 @@ impl From<ObjectIdentifier> for u32 {
     }
 }
 impl<Dst: GlDstType> SrcType<Dst> for ObjectIdentifier {
-    fn cast(self) -> Dst {
+    fn convert(self) -> Dst {
         Dst::from_uint(self as u32)
     }
 }
@@ -4293,7 +4293,7 @@ impl From<InvalidateFramebufferAttachment> for u32 {
     }
 }
 impl<Dst: GlDstType> SrcType<Dst> for InvalidateFramebufferAttachment {
-    fn cast(self) -> Dst {
+    fn convert(self) -> Dst {
         Dst::from_uint(self as u32)
     }
 }
@@ -4322,7 +4322,7 @@ impl From<HintMode> for u32 {
     }
 }
 impl<Dst: GlDstType> SrcType<Dst> for HintMode {
-    fn cast(self) -> Dst {
+    fn convert(self) -> Dst {
         Dst::from_uint(self as u32)
     }
 }
@@ -4369,7 +4369,7 @@ impl From<BlendingFactor> for u32 {
     }
 }
 impl<Dst: GlDstType> SrcType<Dst> for BlendingFactor {
-    fn cast(self) -> Dst {
+    fn convert(self) -> Dst {
         Dst::from_uint(self as u32)
     }
 }
@@ -4399,7 +4399,7 @@ impl From<ClipControlOrigin> for u32 {
     }
 }
 impl<Dst: GlDstType> SrcType<Dst> for ClipControlOrigin {
-    fn cast(self) -> Dst {
+    fn convert(self) -> Dst {
         Dst::from_uint(self as u32)
     }
 }
@@ -4433,7 +4433,7 @@ impl From<ConditionalRenderMode> for u32 {
     }
 }
 impl<Dst: GlDstType> SrcType<Dst> for ConditionalRenderMode {
-    fn cast(self) -> Dst {
+    fn convert(self) -> Dst {
         Dst::from_uint(self as u32)
     }
 }
@@ -4464,7 +4464,7 @@ impl From<FramebufferTarget> for u32 {
     }
 }
 impl<Dst: GlDstType> SrcType<Dst> for FramebufferTarget {
-    fn cast(self) -> Dst {
+    fn convert(self) -> Dst {
         Dst::from_uint(self as u32)
     }
 }
@@ -4499,7 +4499,7 @@ impl From<VertexBufferObjectUsage> for u32 {
     }
 }
 impl<Dst: GlDstType> SrcType<Dst> for VertexBufferObjectUsage {
-    fn cast(self) -> Dst {
+    fn convert(self) -> Dst {
         Dst::from_uint(self as u32)
     }
 }
@@ -4532,7 +4532,7 @@ impl From<PipelineParameterName> for u32 {
     }
 }
 impl<Dst: GlDstType> SrcType<Dst> for PipelineParameterName {
-    fn cast(self) -> Dst {
+    fn convert(self) -> Dst {
         Dst::from_uint(self as u32)
     }
 }
@@ -4572,7 +4572,7 @@ impl From<FramebufferAttachmentParameterName> for u32 {
     }
 }
 impl<Dst: GlDstType> SrcType<Dst> for FramebufferAttachmentParameterName {
-    fn cast(self) -> Dst {
+    fn convert(self) -> Dst {
         Dst::from_uint(self as u32)
     }
 }
@@ -4605,7 +4605,7 @@ impl From<SamplerParameterF> for u32 {
     }
 }
 impl<Dst: GlDstType> SrcType<Dst> for SamplerParameterF {
-    fn cast(self) -> Dst {
+    fn convert(self) -> Dst {
         Dst::from_uint(self as u32)
     }
 }
@@ -4645,7 +4645,7 @@ impl From<UniformBlockPName> for u32 {
     }
 }
 impl<Dst: GlDstType> SrcType<Dst> for UniformBlockPName {
-    fn cast(self) -> Dst {
+    fn convert(self) -> Dst {
         Dst::from_uint(self as u32)
     }
 }
@@ -4677,7 +4677,7 @@ impl From<SyncParameterName> for u32 {
     }
 }
 impl<Dst: GlDstType> SrcType<Dst> for SyncParameterName {
-    fn cast(self) -> Dst {
+    fn convert(self) -> Dst {
         Dst::from_uint(self as u32)
     }
 }
@@ -4713,7 +4713,7 @@ impl From<StencilFunction> for u32 {
     }
 }
 impl<Dst: GlDstType> SrcType<Dst> for StencilFunction {
-    fn cast(self) -> Dst {
+    fn convert(self) -> Dst {
         Dst::from_uint(self as u32)
     }
 }
@@ -4744,7 +4744,7 @@ impl From<DebugSeverity> for u32 {
     }
 }
 impl<Dst: GlDstType> SrcType<Dst> for DebugSeverity {
-    fn cast(self) -> Dst {
+    fn convert(self) -> Dst {
         Dst::from_uint(self as u32)
     }
 }
@@ -4800,7 +4800,7 @@ impl From<ProgramResourceProperty> for u32 {
     }
 }
 impl<Dst: GlDstType> SrcType<Dst> for ProgramResourceProperty {
-    fn cast(self) -> Dst {
+    fn convert(self) -> Dst {
         Dst::from_uint(self as u32)
     }
 }
@@ -4844,7 +4844,7 @@ impl From<PixelStoreParameter> for u32 {
     }
 }
 impl<Dst: GlDstType> SrcType<Dst> for PixelStoreParameter {
-    fn cast(self) -> Dst {
+    fn convert(self) -> Dst {
         Dst::from_uint(self as u32)
     }
 }
@@ -4979,7 +4979,7 @@ impl From<AttributeType> for u32 {
     }
 }
 impl<Dst: GlDstType> SrcType<Dst> for AttributeType {
-    fn cast(self) -> Dst {
+    fn convert(self) -> Dst {
         Dst::from_uint(self as u32)
     }
 }
@@ -5014,7 +5014,7 @@ impl From<UniformPName> for u32 {
     }
 }
 impl<Dst: GlDstType> SrcType<Dst> for UniformPName {
-    fn cast(self) -> Dst {
+    fn convert(self) -> Dst {
         Dst::from_uint(self as u32)
     }
 }
@@ -5045,7 +5045,7 @@ impl From<ClampColorMode> for u32 {
     }
 }
 impl<Dst: GlDstType> SrcType<Dst> for ClampColorMode {
-    fn cast(self) -> Dst {
+    fn convert(self) -> Dst {
         Dst::from_uint(self as u32)
     }
 }
@@ -5078,7 +5078,7 @@ impl From<ShaderParameterName> for u32 {
     }
 }
 impl<Dst: GlDstType> SrcType<Dst> for ShaderParameterName {
-    fn cast(self) -> Dst {
+    fn convert(self) -> Dst {
         Dst::from_uint(self as u32)
     }
 }
@@ -5108,7 +5108,7 @@ impl From<QueryParameterName> for u32 {
     }
 }
 impl<Dst: GlDstType> SrcType<Dst> for QueryParameterName {
-    fn cast(self) -> Dst {
+    fn convert(self) -> Dst {
         Dst::from_uint(self as u32)
     }
 }
@@ -5166,7 +5166,7 @@ impl From<TextureUnit> for u32 {
     }
 }
 impl<Dst: GlDstType> SrcType<Dst> for TextureUnit {
-    fn cast(self) -> Dst {
+    fn convert(self) -> Dst {
         Dst::from_uint(self as u32)
     }
 }
@@ -5198,7 +5198,7 @@ impl From<ShaderType> for u32 {
     }
 }
 impl<Dst: GlDstType> SrcType<Dst> for ShaderType {
-    fn cast(self) -> Dst {
+    fn convert(self) -> Dst {
         Dst::from_uint(self as u32)
     }
 }
@@ -5229,7 +5229,7 @@ impl From<TransformFeedbackPName> for u32 {
     }
 }
 impl<Dst: GlDstType> SrcType<Dst> for TransformFeedbackPName {
-    fn cast(self) -> Dst {
+    fn convert(self) -> Dst {
         Dst::from_uint(self as u32)
     }
 }
@@ -5264,7 +5264,7 @@ impl From<BufferUsage> for u32 {
     }
 }
 impl<Dst: GlDstType> SrcType<Dst> for BufferUsage {
-    fn cast(self) -> Dst {
+    fn convert(self) -> Dst {
         Dst::from_uint(self as u32)
     }
 }
@@ -5300,7 +5300,7 @@ impl From<DebugType> for u32 {
     }
 }
 impl<Dst: GlDstType> SrcType<Dst> for DebugType {
-    fn cast(self) -> Dst {
+    fn convert(self) -> Dst {
         Dst::from_uint(self as u32)
     }
 }
@@ -5336,7 +5336,7 @@ impl From<QueryTarget> for u32 {
     }
 }
 impl<Dst: GlDstType> SrcType<Dst> for QueryTarget {
-    fn cast(self) -> Dst {
+    fn convert(self) -> Dst {
         Dst::from_uint(self as u32)
     }
 }
@@ -5369,7 +5369,7 @@ impl From<DebugSource> for u32 {
     }
 }
 impl<Dst: GlDstType> SrcType<Dst> for DebugSource {
-    fn cast(self) -> Dst {
+    fn convert(self) -> Dst {
         Dst::from_uint(self as u32)
     }
 }
@@ -5401,7 +5401,7 @@ impl From<PrecisionType> for u32 {
     }
 }
 impl<Dst: GlDstType> SrcType<Dst> for PrecisionType {
-    fn cast(self) -> Dst {
+    fn convert(self) -> Dst {
         Dst::from_uint(self as u32)
     }
 }
@@ -5445,7 +5445,7 @@ impl From<MemoryBarrierMask> for u32 {
     }
 }
 impl<Dst: GlDstType> SrcType<Dst> for MemoryBarrierMask {
-    fn cast(self) -> Dst {
+    fn convert(self) -> Dst {
         Dst::from_uint(self.bits())
     }
 }
@@ -5495,7 +5495,7 @@ impl From<PixelType> for u32 {
     }
 }
 impl<Dst: GlDstType> SrcType<Dst> for PixelType {
-    fn cast(self) -> Dst {
+    fn convert(self) -> Dst {
         Dst::from_uint(self as u32)
     }
 }

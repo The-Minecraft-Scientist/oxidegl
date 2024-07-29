@@ -175,7 +175,7 @@ impl<T: NamedObject> ObjectName<T> {
 pub trait NamedObject {}
 
 impl<Dst: GlDstType, T> SrcType<Dst> for Option<ObjectName<T>> {
-    fn cast(self) -> Dst {
+    fn convert(self) -> Dst {
         Dst::from_uint(self.map_or(0, |v| v.0.get()))
     }
 }

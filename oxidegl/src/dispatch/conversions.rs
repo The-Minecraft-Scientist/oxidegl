@@ -33,9 +33,10 @@ pub trait GlDstType: Copy {
     fn from_double(val: f64) -> Self;
     fn from_bool(val: bool) -> Self;
 }
-/// Trait that describes how to convert a given type into a value that may be returned
+/// Trait that describes how to convert a given type into a value that may be returned according to the
+/// conversion rules for state items in the GL spec
 pub trait SrcType<Dst: GlDstType>: Copy {
-    fn cast(self) -> Dst;
+    fn convert(self) -> Dst;
 }
 pub trait MaybeObjectName<T> {
     fn get(self) -> Option<ObjectName<T>>;
@@ -122,11 +123,12 @@ impl<It: SrcType<Dst>, Dst: GlDstType> StateQueryWrite<Dst> for [It] {
             );
             // Safety: Caller ensures ptr points to an allocation with the correct size and alignment to store a
             // single value of type Dst
-            unsafe { ptr::write(ptr, self.get_unchecked(i).cast()) }
+            unsafe { ptr::write(ptr, self.get_unchecked(i).convert()) }
+            return;
         }
         for item in self {
             // Safety: Caller ensures that ptr points to an allocation with the same size and alignment as this array.
-            unsafe { ptr::write(ptr, item.cast()) }
+            unsafe { ptr::write(ptr, item.convert()) }
             //Safety: Caller ensures the length of the allocation is equal to the length of this array
             unsafe { ptr = ptr.add(1) }
         }
@@ -147,62 +149,62 @@ impl<It: SrcType<Dst>, Dst: GlDstType> StateQueryWrite<Dst> for It {
             "UB: Destination pointer passed to write_out should have been aligned correctly!"
         );
         // Safety: caller ensures that Dst is the correct type for the allocation being written to
-        unsafe { ptr::write(ptr, self.cast()) }
+        unsafe { ptr::write(ptr, self.convert()) }
     }
 }
 
 //TODO: wrap all of this in a macro
 impl<Dst: GlDstType> SrcType<Dst> for u32 {
     #[inline]
-    fn cast(self) -> Dst {
+    fn convert(self) -> Dst {
         Dst::from_uint(self)
     }
 }
 impl<Dst: GlDstType> SrcType<Dst> for i32 {
     #[inline]
-    fn cast(self) -> Dst {
+    fn convert(self) -> Dst {
         Dst::from_int(self)
     }
 }
 impl<Dst: GlDstType> SrcType<Dst> for u64 {
     #[inline]
-    fn cast(self) -> Dst {
+    fn convert(self) -> Dst {
         Dst::from_ulong(self)
     }
 }
 impl<Dst: GlDstType> SrcType<Dst> for i64 {
     #[inline]
-    fn cast(self) -> Dst {
+    fn convert(self) -> Dst {
         Dst::from_long(self)
     }
 }
 impl<Dst: GlDstType> SrcType<Dst> for usize {
     #[inline]
-    fn cast(self) -> Dst {
+    fn convert(self) -> Dst {
         Dst::from_ulong(self as u64)
     }
 }
 impl<Dst: GlDstType> SrcType<Dst> for isize {
     #[inline]
-    fn cast(self) -> Dst {
+    fn convert(self) -> Dst {
         Dst::from_long(self as i64)
     }
 }
 impl<Dst: GlDstType> SrcType<Dst> for f32 {
     #[inline]
-    fn cast(self) -> Dst {
+    fn convert(self) -> Dst {
         Dst::from_float(self)
     }
 }
 impl<Dst: GlDstType> SrcType<Dst> for f64 {
     #[inline]
-    fn cast(self) -> Dst {
+    fn convert(self) -> Dst {
         Dst::from_double(self)
     }
 }
 impl<Dst: GlDstType> SrcType<Dst> for bool {
     #[inline]
-    fn cast(self) -> Dst {
+    fn convert(self) -> Dst {
         Dst::from_bool(self)
     }
 }

@@ -19,6 +19,7 @@ use self::state::GLState;
     clippy::missing_safety_doc
 )]
 pub(crate) mod commands;
+pub(crate) mod shader;
 
 pub(crate) mod state;
 
