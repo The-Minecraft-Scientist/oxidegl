@@ -428,8 +428,8 @@ impl Context {
 /// between elements in each buffer, respectively. If `buffers` is NULL, each
 /// affected vertex buffer binding point from $first$ through $first+ count
 ///- 1$ will be reset to have no bound buffer object. In this case, the offsets
-/// and strides associated with the binding points are set to default values,
-/// ignoring `offsets` and `strides`.
+///  and strides associated with the binding points are set to default values,
+///  ignoring `offsets` and `strides`.
 ///
 /// [**glBindVertexBuffers**](crate::context::Context::oxidegl_bind_vertex_buffers)
 /// is equivalent (assuming no errors are generated) to:

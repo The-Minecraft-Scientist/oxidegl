@@ -6,7 +6,7 @@ use objc2_metal::{MTLBuffer, MTLDevice, MTLResourceOptions};
 
 use crate::{
     context::{
-        state::{BufferBindings, NamedObject, ObjectName},
+        state::{NamedObject, ObjectName},
         Context,
     },
     debug_unreachable,
