@@ -240,14 +240,14 @@ impl Context {
         attrib.component_type = r#type;
         // Caller ensures relative_offset is in-bounds i.e. it is strictly less than MAX_VERTEX_ATTRIBUTE_STRIDE
         attrib.relative_offset = relative_offset as u16;
-        debug!("updated vertex attribute format at index {attrib_index} of {:#?} to {:?}*{num_components} with relative offset {relative_offset} and integer behavior {integer_behavior:?}", vao.name, r#type);
         vao.attribs[attrib_index as usize] = Some(attrib);
+        debug!("updated vertex attribute format at index {attrib_index} of {:#?} to {:?}*{num_components} with relative offset {relative_offset} and integer behavior {integer_behavior:?}", vao.name, r#type);
 
         #[cfg(debug_assertions)]
         attrib.validate();
     }
     #[inline]
-    pub fn get_vao(&mut self, maybe_name: impl MaybeObjectName<Vao>) -> Option<&mut Vao> {
+    pub(crate) fn get_vao(&mut self, maybe_name: impl MaybeObjectName<Vao>) -> Option<&mut Vao> {
         if let Some(name) = maybe_name.get() {
             self.gl_state.vao_list.get_mut(name)
         } else {
@@ -1173,7 +1173,7 @@ impl GLVertexAttrib {
         );
         assert!(
             !(component_type == VertexAttribType::UnsignedInt10F11F11FRev && components != 3),
-            "UB: attribute size for attribute with format RG11B10 must be 3, got {components}"
+            "UB: attribute size for attribute with format RG11FB10F must be 3, got {components}"
         );
         assert!(
             !((components == 0 || components > 4) && !normalize),
@@ -1228,7 +1228,8 @@ impl GLVertexAttrib {
     }
     #[inline]
     pub fn get_mtl_layout(&self) -> AttributeFormatWithConversion {
-        // Safety: invariants guaranteed to be upheld by the construction invariant of Self
+        self.validate();
+        // Safety: invariants guaranteed to be upheld (or we abort) by validate function
         unsafe { gl_attribute_to_mtl(self.component_type, self.components, self.integral_cast) }
     }
 }
