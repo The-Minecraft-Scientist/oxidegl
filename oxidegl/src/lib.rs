@@ -1,7 +1,6 @@
 #![deny(unsafe_op_in_unsafe_fn)]
 #![warn(clippy::pedantic, clippy::undocumented_unsafe_blocks)]
 #![allow(clippy::missing_panics_doc, clippy::module_name_repetitions)]
-#![allow(unstable_name_collisions)]
 
 use std::error::Error;
 
