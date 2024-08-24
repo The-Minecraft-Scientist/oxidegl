@@ -34,3 +34,6 @@ f:glGenVertexArrays
 f:glBindVertexArray
 f:glIsVertexArray
 f:glDeleteVertexArrays
+//Shaders
+f:glCreateShader
+f:glShaderSource

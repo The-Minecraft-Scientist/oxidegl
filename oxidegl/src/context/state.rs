@@ -16,7 +16,10 @@ use crate::{
     type_name,
 };
 
-use super::commands::{buffer::Buffer, vao::Vao};
+use super::{
+    commands::{buffer::Buffer, vao::Vao},
+    shader::Shader,
+};
 
 #[derive(Debug)]
 pub struct GLState {
@@ -25,6 +28,7 @@ pub struct GLState {
     pub(crate) buffer_list: NamedObjectList<Buffer>,
     pub(crate) vao_list: NamedObjectList<Vao>,
     pub(crate) vao_binding: Option<ObjectName<Vao>>,
+    pub(crate) shader_list: NamedObjectList<Shader>,
     pub(crate) point_size: f32,
     pub(crate) line_width: f32,
     pub(crate) clear_color: [f32; 4],
@@ -89,6 +93,7 @@ impl GLState {
             buffer_list: NamedObjectList::new(),
 
             vao_list: NamedObjectList::new(),
+            shader_list: NamedObjectList::new(),
             vao_binding: None,
             point_size: 1.0,
             line_width: 1.0,

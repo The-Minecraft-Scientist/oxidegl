@@ -22009,61 +22009,6 @@ impl Context {
         panic!("command oxidegl_shader_binary not yet implemented");
     }
     /// ### Parameters
-    /// `shader`
-    ///
-    /// > Specifies the handle of the shader object whose source code is to be replaced.
-    ///
-    /// `count`
-    ///
-    /// > Specifies the number of elements in the `string` and `length` arrays.
-    ///
-    /// `string`
-    ///
-    /// > Specifies an array of pointers to strings containing the source code to
-    /// > be loaded into the shader.
-    ///
-    /// `length`
-    ///
-    /// > Specifies an array of string lengths.
-    ///
-    /// ### Description
-    /// [**glShaderSource**](crate::context::Context::oxidegl_shader_source) sets
-    /// the source code in `shader` to the source code in the array of strings
-    /// specified by `string`. Any source code previously stored in the shader
-    /// object is completely replaced. The number of strings in the array is specified
-    /// by `count`. If `length` is [`NULL`](crate::enums::NULL), each string is
-    /// assumed to be null terminated. If `length` is a value other than [`NULL`](crate::enums::NULL),
-    /// it points to an array containing a string length for each of the corresponding
-    /// elements of `string`. Each element in the `length` array may contain the
-    /// length of the corresponding string (the null character is not counted as
-    /// part of the string length) or a value less than 0 to indicate that the
-    /// string is null terminated. The source code strings are not scanned or parsed
-    /// at this time; they are simply copied into the specified shader object.
-    ///
-    /// ### Notes
-    /// OpenGL copies the shader source code strings when [**glShaderSource**](crate::context::Context::oxidegl_shader_source)
-    /// is called, so an application may free its copy of the source code strings
-    /// immediately after the function returns.
-    ///
-    /// ### Associated Gets
-    /// [**glGetShader**](crate::context::Context::oxidegl_get_shader) with arguments
-    /// `shader` and [`GL_SHADER_SOURCE_LENGTH`](crate::enums::GL_SHADER_SOURCE_LENGTH)
-    ///
-    /// [**glGetShaderSource**](crate::context::Context::oxidegl_get_shader_source)
-    /// with argument `shader`
-    ///
-    /// [**glIsShader**](crate::context::Context::oxidegl_is_shader)
-
-    pub unsafe fn oxidegl_shader_source(
-        &mut self,
-        shader: GLuint,
-        count: GLsizei,
-        string: GLchar,
-        length: *const GLint,
-    ) {
-        panic!("command oxidegl_shader_source not yet implemented");
-    }
-    /// ### Parameters
     /// `program`
     ///
     /// > The name of the program containing the block whose binding to change.
