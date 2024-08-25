@@ -457,7 +457,7 @@ impl Context {
         self.vertex_array_vertex_buffers_internal(
             CurrentBinding,
             first,
-            //Safety: slices invariants are upheld by the caller
+            // Safety: slices invariants are upheld by the caller
             unsafe {
                 slice::from_raw_parts(buffers.cast::<Option<ObjectName<Buffer>>>(), count as usize)
             },
@@ -479,7 +479,7 @@ impl Context {
         self.vertex_array_vertex_buffers_internal(
             vaobj,
             first,
-            //Safety: slices invariants are upheld by the caller
+            // Safety: slices invariants are upheld by the caller
             unsafe {
                 slice::from_raw_parts(buffers.cast::<Option<ObjectName<Buffer>>>(), count as usize)
             },
@@ -1276,7 +1276,7 @@ macro_rules! generate_attr_match_branch {
                     3 => concat_idents::concat_idents!(name = $base, 3, $($suffix)* { MTLAttributeFormat::name }),
                     4 => concat_idents::concat_idents!(name = $base, 4, $($suffix)* { MTLAttributeFormat::name }),
                     #[allow(unused_unsafe)]
-                    //Safety: Caller ensures the number of components is in bounds
+                    // Safety: Caller ensures the number of components is in bounds
                     _ => unsafe { crate::debug_unreachable!("UB: invalid vertex attribute size!") }
                 }.0 as u32
             },

@@ -129,7 +129,7 @@ impl<It: SrcType<Dst>, Dst: GlDstType> StateQueryWrite<Dst> for [It] {
         for item in self {
             // Safety: Caller ensures that ptr points to an allocation with the same size and alignment as this array.
             unsafe { ptr::write(ptr, item.convert()) }
-            //Safety: Caller ensures the length of the allocation is equal to the length of this array
+            // Safety: Caller ensures the length of the allocation is equal to the length of this array
             unsafe { ptr = ptr.add(1) }
         }
     }

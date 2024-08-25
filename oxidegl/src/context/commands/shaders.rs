@@ -141,7 +141,7 @@ impl Context {
         for (i, &string) in sources.iter().enumerate() {
             let len = lengths.map(|r| r[i]).and_then(|v| u32::try_from(v).ok());
             let str = if let Some(len) = len {
-                //Safety: caller ensures string points to an initialized slice of bytes with length len
+                // Safety: caller ensures string points to an initialized slice of bytes with length len
                 core::str::from_utf8(unsafe { core::slice::from_raw_parts(string, len as usize) })
                     .expect("Shader source contained non-UTF8 character!")
             } else {
@@ -279,7 +279,7 @@ impl Context {
             ShaderParameterName::InfoLogLength => shader.compiler_log.len() as u32,
             ShaderParameterName::ShaderSourceLength => shader.source_type.source_len(),
         };
-        //Safety: caller ensures params pointer is correct
+        // Safety: caller ensures params pointer is correct
         unsafe { *params.cast() = ret };
     }
 }

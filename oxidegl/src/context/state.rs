@@ -160,7 +160,7 @@ impl<T: NamedObject> ObjectName<T> {
     #[inline]
     unsafe fn from_idx(val: usize) -> Self {
         Self(
-            //Safety: Caller ensures val is <= u32::MAX - 1
+            // Safety: Caller ensures val is <= u32::MAX - 1
             unsafe { NonZeroU32::new_unchecked((val + 1) as u32) },
             PhantomData,
         )
