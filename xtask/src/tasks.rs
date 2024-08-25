@@ -86,7 +86,7 @@ pub trait TaskTrait: Sized {
 
 #[derive(Args, Clone, Eq, PartialEq, Hash, Debug)]
 pub struct BuildOxideGL {
-    /// Build OxideGL with debug assertions, even in release mode
+    /// Whether to force enable debug assertions
     #[arg(short, long, default_value_t = true)]
     debug_assertions: bool,
     /// Build OxideGL with the "release" profile instead of "dev"
@@ -116,7 +116,7 @@ impl TaskTrait for BuildOxideGL {
             c.arg("-r");
             c.env("OXIDEGL_RELEASE", "1");
         }
-
+        c.env("CARGO_TARGET_DIR", "/tmp/oxidegl-target/");
         c.args(["--features", &format!("max_log_{}", self.logging_level)]);
         if self.debug_assertions {
             c.args(["--config", "build-override.debug-assertions=true"]);
@@ -136,12 +136,12 @@ impl TaskTrait for BuildOxideGL {
             let _ = remove_file("/usr/local/lib/liboxidegl.dylib");
             copy(
                 format!(
-                    "target/{}/liboxidegl.dylib",
+                    "/tmp/oxidegl-target/{}/liboxidegl.dylib",
                     if self.release { "release" } else { "debug" }
                 ),
                 "/usr/local/lib/liboxidegl.dylib",
             )?;
-            println!("Installed OxideGL to /user/local/lib/liboxidegl.dylib");
+            println!("Installed OxideGL to /usr/local/lib/liboxidegl.dylib");
         }
         Ok(())
     }

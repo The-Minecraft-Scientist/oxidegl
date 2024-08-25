@@ -8,7 +8,7 @@ lto = "fat"
 panic = "abort"
 
 [profile.dev]
-codegen-units = 256
-# incremental = true
+codegen-units = 512
+incremental = true
 lto = "thin"
 panic = "abort"
