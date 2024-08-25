@@ -10,21 +10,24 @@ p:gl_get_string
 //TODO: getInternalformat
 
 //Buffers
+//Buffer lifecycle
 f:glCreateBuffers
 f:glGenBuffers
-f:glBindBuffer
 f:glIsBuffer
 f:glDeleteBuffers
+//Buffer manipulation
 f:glBufferStorage
 f:glNamedBufferStorage
+f:glBindBuffer
 
-//glClear and friends
+
+//glClear and co.
 p:gl_clear
 p:gl_clear_depth
 f:glClearColor
 f:glClearStencil
 
-//VAOs
+//VAO manipulation
 p:gl_vertex_attrib_format
 p:gl_bind_vertex_buffer
 p:gl_bind_vertex_buffers
@@ -32,9 +35,11 @@ p:gl_enable_vertex_attrib_array
 p:gl_vertex_attrib_binding
 p:gl_vertex_attrib_pointer
 
+//VAO divisor
 f:glVertexBindingDivisor
 f:glVertexArrayBindingDivisor
 
+//VAO lifecycle
 f:glCreateVertexArrays
 f:glGenVertexArrays
 f:glBindVertexArray
@@ -42,6 +47,9 @@ f:glIsVertexArray
 f:glDeleteVertexArrays
 
 //Shaders
+//Shader lifecycle
 f:glCreateShader
+
+//Shader manipulation
 f:glShaderSource
-// f:glCompileShader
+f:glCompileShader

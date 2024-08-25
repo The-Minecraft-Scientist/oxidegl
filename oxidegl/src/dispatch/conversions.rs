@@ -48,7 +48,7 @@ impl<T> MaybeObjectName<T> for ObjectName<T> {
 }
 impl<T: NamedObject> MaybeObjectName<T> for u32 {
     fn get(self) -> Option<ObjectName<T>> {
-        Some(ObjectName::from_raw(self).expect("raw name was not a valid object name"))
+        Some(ObjectName::try_from_raw(self).expect("raw name was not a valid object name"))
     }
 }
 pub struct CurrentBinding;

@@ -257,7 +257,7 @@ impl Context {
     /// [**glGet**](crate::context::Context::oxidegl_get) with argument [`GL_UNIFORM_BUFFER_BINDING`](crate::enums::GL_UNIFORM_BUFFER_BINDING)
 
     pub fn oxidegl_bind_buffer(&mut self, target: BufferTarget, buffer: GLuint) {
-        self.bind_buffer_internal(ObjectName::from_raw(buffer), target, NoIndex);
+        self.bind_buffer_internal(ObjectName::try_from_raw(buffer), target, NoIndex);
     }
     /// ### Parameters
     /// `buffer`
@@ -483,8 +483,8 @@ impl Context {
         data: *const GLvoid,
         flags: BufferStorageMask,
     ) {
-        let name =
-            ObjectName::from_raw(buffer).expect("UB: Tried to allocate storage for buffer name 0");
+        let name = ObjectName::try_from_raw(buffer)
+            .expect("UB: Tried to allocate storage for buffer name 0");
         debug!("Allocated {size} byte storage for {name:?}, initialized with ptr {data:?}");
         // Safety: Caller ensures data pointer is correctly initialized
         unsafe {

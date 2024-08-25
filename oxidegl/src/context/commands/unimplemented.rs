@@ -13025,39 +13025,6 @@ impl Context {
         panic!("command oxidegl_clip_control not yet implemented");
     }
     /// ### Parameters
-    /// `shader`
-    ///
-    /// > Specifies the shader object to be compiled.
-    ///
-    /// ### Description
-    /// [**glCompileShader**](crate::context::Context::oxidegl_compile_shader)
-    /// compiles the source code strings that have been stored in the shader object
-    /// specified by `shader`.
-    ///
-    /// The compilation status will be stored as part of the shader object's state.
-    /// This value will be set to [`GL_TRUE`](crate::enums::GL_TRUE) if the shader
-    /// was compiled without errors and is ready for use, and [`GL_FALSE`](crate::enums::GL_FALSE)
-    /// otherwise. It can be queried by calling [**glGetShader**](crate::context::Context::oxidegl_get_shader)
-    /// with arguments `shader` and [`GL_COMPILE_STATUS`](crate::enums::GL_COMPILE_STATUS).
-    ///
-    /// Compilation of a shader can fail for a number of reasons as specified by
-    /// the OpenGL Shading Language Specification. Whether or not the compilation
-    /// was successful, information about the compilation can be obtained from
-    /// the shader object's information log by calling [**glGetShaderInfoLog**](crate::context::Context::oxidegl_get_shader_info_log).
-    ///
-    /// ### Associated Gets
-    /// [**glGetShaderInfoLog**](crate::context::Context::oxidegl_get_shader_info_log)
-    /// with argument `shader`
-    ///
-    /// [**glGetShader**](crate::context::Context::oxidegl_get_shader) with arguments
-    /// `shader` and [`GL_COMPILE_STATUS`](crate::enums::GL_COMPILE_STATUS)
-    ///
-    /// [**glIsShader**](crate::context::Context::oxidegl_is_shader)
-
-    pub fn oxidegl_compile_shader(&mut self, shader: GLuint) {
-        panic!("command oxidegl_compile_shader not yet implemented");
-    }
-    /// ### Parameters
     /// `target`
     ///
     /// > Specifies the target texture. Must be [`GL_TEXTURE_1D`](crate::enums::GL_TEXTURE_1D)
@@ -19223,78 +19190,6 @@ impl Context {
         params: *mut GLint,
     ) {
         panic!("command oxidegl_get_queryiv not yet implemented");
-    }
-    /// ### Parameters
-    /// `shader`
-    ///
-    /// > Specifies the shader object to be queried.
-    ///
-    /// `pname`
-    ///
-    /// > Specifies the object parameter. Accepted symbolic names are [`GL_SHADER_TYPE`](crate::enums::GL_SHADER_TYPE),
-    /// > [`GL_DELETE_STATUS`](crate::enums::GL_DELETE_STATUS), [`GL_COMPILE_STATUS`](crate::enums::GL_COMPILE_STATUS),
-    /// > [`GL_INFO_LOG_LENGTH`](crate::enums::GL_INFO_LOG_LENGTH), [`GL_SHADER_SOURCE_LENGTH`](crate::enums::GL_SHADER_SOURCE_LENGTH).
-    ///
-    /// `params`
-    ///
-    /// > Returns the requested object parameter.
-    ///
-    /// ### Description
-    /// [**glGetShader**](crate::context::Context::oxidegl_get_shader) returns
-    /// in `params` the value of a parameter for a specific shader object. The
-    /// following parameters are defined:
-    ///
-    /// [`GL_SHADER_TYPE`](crate::enums::GL_SHADER_TYPE)
-    ///
-    /// > `params` returns [`GL_VERTEX_SHADER`](crate::enums::GL_VERTEX_SHADER) if
-    /// > `shader` is a vertex shader object, [`GL_GEOMETRY_SHADER`](crate::enums::GL_GEOMETRY_SHADER)
-    /// > if `shader` is a geometry shader object, and [`GL_FRAGMENT_SHADER`](crate::enums::GL_FRAGMENT_SHADER)
-    /// > if `shader` is a fragment shader object.
-    ///
-    /// [`GL_DELETE_STATUS`](crate::enums::GL_DELETE_STATUS)
-    ///
-    /// > `params` returns [`GL_TRUE`](crate::enums::GL_TRUE) if `shader` is currently
-    /// > flagged for deletion, and [`GL_FALSE`](crate::enums::GL_FALSE) otherwise.
-    ///
-    /// [`GL_COMPILE_STATUS`](crate::enums::GL_COMPILE_STATUS)
-    ///
-    /// > `params` returns [`GL_TRUE`](crate::enums::GL_TRUE) if the last compile
-    /// > operation on `shader` was successful, and [`GL_FALSE`](crate::enums::GL_FALSE)
-    /// > otherwise.
-    ///
-    /// [`GL_INFO_LOG_LENGTH`](crate::enums::GL_INFO_LOG_LENGTH)
-    ///
-    /// > `params` returns the number of characters in the information log for `shader`
-    /// > including the null termination character (i.e., the size of the character
-    /// > buffer required to store the information log). If `shader` has no information
-    /// > log, a value of 0 is returned.
-    ///
-    /// [`GL_SHADER_SOURCE_LENGTH`](crate::enums::GL_SHADER_SOURCE_LENGTH)
-    ///
-    /// > `params` returns the length of the concatenation of the source strings
-    /// > that make up the shader source for the `shader`, including the null termination
-    /// > character. (i.e., the size of the character buffer required to store the
-    /// > shader source). If no source code exists, 0 is returned.
-    ///
-    /// ### Notes
-    /// If an error is generated, no change is made to the contents of `params`.
-    ///
-    /// ### Associated Gets
-    /// [**glGetShaderInfoLog**](crate::context::Context::oxidegl_get_shader_info_log)
-    /// with argument `shader`
-    ///
-    /// [**glGetShaderSource**](crate::context::Context::oxidegl_get_shader_source)
-    /// with argument `shader`
-    ///
-    /// [**glIsShader**](crate::context::Context::oxidegl_is_shader)
-
-    pub unsafe fn oxidegl_get_shaderiv(
-        &mut self,
-        shader: GLuint,
-        pname: ShaderParameterName,
-        params: *mut GLint,
-    ) {
-        panic!("command oxidegl_get_shaderiv not yet implemented");
     }
     /// ### Parameters
     /// `shader`

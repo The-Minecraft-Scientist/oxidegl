@@ -313,7 +313,7 @@ impl Context {
         self.vertex_array_vertex_buffers_internal(
             CurrentBinding,
             bindingindex,
-            &[ObjectName::from_raw(buffer)],
+            &[ObjectName::try_from_raw(buffer)],
             &[offset],
             &[stride],
         );
@@ -329,7 +329,7 @@ impl Context {
         self.vertex_array_vertex_buffers_internal(
             vaobj,
             bindingindex,
-            &[ObjectName::from_raw(buffer)],
+            &[ObjectName::try_from_raw(buffer)],
             &[offset],
             &[stride],
         );
@@ -562,7 +562,7 @@ impl Context {
     /// the state of the vertex array object, and any previous vertex array object
     /// binding is broken.
     pub fn oxidegl_bind_vertex_array(&mut self, array: GLuint) {
-        let name = ObjectName::from_raw(array);
+        let name = ObjectName::try_from_raw(array);
         debug_assert!(
             if let Some(n2) = name {
                 self.gl_state.vao_list.is(n2)

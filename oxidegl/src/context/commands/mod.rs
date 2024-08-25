@@ -8,3 +8,5 @@ pub mod clear;
 pub mod buffer;
 
 pub mod vao;
+
+pub mod shaders;
