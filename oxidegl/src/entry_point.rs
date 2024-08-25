@@ -1,5 +1,6 @@
 use std::{ffi::c_void, ptr::NonNull};
 
+use flexi_logger::Logger;
 use log::{debug, info, trace};
 use objc2::rc::Retained;
 use objc2_app_kit::NSView;
@@ -21,7 +22,10 @@ unsafe extern "C" fn oxidegl_swap_buffers(_ctx: Option<NonNull<Context>>) {
 }
 #[no_mangle]
 unsafe extern "C" fn oxidegl_platform_init() {
-    simple_logger::init_with_env().expect("failed to initialize OxideGL's logger!");
+    Logger::try_with_env_or_str("none, oxidegl=trace")
+        .unwrap()
+        .start()
+        .unwrap();
     trace!("OxideGL Logger initialized");
     info!("OxideGL {}", Context::VERSION_INFO);
 }

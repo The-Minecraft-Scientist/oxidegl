@@ -33,7 +33,7 @@ machx = "0.4.9"
 [dependencies]
 # Logging
 log = "0.4.21"
-simple_logger = "5.0.0"
+flexi_logger = "0.28"
 
 # Bitflags for GL Bitmasks
 bitflags = "2.6.0"

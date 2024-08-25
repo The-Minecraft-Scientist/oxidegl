@@ -1511,7 +1511,7 @@ impl Context {
         ptr: *mut T,
         idx: I,
     ) {
-        debug!(target: "get", "glGet {parameter_name:?}");
+        debug!("glGet {parameter_name:?}");
         macro_rules! subst {
             ($pref:ident {$($middle:ident),+} $tail:ident) => {
                 $(concat_idents::concat_idents!(enum_path = $pref, $middle, $tail, {
@@ -2099,7 +2099,7 @@ pub mod get_string {
             const VERSION: &[u8] =
                 constcat::concat_bytes!(VERSION_PREFIX, Context::VERSION_INFO.as_bytes(), &[0]);
 
-            debug!(target: "get", "glGetString {name:?}");
+            debug!("glGetString {name:?}");
             match name {
                 StringName::Vendor => VENDOR.as_ptr(),
                 StringName::Renderer => RENDERER.as_ptr(),

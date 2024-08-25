@@ -165,13 +165,22 @@ impl<T: NamedObject> ObjectName<T> {
             PhantomData,
         )
     }
-    pub fn from_raw(name: u32) -> Option<Self> {
+    #[inline]
+    pub fn try_from_raw(name: u32) -> Option<Self> {
         Some(Self(NonZeroU32::new(name)?, PhantomData))
+    }
+    #[inline]
+    pub fn from_raw(name: u32) -> Self {
+        Self(
+            NonZeroU32::new(name).expect("UB: object name at 0 is reserved"),
+            PhantomData,
+        )
     }
     #[inline]
     pub fn to_idx(self) -> usize {
         (self.0.get() - 1) as usize
     }
+    #[inline]
     pub fn to_raw(self) -> u32 {
         self.0.get()
     }
@@ -266,7 +275,7 @@ impl<Obj: NamedObject> NamedObjectList<Obj> {
     ) -> ObjectName<Obj> {
         debug_assert!(
             self.objects.len() < (u32::MAX - 1) as usize,
-            "UB: OxideGL does not allow generation of more than u32::MAX object names"
+            "UB: OxideGL does not allow generation of more than u32::MAX - 1 object names"
         );
         // Safety: see assertion
         let name = unsafe { ObjectName::from_idx(self.objects.len()) };
@@ -315,7 +324,7 @@ impl<Obj: NamedObject> NamedObjectList<Obj> {
             names.is_aligned(),
             "UB: object name array pointer was not sufficiently aligned"
         );
-        debug!(target: "object alloc", "writing {n} new {} names to {names:?}", type_name::<Obj>());
+        debug!(target: "oxidegl::object_alloc", "writing {n} new {} names to {names:?}", type_name::<Obj>());
         let mut names = names.cast();
         for _ in 0..n {
             let name = self.new_name();
@@ -338,7 +347,7 @@ impl<Obj: NamedObject> NamedObjectList<Obj> {
             "UB: object name array pointer was not sufficiently aligned"
         );
         debug!(
-            target: "object alloc",
+            target: "oxidegl::object_alloc",
             "writing {n} new initialized {} names to {names:?}",
             type_name::<Obj>()
         );
@@ -353,7 +362,7 @@ impl<Obj: NamedObject> NamedObjectList<Obj> {
     }
     #[inline]
     pub(crate) fn is_obj(&self, name: GLuint) -> GLboolean {
-        ObjectName::from_raw(name).is_some_and(|name| self.is(name))
+        ObjectName::try_from_raw(name).is_some_and(|name| self.is(name))
     }
     #[inline]
     pub(crate) fn ensure_init(
