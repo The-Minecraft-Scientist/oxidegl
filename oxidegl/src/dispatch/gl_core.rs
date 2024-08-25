@@ -1,10 +1,7 @@
 // GL Commands
 use crate::context::with_ctx;
-use crate::dispatch::conversions::GLenumExt;
-use crate::dispatch::gl_types::{
-    GLbitfield, GLboolean, GLbyte, GLchar, GLdouble, GLenum, GLfloat, GLint, GLint64, GLintptr,
-    GLshort, GLsizei, GLsizeiptr, GLsync, GLubyte, GLuint, GLuint64, GLushort, GLvoid, GLDEBUGPROC,
-};
+use crate::dispatch::conversions::{GLenumExt};
+use crate::dispatch::gl_types::{GLDEBUGPROC, GLbitfield, GLboolean, GLbyte, GLchar, GLdouble, GLenum, GLfloat, GLint, GLint64, GLintptr, GLshort, GLsizei, GLsizeiptr, GLsync, GLubyte, GLuint, GLuint64, GLushort, GLvoid};
 
 #[no_mangle]
 unsafe extern "C" fn glActiveShaderProgram(pipeline: GLuint, program: GLuint) {
@@ -733,12 +730,7 @@ unsafe extern "C" fn glClearNamedFramebufferuiv(
 ) {
     ::log::trace!("glClearNamedFramebufferuiv called, parameters: framebuffer: {:?}, buffer: {:?}, drawbuffer: {:?}, value: {:?} ", framebuffer, buffer, drawbuffer, value);
     with_ctx(|mut state| unsafe {
-        state.oxidegl_clear_named_framebufferuiv(
-            framebuffer,
-            buffer.into_enum(),
-            drawbuffer,
-            value,
-        );
+        state.oxidegl_clear_named_framebufferuiv(framebuffer, buffer.into_enum(), drawbuffer, value);
     });
 }
 #[no_mangle]
@@ -1545,7 +1537,7 @@ unsafe extern "C" fn glCreateShader(r#type: GLenum) -> GLuint {
 unsafe extern "C" fn glCreateShaderProgramv(
     r#type: GLenum,
     count: GLsizei,
-    strings: GLchar,
+    strings: *const *const GLchar,
 ) -> GLuint {
     ::log::trace!(
         "glCreateShaderProgramv called, parameters: r#type: {:?}, count: {:?}, strings: {:?} ",
@@ -1553,8 +1545,8 @@ unsafe extern "C" fn glCreateShaderProgramv(
         count,
         strings
     );
-    with_ctx(|mut state| {
-        state.oxidegl_create_shader_programv(unsafe { r#type.into_enum() }, count, strings)
+    with_ctx(|mut state| unsafe {
+        state.oxidegl_create_shader_programv(r#type.into_enum(), count, strings)
     })
 }
 #[no_mangle]
@@ -2258,11 +2250,7 @@ unsafe extern "C" fn glNamedFramebufferParameteri(
 ) {
     ::log::trace!("glNamedFramebufferParameteri called, parameters: framebuffer: {:?}, pname: {:?}, param: {:?} ", framebuffer, pname, param);
     with_ctx(|mut state| {
-        state.oxidegl_named_framebuffer_parameteri(
-            framebuffer,
-            unsafe { pname.into_enum() },
-            param,
-        );
+        state.oxidegl_named_framebuffer_parameteri(framebuffer, unsafe { pname.into_enum() }, param);
     });
 }
 #[no_mangle]
@@ -3475,12 +3463,7 @@ unsafe extern "C" fn glGetQueryBufferObjectui64v(
 ) {
     ::log::trace!("glGetQueryBufferObjectui64v called, parameters: id: {:?}, buffer: {:?}, pname: {:?}, offset: {:?} ", id, buffer, pname, offset);
     with_ctx(|mut state| {
-        state.oxidegl_get_query_buffer_objectui64v(
-            id,
-            buffer,
-            unsafe { pname.into_enum() },
-            offset,
-        );
+        state.oxidegl_get_query_buffer_objectui64v(id, buffer, unsafe { pname.into_enum() }, offset);
     });
 }
 #[no_mangle]
@@ -4096,7 +4079,7 @@ unsafe extern "C" fn glGetUniformBlockIndex(
 unsafe extern "C" fn glGetUniformIndices(
     program: GLuint,
     uniformCount: GLsizei,
-    uniformNames: GLchar,
+    uniformNames: *const *const GLchar,
     uniformIndices: *mut GLuint,
 ) {
     ::log::trace!("glGetUniformIndices called, parameters: program: {:?}, uniformCount: {:?}, uniformNames: {:?}, uniformIndices: {:?} ", program, uniformCount, uniformNames, uniformIndices);
@@ -5509,7 +5492,7 @@ unsafe extern "C" fn glShaderBinary(
 unsafe extern "C" fn glShaderSource(
     shader: GLuint,
     count: GLsizei,
-    string: GLchar,
+    string: *const *const GLchar,
     length: *const GLint,
 ) {
     ::log::trace!(
@@ -6365,14 +6348,12 @@ unsafe extern "C" fn glTransformFeedbackBufferRange(
 unsafe extern "C" fn glTransformFeedbackVaryings(
     program: GLuint,
     count: GLsizei,
-    varyings: GLchar,
+    varyings: *const *const GLchar,
     bufferMode: GLenum,
 ) {
     ::log::trace!("glTransformFeedbackVaryings called, parameters: program: {:?}, count: {:?}, varyings: {:?}, bufferMode: {:?} ", program, count, varyings, bufferMode);
-    with_ctx(|mut state| {
-        state.oxidegl_transform_feedback_varyings(program, count, varyings, unsafe {
-            bufferMode.into_enum()
-        });
+    with_ctx(|mut state| unsafe {
+        state.oxidegl_transform_feedback_varyings(program, count, varyings, bufferMode.into_enum());
     });
 }
 #[no_mangle]
@@ -7637,13 +7618,7 @@ unsafe extern "C" fn glVertexArrayAttribLFormat(
 ) {
     ::log::trace!("glVertexArrayAttribLFormat called, parameters: vaobj: {:?}, attribindex: {:?}, size: {:?}, r#type: {:?}, relativeoffset: {:?} ", vaobj, attribindex, size, r#type, relativeoffset);
     with_ctx(|mut state| {
-        state.oxidegl_vertex_array_attrib_l_format(
-            vaobj,
-            attribindex,
-            size,
-            r#type,
-            relativeoffset,
-        );
+        state.oxidegl_vertex_array_attrib_l_format(vaobj, attribindex, size, r#type, relativeoffset);
     });
 }
 #[no_mangle]

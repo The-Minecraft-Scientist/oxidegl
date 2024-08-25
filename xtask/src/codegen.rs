@@ -992,6 +992,7 @@ impl GLTypes {
         let t = Self::from_c_type_str(base);
         match (prefix, suffix) {
             ("const ", " *") => Self::ConstPtrTo(t.bo()),
+            ("const ", " *const*") => Self::ConstPtrTo(Self::ConstPtrTo(t.bo()).bo()),
             ("const ", " **") => Self::ConstPtrTo(Self::PtrTo(t.bo()).bo()),
             (_s, " *") => Self::PtrTo(t.bo()),
             (_s, " **") => Self::PtrTo(Self::PtrTo(t.bo()).bo()),

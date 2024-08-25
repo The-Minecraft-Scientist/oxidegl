@@ -6,6 +6,7 @@
 //glGet
 p:gl_get
 p:gl_get_string
+
 //TODO: getInternalformat
 
 //Buffers
@@ -14,6 +15,8 @@ f:glGenBuffers
 f:glBindBuffer
 f:glIsBuffer
 f:glDeleteBuffers
+f:glBufferStorage
+f:glNamedBufferStorage
 
 //glClear and friends
 p:gl_clear
@@ -29,11 +32,16 @@ p:gl_enable_vertex_attrib_array
 p:gl_vertex_attrib_binding
 p:gl_vertex_attrib_pointer
 
+f:glVertexBindingDivisor
+f:glVertexArrayBindingDivisor
+
 f:glCreateVertexArrays
 f:glGenVertexArrays
 f:glBindVertexArray
 f:glIsVertexArray
 f:glDeleteVertexArrays
+
 //Shaders
 f:glCreateShader
 f:glShaderSource
+// f:glCompileShader

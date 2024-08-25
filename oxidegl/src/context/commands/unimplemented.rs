@@ -1115,7 +1115,6 @@ impl Context {
         panic!("command oxidegl_named_buffer_data not yet implemented");
     }
 }
-
 /// ### Parameters
 /// `target`
 ///
@@ -3003,7 +3002,6 @@ impl Context {
         panic!("command oxidegl_disablei not yet implemented");
     }
 }
-
 /// ### Parameters
 /// `target`
 ///
@@ -11459,7 +11457,6 @@ impl Context {
         panic!("command oxidegl_vertex_attrib_l4dv not yet implemented");
     }
 }
-
 /// ### Parameters
 /// `index`
 ///
@@ -12678,7 +12675,6 @@ impl Context {
     pub fn oxidegl_bind_transform_feedback(&mut self, target: GLenum, id: GLuint) {
         panic!("command oxidegl_bind_transform_feedback not yet implemented");
     }
-
     /// ### Parameters
     /// `red`
     ///
@@ -13982,7 +13978,6 @@ impl Context {
     pub unsafe fn oxidegl_create_samplers(&mut self, n: GLsizei, samplers: *mut GLuint) {
         panic!("command oxidegl_create_samplers not yet implemented");
     }
-
     /// ### Parameters
     /// `type`
     ///
@@ -14010,11 +14005,11 @@ impl Context {
     /// has its [`GL_PROGRAM_SEPARABLE`](crate::enums::GL_PROGRAM_SEPARABLE) status
     /// set to [`GL_TRUE`](crate::enums::GL_TRUE).
 
-    pub fn oxidegl_create_shader_programv(
+    pub unsafe fn oxidegl_create_shader_programv(
         &mut self,
         r#type: ShaderType,
         count: GLsizei,
-        strings: GLchar,
+        strings: *const *const GLchar,
     ) -> GLuint {
         panic!("command oxidegl_create_shader_programv not yet implemented");
     }
@@ -14595,10 +14590,10 @@ impl Context {
     ///
     /// ### Associated Gets
     /// [**glGet**](crate::context::Context::oxidegl_get) with argument [`GL_TRANSFORM_FEEDBACK_BINDING`](crate::enums::GL_TRANSFORM_FEEDBACK_BINDING)
+
     pub unsafe fn oxidegl_delete_transform_feedbacks(&mut self, n: GLsizei, ids: *const GLuint) {
         panic!("command oxidegl_delete_transform_feedbacks not yet implemented");
     }
-
     /// ### Parameters
     /// `func`
     ///
@@ -16155,7 +16150,6 @@ impl Context {
     pub unsafe fn oxidegl_gen_transform_feedbacks(&mut self, n: GLsizei, ids: *mut GLuint) {
         panic!("command oxidegl_gen_transform_feedbacks not yet implemented");
     }
-
     /// ### Parameters
     /// `program`
     ///
@@ -19918,7 +19912,7 @@ impl Context {
         &mut self,
         program: GLuint,
         uniform_count: GLsizei,
-        uniform_names: GLchar,
+        uniform_names: *const *const GLchar,
         uniform_indices: *mut GLuint,
     ) {
         panic!("command oxidegl_get_uniform_indices not yet implemented");
@@ -20577,7 +20571,6 @@ impl Context {
     pub fn oxidegl_is_transform_feedback(&mut self, id: GLuint) -> GLboolean {
         panic!("command oxidegl_is_transform_feedback not yet implemented");
     }
-
     /// ### Parameters
     /// `width`
     ///
@@ -24027,11 +24020,11 @@ impl Context {
     /// ### Associated Gets
     /// [**glGetTransformFeedbackVarying**](crate::context::Context::oxidegl_get_transform_feedback_varying)
 
-    pub fn oxidegl_transform_feedback_varyings(
+    pub unsafe fn oxidegl_transform_feedback_varyings(
         &mut self,
         program: GLuint,
         count: GLsizei,
-        varyings: GLchar,
+        varyings: *const *const GLchar,
         buffer_mode: TransformFeedbackBufferMode,
     ) {
         panic!("command oxidegl_transform_feedback_varyings not yet implemented");
