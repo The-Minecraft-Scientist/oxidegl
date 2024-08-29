@@ -1,5 +1,6 @@
 use std::{marker::PhantomData, num::NonZeroU32};
 
+use ahash::{HashSet, HashSetExt};
 use bitflags::bitflags;
 use log::debug;
 
@@ -18,6 +19,7 @@ use crate::{
 
 use super::{
     commands::{buffer::Buffer, vao::Vao},
+    program::Program,
     shader::Shader,
 };
 
@@ -29,8 +31,12 @@ pub struct GLState {
     pub(crate) vao_list: NamedObjectList<Vao>,
     pub(crate) vao_binding: Option<ObjectName<Vao>>,
     pub(crate) shader_list: NamedObjectList<Shader>,
+    pub(crate) shaders_to_delete: HashSet<ObjectName<Shader>>,
+    pub(crate) shader_program_list: NamedObjectList<Program>,
     pub(crate) point_size: f32,
     pub(crate) line_width: f32,
+
+    //Todo, move this stuff to a dedicated ClearState struct
     pub(crate) clear_color: [f32; 4],
     pub(crate) clear_depth: f32,
     pub(crate) clear_mask: ClearBufferMask,
@@ -91,9 +97,11 @@ impl GLState {
             characteristics: Characteristics::new(),
             buffer_bindings: BufferBindings::default(),
             buffer_list: NamedObjectList::new(),
-
             vao_list: NamedObjectList::new(),
             shader_list: NamedObjectList::new(),
+            shaders_to_delete: HashSet::new(),
+            shader_program_list: NamedObjectList::new(),
+
             vao_binding: None,
             point_size: 1.0,
             line_width: 1.0,
@@ -141,17 +149,27 @@ pub enum NameState<T> {
     /// This object name is *bound* to an object with the given state
     Bound(T),
 }
-#[derive(PartialEq, Eq)]
 #[repr(transparent)]
 pub struct ObjectName<Obj>(NonZeroU32, PhantomData<for<'a> fn(&'a Obj) -> &'a Obj>);
+impl<T> PartialEq for ObjectName<T> {
+    fn eq(&self, other: &Self) -> bool {
+        self.0 == other.0
+    }
+}
+impl<T> Eq for ObjectName<T> {}
 impl<T> Clone for ObjectName<T> {
     fn clone(&self) -> Self {
         *self
     }
 }
-impl<Obj> core::fmt::Debug for ObjectName<Obj> {
+impl<T> std::hash::Hash for ObjectName<T> {
+    fn hash<H: std::hash::Hasher>(&self, state: &mut H) {
+        self.0.hash(state);
+    }
+}
+impl<T> core::fmt::Debug for ObjectName<T> {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        f.pad(&format!("{} #{}", type_name::<Obj>(), self.0.get()))
+        f.pad(&format!("{} #{}", type_name::<T>(), self.0.get()))
     }
 }
 impl<T> Copy for ObjectName<T> {}
@@ -205,7 +223,25 @@ impl<Obj: NamedObject> NamedObjectList<Obj> {
         }
     }
     #[inline]
-    pub(crate) fn get(&self, name: ObjectName<Obj>) -> Option<&Obj> {
+    pub(crate) fn get(&self, name: ObjectName<Obj>) -> &Obj {
+        match self
+            .objects
+            .get(name.to_idx())
+            .expect("Tried to use an nonexistent object name")
+        {
+            NameState::Empty => panic!("Tried to use an object name that was previously deleted",),
+            NameState::Named => {
+                panic!("Tried to use an object name that was not initialized to an object")
+            }
+            NameState::Bound(obj) => obj,
+        }
+    }
+    #[inline]
+    pub(crate) fn get_raw(&self, name: GLuint) -> &Obj {
+        self.get(ObjectName::from_raw(name))
+    }
+    #[inline]
+    pub(crate) fn get_opt(&self, name: ObjectName<Obj>) -> Option<&Obj> {
         self.objects
             .get(name.to_idx())
             .and_then(|name_state| match name_state {
@@ -228,8 +264,27 @@ impl<Obj: NamedObject> NamedObjectList<Obj> {
             }
         }
     }
+
     #[inline]
-    pub(crate) fn get_mut(&mut self, name: ObjectName<Obj>) -> Option<&mut Obj> {
+    pub(crate) fn get_mut(&mut self, name: ObjectName<Obj>) -> &mut Obj {
+        match self
+            .objects
+            .get_mut(name.to_idx())
+            .expect("Tried to use an nonexistent object name")
+        {
+            NameState::Empty => panic!("Tried to use an object name that was previously deleted",),
+            NameState::Named => {
+                panic!("Tried to use an object name that was not initialized to an object")
+            }
+            NameState::Bound(obj) => obj,
+        }
+    }
+    #[inline]
+    pub(crate) fn get_raw_mut(&mut self, name: GLuint) -> &mut Obj {
+        self.get_mut(ObjectName::from_raw(name))
+    }
+    #[inline]
+    pub(crate) fn get_opt_mut(&mut self, name: ObjectName<Obj>) -> Option<&mut Obj> {
         self.objects
             .get_mut(name.to_idx())
             .and_then(|name_state| match name_state {
@@ -284,7 +339,7 @@ impl<Obj: NamedObject> NamedObjectList<Obj> {
     }
     #[inline]
     pub(crate) fn is(&self, name: ObjectName<Obj>) -> bool {
-        self.get(name).is_some()
+        self.get_opt(name).is_some()
     }
     pub(crate) fn delete(&mut self, name: ObjectName<Obj>) {
         if let Some(entry) = self.objects.get_mut(name.to_idx()) {

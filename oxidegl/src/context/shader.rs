@@ -1,13 +1,13 @@
-use std::cell::Cell;
+use std::{cell::Cell, fmt::Debug};
 
-use log::{debug, error};
+use log::{debug, error, warn};
 use naga::{
     front::glsl,
-    valid::{Capabilities, ValidationFlags, Validator},
+    valid::{Capabilities, ModuleInfo, ValidationFlags, Validator},
     Module, ShaderStage, WithSpan,
 };
 
-use crate::enums::ShaderType;
+use crate::{enums::ShaderType, type_name};
 
 use super::state::{NamedObject, ObjectName};
 
@@ -15,6 +15,7 @@ use super::state::{NamedObject, ObjectName};
 pub struct Shader {
     pub(crate) name: ObjectName<Shader>,
     pub(crate) stage: ShaderType,
+    pub(crate) refcount: u32,
     pub(crate) source_type: ShaderSourceType,
     pub(crate) latest_module: Option<Module>,
     pub(crate) compiler_log: String,
@@ -44,14 +45,15 @@ impl ShaderSourceType {
     }
 }
 impl Shader {
-    pub fn new_text_default(name: ObjectName<Shader>, stage: ShaderType) -> Self {
+    pub fn new_text_default(name: ObjectName<Self>, stage: ShaderType) -> Self {
+        debug!("created new {stage:?} GLSL {name:?}");
         Self {
             name,
             stage,
+            refcount: 0,
             source_type: ShaderSourceType::Glsl {
                 source: String::new(),
             },
-
             latest_module: None,
             compiler_log: String::new(),
         }
@@ -59,11 +61,12 @@ impl Shader {
 }
 impl NamedObject for Shader {}
 
-thread_local! {
-    static GLSL_FRONTEND: Cell<Option<glsl::Frontend>> = Cell::new(Some(glsl::Frontend::default()));
-}
 impl Shader {
+    //TODO: experiment shader parsing, translation and compilation off of the main thread (if shader compilation perf becomes an issue)
     pub(crate) fn compile(&mut self) {
+        thread_local! {
+            static GLSL_FRONTEND: Cell<Option<glsl::Frontend>> = Cell::new(Some(glsl::Frontend::default()));
+        }
         self.compiler_log.clear();
         debug!("attempting to parse shader {:?}", self.name);
         match &self.source_type {
@@ -72,7 +75,7 @@ impl Shader {
                     glsl::Options::from(self.stage.as_shader_stage().expect(
                         "OxideGL does not currently support geometry or tesselation shaders",
                     ));
-                // This expect can only fire if the caller commits some SERIOUS (but unfortunately legal) crimes
+                // This expect can only fire if the caller commits some SERIOUS (but unfortunately barely legal) crimes
                 let mut frontend = GLSL_FRONTEND
                     .take()
                     .expect("naga glsl frontend should have been present!");
@@ -111,25 +114,52 @@ impl Shader {
         #[cfg(debug_assertions)]
         self.validate();
     }
-    pub(crate) fn validate(&self) {
+    pub(crate) fn validate(&self) -> ModuleInfo {
         if let Some(ref m) = self.latest_module {
+            debug!("validating {:?}", self.name);
             let mut val = GLSL_VALIDATOR
                 .take()
                 .expect("Naga GLSL validator should have been present!");
-            if let Err(e) = val.validate(m) {
-                let err;
-                if let ShaderSourceType::Glsl { source } = &self.source_type {
-                    err = e.emit_to_string(source);
-                } else {
-                    err = e.into_inner().to_string();
-                }
+            let ret = match val.validate(m) {
+                Ok(info) => info,
+                Err(e) => {
+                    let err;
+                    if let ShaderSourceType::Glsl { source } = &self.source_type {
+                        err = e.emit_to_string(source);
+                    } else {
+                        err = e.into_inner().to_string();
+                    }
 
-                panic!("{:?} failed Naga validation:\n{}", self.name, err);
-            }
+                    panic!(
+                        "OxideGL internal error: {:?} failed Naga validation:\n{}",
+                        self.name, err
+                    );
+                }
+            };
             GLSL_VALIDATOR.set(Some(val));
+            ret
+        } else {
+            panic!("tried to validate a non-parsed Shader!");
+        }
+    }
+    /// Increments the program reference count on this shader. Call this function when attaching a shader object to a program
+    pub(crate) fn retain_shader(&mut self) {
+        self.refcount += 1;
+    }
+    /// Decrements the program reference count on this shader. Call this function when detaching a shader object from a program.
+    ///
+    /// Returns `true` if it is OK to deallocate this shader object after the decrement (i.e. it is not currently attached to any program objects)
+    pub(crate) fn release_shader(&mut self) -> bool {
+        if self.refcount <= 1 {
+            self.refcount = 0;
+            true
+        } else {
+            self.refcount -= 1;
+            false
         }
     }
 }
+
 thread_local! {
     // TODO correctly detect device capabilities
     // (see https://github.com/gfx-rs/wgpu/blob/trunk/wgpu-hal/src/metal/mod.rs#L201)

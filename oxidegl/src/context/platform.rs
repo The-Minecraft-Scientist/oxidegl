@@ -1,4 +1,4 @@
-use log::{debug, info, trace};
+use log::{info, trace};
 use objc2::rc::{Id, Retained};
 use objc2::runtime::ProtocolObject;
 use objc2_app_kit::{NSScreen, NSView};
@@ -6,17 +6,13 @@ use objc2_foundation::MainThreadMarker;
 use objc2_metal::{MTLCreateSystemDefaultDevice, MTLDevice};
 use objc2_quartz_core::{kCAFilterNearest, CAMetalLayer};
 
-#[derive(Debug)]
-pub struct PlatformState {
-    pub metal: MetalComponents,
-}
 #[derive(Debug, Clone)]
-pub struct MetalComponents {
+pub struct PlatformState {
     pub device: Retained<ProtocolObject<dyn MTLDevice>>,
     pub layer: Retained<CAMetalLayer>,
 }
 #[allow(clippy::undocumented_unsafe_blocks)]
-impl MetalComponents {
+impl PlatformState {
     pub(crate) fn new(view: &Id<NSView>) -> Self {
         let device = unsafe { Retained::retain(MTLCreateSystemDefaultDevice()) }.unwrap();
 

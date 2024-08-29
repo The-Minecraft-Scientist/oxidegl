@@ -10,3 +10,5 @@ pub mod buffer;
 pub mod vao;
 
 pub mod shaders;
+
+pub mod programs;

@@ -503,7 +503,7 @@ impl Context {
     ) {
         self.gl_state
             .buffer_list
-            .get_mut(name)
+            .get_opt_mut(name)
             .expect("UB: buffer name not present in buffer list!");
 
         assert!(size >= 0, "UB: Tried to create buffer with negative length");
@@ -520,14 +520,12 @@ impl Context {
             // Safety: caller ensures pointer validity, and that the slice implicitly formed by (data, size) is correctly initialized
             buffer = unsafe {
                 self.platform_state
-                    .metal
                     .device
                     .newBufferWithBytes_length_options(ptr, size, options)
             };
         } else {
             buffer = self
                 .platform_state
-                .metal
                 .device
                 .newBufferWithLength_options(size, options);
         };

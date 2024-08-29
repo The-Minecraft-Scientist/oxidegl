@@ -152,7 +152,7 @@ impl Context {
             };
             strings.push(str);
         }
-        let shader = self.get_shader_mut(shader);
+        let shader = self.get_shader_raw_mut(shader);
         let s = match &mut shader.source_type {
             ShaderSourceType::Glsl { source } => source,
             ShaderSourceType::Spirv { .. } => {
@@ -196,7 +196,7 @@ impl Context {
     /// [**glIsShader**](crate::context::Context::oxidegl_is_shader)
 
     pub fn oxidegl_compile_shader(&mut self, shader: GLuint) {
-        self.get_shader_mut(shader).compile();
+        self.get_shader_raw_mut(shader).compile();
     }
     /// ### Parameters
     /// `shader`
@@ -269,7 +269,7 @@ impl Context {
         params: *mut GLint,
     ) {
         // TODO come up with a way to handle shader refcounting/delete status
-        let shader = self.get_shader_mut(shader);
+        let shader = self.get_shader_raw_mut(shader);
         // if someone is trying to compile a >4gb shader we have bigger problems
         #[allow(clippy::cast_possible_truncation)]
         let ret: u32 = match pname {
@@ -285,10 +285,10 @@ impl Context {
 }
 
 impl Context {
-    fn get_shader_mut(&mut self, shader: GLuint) -> &mut Shader {
+    pub(crate) fn get_shader_raw_mut(&mut self, shader: GLuint) -> &mut Shader {
         self.gl_state
             .shader_list
-            .get_mut(ObjectName::from_raw(shader))
+            .get_opt_mut(ObjectName::from_raw(shader))
             .expect("tried to compile a nonexistent shader")
     }
 }

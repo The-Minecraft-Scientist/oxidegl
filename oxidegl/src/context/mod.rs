@@ -1,3 +1,4 @@
+use self::state::GLState;
 use objc2::rc::Id;
 use objc2_app_kit::NSView;
 use platform::PlatformState;
@@ -5,9 +6,6 @@ use state::NeedsRefreshBits;
 use std::cell::Cell;
 use std::pin::Pin;
 use std::ptr::NonNull;
-
-use self::platform::MetalComponents;
-use self::state::GLState;
 
 #[allow(
     dead_code,
@@ -19,11 +17,13 @@ use self::state::GLState;
     clippy::missing_safety_doc
 )]
 pub(crate) mod commands;
-pub(crate) mod shader;
 
+pub(crate) mod program;
+pub(crate) mod shader;
 pub(crate) mod state;
 
 pub(crate) mod platform;
+
 thread_local! {
     pub(crate) static CTX: Cell<Option<NonNull<Context>>> = const {Cell::new(None)};
 }
@@ -50,9 +50,7 @@ impl Context {
         Self {
             dirty_components: NeedsRefreshBits::empty(),
             gl_state: GLState::default(),
-            platform_state: PlatformState {
-                metal: MetalComponents::new(view),
-            },
+            platform_state: PlatformState::new(view),
         }
     }
 }
@@ -61,7 +59,6 @@ impl Context {
 #[inline(always)]
 pub fn with_ctx<Ret, Func: for<'a> Fn(Pin<&'a mut Context>) -> Ret>(f: Func) -> Ret {
     let mut ptr: NonNull<Context> = CTX.take().expect("No context set");
-
     // Safety: we are the exclusive accessor of ptr due to its thread locality and the fact that we called `take` on it previously
     let p = Pin::new(unsafe { ptr.as_mut() });
 

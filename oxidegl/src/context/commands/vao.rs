@@ -233,7 +233,7 @@ impl Context {
         let mut attrib = if let Some(a) = vao.attribs[attrib_index as usize] {
             a
         } else {
-            GLVertexAttrib::new_default(attrib_index as u8)
+            VertexAttrib::new_default(attrib_index as u8)
         };
         // Caller ensures num_components is in-bounds
         attrib.components = num_components as u8;
@@ -249,9 +249,11 @@ impl Context {
     #[inline]
     pub(crate) fn get_vao(&mut self, maybe_name: impl MaybeObjectName<Vao>) -> Option<&mut Vao> {
         if let Some(name) = maybe_name.get() {
-            self.gl_state.vao_list.get_mut(name)
+            self.gl_state.vao_list.get_opt_mut(name)
         } else {
-            self.gl_state.vao_list.get_mut(self.gl_state.vao_binding?)
+            self.gl_state
+                .vao_list
+                .get_opt_mut(self.gl_state.vao_binding?)
         }
     }
 }
@@ -694,7 +696,7 @@ impl Context {
             (index as usize) < MAX_VERTEX_ATTRIBUTES,
             "UB: tried to enable more than the maximum vertex attribute count"
         );
-        vao.attribs[index as usize] = Some(GLVertexAttrib::new_default(index as u8));
+        vao.attribs[index as usize] = Some(VertexAttrib::new_default(index as u8));
     }
     #[allow(clippy::cast_possible_truncation)]
     #[inline]
@@ -1096,12 +1098,10 @@ pub const MAX_VERTEX_ATTRIBUTE_STRIDE: u16 = 2048;
 #[derive(Debug)]
 pub struct Vao {
     name: ObjectName<Self>,
-    attribs: [Option<GLVertexAttrib>; MAX_VERTEX_ATTRIBUTES],
+    attribs: [Option<VertexAttrib>; MAX_VERTEX_ATTRIBUTES],
     buffer_bindings: [AttributeBufferBinding; MAX_VERTEX_ATTRIB_BUFFER_BINDINGS],
 }
 impl Vao {
-    // array index is never > u8::MAX
-    #[allow(clippy::cast_possible_truncation)]
     fn new_default(name: ObjectName<Self>) -> Self {
         Self {
             name,
@@ -1115,7 +1115,7 @@ impl Vao {
             .get_mut(idx as usize)
             .expect("UB: attribute buffer binding point out of bounds")
     }
-    fn get_attrib_mut(&mut self, idx: u32) -> Option<&mut GLVertexAttrib> {
+    fn get_attrib_mut(&mut self, idx: u32) -> Option<&mut VertexAttrib> {
         self.attribs
             .get_mut(idx as usize)
             .expect("UB: attribute index out of bounds")
@@ -1125,7 +1125,7 @@ impl Vao {
 impl NamedObject for Vao {}
 
 #[derive(Debug, Clone, Copy)]
-pub struct GLVertexAttrib {
+pub struct VertexAttrib {
     components: u8,
     buffer_idx: u8,
     relative_offset: u16,
@@ -1133,7 +1133,7 @@ pub struct GLVertexAttrib {
     component_type: VertexAttribType,
 }
 
-impl GLVertexAttrib {
+impl VertexAttrib {
     #[inline]
     pub fn new(
         components: u8,
@@ -1183,6 +1183,7 @@ impl GLVertexAttrib {
             self.relative_offset < MAX_VERTEX_ATTRIBUTE_STRIDE,
             "UB: relative offset greater than maximum stride"
         );
+        assert!(!normalize);
     }
     pub fn new_default(idx: u8) -> Self {
         Self::new(
@@ -1404,7 +1405,10 @@ pub struct AttributeFormatWithConversion {
     pub bgra_shuffle: bool,
 }
 impl AttributeFormatWithConversion {
-    fn get_mtl_format(self) -> MTLAttributeFormat {
+    pub(crate) fn get_mtl_format(self) -> MTLAttributeFormat {
         MTLAttributeFormat(self.mtl_format as usize)
+    }
+    pub(crate) fn validate(self) {
+        assert_eq!(self.conversion, IntegralCastBehavior::Native, "OxideGL does not yet support normalize or cast-to-float semantics for vertex attributes");
     }
 }
