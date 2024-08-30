@@ -566,14 +566,11 @@ impl Context {
     pub fn oxidegl_bind_vertex_array(&mut self, array: GLuint) {
         let name = ObjectName::try_from_raw(array);
         debug_assert!(
-            if let Some(n2) = name {
-                self.gl_state.vao_list.is(n2)
-            } else {
-                true
-            },
-            "UB: Bound a non-zero invalid VAO name to the current vao bind point"
+            name.map(|name| self.gl_state.vao_list.is(name))
+                .is_some_and(|b| b),
+            "UB: Tried to bind an uninitialized VAO name"
         );
-        debug!("bound {name:?}");
+        debug!("bound {name:?} as current VAO");
         self.gl_state.vao_binding = name;
     }
 

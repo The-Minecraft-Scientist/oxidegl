@@ -19,11 +19,13 @@ An open-source OpenGL 4.6 Core implementation atop Apple's Metal API, written in
  * xtask system capable of:
     * building and testing OxideGL and its GLFW fork
     * code generating a placeholder GL implementation, as well as Rust wrapper enums for many functions that take `GLenum` parameters
- * Context creation and linkage with GLFW works, the GLFW example successfully calls into OxideGL.
- * Generic context parameter lookup works (`glGet` and co.)
- * Modeling Vertex Attribute Objects and vertex buffers
+ * Context creation and linkage with GLFW
+ * Generic context parameter lookup (`glGet` and co.)
+ * full implementation of VAOs (some features disabled due to limitations in shader translation)
  * initial implementation of buffers and buffer binding (currently missing buffer copy operations)
- * Parsing shader objects to `naga` modules
+ * initial implementation of shaders and shader programs
+ * initial implementation of shader translation with `naga` (only allows 1 shader per stage, global uniforms not working, no compute shaders)
+
 
 ## Building/XTasks
 To get a full list of OxideGL `xtask` subcommands, run `cargo xtask --help` anywhere in this repository. 

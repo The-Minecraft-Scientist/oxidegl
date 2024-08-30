@@ -32,7 +32,9 @@ pub struct GLState {
     pub(crate) vao_binding: Option<ObjectName<Vao>>,
     pub(crate) shader_list: NamedObjectList<Shader>,
     pub(crate) shaders_to_delete: HashSet<ObjectName<Shader>>,
-    pub(crate) shader_program_list: NamedObjectList<Program>,
+    pub(crate) program_list: NamedObjectList<Program>,
+    pub(crate) programs_to_delete: HashSet<ObjectName<Program>>,
+    pub(crate) program_binding: Option<ObjectName<Program>>,
     pub(crate) point_size: f32,
     pub(crate) line_width: f32,
 
@@ -95,14 +97,20 @@ impl GLState {
     pub fn default() -> Self {
         GLState {
             characteristics: Characteristics::new(),
+
             buffer_bindings: BufferBindings::default(),
             buffer_list: NamedObjectList::new(),
+
             vao_list: NamedObjectList::new(),
+            vao_binding: None,
+
             shader_list: NamedObjectList::new(),
             shaders_to_delete: HashSet::new(),
-            shader_program_list: NamedObjectList::new(),
 
-            vao_binding: None,
+            program_list: NamedObjectList::new(),
+            programs_to_delete: HashSet::new(),
+            program_binding: None,
+
             point_size: 1.0,
             line_width: 1.0,
 

@@ -3,13 +3,13 @@ use objc2::rc::{Id, Retained};
 use objc2::runtime::ProtocolObject;
 use objc2_app_kit::{NSScreen, NSView};
 use objc2_foundation::MainThreadMarker;
-use objc2_metal::{MTLCreateSystemDefaultDevice, MTLDevice};
+use objc2_metal::{MTLCreateSystemDefaultDevice, MTLDevice, MTLPixelFormat};
 use objc2_quartz_core::{kCAFilterNearest, CAMetalLayer};
 
 #[derive(Debug, Clone)]
 pub struct PlatformState {
-    pub device: Retained<ProtocolObject<dyn MTLDevice>>,
-    pub layer: Retained<CAMetalLayer>,
+    pub(crate) device: Retained<ProtocolObject<dyn MTLDevice>>,
+    pub(crate) layer: Retained<CAMetalLayer>,
 }
 #[allow(clippy::undocumented_unsafe_blocks)]
 impl PlatformState {
@@ -19,7 +19,8 @@ impl PlatformState {
         let layer = unsafe { CAMetalLayer::new() };
 
         unsafe {
-            //TODO: pixel format
+            //TODO: pixel format real
+            layer.setPixelFormat(MTLPixelFormat::R8Unorm_sRGB);
             layer.setDevice(Some(&device));
             layer.setFramebufferOnly(false);
             layer.setFrame(view.frame());
@@ -38,7 +39,6 @@ impl PlatformState {
             .backingScaleFactor();
         layer.setContentsScale(cscale);
 
-        unsafe { view.setLayer(Some(&layer)) };
         view.setWantsLayer(true);
         info!("Metal device: {}", device.name());
         Self { device, layer }

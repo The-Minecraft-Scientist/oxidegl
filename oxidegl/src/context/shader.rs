@@ -7,10 +7,10 @@ use naga::{
     Module, ShaderStage, WithSpan,
 };
 
-use crate::{enums::ShaderType, type_name};
+use crate::enums::ShaderType;
 
 use super::state::{NamedObject, ObjectName};
-
+//TODO: write more debug logging to compiler_log
 #[derive(Debug)]
 pub struct Shader {
     pub(crate) name: ObjectName<Shader>,
@@ -46,7 +46,7 @@ impl ShaderSourceType {
 }
 impl Shader {
     pub fn new_text_default(name: ObjectName<Self>, stage: ShaderType) -> Self {
-        debug!("created new {stage:?} GLSL {name:?}");
+        debug!("created new GLSL {stage:?} {name:?}");
         Self {
             name,
             stage,
@@ -63,6 +63,7 @@ impl NamedObject for Shader {}
 
 impl Shader {
     //TODO: experiment shader parsing, translation and compilation off of the main thread (if shader compilation perf becomes an issue)
+    //TODO: collapse global uniforms into uniform block (or fork naga and add global uniform support)
     pub(crate) fn compile(&mut self) {
         thread_local! {
             static GLSL_FRONTEND: Cell<Option<glsl::Frontend>> = Cell::new(Some(glsl::Frontend::default()));

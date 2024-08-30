@@ -1,4 +1,4 @@
-use log::trace;
+use log::{debug, trace};
 
 use crate::{
     context::{
@@ -282,9 +282,43 @@ impl Context {
         // Safety: caller ensures params pointer is correct
         unsafe { *params.cast() = ret };
     }
+    /// ### Parameters
+    /// `shader`
+    ///
+    /// > Specifies the shader object to be deleted.
+    ///
+    /// ### Description
+    /// [**glDeleteShader**](crate::context::Context::oxidegl_delete_shader) frees
+    /// the memory and invalidates the name associated with the shader object specified
+    /// by `shader`. This command effectively undoes the effects of a call to [**glCreateShader**](crate::context::Context::oxidegl_create_shader).
+    ///
+    /// If a shader object to be deleted is attached to a program object, it will
+    /// be flagged for deletion, but it will not be deleted until it is no longer
+    /// attached to any program object, for any rendering context (i.e., it must
+    /// be detached from wherever it was attached before it will be deleted). A
+    /// value of 0 for `shader` will be silently ignored.
+    ///
+    /// To determine whether an object has been flagged for deletion, call [**glGetShader**](crate::context::Context::oxidegl_get_shader)
+    /// with arguments `shader` and [`GL_DELETE_STATUS`](crate::enums::GL_DELETE_STATUS).
+    ///
+    /// ### Associated Gets
+    /// [**glGetAttachedShaders**](crate::context::Context::oxidegl_get_attached_shaders)
+    /// with the program object to be queried
+    ///
+    /// [**glGetShader**](crate::context::Context::oxidegl_get_shader) with arguments
+    /// `shader` and [`GL_DELETE_STATUS`](crate::enums::GL_DELETE_STATUS)
+    ///
+    /// [**glIsShader**](crate::context::Context::oxidegl_is_shader)
+
+    pub fn oxidegl_delete_shader(&mut self, shader: GLuint) {
+        let name = ObjectName::from_raw(shader);
+        debug!("marking {:?} for deletion", name);
+        self.gl_state.shaders_to_delete.insert(name);
+    }
 }
 
 impl Context {
+    //TODO: replace with gl_state.shader_list.get_raw_mut()
     pub(crate) fn get_shader_raw_mut(&mut self, shader: GLuint) -> &mut Shader {
         self.gl_state
             .shader_list
