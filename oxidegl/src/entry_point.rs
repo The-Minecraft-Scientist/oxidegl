@@ -28,6 +28,16 @@ unsafe extern "C" fn oxidegl_platform_init() {
         .unwrap();
     trace!("OxideGL Logger initialized");
     info!("OxideGL {}", Context::VERSION_INFO);
+    #[cfg(debug_assertions)]
+    // Safety: We pray that we aren't racing with anyone else's code writing env vars.
+    // This isn't *too* bad because we're running on the main thread, which is where
+    // a majority of the writes occur in practice.
+    unsafe {
+        use std::env::set_var;
+        set_var("MTL_DEBUG_LAYER", "1");
+        set_var("MTL_SHADER_VALIDATION", "1");
+        set_var("MTL_DEBUG_LAYER_VALIDATE_UNRETAINED_RESOURCES", "0x4");
+    }
 }
 
 #[no_mangle]

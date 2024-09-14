@@ -1,7 +1,6 @@
 use core::{ffi::c_void, fmt::Debug, ptr::NonNull};
 
 use log::debug;
-use objc2::{rc::Retained, runtime::ProtocolObject};
 use objc2_metal::{MTLBuffer, MTLDevice, MTLResourceOptions};
 
 use crate::{
@@ -18,6 +17,7 @@ use crate::{
         BufferAccess, BufferStorageMask, BufferStorageTarget, BufferTarget, BufferUsage,
         MapBufferAccessMask,
     },
+    RetainedObject,
 };
 
 impl Context {
@@ -633,7 +633,7 @@ pub(crate) struct Buffer {
 #[derive(Debug)]
 pub(crate) struct RealizedBufferInternal {
     pub(crate) mapping: Option<MappingInfo>,
-    pub(crate) mtl: Retained<ProtocolObject<dyn MTLBuffer>>,
+    pub(crate) mtl: RetainedObject<dyn MTLBuffer>,
 }
 impl Buffer {
     // fn get_best_storage_mode_for_access_hint(access: BufferAccess, usage_hint: BufferUsage) -> MTLStorageMode {

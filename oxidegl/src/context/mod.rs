@@ -1,6 +1,7 @@
 use self::state::GLState;
 use objc2::rc::Id;
 use objc2_app_kit::NSView;
+use objc2_metal::MTLPixelFormat;
 use platform::PlatformState;
 use state::NeedsRefreshBits;
 use std::cell::Cell;
@@ -18,9 +19,11 @@ use std::ptr::NonNull;
 )]
 pub(crate) mod commands;
 
+pub(crate) mod framebuffer;
 pub(crate) mod program;
 pub(crate) mod shader;
 pub(crate) mod state;
+pub(crate) mod texture;
 
 pub(crate) mod platform;
 
@@ -47,10 +50,12 @@ impl Context {
 
 impl Context {
     pub(crate) fn new(view: &Id<NSView>) -> Self {
+        //TODO: pixel format real
+        let platform_state = PlatformState::new(view, MTLPixelFormat::RGBA8Unorm);
         Self {
             dirty_components: NeedsRefreshBits::empty(),
             gl_state: GLState::default(),
-            platform_state: PlatformState::new(view),
+            platform_state,
         }
     }
 }

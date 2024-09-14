@@ -767,7 +767,7 @@ fn print_enum_group_enum<'a>(
 ) -> Result<()> {
     writeln!(
         w,
-        "#[derive(Debug, Clone, Copy, PartialEq, Eq, ::strum_macros::FromRepr)]"
+        "#[derive(Debug, Clone, Copy, PartialEq, Eq)]\n#[cfg_attr(debug_assertions, derive(::strum_macros::FromRepr))]"
     )?;
     writeln!(w, "#[repr(u32)]")?;
     writeln!(w, "pub enum {name} {{")?;

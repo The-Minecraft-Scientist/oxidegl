@@ -7,7 +7,10 @@ use objc2::{rc::Retained, runtime::ProtocolObject};
 use objc2_foundation::NSString;
 use objc2_metal::{MTLDevice, MTLFunction, MTLLibrary};
 
-use crate::enums::{ShaderType, UseProgramStageMask};
+use crate::{
+    enums::{ShaderType, UseProgramStageMask},
+    RetainedObject,
+};
 
 use super::{
     shader::Shader,
@@ -84,8 +87,11 @@ impl Program {
     }
     fn compile_program_stage_shaders<'a>(
         mut shaders: impl Iterator<Item = &'a Shader>,
-        device: &Retained<ProtocolObject<dyn MTLDevice>>,
-    ) -> (Retained<ProtocolObject<dyn MTLLibrary>>, EntryPoint) {
+        device: &RetainedObject<dyn MTLDevice>,
+    ) -> (
+        RetainedObject<dyn MTLLibrary>,
+        RetainedObject<dyn MTLFunction>,
+    ) {
         //TODO handle linkage of multiple shaders per stage
 
         let shader = *shaders.next().as_ref().expect("shaders iter was empty");
@@ -124,11 +130,11 @@ impl Program {
         }
     }
 
-    //TODO do shader "linking" (compilation to MTL lib) off of the main thread
+    //TODO do shader "linking" (mostly metallib compilation) off of the main thread
     pub(crate) fn link(
         &mut self,
         shader_list: &mut NamedObjectList<Shader>,
-        device: &Retained<ProtocolObject<dyn MTLDevice>>,
+        device: &RetainedObject<dyn MTLDevice>,
     ) {
         debug!("attempting to link {:?}", self.name);
         trace!("Current shader program state: {:?}", &self);
@@ -172,8 +178,7 @@ impl NamedObject for Program {}
 #[derive(Debug)]
 pub struct LinkedShaderProgram {
     // TODO: compute shaders
-    libs: Vec<Retained<ProtocolObject<dyn MTLLibrary>>>,
-    fragment_entry: Option<EntryPoint>,
-    vertex_entry: Option<EntryPoint>,
+    libs: Vec<RetainedObject<dyn MTLLibrary>>,
+    fragment_entry: Option<RetainedObject<dyn MTLFunction>>,
+    vertex_entry: Option<RetainedObject<dyn MTLFunction>>,
 }
-pub(crate) type EntryPoint = Retained<ProtocolObject<dyn MTLFunction>>;

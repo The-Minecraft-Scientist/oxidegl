@@ -5,11 +5,12 @@ use crate::context::state::{NamedObject, ObjectName};
 
 use super::gl_types::GLenum;
 use core::fmt::Debug;
-
+/// Trait defined for all custom bitfield and enum types which allows them to be unsafely created
+/// from an underlying GLenum (u32) value with checks on debug builds
 pub trait UnsafeFromGLenum {
     unsafe fn unsafe_from_gl_enum(val: GLenum) -> Self;
 }
-/// Helper trait to convert from "raw" `GLenums` to wrappers around subsets of those that are valid for certain functions
+/// Helper trait to convert from "raw" [`GLenums`](crate::dispatch::gl_types::GLenum) to wrappers around subsets of those that are valid for certain functions
 pub trait GLenumExt<T> {
     unsafe fn into_enum(self) -> T;
 }
@@ -36,6 +37,7 @@ pub trait GlDstType: Copy {
 /// Trait that describes how to convert a given type into a value that may be returned according to the
 /// conversion rules for state items in the GL spec
 pub trait SrcType<Dst: GlDstType>: Copy {
+    /// Convert from source type Self to the given destination type
     fn convert(self) -> Dst;
 }
 pub trait MaybeObjectName<T> {
@@ -57,6 +59,7 @@ impl<T> MaybeObjectName<T> for CurrentBinding {
         None
     }
 }
+/// Trait that abstracts indexing for cases where a function should return
 pub trait IndexType: Copy + Sized + Debug {
     fn get(self) -> Option<usize>;
     fn get_numeric(self) -> usize {
@@ -101,7 +104,9 @@ impl Debug for NoIndex {
 /// given by the GL Spec for state entries and unsafely writing it to a type-erased allocation
 pub trait StateQueryWrite<Dst: GlDstType> {
     type It: SrcType<Dst>;
+    /// Write the GL state attributes stored in Self at index I to the destination pointer
     unsafe fn write_out<I: IndexType>(&self, idx: I, ptr: *mut Dst);
+    /// Write the GL state attributes stored in Self to the destination pointer
     unsafe fn write_noindex(&self, ptr: *mut Dst) {
         // Safety: See Self::write_out
         unsafe { self.write_out(NoIndex, ptr) };

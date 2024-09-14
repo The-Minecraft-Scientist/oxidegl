@@ -62,7 +62,7 @@ impl Shader {
 impl NamedObject for Shader {}
 
 impl Shader {
-    //TODO: experiment shader parsing, translation and compilation off of the main thread (if shader compilation perf becomes an issue)
+    //TODO: experiment: shader parsing, translation and compilation off of the main thread (if shader compilation perf becomes an issue)
     //TODO: collapse global uniforms into uniform block (or fork naga and add global uniform support)
     pub(crate) fn compile(&mut self) {
         thread_local! {

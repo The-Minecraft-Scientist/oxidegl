@@ -2,7 +2,7 @@
 #![warn(clippy::pedantic, clippy::undocumented_unsafe_blocks)]
 #![allow(clippy::missing_panics_doc, clippy::module_name_repetitions)]
 
-use std::error::Error;
+use objc2::{rc::Retained, runtime::ProtocolObject};
 
 pub mod context;
 pub mod entry_point;
@@ -29,54 +29,8 @@ macro_rules! debug_unreachable {
         }
     };
 }
-
-pub(crate) trait OptionResultExt<T> {
-    #[track_caller]
-    /// # Safety
-    /// Caller must ensure that:
-    /// This Result or Option is Some or Ok OR that it is acceptable to cause UB if this Result or Option is not Some or Ok
-    unsafe fn debug_expect(self, msg: &str) -> T;
-    #[track_caller]
-    /// # Safety
-    /// Caller must ensure that:
-    /// This Result or Option is Some or Ok OR that it is acceptable to cause UB if this Result or Option is not Some or Ok
-    unsafe fn debug_unwrap(self) -> T;
-}
-impl<T, E: Error> OptionResultExt<T> for Result<T, E> {
-    unsafe fn debug_expect(self, msg: &str) -> T {
-        #[cfg(debug_assertions)]
-        return self.expect(msg);
-        #[cfg(not(debug_assertions))]
-        // Safety: Caller ensures self is Ok (or that we are allowed to cause UB)
-        return unsafe { self.unwrap_unchecked() };
-    }
-
-    unsafe fn debug_unwrap(self) -> T {
-        #[cfg(debug_assertions)]
-        return self.unwrap();
-        #[cfg(not(debug_assertions))]
-        // Safety: Caller ensures self is Ok (or that we are allowed to cause UB)
-        return unsafe { self.unwrap_unchecked() };
-    }
-}
-impl<T> OptionResultExt<T> for Option<T> {
-    unsafe fn debug_expect(self, msg: &str) -> T {
-        #[cfg(debug_assertions)]
-        return self.expect(msg);
-        #[cfg(not(debug_assertions))]
-        // Safety: Caller ensures self is Some (or that we are allowed to cause UB)
-        return unsafe { self.unwrap_unchecked() };
-    }
-
-    unsafe fn debug_unwrap(self) -> T {
-        #[cfg(debug_assertions)]
-        return self.unwrap();
-        #[cfg(not(debug_assertions))]
-        // Safety: Caller ensures self is Some (or that we are allowed to cause UB)
-        return unsafe { self.unwrap_unchecked() };
-    }
-}
 #[must_use]
-pub fn type_name<T>() -> &'static str {
+pub fn type_name<T: ?Sized>() -> &'static str {
     std::any::type_name::<T>().split("::").last().unwrap()
 }
+pub type RetainedObject<T> = Retained<ProtocolObject<T>>;

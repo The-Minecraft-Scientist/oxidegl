@@ -1,6 +1,6 @@
 [package]
 name = "oxidegl"
-version = "0.1.0"
+version = "0.0.1"
 edition = "2021"
 [lib]
 crate-type = ["cdylib"]
@@ -27,13 +27,17 @@ objc2-quartz-core = { version = "0.2.2", features = [
 ] }
 objc2-foundation = "0.2.2"
 
-# Need access to raw vm_allocate for [MTLDevice newBufferWithBytesNoCopy];
-machx = "0.4.9"
+# Need access to raw mach vm_allocate for [MTLDevice newBufferWithBytesNoCopy]
+# machx = "0.4.9"
+# TODO: rework buffer alloc
 
 [dependencies]
+# FromRepr used for checked GLenum wrapper creation on debug builds
+strum_macros = "0.26.3"
+
 # Logging
 log = "0.4.21"
-flexi_logger = "0.28"
+flexi_logger = "0.29"
 
 # Bitflags for GL Bitmasks
 bitflags = "2.6.0"
@@ -41,12 +45,10 @@ bitflags = "2.6.0"
 ahash = "0.8.11"
 # Macro utilities
 concat-idents = "1.1.5"
-# FromRepr used for checked GLenum wrapper creation
-strum_macros = "0.26.3"
 # Used for const str/[u8] appending for commit hash/version constants
 constcat = "0.5.0"
 # Used for glsl/spv -> MSL shader conversion
-naga = { version = "22.0.0", features = ["glsl-in", "spv-in", "msl-out"] }
+naga = { version = "22.1.0", features = ["glsl-in", "spv-in", "msl-out"] }
 
 # Expose max log level features
 [features]

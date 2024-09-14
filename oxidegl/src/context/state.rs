@@ -19,6 +19,7 @@ use crate::{
 
 use super::{
     commands::{buffer::Buffer, vao::Vao},
+    framebuffer::{Framebuffer, FramebufferInternal},
     program::Program,
     shader::Shader,
 };
@@ -26,19 +27,27 @@ use super::{
 #[derive(Debug)]
 pub struct GLState {
     pub(crate) characteristics: Characteristics,
+
     pub(crate) buffer_bindings: BufferBindings,
     pub(crate) buffer_list: NamedObjectList<Buffer>,
+
     pub(crate) vao_list: NamedObjectList<Vao>,
     pub(crate) vao_binding: Option<ObjectName<Vao>>,
+
     pub(crate) shader_list: NamedObjectList<Shader>,
     pub(crate) shaders_to_delete: HashSet<ObjectName<Shader>>,
+
     pub(crate) program_list: NamedObjectList<Program>,
     pub(crate) programs_to_delete: HashSet<ObjectName<Program>>,
     pub(crate) program_binding: Option<ObjectName<Program>>,
+
+    pub(crate) framebufer_list: NamedObjectList<Framebuffer>,
+    pub(crate) framebuffer_binding: Option<ObjectName<Framebuffer>>,
+    pub(crate) default_framebuffer: FramebufferInternal,
+
     pub(crate) point_size: f32,
     pub(crate) line_width: f32,
-
-    //Todo, move this stuff to a dedicated ClearState struct
+    //TODO move this stuff to a dedicated ClearState struct
     pub(crate) clear_color: [f32; 4],
     pub(crate) clear_depth: f32,
     pub(crate) clear_mask: ClearBufferMask,
@@ -58,6 +67,7 @@ pub const MAX_SHADER_STORAGE_BUFFER_BINDINGS: usize = 16;
 pub const MAX_TRANSFORM_FEEDBACK_BUFFER_BINDINGS: usize = 16;
 pub const MAX_UNIFORM_BUFFER_BINDINGS: usize = 16;
 
+/// Keeps track of all buffer bindings in this OpenGL context
 #[derive(Debug, Clone, Copy, Default)]
 pub struct BufferBindings {
     /// Vertex attribute buffer
@@ -111,6 +121,10 @@ impl GLState {
             programs_to_delete: HashSet::new(),
             program_binding: None,
 
+            framebufer_list: NamedObjectList::new(),
+            framebuffer_binding: None,
+            default_framebuffer: FramebufferInternal::new(),
+
             point_size: 1.0,
             line_width: 1.0,
 
@@ -148,7 +162,7 @@ impl Characteristics {
 }
 
 #[derive(Debug)]
-/// Tracks the state of a given *name* throughout the GL server lifetime
+/// Tracks the state of a given object *name* throughout the object's lifetime
 pub enum NameState<T> {
     /// No object is present; the object previously resident in this name has been deleted
     Empty,
@@ -157,33 +171,38 @@ pub enum NameState<T> {
     /// This object name is *bound* to an object with the given state
     Bound(T),
 }
+/// Represents the name of an object (whose type is given in its generic parameter).
+/// Note that the generic parameter is simply there to prevent accidental misuse of
+/// object names, since an arbitrary ObjectName can be safely created
 #[repr(transparent)]
-pub struct ObjectName<Obj>(NonZeroU32, PhantomData<for<'a> fn(&'a Obj) -> &'a Obj>);
-impl<T> PartialEq for ObjectName<T> {
+pub struct ObjectName<Obj: ?Sized>(NonZeroU32, PhantomData<for<'a> fn(&'a Obj) -> &'a Obj>);
+
+impl<T: ?Sized> PartialEq for ObjectName<T> {
     fn eq(&self, other: &Self) -> bool {
         self.0 == other.0
     }
 }
-impl<T> Eq for ObjectName<T> {}
-impl<T> Clone for ObjectName<T> {
+impl<T: ?Sized> Eq for ObjectName<T> {}
+impl<T: ?Sized> Clone for ObjectName<T> {
     fn clone(&self) -> Self {
         *self
     }
 }
-impl<T> std::hash::Hash for ObjectName<T> {
+impl<T: ?Sized> std::hash::Hash for ObjectName<T> {
     fn hash<H: std::hash::Hasher>(&self, state: &mut H) {
         self.0.hash(state);
     }
 }
-impl<T> core::fmt::Debug for ObjectName<T> {
+impl<T: ?Sized> core::fmt::Debug for ObjectName<T> {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         f.pad(&format!("{} #{}", type_name::<T>(), self.0.get()))
     }
 }
-impl<T> Copy for ObjectName<T> {}
+impl<T: ?Sized> Copy for ObjectName<T> {}
 impl<T: NamedObject> ObjectName<T> {
     #[allow(clippy::cast_possible_truncation)]
     #[inline]
+    /// unsafely create an ObjectName from a 0-indexed internal object ID (without checking overflow)
     unsafe fn from_idx(val: usize) -> Self {
         Self(
             // Safety: Caller ensures val is <= u32::MAX - 1
@@ -192,10 +211,12 @@ impl<T: NamedObject> ObjectName<T> {
         )
     }
     #[inline]
+    /// Try creating a new ObjectName from a possibly-zero input value
     pub fn try_from_raw(name: u32) -> Option<Self> {
         Some(Self(NonZeroU32::new(name)?, PhantomData))
     }
     #[inline]
+    /// Create a new ObjectName from a possibly-zero input value, panicking on zero
     pub fn from_raw(name: u32) -> Self {
         Self(
             NonZeroU32::new(name).expect("UB: object name at 0 is reserved"),
@@ -203,15 +224,23 @@ impl<T: NamedObject> ObjectName<T> {
         )
     }
     #[inline]
+    /// Convert this ObjectName to a 0-indexed ID for usage indexing object lists
     pub fn to_idx(self) -> usize {
         (self.0.get() - 1) as usize
     }
+    /// Get the raw inner value of this object name
     #[inline]
     pub fn to_raw(self) -> u32 {
         self.0.get()
     }
+    /// Cast the type of object this name refers to a different type
+    #[inline]
+    pub fn cast<U: ?Sized>(self) -> ObjectName<U> {
+        ObjectName(self.0, PhantomData)
+    }
 }
 
+/// Marker trait that marks a struct as an openGL object
 pub trait NamedObject {}
 
 impl<Dst: GlDstType, T> SrcType<Dst> for Option<ObjectName<T>> {
@@ -315,6 +344,7 @@ impl<Obj: NamedObject> NamedObjectList<Obj> {
             }
         }
     }
+    /// Generates a new valid object name (e.g. for glGen*)
     // Overflow is checked
     #[allow(clippy::cast_possible_truncation)]
     #[inline]
@@ -329,6 +359,10 @@ impl<Obj: NamedObject> NamedObjectList<Obj> {
         self.objects.push(NameState::Named);
         name
     }
+
+    /// Generates a new object name, calls the given initialization
+    /// function on the name, adds the newly created object to this list,
+    /// and returns the name of the newly generated object
     // Overflow is checked
     #[allow(clippy::cast_possible_truncation)]
     #[inline]
@@ -345,10 +379,13 @@ impl<Obj: NamedObject> NamedObjectList<Obj> {
         self.objects.push(NameState::Bound(create(name)));
         name
     }
+    /// Whether the given object name points to a valid and initialized object
     #[inline]
     pub(crate) fn is(&self, name: ObjectName<Obj>) -> bool {
         self.get_opt(name).is_some()
     }
+    /// Immediately remove an object from the list
+    #[inline]
     pub(crate) fn delete(&mut self, name: ObjectName<Obj>) {
         if let Some(entry) = self.objects.get_mut(name.to_idx()) {
             let mut e = NameState::Empty;
@@ -357,6 +394,7 @@ impl<Obj: NamedObject> NamedObjectList<Obj> {
             drop(e);
         }
     }
+    /// Helper implementing the glDelete* pattern
     #[inline]
     pub(crate) unsafe fn delete_objects(&mut self, n: GLsizei, to_delete: *const GLuint) {
         debug_assert!(
@@ -380,6 +418,7 @@ impl<Obj: NamedObject> NamedObjectList<Obj> {
             debug!(target: "object alloc", "deleted {} {name:?}", type_name::<Obj>());
         }
     }
+    /// Helper implementing the glGen* pattern
     #[inline]
     pub(crate) unsafe fn gen_obj(&mut self, n: GLsizei, names: *mut GLuint) {
         debug_assert!(!names.is_null(), "UB: object name array pointer was null");
@@ -397,6 +436,7 @@ impl<Obj: NamedObject> NamedObjectList<Obj> {
             unsafe { names = names.add(1) }
         }
     }
+    /// Helper implementing the glCreate* pattern, using an initialization function to fully initialize the objects in question
     #[inline]
     pub(crate) unsafe fn create_obj(
         &mut self,
@@ -424,17 +464,26 @@ impl<Obj: NamedObject> NamedObjectList<Obj> {
         }
     }
     #[inline]
+    /// Helper wrapping `is` to take a raw, possibly-zero `GLenum`
     pub(crate) fn is_obj(&self, name: GLuint) -> GLboolean {
         ObjectName::try_from_raw(name).is_some_and(|name| self.is(name))
     }
     #[inline]
+    /// Helper to ensure that a given object name is fully initialized prior to use
+    /// (to support GL's cursed init-at-first-binding pattern)
     pub(crate) fn ensure_init(
         &mut self,
         name: ObjectName<Obj>,
-        default: impl Fn(ObjectName<Obj>) -> Obj + Copy,
+        default: impl Fn(ObjectName<Obj>) -> Obj,
     ) {
-        if let Some(NameState::Named) = self.objects.get(name.to_idx()) {
-            self.objects[name.to_idx()] = NameState::Bound(default(name));
+        match self.objects.get(name.to_idx()) {
+            Some(NameState::Named) => {
+                self.objects[name.to_idx()] = NameState::Bound(default(name));
+            }
+            Some(NameState::Bound(_)) => {}
+            _ => {
+                panic!("tried to ensure_init an uninitialized object name!")
+            }
         }
     }
 }

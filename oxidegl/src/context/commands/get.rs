@@ -1,8 +1,11 @@
 use log::debug;
 
-use crate::dispatch::conversions::{IndexType, NoIndex};
 #[allow(clippy::wildcard_imports)]
 use crate::dispatch::gl_types::*;
+use crate::{
+    context::framebuffer::MAX_COLOR_ATTACHMENTS,
+    dispatch::conversions::{IndexType, NoIndex},
+};
 
 #[allow(clippy::enum_glob_use)]
 use crate::{
@@ -1538,10 +1541,11 @@ impl Context {
                     crate::context::state::MAX_TRANSFORM_FEEDBACK_BUFFER_BINDINGS
                         .write_out(idx, ptr);
                 }
+                MaxColorAttachments => MAX_COLOR_ATTACHMENTS.write_out(idx, ptr),
                 // Buffer Bindings
                 // FIXME `VertexArray` actually refers to the current VAO binding, *not* the current `VertexArray*BufferBinding*`
                 // waiting on codegen update
-                VertexArray => {
+                ArrayBufferBinding => {
                     self.gl_state.buffer_bindings.array.write_out(idx, ptr);
                 }
                 CopyReadBufferBinding => {
@@ -1598,6 +1602,8 @@ impl Context {
                     self.gl_state.buffer_bindings.atomic_counter[idx.get().unwrap_or(0)]
                         .write_noindex(ptr);
                 }
+                //VAO binding
+                VertexArrayBinding => self.gl_state.vao_binding.write_out(idx, ptr),
 
                 PointSize => self.gl_state.point_size.write_out(idx, ptr),
                 PointSizeRange => self
