@@ -173,7 +173,7 @@ pub enum NameState<T> {
 }
 /// Represents the name of an object (whose type is given in its generic parameter).
 /// Note that the generic parameter is simply there to prevent accidental misuse of
-/// object names, since an arbitrary ObjectName can be safely created
+/// object names, since an arbitrary `ObjectName` can be safely created
 #[repr(transparent)]
 pub struct ObjectName<Obj: ?Sized>(NonZeroU32, PhantomData<for<'a> fn(&'a Obj) -> &'a Obj>);
 
@@ -202,7 +202,7 @@ impl<T: ?Sized> Copy for ObjectName<T> {}
 impl<T: NamedObject> ObjectName<T> {
     #[allow(clippy::cast_possible_truncation)]
     #[inline]
-    /// unsafely create an ObjectName from a 0-indexed internal object ID (without checking overflow)
+    /// unsafely create an `ObjectName` from a 0-indexed internal object ID (without checking overflow)
     unsafe fn from_idx(val: usize) -> Self {
         Self(
             // Safety: Caller ensures val is <= u32::MAX - 1
@@ -211,12 +211,12 @@ impl<T: NamedObject> ObjectName<T> {
         )
     }
     #[inline]
-    /// Try creating a new ObjectName from a possibly-zero input value
+    /// Try creating a new `ObjectName` from a possibly-zero input value
     pub fn try_from_raw(name: u32) -> Option<Self> {
         Some(Self(NonZeroU32::new(name)?, PhantomData))
     }
     #[inline]
-    /// Create a new ObjectName from a possibly-zero input value, panicking on zero
+    /// Create a new `ObjectName` from a possibly-zero input value, panicking on zero
     pub fn from_raw(name: u32) -> Self {
         Self(
             NonZeroU32::new(name).expect("UB: object name at 0 is reserved"),
@@ -224,7 +224,7 @@ impl<T: NamedObject> ObjectName<T> {
         )
     }
     #[inline]
-    /// Convert this ObjectName to a 0-indexed ID for usage indexing object lists
+    /// Convert this `ObjectName` to a 0-indexed ID for usage indexing object lists
     pub fn to_idx(self) -> usize {
         (self.0.get() - 1) as usize
     }

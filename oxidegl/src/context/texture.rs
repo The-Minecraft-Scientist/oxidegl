@@ -12,7 +12,7 @@ impl GLPixelTypeFormat {
     pub fn new(ty: PixelType, fmt: PixelFormat) -> Self {
         Self { ty, fmt }
     }
-    pub fn as_mtl_format(self) -> MTLPixelFormat {
+    pub fn to_mtl_format(self) -> MTLPixelFormat {
         use MTLPixelFormat as MF;
         use PixelFormat::{
             DepthComponent, DepthStencil, Red, RedInteger, Rg, RgInteger, Rgba, RgbaInteger,

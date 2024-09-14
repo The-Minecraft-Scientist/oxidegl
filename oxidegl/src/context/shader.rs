@@ -1,6 +1,6 @@
 use std::{cell::Cell, fmt::Debug};
 
-use log::{debug, error, warn};
+use log::{debug, error};
 use naga::{
     front::glsl,
     valid::{Capabilities, ModuleInfo, ValidationFlags, Validator},

@@ -6,7 +6,7 @@ use crate::context::state::{NamedObject, ObjectName};
 use super::gl_types::GLenum;
 use core::fmt::Debug;
 /// Trait defined for all custom bitfield and enum types which allows them to be unsafely created
-/// from an underlying GLenum (u32) value with checks on debug builds
+/// from an underlying `GLenum` (u32) value with checks on debug builds
 pub trait UnsafeFromGLenum {
     unsafe fn unsafe_from_gl_enum(val: GLenum) -> Self;
 }

@@ -1,21 +1,18 @@
-use std::{borrow::Borrow, ops::Deref};
 
 use ahash::{HashSet, HashSetExt};
 use log::{debug, trace};
 use naga::back::msl::{Options, PipelineOptions};
-use objc2::{rc::Retained, runtime::ProtocolObject};
 use objc2_foundation::NSString;
 use objc2_metal::{MTLDevice, MTLFunction, MTLLibrary};
 
 use crate::{
-    enums::{ShaderType, UseProgramStageMask},
+    enums::ShaderType,
     RetainedObject,
 };
 
 use super::{
     shader::Shader,
     state::{NamedObject, NamedObjectList, ObjectName},
-    Context,
 };
 
 #[derive(Debug)]

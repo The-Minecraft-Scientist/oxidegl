@@ -39,9 +39,6 @@ pub enum Task {
     /// Generate OxideGL rust GL bindings/placeholder impls
     GenerateBindings,
 
-    // /// Run a "test". A test is a name=relative_path_to_binary pair given in tests.txt.
-    // /// Paths given are relative to the workspace root.
-    // RunTest,
     /// Init GLFW git submodule if it hasn't been already
     GetGLFW,
 
@@ -53,6 +50,10 @@ pub enum Task {
 
     /// Generates a GLFW build folder in oxidegl-glfw/build
     GenGLFWBuild,
+
+    /// Runs `cargo fix --allow-dirty && cargo clippy --fix --allow-dirty`
+    #[command(name = "fix")]
+    CargoFix,
 }
 #[enum_dispatch(Task)]
 pub trait TaskTrait: Sized {
@@ -60,6 +61,7 @@ pub trait TaskTrait: Sized {
     /// If you need serial execution of a list of dependecies, chain the dependency to be executed serially from its dependent tasks' `dependencies` function.
     ///
     /// Default implemention returns `None`
+    ///
     fn dependencies(&self) -> Option<Box<[Task]>> {
         None
     }
@@ -155,7 +157,7 @@ pub struct GenGLFWBuild {
 }
 impl TaskTrait for GenGLFWBuild {
     fn dependencies(&self) -> Option<Box<[Task]>> {
-        Some(Box::new([GetGLFW {}.into()]))
+        Some(Box::new([GetGLFW.into()]))
     }
 
     fn perform(&self) -> Result<()> {
@@ -303,7 +305,7 @@ fn rustfmt_file(path: impl AsRef<Path>) -> Result<()> {
 macro_rules! stub_arg {
     ($name:ident) => {
         #[derive(clap::Args, Clone, Eq, PartialEq, Hash, Debug)]
-        pub struct $name {}
+        pub struct $name;
     };
 }
 stub_arg!(GetGLFW);
@@ -312,7 +314,7 @@ impl TaskTrait for GetGLFW {
         submodule_init(&["oxidegl-glfw"])
     }
     fn dependencies(&self) -> Option<Box<[Task]>> {
-        Some([GetXcodeCommandLineTools {}.into()].into())
+        Some([GetXcodeCommandLineTools.into()].into())
     }
 }
 stub_arg!(GetKhronosStuff);
@@ -322,6 +324,21 @@ impl TaskTrait for GetKhronosStuff {
     }
     fn dependencies(&self) -> Option<Box<[Task]>> {
         Some([GetXcodeCommandLineTools {}.into()].into())
+    }
+}
+stub_arg!(CargoFix);
+impl TaskTrait for CargoFix {
+    fn perform(&self) -> Result<()> {
+        std::process::Command::new("cargo")
+            .args(["fix", "--allow-dirty"])
+            .spawn()?
+            .try_wait()?;
+        std::process::Command::new("cargo")
+            .arg("clippy")
+            .args(["--fix", "--allow-dirty"])
+            .spawn()?
+            .try_wait()?;
+        Ok(())
     }
 }
 stub_arg!(GetXcodeCommandLineTools);
