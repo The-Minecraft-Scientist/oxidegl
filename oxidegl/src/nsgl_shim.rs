@@ -180,6 +180,9 @@ struct DyldInterposeTuple {
 unsafe impl Sync for DyldInterposeTuple {}
 
 #[allow(non_snake_case)]
+/// This function overrides the default implementation of CFBundleGetFunctionPointerForName, which is used
+/// by consumers of NSGL to look up all of the openGL command functions. When called, it checks if the bundle name for
+/// the function being looked up is "com.apple.opengl", and if so, redirects the lookup to a dlsym on the OxideGL dylib.
 unsafe extern "C" fn CFBundleGetFunctionPointerForNameOverride(
     bundle: CFBundleRef,
     function_name: CFStringRef,
@@ -195,7 +198,9 @@ unsafe extern "C" fn CFBundleGetFunctionPointerForNameOverride(
             c"com.apple.opengl".as_ptr(),
             kCFStringEncodingASCII,
         );
+        // Detect opengl bundle name
         if CFEqual(bundle_name.cast(), comp_str.cast()) == 1 {
+            //Redirect function lookup for openGL functions
             const BUF_SIZE: u32 = 1024;
             let mut buf = [0u8; BUF_SIZE as usize];
             //wrap only happens on 32 bit platforms, none of which implement Metal anyways
@@ -228,6 +233,7 @@ unsafe extern "C" fn CFBundleGetFunctionPointerForNameOverride(
 // I love linker magic
 #[link_section = "__DATA,__interpose"]
 #[allow(private_interfaces)]
+/// Installs the above override function into a special section in the binary that tells dyld to actually do the override
 pub static DYLD_CF_BUNDLE_GET_FUNCTION_PTR_FOR_NAME_INTERPOSE: DyldInterposeTuple =
     DyldInterposeTuple {
         replacement: CFBundleGetFunctionPointerForNameOverride as unsafe extern "C" fn(_, _) -> _
