@@ -113,7 +113,7 @@ extern_class!(
 
 impl OXGLOxideGlCtxShim {
     /// # Safety
-    /// Must be called from a serial objc context (e.g. from a static initializer or +load function)
+    /// Must be called from a serial objc context (e.g. a static initializer or +load method)
     unsafe fn install_swizzle() {
         //TODO: entirely rawdog the objc runtime C API here instead of mixing the safe and unsafe bindings
         static INSTALL_SWIZZLE_ONCE: Once = Once::new();
@@ -142,6 +142,7 @@ impl OXGLOxideGlCtxShim {
                         unsafe extern "C" fn(_, _) -> _,
                         unsafe extern "C" fn(),
                     >(ALLOC_THE_SHIM_IMP)),
+                    // Magic string :)
                     c"@16@0:8".as_ptr(),
                 ));
             };
