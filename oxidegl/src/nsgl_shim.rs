@@ -45,7 +45,7 @@ declare_class! {
     }
     unsafe impl OXGLOxideGlCtxShim {
         #[method_id(initWithFormat:shareContext:)]
-        fn init_with_format(this: Allocated<Self>, _format: &AnyClass, share: Option<&Self>) -> Option<Retained<Self>> {
+        fn init_with_format_share_ctx(this: Allocated<Self>, _format: &AnyClass, share: Option<&Self>) -> Option<Retained<Self>> {
             unsafe {oxidegl_platform_init()}
             println!("fake context init");
             assert!(share.is_none(), "OxideGL does not support linked contexts!");
@@ -133,7 +133,7 @@ impl OXGLOxideGlCtxShim {
                 // here is **EXTREMELY** sus and we probably shouldn't be using the safe API and references at all in the above code
                 // this is the primary reason that this function needs to be externally synchronized; We need to ensure that
                 // our mutations to the class do not race with other threads potential usage of it
-                dbg!(class_replaceMethod(
+                class_replaceMethod(
                     ptr::from_ref(opengl_ctx_class)
                         .cast::<objc_class>()
                         .cast_mut(),
@@ -144,7 +144,7 @@ impl OXGLOxideGlCtxShim {
                     >(ALLOC_THE_SHIM_IMP)),
                     // Magic string :)
                     c"@16@0:8".as_ptr(),
-                ));
+                );
             };
         });
     }
