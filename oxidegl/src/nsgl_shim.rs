@@ -19,21 +19,17 @@ use core_foundation_sys::{
     },
 };
 use ctor::ctor;
-use libc::{
-    dlopen, dlsym, RTLD_LAZY,
-    RTLD_LOCAL,
-};
+use libc::{dlopen, dlsym, RTLD_LAZY, RTLD_LOCAL};
 use objc2::{
     declare_class, extern_class,
-    ffi::{
-        class_replaceMethod, objc_class,
-    },
+    ffi::{class_replaceMethod, objc_class},
     msg_send_id, mutability,
     rc::{Allocated, Retained},
     runtime::{AnyClass, NSObject, Sel},
     sel, ClassType, DeclaredClass,
 };
 use objc2_foundation::MainThreadMarker;
+//TODO: safety comments for this hot mess
 
 declare_class! {
     /// This is an objective C class whose methods shadow NSOpenGLContext's.
@@ -95,7 +91,6 @@ declare_class! {
     }
 }
 unsafe extern "C" fn alloc_the_shim(_this: *const c_void, _cmd: Sel) -> *mut OXGLOxideGlCtxShim {
-    println!("cursed alloc called");
     let mut alloced = MainThreadMarker::new()
         .unwrap()
         .alloc::<OXGLOxideGlCtxShim>();
@@ -120,6 +115,7 @@ impl OXGLOxideGlCtxShim {
     /// # Safety
     /// Must be called from a serial objc context (e.g. from a static initializer or +load function)
     unsafe fn install_swizzle() {
+        //TODO: entirely rawdog the objc runtime C API here instead of mixing the safe and unsafe bindings
         static INSTALL_SWIZZLE_ONCE: Once = Once::new();
         INSTALL_SWIZZLE_ONCE.call_once(|| {
             let _self_class = black_box(OXGLOxideGlCtxShim::class());
@@ -130,13 +126,13 @@ impl OXGLOxideGlCtxShim {
             // this comment will likely be inadequate due to the objective c
             // runtime functions being objectively sketchy as hell to call.
             // However, the caller ensures this method is only called from within
-            // +load (which seems to be a common practice for "safe" method swizzling in objc)
+            // a static initializer (which seems to be a common practice for "safe" method swizzling in objc)
 
             unsafe {
                 // the cast_mut on the objc_class pointer derived from the shared AnyClass reference
                 // here is **EXTREMELY** sus and we probably shouldn't be using the safe API and references at all in the above code
                 // this is the primary reason that this function needs to be externally synchronized; We need to ensure that
-                // our mutations to the class do not race with other threads usage of it
+                // our mutations to the class do not race with other threads potential usage of it
                 dbg!(class_replaceMethod(
                     ptr::from_ref(opengl_ctx_class)
                         .cast::<objc_class>()
@@ -181,15 +177,16 @@ unsafe extern "C" fn CFBundleGetFunctionPointerForNameOverride(
         let symbol = CFStringGetCStringPtr(function_name, kCFStringEncodingASCII);
         dbg!(CStr::from_ptr(symbol));
         if CFEqual(bundle_name.cast(), comp_str.cast()) == 1 {
-            let handle = OXIDEGL_HANDLE.with(|v| {
-                *v.get_or_init(|| dlopen(c"liboxidegl.dylib".as_ptr(), RTLD_LOCAL | RTLD_LAZY))
-            });
+            let handle = OXIDEGL_HANDLE
+                .with(|v| *v.get_or_init(|| dlopen(c"liboxidegl.dylib".as_ptr(), RTLD_LAZY)));
             dlsym(handle, symbol)
         } else {
             CFBundleGetFunctionPointerForName(bundle, function_name)
         }
     }
 }
+// ...
+// I love linker magic
 #[link_section = "__DATA,__interpose"]
 #[allow(private_interfaces)]
 pub static DYLD_CF_BUNDLE_GET_FUNCTION_PTR_FOR_NAME_INTERPOSE: DyldInterposeTuple =
@@ -199,6 +196,7 @@ pub static DYLD_CF_BUNDLE_GET_FUNCTION_PTR_FOR_NAME_INTERPOSE: DyldInterposeTupl
         replacee: CFBundleGetFunctionPointerForName as unsafe extern "C" fn(_, _) -> _
             as *const c_void,
     };
+
 #[ctor]
 fn ctor() {
     // Need to use the static to keep the linker/rustc from stripping it
