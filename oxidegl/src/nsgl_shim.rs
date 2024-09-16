@@ -46,7 +46,7 @@ declare_class! {
     unsafe impl OXGLOxideGlCtxShim {
         #[method_id(initWithFormat:shareContext:)]
         fn init_with_format_share_ctx(this: Allocated<Self>, _format: &AnyClass, share: Option<&Self>) -> Option<Retained<Self>> {
-            trace!("initialized context shim class");
+            trace!("initialized OBJC context shim");
             assert!(share.is_none(), "OxideGL does not support linked contexts!");
             let ctx_ptr = box_ctx(Context::new());
             let this = this.set_ivars(ctx_ptr);
@@ -55,7 +55,7 @@ declare_class! {
         }
         #[method_id(initWithCGLPixelFormatObj:)]
         fn init_with_cgl_pf_obj(this: Allocated<Self>, _obj: *const c_void) -> Option<Retained<Self>> {
-            trace!("initialized context shim class");
+            trace!("initialized OBJC context shim");
             let ctx_ptr = box_ctx(Context::new());
             let this = this.set_ivars(ctx_ptr);
             // Safety: superclass is NSObject and the init method exists on it
