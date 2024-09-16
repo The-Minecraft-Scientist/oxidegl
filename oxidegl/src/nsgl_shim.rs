@@ -2,8 +2,7 @@ use std::{
     cell::OnceCell,
     ffi::{c_void, CStr},
     hint::black_box,
-    io::Read,
-    mem::{self, transmute, MaybeUninit},
+    mem::{self},
     ptr::{self, NonNull},
     sync::Once,
 };
@@ -13,7 +12,7 @@ use crate::{
     entry_point::{box_ctx, oxidegl_platform_init, set_context, swap_buffers},
 };
 use core_foundation_sys::{
-    base::{CFEqual, CFGetAllocator},
+    base::CFEqual,
     bundle::{CFBundleGetFunctionPointerForName, CFBundleGetIdentifier, CFBundleRef},
     string::{
         kCFStringEncodingASCII, CFStringCreateWithCString, CFStringGetCStringPtr, CFStringRef,
@@ -21,20 +20,17 @@ use core_foundation_sys::{
 };
 use ctor::ctor;
 use libc::{
-    abort, dladdr, dlclose, dlopen, dlsym, printf, Dl_info, _dyld_image_count, RTLD_LAZY,
+    dlopen, dlsym, RTLD_LAZY,
     RTLD_LOCAL,
 };
-use mach2::{dyld::_dyld_get_image_name, loader::mach_header};
 use objc2::{
     declare_class, extern_class,
     ffi::{
-        class_addMethod, class_getClassMethod, class_getName, class_replaceMethod,
-        method_getImplementation, method_getTypeEncoding, method_setImplementation, objc_class,
-        objc_getClass, objc_method, objc_object,
+        class_replaceMethod, objc_class,
     },
     msg_send_id, mutability,
     rc::{Allocated, Retained},
-    runtime::{AnyClass, ClassBuilder, Method, NSObject, Sel},
+    runtime::{AnyClass, NSObject, Sel},
     sel, ClassType, DeclaredClass,
 };
 use objc2_foundation::MainThreadMarker;

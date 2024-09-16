@@ -1,5 +1,5 @@
 use self::state::GLState;
-use objc2::rc::{Id, Retained};
+use objc2::rc::Retained;
 use objc2_app_kit::NSView;
 use objc2_metal::MTLPixelFormat;
 use platform::PlatformState;
@@ -49,7 +49,7 @@ impl Context {
 }
 
 impl Context {
-    pub fn new() -> Self {
+    #[must_use] pub fn new() -> Self {
         Self {
             dirty_components: NeedsRefreshBits::empty(),
             gl_state: GLState::default(),
@@ -57,7 +57,7 @@ impl Context {
         }
     }
     pub fn set_view(&self, view: &Retained<NSView>) {
-        self.platform_state.set_view(view)
+        self.platform_state.set_view(view);
     }
 }
 

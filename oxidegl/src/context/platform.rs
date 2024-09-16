@@ -103,7 +103,7 @@ impl PlatformState {
             desc.setErrorOptions(MTLCommandBufferErrorOption::EncoderExecutionStatus);
             buf = queue
                 .commandBufferWithDescriptor(&desc)
-                .expect("failed to create command buffer")
+                .expect("failed to create command buffer");
         }
         #[cfg(not(debug_assertions))]
         unsafe {
@@ -111,7 +111,7 @@ impl PlatformState {
                 .commandBuffer()
                 .expect("failed to create command buffer")
         }
-        label.map(|v| buf.setLabel(Some(v)));
+        if let Some(v) = label { buf.setLabel(Some(v)) }
         buf
     }
     #[inline]
@@ -132,7 +132,7 @@ impl PlatformState {
         let enc = buf
             .renderCommandEncoderWithDescriptor(desc)
             .expect("failed to create render command encoder");
-        label.map(|v| enc.setLabel(Some(v)));
+        if let Some(v) = label { enc.setLabel(Some(v)) }
         enc
     }
     pub(crate) fn current_render_encoder(&mut self) -> &ProtoObjRef<dyn MTLRenderCommandEncoder> {
