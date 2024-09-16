@@ -180,9 +180,9 @@ struct DyldInterposeTuple {
 unsafe impl Sync for DyldInterposeTuple {}
 
 #[allow(non_snake_case)]
-/// This function overrides the default implementation of CFBundleGetFunctionPointerForName, which is used
+/// This function overrides the default implementation of `CFBundleGetFunctionPointerForName`, which is used
 /// by consumers of NSGL to look up all of the openGL command functions. When called, it checks if the bundle name for
-/// the function being looked up is "com.apple.opengl", and if so, redirects the lookup to a dlsym on the OxideGL dylib.
+/// the function being looked up is "com.apple.opengl", and if so, redirects the lookup to a dlsym on the `OxideGL` dylib.
 unsafe extern "C" fn CFBundleGetFunctionPointerForNameOverride(
     bundle: CFBundleRef,
     function_name: CFStringRef,
