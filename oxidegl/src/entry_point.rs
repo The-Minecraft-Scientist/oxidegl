@@ -32,6 +32,8 @@ pub fn box_ctx(ctx: Context) -> NonNull<Context> {
     unsafe { NonNull::new_unchecked(p) }
 }
 #[no_mangle]
+/// # Safety
+/// This needs to be run as early as possible (ideally before the program spawns a thread other than the main thread)
 pub unsafe extern "C" fn oxidegl_platform_init() {
     Logger::try_with_env_or_str("none, oxidegl=trace")
         .unwrap()
