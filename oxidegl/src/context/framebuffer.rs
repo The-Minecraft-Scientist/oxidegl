@@ -4,7 +4,7 @@ use objc2_metal::MTLTexture;
 
 use crate::{
     enums::{ClearBufferMask, TextureTarget},
-    RetainedObject,
+    ProtoObjRef,
 };
 
 use super::state::{NamedObject, ObjectName};
@@ -43,7 +43,7 @@ impl NamedObject for Framebuffer {}
 /// A Texture with extra steps (Metal doesn't support doing fancy things for render-only targets)
 pub struct RenderBuffer {
     name: ObjectName<Self>,
-    mtl: RetainedObject<dyn MTLTexture>,
+    mtl: ProtoObjRef<dyn MTLTexture>,
 }
 pub trait AttachableTexture: Any {}
 impl AttachableTexture for RenderBuffer {}

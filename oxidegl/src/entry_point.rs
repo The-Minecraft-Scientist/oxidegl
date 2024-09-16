@@ -12,16 +12,27 @@ use crate::{
 
 #[no_mangle]
 unsafe extern "C" fn oxidegl_set_current_context(ctx: Option<NonNull<Context>>) {
+    set_context(ctx);
+}
+pub fn set_context(ctx: Option<NonNull<Context>>) {
     trace!("set context to {:?}", ctx);
     CTX.set(ctx);
 }
-
-#[no_mangle]
-unsafe extern "C" fn oxidegl_swap_buffers(_ctx: Option<NonNull<Context>>) {
+pub fn swap_buffers() {
     debug!("swap buffers called");
 }
 #[no_mangle]
-unsafe extern "C" fn oxidegl_platform_init() {
+unsafe extern "C" fn oxidegl_swap_buffers(_ctx: Option<NonNull<Context>>) {
+    swap_buffers();
+}
+#[must_use]
+pub fn box_ctx(ctx: Context) -> NonNull<Context> {
+    let p = Box::into_raw(Box::new(ctx));
+    // Safety: Box guarantees that the pointer is non-null
+    unsafe { NonNull::new_unchecked(p) }
+}
+#[no_mangle]
+pub unsafe extern "C" fn oxidegl_platform_init() {
     Logger::try_with_env_or_str("none, oxidegl=trace")
         .unwrap()
         .start()
@@ -50,9 +61,11 @@ unsafe extern "C" fn oxidegl_create_context(
     stencil_format: GLenum,
     stencil_type: GLenum,
 ) -> *mut c_void {
+    let ctx = Context::new();
     // Safety: caller ensures ptr is a pointer to a valid, initialized NSView.
     // It is retained because we need it to live until we've injected our layer. (which happens in PlatformState::new)
-    let ctx = unsafe { Context::new(&Retained::retain(view).unwrap()) };
+    let view = unsafe { Retained::retain(view).unwrap() };
+    ctx.set_view(&view);
     debug!("Created context");
-    Box::into_raw(Box::new(ctx)).cast()
+    box_ctx(ctx).as_ptr().cast()
 }

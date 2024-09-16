@@ -6,6 +6,8 @@ use objc2::{rc::Retained, runtime::ProtocolObject};
 
 pub mod context;
 pub mod entry_point;
+#[cfg(feature = "nsgl_shim")]
+pub mod nsgl_shim;
 
 #[allow(clippy::undocumented_unsafe_blocks)]
 mod dispatch;
@@ -33,4 +35,4 @@ macro_rules! debug_unreachable {
 pub fn type_name<T: ?Sized>() -> &'static str {
     std::any::type_name::<T>().split("::").last().unwrap()
 }
-pub type RetainedObject<T> = Retained<ProtocolObject<T>>;
+pub type ProtoObjRef<T> = Retained<ProtocolObject<T>>;

@@ -1,5 +1,5 @@
 use self::state::GLState;
-use objc2::rc::Id;
+use objc2::rc::{Id, Retained};
 use objc2_app_kit::NSView;
 use objc2_metal::MTLPixelFormat;
 use platform::PlatformState;
@@ -49,14 +49,21 @@ impl Context {
 }
 
 impl Context {
-    pub(crate) fn new(view: &Id<NSView>) -> Self {
-        //TODO: pixel format real
-        let platform_state = PlatformState::new(view, MTLPixelFormat::RGBA8Unorm);
+    pub fn new() -> Self {
         Self {
             dirty_components: NeedsRefreshBits::empty(),
             gl_state: GLState::default(),
-            platform_state,
+            platform_state: PlatformState::new(MTLPixelFormat::BGRA8Unorm),
         }
+    }
+    pub fn set_view(&self, view: &Retained<NSView>) {
+        self.platform_state.set_view(view)
+    }
+}
+
+impl Default for Context {
+    fn default() -> Self {
+        Self::new()
     }
 }
 // This function is only used by GL dispatch. It is always advantageous for it to be inlined in that usage

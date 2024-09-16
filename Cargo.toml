@@ -9,6 +9,6 @@ panic = "abort"
 
 [profile.dev]
 codegen-units = 512
-incremental = true
+# incremental = true
 lto = "thin"
 panic = "abort"

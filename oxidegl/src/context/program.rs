@@ -1,14 +1,10 @@
-
 use ahash::{HashSet, HashSetExt};
 use log::{debug, trace};
 use naga::back::msl::{Options, PipelineOptions};
 use objc2_foundation::NSString;
 use objc2_metal::{MTLDevice, MTLFunction, MTLLibrary};
 
-use crate::{
-    enums::ShaderType,
-    RetainedObject,
-};
+use crate::{enums::ShaderType, ProtoObjRef};
 
 use super::{
     shader::Shader,
@@ -84,11 +80,8 @@ impl Program {
     }
     fn compile_program_stage_shaders<'a>(
         mut shaders: impl Iterator<Item = &'a Shader>,
-        device: &RetainedObject<dyn MTLDevice>,
-    ) -> (
-        RetainedObject<dyn MTLLibrary>,
-        RetainedObject<dyn MTLFunction>,
-    ) {
+        device: &ProtoObjRef<dyn MTLDevice>,
+    ) -> (ProtoObjRef<dyn MTLLibrary>, ProtoObjRef<dyn MTLFunction>) {
         //TODO handle linkage of multiple shaders per stage
 
         let shader = *shaders.next().as_ref().expect("shaders iter was empty");
@@ -131,7 +124,7 @@ impl Program {
     pub(crate) fn link(
         &mut self,
         shader_list: &mut NamedObjectList<Shader>,
-        device: &RetainedObject<dyn MTLDevice>,
+        device: &ProtoObjRef<dyn MTLDevice>,
     ) {
         debug!("attempting to link {:?}", self.name);
         trace!("Current shader program state: {:?}", &self);
@@ -175,7 +168,7 @@ impl NamedObject for Program {}
 #[derive(Debug)]
 pub struct LinkedShaderProgram {
     // TODO: compute shaders
-    libs: Vec<RetainedObject<dyn MTLLibrary>>,
-    fragment_entry: Option<RetainedObject<dyn MTLFunction>>,
-    vertex_entry: Option<RetainedObject<dyn MTLFunction>>,
+    libs: Vec<ProtoObjRef<dyn MTLLibrary>>,
+    fragment_entry: Option<ProtoObjRef<dyn MTLFunction>>,
+    vertex_entry: Option<ProtoObjRef<dyn MTLFunction>>,
 }

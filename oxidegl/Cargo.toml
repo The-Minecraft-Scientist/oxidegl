@@ -25,10 +25,10 @@ objc2-quartz-core = { version = "0.2.2", features = [
     "CAMetalLayer",
     "CALayer",
 ] }
-objc2-foundation = "0.2.2"
+objc2-foundation = { version = "0.2.2", features = ["NSThread"] }
 
 # Need access to raw mach vm_allocate for [MTLDevice newBufferWithBytesNoCopy]
-# machx = "0.4.9"
+mach2 = { git = "https://github.com/JohnTitor/mach2/" }
 # TODO: rework buffer alloc
 
 [dependencies]
@@ -50,11 +50,20 @@ constcat = "0.5.0"
 # Used for glsl/spv -> MSL shader conversion
 naga = { version = "22.1.0", features = ["glsl-in", "spv-in", "msl-out"] }
 
+# Used for crimes (nsgl_shim)
+ctor = { version = "0.2.8", optional = true }
+core-foundation-sys = { version = "0.8.7", optional = true }
+libc = { version = "0.2.158", optional = true }
+
+
 # Expose max log level features
 [features]
+default = ["nsgl_shim"]
 max_log_trace = ["log/max_level_trace"]
 max_log_debug = ["log/max_level_debug"]
 max_log_info = ["log/max_level_info"]
 max_log_warn = ["log/max_level_warn"]
 max_log_error = ["log/max_level_error"]
 max_log_off = ["log/max_level_off"]
+
+nsgl_shim = ["ctor", "core-foundation-sys", "libc"]
