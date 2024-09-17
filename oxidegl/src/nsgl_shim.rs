@@ -89,7 +89,7 @@ declare_class! {
         fn set_view(&self, view: Option<&NSView>) {
             dbg!(view);
             let ptr = *self.ivars();
-            // take current context to avoid potential aliasing
+            // take current context to avoid potential aliasing references
             let ctx = CTX.take();
             if let Some(v) = view {
                 // Safety: pointer is non null, points to an initialized and heap-allocated Context.
@@ -148,7 +148,7 @@ impl OXGLOxideGlCtxShim {
                 // the mutable access is the primary reason that this function needs to be externally synchronized; We need to ensure that
                 // our mutations to the class do not race with other threads potential usage of it
 
-                // Safety 2: cls points to an loaded and initialized Objective C class object, the context this function is run from prevents races on this class
+                // Safety 2: cls points to an loaded and initialized Objective C class object, the context this function is run should prevent races on this class
                 // name points to a valid selector (created safely via the sel! macro)
                 // imp points to a function with the platform C ABI and a signature matching the underlying implementation of [NSObject alloc]
                 // types points to an Objective C method type encoding string that describes a method signature matching the implementation of [NSObject alloc]
@@ -162,8 +162,8 @@ impl OXGLOxideGlCtxShim {
                         unsafe extern "C" fn(),
                     >(ALLOC_THE_SHIM_IMP)),
                     // Magic string :)
-                    // `@` - returns objc object pointer, `16`: 16 byte total parameter frame, `@0` - object pointer passed in
-                    // at offset 0 in the parameter frame,`:8` - method selector passed in at offset 8 within the parameter frame (also cute face :3)
+                    // `@` - returns objc object pointer, `16`: 16 byte total parameter frame, `@0` - object pointer passed in at offset 0 in the parameter frame,
+                    // `:8` - method selector passed in at offset 8 within the parameter frame (also cute face :3)
                     c"@16@0:8".as_ptr(),
                 );
             };
@@ -244,7 +244,7 @@ pub static DYLD_CF_BUNDLE_GET_FUNCTION_PTR_FOR_NAME_INTERPOSE: DyldInterposeTupl
 
 #[ctor]
 fn ctor() {
-    // Safety: we are living the good life (before main), so there are no other threads to race with on environment variables
+    // Safety: we are living the good life (before main), so there are no other threads to race on environment variables with
     unsafe { oxidegl_platform_init() }
     // Need to actually use the static somewhere to keep the linker/rustc from stripping it from the binary, might as well put it here
     let _ = black_box(&DYLD_CF_BUNDLE_GET_FUNCTION_PTR_FOR_NAME_INTERPOSE);
