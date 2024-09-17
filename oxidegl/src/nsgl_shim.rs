@@ -93,7 +93,7 @@ declare_class! {
             let ctx = CTX.take();
             if let Some(v) = view {
                 // Safety: pointer is non null, points to an initialized and heap-allocated Context.
-                // pointer cannot be aliased (since this class and CTX are the only places where the
+                // pointer cannot have aliasing Rust references (since this class and CTX are the only places where the
                 // pointer is actually read from, and we emptied CTX prior to creating this reference)
                 unsafe {ptr.as_ref()}.set_view(&v.retain());
             }
