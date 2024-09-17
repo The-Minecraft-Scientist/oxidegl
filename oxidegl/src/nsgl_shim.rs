@@ -233,7 +233,7 @@ unsafe extern "C" fn CFBundleGetFunctionPointerForNameOverride(
 // I love linker magic
 #[link_section = "__DATA,__interpose"]
 #[allow(private_interfaces)]
-/// Installs the above override function into a special section in the binary that tells dyld to actually do the override
+/// Installs a pointer to the above override function into a special section in the binary that tells dyld to actually do the override
 pub static DYLD_CF_BUNDLE_GET_FUNCTION_PTR_FOR_NAME_INTERPOSE: DyldInterposeTuple =
     DyldInterposeTuple {
         replacement: CFBundleGetFunctionPointerForNameOverride as unsafe extern "C" fn(_, _) -> _
