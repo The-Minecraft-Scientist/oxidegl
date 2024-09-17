@@ -171,14 +171,6 @@ impl OXGLOxideGlCtxShim {
     }
 }
 
-#[repr(C)]
-struct DyldInterposeTuple {
-    replacement: *const c_void,
-    replacee: *const c_void,
-}
-//Safety: Function pointers are safe to share between threads, DyldInterposeTuple cannot be constructed outside this module
-unsafe impl Sync for DyldInterposeTuple {}
-
 #[allow(non_snake_case)]
 /// This function overrides the default implementation of `CFBundleGetFunctionPointerForName`, which is used
 /// by consumers of NSGL to look up all of the openGL command functions. When called, it checks if the bundle name for
@@ -228,6 +220,14 @@ unsafe extern "C" fn CFBundleGetFunctionPointerForNameOverride(
         }
     }
 }
+
+#[repr(C)]
+struct DyldInterposeTuple {
+    replacement: *const c_void,
+    replacee: *const c_void,
+}
+//Safety: Function pointers are safe to share between threads, DyldInterposeTuple cannot be constructed outside this module
+unsafe impl Sync for DyldInterposeTuple {}
 
 // ...
 // I love linker magic
