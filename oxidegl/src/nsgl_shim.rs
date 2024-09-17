@@ -226,7 +226,9 @@ struct DyldInterposeTuple {
     replacement: *const c_void,
     replacee: *const c_void,
 }
-//Safety: Function pointers are safe to share between threads, DyldInterposeTuple cannot be constructed outside this module
+// Safety: Function pointers are safe to share between threads, DyldInterposeTuple cannot be constructed outside this module
+// This is only read (by dyld during life-before-main) from the main thread anyways,
+// rustc requires Sync for all statics and this keeps it from complaining
 unsafe impl Sync for DyldInterposeTuple {}
 
 // ...
