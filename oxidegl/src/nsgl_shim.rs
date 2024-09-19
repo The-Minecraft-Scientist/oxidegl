@@ -63,9 +63,7 @@ impl OXGLOxideGLCtxAssociatedObject {
 }
 
 declare_class! (
-    /// This is an objective C class whose methods shadow NSOpenGLContext's.
-    /// When the nsgl_shim feature is enabled, a static initializer replaces the NSOpenGLContext's alloc implementation
-    /// with an alloc implementation that allocates an OXGLOxideGlCtxShim instead (which essentially makes this class override NSOpenGLContext entirely)
+    /// This is a placeholder class used to conveniently generate instance/class methods that will be swizzled onto NSOpenGLContext
     struct OXGLOxideGlCtxShim;
     unsafe impl ClassType for OXGLOxideGlCtxShim {
         type Super = NSObject;
@@ -130,18 +128,18 @@ declare_class! (
         }
         #[method(setView:)]
         fn set_view(&self, view: Option<&NSView>) {
-            dbg!(view);
-            let obj = self.get_assoc_obj();
-            let ptr = obj.ivars().cast::<Context>();
-            // take current context to avoid potential aliasing references
-            let ctx = CTX.take();
             if let Some(v) = view {
+                let obj = self.get_assoc_obj();
+                let ptr = obj.ivars().cast::<Context>();
+
+                // take current context to avoid potential aliasing references
+                let ctx = CTX.take();
                 // Safety: pointer is non null, points to an initialized and heap-allocated Context.
                 // pointer cannot have aliasing Rust references (since this class and CTX are the only places where the
                 // pointer is actually read from, and we emptied CTX prior to creating this reference)
                 unsafe {ptr.as_ref()}.set_view(&v.retain());
+                CTX.set(ctx);
             }
-            CTX.set(ctx);
         }
 
     }
