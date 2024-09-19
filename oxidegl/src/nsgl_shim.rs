@@ -2,7 +2,7 @@ use std::{
     cell::OnceCell,
     ffi::{c_void, CStr},
     hint::black_box,
-    mem::{self, ManuallyDrop, MaybeUninit},
+    mem,
     ptr::{self, NonNull},
     sync::Once,
 };
@@ -22,15 +22,12 @@ use log::trace;
 use objc2::{
     declare_class, extern_class,
     ffi::{
-        class_addIvar, class_addProperty, class_getClassMethod, class_replaceMethod,
-        class_setIvarLayout, method_getTypeEncoding, objc_alloc, objc_class,
-        objc_getAssociatedObject, objc_object, objc_property, objc_setAssociatedObject,
-        object_setClass, OBJC_ASSOCIATION_COPY, OBJC_ASSOCIATION_RETAIN,
-        OBJC_ASSOCIATION_RETAIN_NONATOMIC,
+        class_getClassMethod, class_replaceMethod, method_getTypeEncoding, objc_class,
+        objc_getAssociatedObject, objc_setAssociatedObject, OBJC_ASSOCIATION_RETAIN,
     },
     msg_send_id, mutability,
     rc::{Allocated, Retained},
-    runtime::{AnyClass, ClassBuilder, NSObject, Sel},
+    runtime::{AnyClass, NSObject},
     sel, ClassType, DeclaredClass,
 };
 use objc2_app_kit::NSView;
@@ -58,13 +55,14 @@ declare_class!(
     }
 );
 impl OXGLOxideGLCtxAssociatedObject {
-    fn new_with_ctx(ctx: NonNull<Context>) -> Retained<OXGLOxideGLCtxAssociatedObject> {
+    fn new_with_ctx(ctx: NonNull<Context>) -> Option<Retained<OXGLOxideGLCtxAssociatedObject>> {
         let alloc = OXGLOxideGLCtxAssociatedObject::alloc();
+        // Safety: init method exists on super
         unsafe { msg_send_id![alloc, initWithCtx:ctx.as_ptr().cast::<c_void>()] }
     }
 }
 
-declare_class! {
+declare_class! (
     /// This is an objective C class whose methods shadow NSOpenGLContext's.
     /// When the nsgl_shim feature is enabled, a static initializer replaces the NSOpenGLContext's alloc implementation
     /// with an alloc implementation that allocates an OXGLOxideGlCtxShim instead (which essentially makes this class override NSOpenGLContext entirely)
@@ -88,7 +86,8 @@ declare_class! {
             let this: Option<Retained<Self>> = unsafe {msg_send_id![super(this), init]};
             let this = this.unwrap();
             let ctx_ptr = box_ctx(Context::new());
-            unsafe {this.set_assoc_obj(OXGLOxideGLCtxAssociatedObject::new_with_ctx(ctx_ptr.cast())) };
+            this.set_assoc_obj(OXGLOxideGLCtxAssociatedObject::new_with_ctx(ctx_ptr.cast())
+                .expect("failed to create associated object for context storage"));
             Some(this)
 
         }
@@ -100,7 +99,8 @@ declare_class! {
             let this: Option<Retained<Self>> = unsafe {msg_send_id![super(this), init]};
             let this = this.unwrap();
             let ctx_ptr = box_ctx(Context::new());
-            unsafe {this.set_assoc_obj(OXGLOxideGLCtxAssociatedObject::new_with_ctx(ctx_ptr.cast())) };
+            this.set_assoc_obj(OXGLOxideGLCtxAssociatedObject::new_with_ctx(ctx_ptr.cast())
+                .expect("failed to create associated object for context storage"));
             Some(this)
         }
         #[method(setValues:forParameter:)]
@@ -117,7 +117,7 @@ declare_class! {
         }
         #[method(makeCurrentContext)]
         fn make_current(&self) {
-            let obj = unsafe {self.get_assoc_obj()};
+            let obj = self.get_assoc_obj();
             set_context(Some(obj.ivars().cast()));
         }
         #[method(clearCurrentContext)]
@@ -131,7 +131,7 @@ declare_class! {
         #[method(setView:)]
         fn set_view(&self, view: Option<&NSView>) {
             dbg!(view);
-            let obj = unsafe {self.get_assoc_obj()};
+            let obj = self.get_assoc_obj();
             let ptr = obj.ivars().cast::<Context>();
             // take current context to avoid potential aliasing references
             let ctx = CTX.take();
@@ -145,7 +145,7 @@ declare_class! {
         }
 
     }
-}
+);
 // unsafe extern "C" fn alloc_the_shim(this: &AnyClass, _cmd: Sel) -> *mut objc_object {
 //     unsafe { objc_alloc(ptr::from_ref(this).cast()) }
 // }
@@ -162,7 +162,8 @@ extern_class!(
 );
 
 impl OXGLOxideGlCtxShim {
-    unsafe fn set_assoc_obj(&self, mut obj: Retained<OXGLOxideGLCtxAssociatedObject>) {
+    fn set_assoc_obj(&self, mut obj: Retained<OXGLOxideGLCtxAssociatedObject>) {
+        // Safety: self is a valid objective-C object, obj is a retained pointer to an initialized associated object
         unsafe {
             objc_setAssociatedObject(
                 ptr::from_ref(self).cast_mut().cast(),
@@ -172,13 +173,15 @@ impl OXGLOxideGlCtxShim {
             );
         };
     }
-    unsafe fn get_assoc_obj(&self) -> &OXGLOxideGLCtxAssociatedObject {
+    fn get_assoc_obj(&self) -> &OXGLOxideGLCtxAssociatedObject {
+        // Safety: self is a valid objective c object
         let ptr = unsafe {
             objc_getAssociatedObject(
                 ptr::from_ref(self).cast_mut().cast(),
                 sel!(oxglAssocObj).as_ptr().cast(),
             )
         };
+        // Safety: ptr is either null (not set) or a pointer to an associated object as set by set_assoc_obj
         unsafe {
             ptr.cast_mut()
                 .cast::<OXGLOxideGLCtxAssociatedObject>()
@@ -189,7 +192,7 @@ impl OXGLOxideGlCtxShim {
     /// # Safety
     /// Must be called from a serial objc context (e.g. a static initializer or +load method)
     #[allow(clippy::too_many_lines)]
-    unsafe fn butcher_ns_opengl() {
+    unsafe fn clobber_ns_opengl() {
         static BUTCHER_ONCE: Once = Once::new();
         BUTCHER_ONCE.call_once(|| {
             trace!("Clobbering NSOpenGLContext");
@@ -300,16 +303,28 @@ impl OXGLOxideGlCtxShim {
 thread_local! {
     static OXIDEGL_HANDLE: OnceCell<*mut c_void> = const { OnceCell::new() };
 }
-unsafe fn get_oxidegl_handle() -> *mut c_void {
-    OXIDEGL_HANDLE
-        .with(|v| *v.get_or_init(|| unsafe { dlopen(c"liboxidegl.dylib".as_ptr(), RTLD_LAZY) }))
+fn get_oxidegl_handle() -> *mut c_void {
+    OXIDEGL_HANDLE.with(|v| {
+        *v.get_or_init(|| {
+            //Safety: arguments to dlopen are valid, pointer is checked for null
+            let handle = unsafe { dlopen(c"liboxidegl.dylib".as_ptr(), RTLD_LAZY) };
+            assert!(
+                !handle.is_null(),
+                "OxideGL NSGL shim: failed to dlopen oxidegl"
+            );
+            handle
+        })
+    })
 }
 unsafe extern "C" fn dlopen_override(filename: *const i8, flags: i32) -> *mut c_void {
+    // Safety: caller ensures filename points to a valid, nul-terminated C string
     let str = unsafe { CStr::from_ptr(filename) };
     if str.to_str().is_ok_and(|s| s.contains("libGL.dylib")) {
-        trace!("substituted OxideGL dlopen handle for libGL.dylib");
-        unsafe { get_oxidegl_handle() }
+        trace!("intercepted dlopen of libGL.dylib, returning oxidegl handle instead");
+
+        get_oxidegl_handle()
     } else {
+        // Safety: caller ensures arguments to dlopen are correct
         unsafe { dlopen(filename, flags) }
     }
 }
@@ -398,5 +413,5 @@ fn ctor() {
     let _ = black_box(&DYLD_CF_BUNDLE_GET_FUNCTION_PTR_FOR_NAME_INTERPOSE);
     let _ = black_box(&DYLD_LIBC_DLOPEN_INTERPOSE);
     // Safety: running from static ctor (equivalent to objc +load context)
-    unsafe { OXGLOxideGlCtxShim::butcher_ns_opengl() }
+    unsafe { OXGLOxideGlCtxShim::clobber_ns_opengl() }
 }
