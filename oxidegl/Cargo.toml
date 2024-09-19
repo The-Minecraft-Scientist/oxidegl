@@ -28,7 +28,7 @@ objc2-quartz-core = { version = "0.2.2", features = [
 objc2-foundation = { version = "0.2.2", features = ["NSThread"] }
 
 # Need access to raw mach vm_allocate for [MTLDevice newBufferWithBytesNoCopy]
-mach2 = { git = "https://github.com/JohnTitor/mach2/" }
+# mach2 = { git = "https://github.com/JohnTitor/mach2/" }
 # TODO: rework buffer alloc
 
 [dependencies]

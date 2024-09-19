@@ -156,7 +156,7 @@ impl Characteristics {
             line_width_granularity: 0.0001,
             context_flags: GL_CONTEXT_FLAG_FORWARD_COMPATIBLE_BIT | GL_CONTEXT_FLAG_NO_ERROR_BIT,
             context_profile_mask: GL_CONTEXT_CORE_PROFILE_BIT,
-            ..Default::default()
+            num_extensions: 1,
         }
     }
 }

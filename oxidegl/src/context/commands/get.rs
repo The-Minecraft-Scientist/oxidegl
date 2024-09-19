@@ -2081,6 +2081,8 @@ impl Context {
 /// always returns a compatible version number. The release number always describes
 /// the server.
 pub mod get_string {
+    use std::ffi::CStr;
+
     use log::debug;
 
     use crate::context::Context;
@@ -2098,21 +2100,21 @@ pub mod get_string {
             }
         };
         fn get_string(name: StringName) -> *const GLubyte {
-            const VENDOR: &[u8] = b"Charles Liske\0";
-            const RENDERER: &[u8] = b"OxideGL\0";
-
+            const VENDOR: &CStr = c"Charles Liske";
+            const RENDERER: &CStr = c"OxideGL";
             const VERSION_PREFIX: &[u8] = b"4.6.0 OxideGL ";
+
+            const FAKEEXT: &CStr = c"EXTFakeExtensionToMakeGladHappy";
+
             const VERSION: &[u8] =
                 constcat::concat_bytes!(VERSION_PREFIX, Context::VERSION_INFO.as_bytes(), &[0]);
 
             debug!("glGetString {name:?}");
             match name {
-                StringName::Vendor => VENDOR.as_ptr(),
-                StringName::Renderer => RENDERER.as_ptr(),
+                StringName::Vendor => VENDOR.as_ptr().cast(),
+                StringName::Renderer => RENDERER.as_ptr().cast(),
                 StringName::Version | StringName::ShadingLanguageVersion => VERSION.as_ptr(),
-                StringName::Extensions => {
-                    panic!("OxideGL does not support any extensions!")
-                }
+                StringName::Extensions => FAKEEXT.as_ptr().cast(),
             }
         }
         pub(crate) fn oxidegl_get_string(&mut self, name: StringName) -> *const GLubyte {
