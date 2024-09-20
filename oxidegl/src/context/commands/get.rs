@@ -1542,9 +1542,8 @@ impl Context {
                         .write_out(idx, ptr);
                 }
                 MaxColorAttachments => MAX_COLOR_ATTACHMENTS.write_out(idx, ptr),
-                // Buffer Bindings
-                // FIXME `VertexArray` actually refers to the current VAO binding, *not* the current `VertexArray*BufferBinding*`
-                // waiting on codegen update
+
+                // singleton buffer bindings
                 ArrayBufferBinding => {
                     self.gl_state.buffer_bindings.array.write_out(idx, ptr);
                 }
@@ -1635,6 +1634,11 @@ impl Context {
                     .characteristics
                     .context_profile_mask
                     .write_out(idx, ptr),
+                MajorVersion => 4.write_out(idx, ptr),
+                MinorVersion => 6.write_out(idx, ptr),
+                MaxTextureSize => 16384.write_out(idx, ptr),
+                MaxTextureBufferSize => 64_000_000.write_out(idx, ptr),
+                MaxArrayTextureLayers => 2048.write_out(idx, ptr),
 
                 //Bindings
 
@@ -1930,7 +1934,7 @@ impl Context {
                 // 0x82D9 => self.state.max_vertex_attrib_relative_offset.into(), // GL_MAX_VERTEX_ATTRIB_RELATIVE_OFFSET
                 // 0x82DA => self.state.max_vertex_attrib_bindings.into(), // GL_MAX_VERTEX_ATTRIB_BINDINGS
                 u => {
-                    panic!("unrecognized enum {:x}", u as u32)
+                    panic!("unrecognized enum {u:?}")
                 }
             };
         }

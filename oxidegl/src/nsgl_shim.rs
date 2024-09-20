@@ -144,9 +144,6 @@ declare_class! (
 
     }
 );
-// unsafe extern "C" fn alloc_the_shim(this: &AnyClass, _cmd: Sel) -> *mut objc_object {
-//     unsafe { objc_alloc(ptr::from_ref(this).cast()) }
-// }
 
 extern_class!(
     #[derive(Debug, PartialEq, Eq, Hash)]

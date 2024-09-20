@@ -103,6 +103,9 @@ pub struct BuildOxideGL {
     /// Install the compiled binary to /usr/local/lib, replacing the current one if it exists.
     #[arg(short, long, default_value_t = false)]
     install: bool,
+    /// Builds OxideGL x86 and arm64 targets, then constructs a universal binary in target/darwin-universal
+    #[arg(short, long, default_value_t = false)]
+    universal: bool,
 }
 impl TaskTrait for BuildOxideGL {
     fn dependencies(&self) -> Option<Box<[Task]>> {
@@ -364,7 +367,22 @@ impl TaskTrait for GetXcodeCommandLineTools {
     }
 }
 fn submodule_init(paths: &[&str]) -> Result<()> {
-    println!("Checking submodule(s) at: {}", paths.join(", "));
+    let mut paths = paths.to_vec();
+    paths.retain(|v| {
+        !read_dir(v).is_ok_and(|mut v| {
+            v.any(|e| {
+                e.is_ok_and(|v| {
+                    v.file_name()
+                        .into_string()
+                        .is_ok_and(|s| !s.starts_with('.'))
+                })
+            })
+        })
+    });
+    println!(
+        "Checking uninitialized submodule(s) at: {}",
+        paths.join(", ")
+    );
     if !process::Command::new("git")
         .args(["submodule", "update", "--init", "--recursive", "--"])
         .args(paths)
