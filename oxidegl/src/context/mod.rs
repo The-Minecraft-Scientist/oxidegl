@@ -3,7 +3,6 @@ use objc2::rc::Retained;
 use objc2_app_kit::NSView;
 use objc2_metal::MTLPixelFormat;
 use platform::PlatformState;
-use state::NeedsRefreshBits;
 use std::cell::Cell;
 use std::pin::Pin;
 use std::ptr::NonNull;
@@ -33,25 +32,15 @@ thread_local! {
 #[derive(Debug)]
 #[repr(C)]
 pub struct Context {
-    dirty_components: NeedsRefreshBits,
     gl_state: GLState,
     platform_state: PlatformState,
 }
-impl Context {
-    #[inline]
-    pub(crate) fn dirty_render_pass(&mut self) {
-        self.dirty_components |= NeedsRefreshBits::RENDER_PASS;
-    }
-    #[inline]
-    pub(crate) fn dirty_buffers(&mut self) {
-        self.dirty_components |= NeedsRefreshBits::BUFFERS;
-    }
-}
+impl Context {}
 
 impl Context {
-    #[must_use] pub fn new() -> Self {
+    #[must_use]
+    pub fn new() -> Self {
         Self {
-            dirty_components: NeedsRefreshBits::empty(),
             gl_state: GLState::default(),
             platform_state: PlatformState::new(MTLPixelFormat::BGRA8Unorm),
         }

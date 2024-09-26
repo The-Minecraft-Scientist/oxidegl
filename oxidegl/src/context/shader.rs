@@ -1,13 +1,17 @@
-use std::{cell::Cell, fmt::Debug};
+use std::{cell::Cell, fmt::Debug, mem};
 
-use log::{debug, error};
-use naga::{
-    front::glsl,
-    valid::{Capabilities, ModuleInfo, ValidationFlags, Validator},
-    Module, ShaderStage, WithSpan,
+use crate::{enums::ShaderType, NoDebug};
+use glslang::{
+    Compiler as GlslangCompiler, CompilerOptions, GlslProfile, Shader as GlslLangShader,
+    ShaderInput, ShaderMessage, ShaderSource, ShaderStage, SourceLanguage, Target,
 };
-
-use crate::enums::ShaderType;
+use log::{debug, error};
+// use naga::{
+//     front::glsl,
+//     valid::{Capabilities, ModuleInfo, ValidationFlags, Validator},
+//     ShaderStage, WithSpan,
+// };
+use spirv_cross2::Module;
 
 use super::state::{NamedObject, ObjectName};
 //TODO: write more debug logging to compiler_log
@@ -16,32 +20,54 @@ pub struct Shader {
     pub(crate) name: ObjectName<Shader>,
     pub(crate) stage: ShaderType,
     pub(crate) refcount: u32,
-    pub(crate) source_type: ShaderSourceType,
-    pub(crate) latest_module: Option<Module>,
+    pub(crate) internal: ShaderInternal,
     pub(crate) compiler_log: String,
 }
-#[derive(Debug)]
-pub(crate) enum ShaderSourceType {
-    Glsl {
-        source: String,
-    },
-    Spirv {
-        source: Vec<u8>,
-        entry_point: String,
-        specialization_constants: Vec<(u32, u32)>,
-    },
+#[derive(Debug, Default)]
+pub struct GlslShaderInternal {
+    pub(crate) source: String,
+    pub(crate) latest_shader: Option<NoDebug<GlslLangShader<'static>>>,
 }
-impl ShaderSourceType {
+impl GlslShaderInternal {
+    pub(crate) fn set_src(&mut self, src: String) {
+        self.source = src;
+    }
+    #[allow(clippy::cast_possible_truncation)]
+    pub(crate) fn src_byte_len(&self) -> u32 {
+        self.source.len() as u32
+    }
+}
+#[derive(Debug)]
+pub struct SpirvShaderInternal {
+    pub(crate) source: Vec<u32>,
+    pub(crate) latest_module: Option<NoDebug<Module<'static>>>,
+}
+#[derive(Debug)]
+pub(crate) enum ShaderInternal {
+    Glsl(GlslShaderInternal),
+    Spirv(SpirvShaderInternal),
+}
+impl ShaderInternal {
     pub(crate) fn is_spirv(&self) -> bool {
-        matches!(self, ShaderSourceType::Spirv { .. })
+        matches!(self, ShaderInternal::Spirv(_))
     }
     //4gb shader is not real, 4gb shader cannot hurt you
     #[allow(clippy::cast_possible_truncation)]
     pub(crate) fn source_len(&self) -> u32 {
         (match self {
-            ShaderSourceType::Glsl { source } => source.len(),
-            ShaderSourceType::Spirv { source, .. } => source.len(),
+            ShaderInternal::Glsl(internal) => internal.source.len(),
+            // 4 byte words
+            ShaderInternal::Spirv(internal) => internal.source.len() * 4,
         }) as u32
+    }
+    /// Returns whether the last attempted compilation of this internal shader succeeded
+    pub(crate) fn compile_status(&self) -> bool {
+        match self {
+            ShaderInternal::Glsl(glsl_shader_internal) => {
+                glsl_shader_internal.latest_shader.is_some()
+            }
+            ShaderInternal::Spirv(spirv_shader_internal) => todo!(),
+        }
     }
 }
 impl Shader {
@@ -51,10 +77,7 @@ impl Shader {
             name,
             stage,
             refcount: 0,
-            source_type: ShaderSourceType::Glsl {
-                source: String::new(),
-            },
-            latest_module: None,
+            internal: ShaderInternal::Glsl(GlslShaderInternal::default()),
             compiler_log: String::new(),
         }
     }
@@ -65,86 +88,54 @@ impl Shader {
     //TODO: experiment: shader parsing, translation and compilation off of the main thread (if shader compilation perf becomes an issue)
     //TODO: collapse global uniforms into uniform block (or fork naga and add global uniform support)
     pub(crate) fn compile(&mut self) {
-        thread_local! {
-            static GLSL_FRONTEND: Cell<Option<glsl::Frontend>> = Cell::new(Some(glsl::Frontend::default()));
-        }
-        self.compiler_log.clear();
-        debug!("attempting to parse shader {:?}", self.name);
-        match &self.source_type {
-            ShaderSourceType::Glsl { source } => {
-                let opts =
-                    glsl::Options::from(self.stage.as_shader_stage().expect(
-                        "OxideGL does not currently support geometry or tesselation shaders",
-                    ));
-                // This expect can only fire if the caller commits some SERIOUS (but unfortunately barely legal) crimes
-                let mut frontend = GLSL_FRONTEND
-                    .take()
-                    .expect("naga glsl frontend should have been present!");
-                let res = frontend.parse(&opts, source);
-                GLSL_FRONTEND.set(Some(frontend));
-                match res {
-                    Ok(m) => {
-                        debug!("successfully parsed shader {:?}", self.name);
-                        self.latest_module = Some(m);
-                    }
-                    Err(errors) => {
-                        self.latest_module = None;
-                        for error in errors.errors {
-                            let err = WithSpan::new(error.kind)
-                                .with_context((error.meta, "parse error".to_owned()));
-                            self.compiler_log.push_str(&err.emit_to_string_with_path(
-                                source,
-                                &format!("{:?}(id #{})", self.stage, self.name.to_raw()),
-                            ));
-                            self.compiler_log.push('\n');
-                        }
-                        error!(
-                            "failed to parse shader {:?}. Errors:\n{}",
-                            self.name,
-                            &self.compiler_log.trim()
-                        );
-                    }
-                }
-            }
-            ShaderSourceType::Spirv {
-                source,
-                entry_point,
-                specialization_constants,
-            } => panic!("SPIRV shader binaries currently unimplemented!"),
-        }
-        #[cfg(debug_assertions)]
-        self.validate();
-    }
-    pub(crate) fn validate(&self) -> ModuleInfo {
-        if let Some(ref m) = self.latest_module {
-            debug!("validating {:?}", self.name);
-            let mut val = GLSL_VALIDATOR
-                .take()
-                .expect("Naga GLSL validator should have been present!");
-            let ret = match val.validate(m) {
-                Ok(info) => info,
-                Err(e) => {
-                    let err;
-                    if let ShaderSourceType::Glsl { source } = &self.source_type {
-                        err = e.emit_to_string(source);
-                    } else {
-                        err = e.into_inner().to_string();
-                    }
+        match &mut self.internal {
+            ShaderInternal::Glsl(glsl_shader_internal) => {
+                // Clear the previous compilation attempt
+                glsl_shader_internal.latest_shader = None;
+                let source = ShaderSource::from(mem::take(&mut glsl_shader_internal.source));
+                let comp = GlslangCompiler::acquire().expect("failed to acquire Glslang compiler");
 
-                    panic!(
-                        "OxideGL internal error: {:?} failed Naga validation:\n{}",
-                        self.name, err
-                    );
-                }
-            };
-            GLSL_VALIDATOR.set(Some(val));
-            ret
-        } else {
-            panic!("tried to validate a non-parsed Shader!");
+                let opts = CompilerOptions {
+                    source_language: SourceLanguage::GLSL,
+                    target: Target::OpenGL {
+                        version: glslang::OpenGlVersion::OpenGL4_5,
+                        spirv_version: Some(glslang::SpirvVersion::SPIRV1_5),
+                    },
+                    version_profile: None,
+                    messages: ShaderMessage::RELAXED_ERRORS
+                        | ShaderMessage::ENHANCED
+                        | ShaderMessage::ONLY_PREPROCESSOR
+                        // VULKAN_RULES_RELAXED
+                        | ShaderMessage(1 << 2),
+                };
+
+                let input =
+                    match ShaderInput::new(&source, self.stage.to_glslang_stage(), &opts, None) {
+                        Ok(input) => input,
+                        Err(err) => {
+                            self.write_to_compiler_log(&err.to_string());
+                            return;
+                        }
+                    };
+                let shader = match comp.create_shader(input) {
+                    Ok(shader) => shader,
+                    Err(e) => {
+                        self.write_to_compiler_log(&e.to_string());
+                        return;
+                    }
+                };
+                glsl_shader_internal.latest_shader = Some(shader.into());
+            }
+            ShaderInternal::Spirv(_spirv_shader_internal) => todo!(),
         }
+    }
+    pub(crate) fn write_to_compiler_log(&mut self, info: &str) {
+        debug!("{:?} compiler log: {info}", self.name);
+        self.compiler_log.push_str(info);
+        self.compiler_log.push('\n');
     }
     /// Increments the program reference count on this shader. Call this function when attaching a shader object to a program
-    pub(crate) fn retain_shader(&mut self) {
+    pub(crate) fn retain(&mut self) {
         self.refcount += 1;
     }
     /// Decrements the program reference count on this shader. Call this function when detaching a shader object from a program.
@@ -161,27 +152,21 @@ impl Shader {
     }
 }
 
-thread_local! {
-    // TODO correctly detect device capabilities
-    // (see https://github.com/gfx-rs/wgpu/blob/trunk/wgpu-hal/src/metal/mod.rs#L201)
-    // (see https://github.com/gfx-rs/wgpu/blob/trunk/wgpu-hal/src/metal/adapter.rs#L842)
-    static GLSL_VALIDATOR: Cell<Option<Validator>> = Cell::new(Some(Validator::new(
-        ValidationFlags::all(),
-        Capabilities::empty(),
-    )));
-}
+// TODO correctly detect device capabilities
+// (see https://github.com/gfx-rs/wgpu/blob/trunk/wgpu-hal/src/metal/mod.rs#L201)
+// (see https://github.com/gfx-rs/wgpu/blob/trunk/wgpu-hal/src/metal/adapter.rs#L842)
 impl ShaderType {
     //ShaderType is Copy
     #[allow(clippy::must_use_candidate)]
-    pub fn as_shader_stage(self) -> Option<ShaderStage> {
+    pub fn to_glslang_stage(self) -> ShaderStage {
         match self {
-            ShaderType::FragmentShader => Some(ShaderStage::Fragment),
-            ShaderType::VertexShader => Some(ShaderStage::Vertex),
+            ShaderType::FragmentShader => ShaderStage::Fragment,
+            ShaderType::VertexShader => ShaderStage::Vertex,
             //TODO: geometry and tesselation shader emulation :)
-            ShaderType::GeometryShader => todo!(),
-            ShaderType::TessEvaluationShader => todo!(),
-            ShaderType::TessControlShader => todo!(),
-            ShaderType::ComputeShader => Some(ShaderStage::Compute),
+            ShaderType::GeometryShader => ShaderStage::Geometry,
+            ShaderType::TessEvaluationShader => ShaderStage::TesselationEvaluation,
+            ShaderType::TessControlShader => ShaderStage::TesselationControl,
+            ShaderType::ComputeShader => ShaderStage::Compute,
         }
     }
 }

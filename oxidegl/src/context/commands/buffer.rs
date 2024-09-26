@@ -591,7 +591,6 @@ impl Context {
         target: BufferTarget,
         idx: I,
     ) {
-        self.dirty_buffers();
         if let Some(maybe_named) = to_bind {
             self.gl_state
                 .buffer_list

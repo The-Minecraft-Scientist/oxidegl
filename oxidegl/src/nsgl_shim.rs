@@ -202,7 +202,7 @@ impl OXGLOxideGlCtxShim {
             // Safety: Caller ensures this method is only called from within
             // a static initializer
             #[allow(clippy::missing_transmute_annotations)]
-            // Replace all of the relevant methods on
+            // Replace all of the relevant methods on NSOpenGLContext context and its metaclass
             unsafe {
                 let sel_ptr = sel!(initWithFormat:shareContext:).as_ptr();
 

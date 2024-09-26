@@ -2,7 +2,7 @@ use log::{debug, trace};
 
 use crate::{
     context::{
-        shader::{Shader, ShaderSourceType},
+        shader::{GlslShaderInternal, Shader, ShaderInternal},
         state::ObjectName,
         Context,
     },
@@ -153,11 +153,9 @@ impl Context {
             strings.push(str);
         }
         let shader = self.get_shader_raw_mut(shader);
-        let s = match &mut shader.source_type {
-            ShaderSourceType::Glsl { source } => source,
-            ShaderSourceType::Spirv { .. } => {
-                panic!("UB: tried to write text source to a SPIRV shader object")
-            }
+        let ShaderInternal::Glsl(GlslShaderInternal { source: s, .. }) = &mut shader.internal
+        else {
+            panic!("UB: tried to write text source to a non-GLSL shader object")
         };
         s.clear();
         for str in strings {
@@ -275,9 +273,9 @@ impl Context {
         let ret: u32 = match pname {
             ShaderParameterName::ShaderType => shader.stage.into(),
             ShaderParameterName::DeleteStatus => u32::from(false),
-            ShaderParameterName::CompileStatus => u32::from(shader.latest_module.is_some()),
+            ShaderParameterName::CompileStatus => u32::from(shader.internal.compile_status()),
             ShaderParameterName::InfoLogLength => shader.compiler_log.len() as u32,
-            ShaderParameterName::ShaderSourceLength => shader.source_type.source_len(),
+            ShaderParameterName::ShaderSourceLength => shader.internal.source_len(),
         };
         // Safety: caller ensures params pointer is correct
         unsafe { *params.cast() = ret };

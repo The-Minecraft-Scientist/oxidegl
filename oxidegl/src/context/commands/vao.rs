@@ -2,7 +2,7 @@ use core::slice;
 use std::num::NonZeroU32;
 
 use log::debug;
-use objc2_metal::MTLAttributeFormat;
+use objc2_metal::MTLVertexFormat;
 
 use crate::{
     context::{
@@ -1094,9 +1094,9 @@ pub const MAX_VERTEX_ATTRIBUTE_STRIDE: u16 = 2048;
 
 #[derive(Debug)]
 pub struct Vao {
-    name: ObjectName<Self>,
-    attribs: [Option<VertexAttrib>; MAX_VERTEX_ATTRIBUTES],
-    buffer_bindings: [AttributeBufferBinding; MAX_VERTEX_ATTRIB_BUFFER_BINDINGS],
+    pub(crate) name: ObjectName<Self>,
+    pub(crate) attribs: [Option<VertexAttrib>; MAX_VERTEX_ATTRIBUTES],
+    pub(crate) buffer_bindings: [AttributeBufferBinding; MAX_VERTEX_ATTRIB_BUFFER_BINDINGS],
 }
 impl Vao {
     fn new_default(name: ObjectName<Self>) -> Self {
@@ -1122,12 +1122,12 @@ impl Vao {
 impl NamedObject for Vao {}
 
 #[derive(Debug, Clone, Copy)]
-pub struct VertexAttrib {
-    components: u8,
-    buffer_idx: u8,
-    relative_offset: u16,
-    integral_cast: IntegralCastBehavior,
-    component_type: VertexAttribType,
+pub(crate) struct VertexAttrib {
+    pub(crate) components: u8,
+    pub(crate) buffer_idx: u8,
+    pub(crate) relative_offset: u16,
+    pub(crate) integral_cast: IntegralCastBehavior,
+    pub(crate) component_type: VertexAttribType,
 }
 
 impl VertexAttrib {
@@ -1139,7 +1139,6 @@ impl VertexAttrib {
         integral_cast: IntegralCastBehavior,
         component_type: VertexAttribType,
     ) -> Self {
-        let normalize = integral_cast == IntegralCastBehavior::Normalize;
         Self {
             components,
             buffer_idx,
@@ -1148,6 +1147,7 @@ impl VertexAttrib {
             component_type,
         }
     }
+    #[inline]
     pub fn validate(&self) {
         let components = self.components;
         let component_type = self.component_type;
@@ -1234,10 +1234,10 @@ impl VertexAttrib {
 
 #[derive(Debug, Clone, Copy)]
 pub struct AttributeBufferBinding {
-    buf: Option<ObjectName<Buffer>>,
-    offset: usize,
-    stride: u16,
-    divisor: Option<NonZeroU32>,
+    pub(crate) buf: Option<ObjectName<Buffer>>,
+    pub(crate) offset: usize,
+    pub(crate) stride: u16,
+    pub(crate) divisor: Option<NonZeroU32>,
 }
 impl AttributeBufferBinding {
     pub fn new_default() -> Self {
@@ -1269,10 +1269,10 @@ macro_rules! generate_attr_match_branch {
         AttributeFormatWithConversion {
             mtl_format: {
                     match $size {
-                    1 => concat_idents::concat_idents!(name = $base, $($suffix)* { MTLAttributeFormat::name }),
-                    2 => concat_idents::concat_idents!(name = $base, 2, $($suffix)* { MTLAttributeFormat::name }),
-                    3 => concat_idents::concat_idents!(name = $base, 3, $($suffix)* { MTLAttributeFormat::name }),
-                    4 => concat_idents::concat_idents!(name = $base, 4, $($suffix)* { MTLAttributeFormat::name }),
+                    1 => concat_idents::concat_idents!(name = $base, $($suffix)* { MTLVertexFormat::name }),
+                    2 => concat_idents::concat_idents!(name = $base, 2, $($suffix)* { MTLVertexFormat::name }),
+                    3 => concat_idents::concat_idents!(name = $base, 3, $($suffix)* { MTLVertexFormat::name }),
+                    4 => concat_idents::concat_idents!(name = $base, 4, $($suffix)* { MTLVertexFormat::name }),
                     #[allow(unused_unsafe)]
                     // Safety: Caller ensures the number of components is in bounds
                     _ => unsafe { crate::debug_unreachable!("UB: invalid vertex attribute size!") }
@@ -1294,7 +1294,7 @@ unsafe fn gl_attribute_to_mtl(
 ) -> AttributeFormatWithConversion {
     let normalize = behavior == IntegralCastBehavior::Normalize;
     let bgra_shuffle = !(1..=4).contains(&num_components);
-    // All MTLAttributeFormat values are in-bounds for u32
+    // All MTLVertexFormat values are in-bounds for u32
     #[allow(clippy::cast_possible_truncation)]
     match ty {
         VertexAttribType::Byte => generate_attr_match_branch!(
@@ -1355,20 +1355,20 @@ unsafe fn gl_attribute_to_mtl(
             IntegralCastBehavior::Native,
         ),
         VertexAttribType::UnsignedInt2101010Rev => AttributeFormatWithConversion {
-            mtl_format: MTLAttributeFormat::UInt1010102Normalized.0 as u32,
+            mtl_format: MTLVertexFormat::UInt1010102Normalized.0 as u32,
             normalization_const: 0,
             conversion: IntegralCastBehavior::Native,
             bgra_shuffle,
         },
         VertexAttribType::Int2101010Rev => AttributeFormatWithConversion {
-            mtl_format: MTLAttributeFormat::Int1010102Normalized.0 as u32,
+            mtl_format: MTLVertexFormat::Int1010102Normalized.0 as u32,
             normalization_const: 0,
             conversion: IntegralCastBehavior::Native,
             bgra_shuffle,
         },
 
         VertexAttribType::UnsignedInt10F11F11FRev => AttributeFormatWithConversion {
-            mtl_format: MTLAttributeFormat::FloatRG11B10.0 as u32,
+            mtl_format: MTLVertexFormat::FloatRG11B10.0 as u32,
             normalization_const: 0,
             conversion: IntegralCastBehavior::Native,
             bgra_shuffle: false,
@@ -1393,7 +1393,7 @@ pub enum IntegralCastBehavior {
 }
 #[derive(Debug, Clone, Copy)]
 pub struct AttributeFormatWithConversion {
-    /// [`MTLAttributeFormat`] truncated to 32 bits
+    /// [`MTLVertexFormat`] truncated to 32 bits
     pub mtl_format: u32,
     /// Values should be divided or multiplied by ``2^normalization_const`` when normalizing
     pub normalization_const: u8,
@@ -1402,10 +1402,10 @@ pub struct AttributeFormatWithConversion {
     pub bgra_shuffle: bool,
 }
 impl AttributeFormatWithConversion {
-    pub(crate) fn get_mtl_format(self) -> MTLAttributeFormat {
-        MTLAttributeFormat(self.mtl_format as usize)
+    pub(crate) fn to_vertex_format(self) -> MTLVertexFormat {
+        MTLVertexFormat(self.mtl_format as usize)
     }
     pub(crate) fn validate(self) {
-        assert_eq!(self.conversion, IntegralCastBehavior::Native, "OxideGL does not yet support normalize or cast-to-float semantics for vertex attributes");
+        assert_eq!(self.conversion, IntegralCastBehavior::Native, "OxideGL does not yet support normalize or cast-to-float semantics for integer-typed vertex attributes");
     }
 }

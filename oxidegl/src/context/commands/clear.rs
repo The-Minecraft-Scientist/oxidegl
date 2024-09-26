@@ -59,7 +59,6 @@ impl Context {
 
     pub fn oxidegl_clear(&mut self, mask: ClearBufferMask) {
         self.gl_state.clear_mask = mask;
-        self.dirty_render_pass();
     }
     /// ### Parameters
     /// `red`
@@ -96,7 +95,6 @@ impl Context {
         alpha: GLfloat,
     ) {
         self.gl_state.clear_color = [red, green, blue, alpha];
-        self.dirty_render_pass();
     }
     /// ### Parameters
     /// `s`
@@ -116,7 +114,6 @@ impl Context {
 
     pub fn oxidegl_clear_stencil(&mut self, s: GLint) {
         self.gl_state.clear_stencil = s;
-        self.dirty_render_pass();
     }
 }
 
@@ -146,10 +143,8 @@ impl Context {
     #[allow(clippy::cast_possible_truncation)]
     pub fn oxidegl_clear_depth(&mut self, depth: GLdouble) {
         self.gl_state.clear_depth = depth as f32;
-        self.dirty_render_pass();
     }
     pub fn oxidegl_clear_depthf(&mut self, d: GLfloat) {
         self.gl_state.clear_depth = d;
-        self.dirty_render_pass();
     }
 }

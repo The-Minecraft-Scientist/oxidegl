@@ -1,7 +1,6 @@
 use std::{marker::PhantomData, num::NonZeroU32};
 
 use ahash::{HashSet, HashSetExt};
-use bitflags::bitflags;
 use log::debug;
 
 use crate::{
@@ -14,7 +13,7 @@ use crate::{
         ClearBufferMask, GL_CONTEXT_CORE_PROFILE_BIT, GL_CONTEXT_FLAG_FORWARD_COMPATIBLE_BIT,
         GL_CONTEXT_FLAG_NO_ERROR_BIT,
     },
-    type_name,
+    trimmed_type_name,
 };
 
 use super::{
@@ -25,7 +24,7 @@ use super::{
 };
 
 #[derive(Debug)]
-pub struct GLState {
+pub(crate) struct GLState {
     pub(crate) characteristics: Characteristics,
 
     pub(crate) buffer_bindings: BufferBindings,
@@ -52,14 +51,6 @@ pub struct GLState {
     pub(crate) clear_depth: f32,
     pub(crate) clear_mask: ClearBufferMask,
     pub(crate) clear_stencil: i32,
-}
-bitflags! {
-    #[derive(Debug, Copy, Clone, Eq, PartialEq)]
-    #[repr(transparent)]
-    pub struct NeedsRefreshBits: u32 {
-        const RENDER_PASS = 0b1;
-        const BUFFERS = 1 << 1;
-    }
 }
 
 pub const MAX_ATOMIC_COUNTER_BUFFER_BINDINGS: usize = 16;
@@ -166,7 +157,7 @@ impl Characteristics {
 pub enum NameState<T> {
     /// No object is present; the object previously resident in this name has been deleted
     Empty,
-    /// Indeterminate state that lies between glGen* and glBind* for non-DSA access
+    /// Intermediate state that lies between glGen* and glBind* for non-DSA access
     Named,
     /// This object name is *bound* to an object with the given state
     Bound(T),
@@ -188,14 +179,15 @@ impl<T: ?Sized> Clone for ObjectName<T> {
         *self
     }
 }
-impl<T: ?Sized> std::hash::Hash for ObjectName<T> {
+impl<T: ?Sized + 'static> std::hash::Hash for ObjectName<T> {
     fn hash<H: std::hash::Hasher>(&self, state: &mut H) {
         self.0.hash(state);
+        std::any::TypeId::of::<T>().hash(state);
     }
 }
 impl<T: ?Sized> core::fmt::Debug for ObjectName<T> {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        f.pad(&format!("{} #{}", type_name::<T>(), self.0.get()))
+        f.pad(&format!("{} #{}", trimmed_type_name::<T>(), self.0.get()))
     }
 }
 impl<T: ?Sized> Copy for ObjectName<T> {}
@@ -415,7 +407,7 @@ impl<Obj: NamedObject> NamedObjectList<Obj> {
             .flatten()
         {
             self.delete(name);
-            debug!(target: "object alloc", "deleted {} {name:?}", type_name::<Obj>());
+            debug!(target: "object alloc", "deleted {} {name:?}", trimmed_type_name::<Obj>());
         }
     }
     /// Helper implementing the glGen* pattern
@@ -426,7 +418,7 @@ impl<Obj: NamedObject> NamedObjectList<Obj> {
             names.is_aligned(),
             "UB: object name array pointer was not sufficiently aligned"
         );
-        debug!(target: "oxidegl::object_alloc", "writing {n} new {} names to {names:?}", type_name::<Obj>());
+        debug!(target: "oxidegl::object_alloc", "writing {n} new {} names to {names:?}", trimmed_type_name::<Obj>());
         let mut names = names.cast();
         for _ in 0..n {
             let name = self.new_name();
@@ -452,7 +444,7 @@ impl<Obj: NamedObject> NamedObjectList<Obj> {
         debug!(
             target: "oxidegl::object_alloc",
             "writing {n} new initialized {} names to {names:?}",
-            type_name::<Obj>()
+            trimmed_type_name::<Obj>()
         );
         let mut names = names.cast();
         for _ in 0..n {

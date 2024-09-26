@@ -47,18 +47,22 @@ ahash = "0.8.11"
 concat-idents = "1.1.5"
 # Used for const str/[u8] appending for commit hash/version constants
 constcat = "0.5.0"
-# Used for glsl/spv -> MSL shader conversion
-naga = { version = "22.1.0", features = ["glsl-in", "spv-in", "msl-out"] }
 
 # Used for crimes (nsgl_shim)
 ctor = { version = "0.2.8", optional = true }
 core-foundation-sys = { version = "0.8.7", optional = true }
 libc = { version = "0.2.158", optional = true }
 
+# GLSL -> MSL conversion
+spirv-cross2 = { version = "0.4.2", default-features = false, features = [
+    "msl",
+] }
+glslang = "0.4.0"
+
 
 # Expose max log level features
 [features]
-default = ["nsgl_shim"]
+# default = ["nsgl_shim"]
 max_log_trace = ["log/max_level_trace"]
 max_log_debug = ["log/max_level_debug"]
 max_log_info = ["log/max_level_info"]
@@ -66,4 +70,4 @@ max_log_warn = ["log/max_level_warn"]
 max_log_error = ["log/max_level_error"]
 max_log_off = ["log/max_level_off"]
 
-nsgl_shim = ["ctor", "core-foundation-sys", "libc"]
+nsgl_shim = ["dep:ctor", "dep:core-foundation-sys", "dep:libc"]
