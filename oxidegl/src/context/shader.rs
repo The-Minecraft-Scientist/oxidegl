@@ -106,7 +106,7 @@ impl Shader {
                         | ShaderMessage::ENHANCED
                         | ShaderMessage::ONLY_PREPROCESSOR
                         // VULKAN_RULES_RELAXED
-                        | ShaderMessage(1 << 2),
+                        | ShaderMessage::from_bits_retain(1 << 2),
                 };
 
                 let input =
