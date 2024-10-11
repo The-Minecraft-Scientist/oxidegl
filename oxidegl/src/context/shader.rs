@@ -1,11 +1,11 @@
-use std::{cell::Cell, fmt::Debug, mem};
+use std::{fmt::Debug, mem};
 
 use crate::{enums::ShaderType, NoDebug};
 use glslang::{
-    Compiler as GlslangCompiler, CompilerOptions, GlslProfile, Shader as GlslLangShader,
-    ShaderInput, ShaderMessage, ShaderSource, ShaderStage, SourceLanguage, Target,
+    Compiler as GlslangCompiler, CompilerOptions, Shader as GlslLangShader, ShaderInput,
+    ShaderMessage, ShaderSource, ShaderStage, SourceLanguage, Target,
 };
-use log::{debug, error};
+use log::debug;
 // use naga::{
 //     front::glsl,
 //     valid::{Capabilities, ModuleInfo, ValidationFlags, Validator},
@@ -27,15 +27,6 @@ pub struct Shader {
 pub struct GlslShaderInternal {
     pub(crate) source: String,
     pub(crate) latest_shader: Option<NoDebug<GlslLangShader<'static>>>,
-}
-impl GlslShaderInternal {
-    pub(crate) fn set_src(&mut self, src: String) {
-        self.source = src;
-    }
-    #[allow(clippy::cast_possible_truncation)]
-    pub(crate) fn src_byte_len(&self) -> u32 {
-        self.source.len() as u32
-    }
 }
 #[derive(Debug)]
 pub struct SpirvShaderInternal {
@@ -85,8 +76,6 @@ impl Shader {
 impl NamedObject for Shader {}
 
 impl Shader {
-    //TODO: experiment: shader parsing, translation and compilation off of the main thread (if shader compilation perf becomes an issue)
-    //TODO: collapse global uniforms into uniform block (or fork naga and add global uniform support)
     pub(crate) fn compile(&mut self) {
         match &mut self.internal {
             ShaderInternal::Glsl(glsl_shader_internal) => {

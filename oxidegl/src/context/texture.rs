@@ -3,7 +3,7 @@ use objc2_metal::MTLPixelFormat;
 
 use crate::enums::{PixelFormat, PixelType};
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Copy, Clone)]
 pub struct GLPixelTypeFormat {
     ty: PixelType,
     fmt: PixelFormat,

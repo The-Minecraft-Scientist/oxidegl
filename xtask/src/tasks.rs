@@ -333,6 +333,7 @@ stub_arg!(CargoFix);
 impl TaskTrait for CargoFix {
     fn perform(&self) -> Result<()> {
         std::process::Command::new("cargo")
+            .current_dir("oxidegl")
             .args(["fix", "--allow-dirty"])
             .spawn()?
             .try_wait()?;

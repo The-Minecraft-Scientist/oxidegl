@@ -230,6 +230,11 @@ impl<T: NamedObject> ObjectName<T> {
     pub fn cast<U: ?Sized>(self) -> ObjectName<U> {
         ObjectName(self.0, PhantomData)
     }
+    #[inline]
+    /// Pretty-prints this object name to a string with no spaces
+    pub fn name_no_space(&self) -> String {
+        format!("{}-{}", trimmed_type_name::<T>(), self.0)
+    }
 }
 
 /// Marker trait that marks a struct as an openGL object

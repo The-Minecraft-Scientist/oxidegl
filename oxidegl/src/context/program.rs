@@ -1,18 +1,19 @@
-use std::mem;
+use std::{error::Error, mem};
 
 use ahash::{HashSet, HashSetExt};
-use glslang::{Compiler as GlslLangCompiler, Program as GlslLangProgram};
+use glslang::Compiler as GlslLangCompiler;
 use log::{debug, trace};
 //use naga::back::msl::{Options, PipelineOptions};
+use crate::{context::shader::ShaderInternal, enums::ShaderType, NoDebug, ProtoObjRef};
 use objc2_foundation::NSString;
 use objc2_metal::{MTLDevice, MTLFunction, MTLLibrary};
 use spirv_cross2::{
-    compile::{msl::ShaderInterfaceVariable, CompilableTarget, CompiledArtifact},
+    compile::{msl::CompilerOptions, CompiledArtifact},
+    reflect::ResourceIter,
     targets::Msl,
-    Compiler, Module,
+    Compiler, Module, SpirvCrossError,
 };
-
-use crate::{context::shader::ShaderInternal, enums::ShaderType, NoDebug, ProtoObjRef};
+use std::fmt::Write;
 
 use super::{
     shader::Shader,
@@ -66,7 +67,7 @@ impl ProgramStageBinding {
     }
     /// remove a shader from this program stage binding point. Returns whether the shader was present in the binding before removal
     #[inline]
-    pub(crate) fn remove_shader(&mut self, name: ObjectName<Shader>) -> bool {
+    fn remove_shader(&mut self, name: ObjectName<Shader>) -> bool {
         let b;
         (*self, b) = match self {
             ProgramStageBinding::Unbound => (Self::Unbound, false),
@@ -124,15 +125,11 @@ impl Program {
         self.refcount -= 1;
         false
     }
-    #[expect(
-        clippy::cast_possible_truncation,
-        reason = "more than u32::MAX shaders cannot exist at once"
-    )]
     #[inline]
     pub(crate) fn attached_shader_count(&self) -> u32 {
-        (self.vertex_shaders.shader_count()
+        self.vertex_shaders.shader_count()
             + self.fragment_shaders.shader_count()
-            + self.compute_shaders.shader_count()) as u32
+            + self.compute_shaders.shader_count()
     }
     #[inline]
     pub(crate) fn debug_log_str(&mut self, msg: &str) {
@@ -146,6 +143,7 @@ impl Program {
         self.debug_log_str(&format!("attached {:?} to {:?}", shader.name, self.name));
         shader.retain();
     }
+    #[inline]
     fn get_stage_binding(&mut self, stage: ShaderType) -> &mut ProgramStageBinding {
         match stage {
             crate::enums::ShaderType::FragmentShader => &mut self.fragment_shaders,
@@ -173,20 +171,27 @@ impl Program {
         device: &ProtoObjRef<dyn MTLDevice>,
         b: &mut ProgramStageBinding,
         glslang_compiler: &GlslLangCompiler,
-    ) -> Result<LinkedShaderStage, String> {
-        let stage_spirv = match b {
+    ) -> Result<LinkedShaderStage, Box<str>> {
+        macro_rules! err_ret {
+            ($e:expr) => {
+                return Err($e.to_string().into_boxed_str())
+            };
+        }
+        let mut used_shaders = Vec::with_capacity(1);
+        let mut stage = None;
+        let mut stage_spirv = match b {
             ProgramStageBinding::Unbound => unreachable!(),
             ProgramStageBinding::Spirv(_) => todo!(),
             ProgramStageBinding::Glsl(hash_set) => {
                 let mut program = glslang_compiler.create_program();
-                let mut stage = None;
                 for shader in hash_set.iter().copied().map(|name| shader_list.get(name)) {
+                    used_shaders.push(shader.name.to_raw().to_string().into_boxed_str());
                     let ShaderInternal::Glsl(internal) = &shader.internal else {
                         unreachable!()
                     };
                     stage = Some(shader.stage);
                     let Some(glslang_shader) = &internal.latest_shader else {
-                        panic!("Tried to link a program with a shader that did not compile!")
+                        err_ret!("Tried to link a program with a shader that did not compile!");
                     };
                     program.add_shader(glslang_shader);
                 }
@@ -202,9 +207,27 @@ impl Program {
                 Compiler::<Msl>::new(module).map_err(|e| e.to_string())?
             }
         };
-        let artifact = stage_spirv
-            .compile(&Msl::options())
-            .map_err(|e| e.to_string())?;
+        stage_spirv
+            .add_discrete_descriptor_set(3)
+            .map_err(|e| e.to_string().into_boxed_str())?;
+
+        let entry_name = format!("{:?}_{}_main", stage.unwrap(), used_shaders.join("_"));
+
+        let model = stage_spirv
+            .execution_model()
+            .expect("failed to get execution model");
+        let previous_entry_cleansed = stage_spirv
+            .cleansed_entry_point_name("main", model)
+            .expect("failed to cleanse entry point name")
+            .expect("cleansed entry point was null");
+        stage_spirv
+            .rename_entry_point(previous_entry_cleansed, entry_name.clone(), model)
+            .expect("failed to rename spirv entry point");
+
+        let mut opts = CompilerOptions::default();
+        opts.version = (2, 1).into();
+        opts.argument_buffers = true;
+        let artifact = stage_spirv.compile(&opts).map_err(|e| e.to_string())?;
 
         let msl_src = format!("{artifact}");
         trace!("transformed metal sources for stage:\n{msl_src}");
@@ -212,26 +235,14 @@ impl Program {
         let lib = device
             .newLibraryWithSource_options_error(&NSString::from_str(&msl_src), None)
             .map_err(|e| e.to_string())?;
-
-        let entry_points = artifact
-            .entry_points()
-            .map_err(|e| e.to_string())?
-            .collect::<Vec<_>>();
-
-        assert!(
-            entry_points.len() == 1,
-            "Cannot have more than one entry point per program stage"
-        );
         // TODO: coalesce ungrouped (named) uniforms into a single uniform block with a hashmap for by-identifier uniform lookup
         Ok(LinkedShaderStage {
             function: lib
-                .newFunctionWithName(&NSString::from_str(&format!(
-                    // this is cursed
-                    "{}0",
-                    entry_points.first().unwrap().name
-                )))
-                .expect("Metal library did not contain the entry point named by spirv-cross!"),
+                .newFunctionWithName(&NSString::from_str(&entry_name))
+                .unwrap(),
             lib,
+            resources: LinkedProgramResources::from_compiler(&artifact)
+                .expect("failed to get resource bindings during program linkage!"),
             artifact: artifact.into(),
         })
     }
@@ -248,9 +259,9 @@ impl Program {
         let glslang_compiler =
             GlslLangCompiler::acquire().expect("failed to acquire glslang instance");
         let mut new_linkage = LinkedProgram {
-            fragment_entry: None,
-            vertex_entry: None,
-            compute_entry: None,
+            fragment: None,
+            vertex: None,
+            compute: None,
         };
         if !self.vertex_shaders.is_empty() {
             trace!("linking vertex shaders");
@@ -260,7 +271,7 @@ impl Program {
                 &mut self.vertex_shaders,
                 glslang_compiler,
             ) {
-                Ok(v) => new_linkage.vertex_entry = Some(v),
+                Ok(v) => new_linkage.vertex = Some(v),
                 Err(s) => {
                     self.debug_log_str(&s);
                     return;
@@ -275,7 +286,7 @@ impl Program {
                 &mut self.fragment_shaders,
                 glslang_compiler,
             ) {
-                Ok(v) => new_linkage.vertex_entry = Some(v),
+                Ok(v) => new_linkage.vertex = Some(v),
                 Err(s) => {
                     self.debug_log_str(&s);
                     return;
@@ -290,7 +301,7 @@ impl Program {
                 &mut self.compute_shaders,
                 glslang_compiler,
             ) {
-                Ok(v) => new_linkage.vertex_entry = Some(v),
+                Ok(v) => new_linkage.vertex = Some(v),
                 Err(s) => {
                     self.debug_log_str(&s);
                     return;
@@ -305,16 +316,91 @@ impl NamedObject for Program {}
 
 #[derive(Debug)]
 pub struct LinkedProgram {
-    pub(crate) fragment_entry: Option<LinkedShaderStage>,
-    pub(crate) vertex_entry: Option<LinkedShaderStage>,
-    pub(crate) compute_entry: Option<LinkedShaderStage>,
+    pub(crate) fragment: Option<LinkedShaderStage>,
+    pub(crate) vertex: Option<LinkedShaderStage>,
+    pub(crate) compute: Option<LinkedShaderStage>,
+}
+#[inline]
+fn to_resource_vec(
+    iter: ResourceIter<'_>,
+    compiler: &Compiler<Msl>,
+) -> Result<Vec<ProgramResource>, SpirvCrossError> {
+    let mut vec = Vec::with_capacity(iter.len());
+    for v in iter {
+        vec.push(ProgramResource {
+            name: dbg!(v.name.to_string().into_boxed_str()),
+            binding: compiler
+                .decoration(v.id, spirv_cross2::spirv::Decoration::Binding)?
+                .map(|v| v.as_literal().expect("failed to convert literal")),
+            location: compiler
+                .decoration(v.id, spirv_cross2::spirv::Decoration::Location)?
+                .expect("location decoration argument didn't exist")
+                .as_literal()
+                .expect("failed to convert literal"),
+        });
+    }
+    Ok(vec)
+}
+#[derive(Debug)]
+pub struct LinkedProgramResources {
+    uniform_buffers: Vec<ProgramResource>,
+    shader_storage_buffers: Vec<ProgramResource>,
+    atomic_counter_buffers: Vec<ProgramResource>,
+    stage_inputs: Vec<ProgramResource>,
+}
+impl LinkedProgramResources {
+    fn from_compiler(spirvc: &Compiler<Msl>) -> Result<Self, SpirvCrossError> {
+        let value = spirvc.shader_resources()?;
+        let uniform_buffers = to_resource_vec(
+            value.resources_for_type(spirv_cross2::reflect::ResourceType::UniformBuffer)?,
+            spirvc,
+        )?;
+        let shader_storage_buffers = to_resource_vec(
+            value.resources_for_type(spirv_cross2::reflect::ResourceType::StorageBuffer)?,
+            spirvc,
+        )?;
+        let atomic_counter_buffers = to_resource_vec(
+            value.resources_for_type(spirv_cross2::reflect::ResourceType::AtomicCounter)?,
+            spirvc,
+        )?;
+        let stage_inputs = to_resource_vec(
+            value.resources_for_type(spirv_cross2::reflect::ResourceType::StageInput)?,
+            spirvc,
+        )?;
+        Ok(Self {
+            uniform_buffers,
+            shader_storage_buffers,
+            atomic_counter_buffers,
+            stage_inputs,
+        })
+    }
+}
+#[derive(Debug)]
+pub struct ProgramResource {
+    name: Box<str>,
+    binding: Option<u32>,
+    location: u32,
 }
 #[derive(Debug)]
 pub struct LinkedShaderStage {
     /// the entry point for this stage
-    function: ProtoObjRef<dyn MTLFunction>,
+    pub(crate) function: ProtoObjRef<dyn MTLFunction>,
     /// a retained reference to the metal library that contains the entry point function for this stage
-    lib: ProtoObjRef<dyn MTLLibrary>,
-    /// the spirv_cross artifact/module that was compiled to the metal lib given above
-    artifact: NoDebug<CompiledArtifact<Msl>>,
+    pub(crate) lib: ProtoObjRef<dyn MTLLibrary>,
+    /// the `spirv_cross` artifact/module that was compiled to the metal lib given above
+    pub(crate) artifact: NoDebug<CompiledArtifact<Msl>>,
+    /// Resources
+    pub(crate) resources: LinkedProgramResources,
+}
+pub trait ResultExt<T> {
+    fn into_boxed_str(self) -> Result<T, Box<str>>;
+}
+impl<T, E: Error> ResultExt<T> for Result<T, E> {
+    fn into_boxed_str(self) -> Result<T, Box<str>> {
+        self.map_err(|e| {
+            let mut s = String::new();
+            write!(&mut s, "{e:?}");
+            s.into_boxed_str()
+        })
+    }
 }
