@@ -18,32 +18,46 @@ use crate::{
 
 use super::{
     commands::{buffer::Buffer, vao::Vao},
-    framebuffer::{Framebuffer, FramebufferInternal},
+    framebuffer::{DrawBuffers, Framebuffer},
     program::Program,
     shader::Shader,
 };
 
 #[derive(Debug)]
 pub(crate) struct GLState {
+    // Static/immutable properties, mostly for glGet. Should probably be turned into constants
     pub(crate) characteristics: Characteristics,
 
+    /// Current state of buffer bindings to this context
     pub(crate) buffer_bindings: BufferBindings,
+    /// List of buffer object states
     pub(crate) buffer_list: NamedObjectList<Buffer>,
 
+    /// List of VAO states
     pub(crate) vao_list: NamedObjectList<Vao>,
+    /// The current VAO to render with
     pub(crate) vao_binding: Option<ObjectName<Vao>>,
 
+    /// List of shader object states
     pub(crate) shader_list: NamedObjectList<Shader>,
+    /// Shaders that are queued for deletion when their reference count reaches 0
     pub(crate) shaders_to_delete: HashSet<ObjectName<Shader>>,
 
+    /// List of shader program states
     pub(crate) program_list: NamedObjectList<Program>,
+    /// Programs that are queued for deletion when their reference count reaches 0
     pub(crate) programs_to_delete: HashSet<ObjectName<Program>>,
+    /// Current program to render with
     pub(crate) program_binding: Option<ObjectName<Program>>,
 
+    /// List of framebuffer object states
     pub(crate) framebufer_list: NamedObjectList<Framebuffer>,
+    /// The current framebuffer to render to (None: default FB)
     pub(crate) framebuffer_binding: Option<ObjectName<Framebuffer>>,
-    pub(crate) default_framebuffer: FramebufferInternal,
+    /// draw buffer/attachment tracking for the default framebuffer
+    pub(crate) default_draw_buffers: DrawBuffers,
 
+    /// TODO get rid of point size and line width, they are not changeable in gl46
     pub(crate) point_size: f32,
     pub(crate) line_width: f32,
     //TODO move this stuff to a dedicated ClearState struct
@@ -114,7 +128,7 @@ impl GLState {
 
             framebufer_list: NamedObjectList::new(),
             framebuffer_binding: None,
-            default_framebuffer: FramebufferInternal::new(),
+            default_draw_buffers: DrawBuffers::new_defaultfb(),
 
             point_size: 1.0,
             line_width: 1.0,
@@ -232,7 +246,7 @@ impl<T: NamedObject> ObjectName<T> {
     }
     #[inline]
     /// Pretty-prints this object name to a string with no spaces
-    pub fn name_no_space(&self) -> String {
+    pub fn name_no_space(self) -> String {
         format!("{}-{}", trimmed_type_name::<T>(), self.0)
     }
 }

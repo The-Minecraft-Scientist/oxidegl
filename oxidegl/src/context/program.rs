@@ -1,4 +1,4 @@
-use std::{error::Error, mem};
+use std::mem;
 
 use ahash::{HashSet, HashSetExt};
 use glslang::Compiler as GlslLangCompiler;
@@ -13,7 +13,6 @@ use spirv_cross2::{
     targets::Msl,
     Compiler, Module, SpirvCrossError,
 };
-use std::fmt::Write;
 
 use super::{
     shader::Shader,
@@ -23,6 +22,8 @@ use super::{
 pub enum ProgramStageBinding {
     Unbound,
     //Spirv shader stage is only allowed to have
+
+    // what did he mean by this?? ^^
     Spirv(ObjectName<Shader>),
     Glsl(HashSet<ObjectName<Shader>>),
 }
@@ -35,7 +36,7 @@ impl ProgramStageBinding {
         match self {
             ProgramStageBinding::Unbound => 0,
             ProgramStageBinding::Spirv(_) => 1,
-            ProgramStageBinding::Glsl(hash_set) => hash_set.len() as u32,
+            ProgramStageBinding::Glsl(set) => set.len() as u32,
         }
     }
     #[inline]
@@ -62,7 +63,7 @@ impl ProgramStageBinding {
             (Self::Glsl(hash_set), super::shader::ShaderInternal::Glsl(_)) => {
                 hash_set.insert(shader.name);
             }
-            (_, _) => panic!("tried to mix GLSL and SPIR-V shaders in a single stage or tried to link multiple SPIR-V shaders to the same stage"),
+            (_, _) => panic!("tried to mix GLSL and SPIR-V shaders in a single stage or tried to link multiple SPIR-V shader objects to the same stage"),
         };
     }
     /// remove a shader from this program stage binding point. Returns whether the shader was present in the binding before removal
@@ -328,27 +329,27 @@ fn to_resource_vec(
     let mut vec = Vec::with_capacity(iter.len());
     for v in iter {
         vec.push(ProgramResource {
-            name: dbg!(v.name.to_string().into_boxed_str()),
+            name: v.name.to_string().into_boxed_str(),
             binding: compiler
                 .decoration(v.id, spirv_cross2::spirv::Decoration::Binding)?
                 .map(|v| v.as_literal().expect("failed to convert literal")),
             location: compiler
                 .decoration(v.id, spirv_cross2::spirv::Decoration::Location)?
-                .expect("location decoration argument didn't exist")
-                .as_literal()
-                .expect("failed to convert literal"),
+                .map(|v| v.as_literal().expect("failed to convert literal")),
         });
     }
     Ok(vec)
 }
 #[derive(Debug)]
 pub struct LinkedProgramResources {
-    uniform_buffers: Vec<ProgramResource>,
-    shader_storage_buffers: Vec<ProgramResource>,
-    atomic_counter_buffers: Vec<ProgramResource>,
-    stage_inputs: Vec<ProgramResource>,
+    pub(crate) uniform_buffers: Vec<ProgramResource>,
+    pub(crate) shader_storage_buffers: Vec<ProgramResource>,
+    pub(crate) atomic_counter_buffers: Vec<ProgramResource>,
+    pub(crate) stage_inputs: Vec<ProgramResource>,
+    pub(crate) plain_uniforms: Vec<ProgramResource>,
 }
 impl LinkedProgramResources {
+    //TODO XFBs
     fn from_compiler(spirvc: &Compiler<Msl>) -> Result<Self, SpirvCrossError> {
         let value = spirvc.shader_resources()?;
         let uniform_buffers = to_resource_vec(
@@ -367,19 +368,24 @@ impl LinkedProgramResources {
             value.resources_for_type(spirv_cross2::reflect::ResourceType::StageInput)?,
             spirvc,
         )?;
-        Ok(Self {
+        let plain_uniforms = to_resource_vec(
+            value.resources_for_type(spirv_cross2::reflect::ResourceType::GlPlainUniform)?,
+            spirvc,
+        )?;
+        Ok(dbg!(Self {
             uniform_buffers,
             shader_storage_buffers,
             atomic_counter_buffers,
             stage_inputs,
-        })
+            plain_uniforms
+        }))
     }
 }
 #[derive(Debug)]
 pub struct ProgramResource {
-    name: Box<str>,
-    binding: Option<u32>,
-    location: u32,
+    pub(crate) name: Box<str>,
+    pub(crate) binding: Option<u32>,
+    pub(crate) location: Option<u32>,
 }
 #[derive(Debug)]
 pub struct LinkedShaderStage {
@@ -391,16 +397,4 @@ pub struct LinkedShaderStage {
     pub(crate) artifact: NoDebug<CompiledArtifact<Msl>>,
     /// Resources
     pub(crate) resources: LinkedProgramResources,
-}
-pub trait ResultExt<T> {
-    fn into_boxed_str(self) -> Result<T, Box<str>>;
-}
-impl<T, E: Error> ResultExt<T> for Result<T, E> {
-    fn into_boxed_str(self) -> Result<T, Box<str>> {
-        self.map_err(|e| {
-            let mut s = String::new();
-            write!(&mut s, "{e:?}");
-            s.into_boxed_str()
-        })
-    }
 }

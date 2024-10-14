@@ -42,10 +42,10 @@ impl Context {
     pub fn new() -> Self {
         Self {
             gl_state: GLState::default(),
-            platform_state: PlatformState::new(MTLPixelFormat::BGRA8Unorm),
+            platform_state: PlatformState::new(MTLPixelFormat::RGBA8Unorm, None, None),
         }
     }
-    pub fn set_view(&self, view: &Retained<NSView>) {
+    pub fn set_view(&mut self, view: &Retained<NSView>) {
         self.platform_state.set_view(view);
     }
 }
@@ -59,8 +59,13 @@ impl Default for Context {
 #[allow(clippy::inline_always)]
 #[inline(always)]
 pub fn with_ctx<Ret, Func: for<'a> Fn(Pin<&'a mut Context>) -> Ret>(f: Func) -> Ret {
+    // take the current context pointer
+    // (this effectively takes a single-threaded "lock" on the context which protects against
+    // the user doing Weird Stuff and running multiple GL commands simultaneously)
     let mut ptr: NonNull<Context> = CTX.take().expect("No context set");
+
     // Safety: we are the exclusive accessor of ptr due to its thread locality and the fact that we called `take` on it previously
+    // wrap the context reference in a pin to ensure it is not moved out of
     let p = Pin::new(unsafe { ptr.as_mut() });
 
     let ret = f(p);

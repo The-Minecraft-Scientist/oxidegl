@@ -30,6 +30,10 @@ use objc2::{
     runtime::{AnyClass, NSObject},
     sel, ClassType, DeclaredClass,
 };
+
+// Sometimes when I'm bored I click onto this file and read what I've wrote. It reads like an abyss
+// and sometimes, it feels like the abyss is staring back, questioning my sanity for writing this.
+
 use objc2_app_kit::NSView;
 declare_class!(
     struct OXGLOxideGLCtxAssociatedObject;
@@ -110,7 +114,7 @@ declare_class! (
                 222 | 235 => 1,
                 _ => panic!("tried to get NSGL context parameters from oxidegl nsgl shim (param code {parameter})"),
             };
-            //Safety: caller ensure pointer is valid
+            //Safety: caller ensures pointer is valid
             unsafe {*values = outv};
         }
         #[method(makeCurrentContext)]
@@ -137,7 +141,7 @@ declare_class! (
                 // Safety: pointer is non null, points to an initialized and heap-allocated Context.
                 // pointer cannot have aliasing Rust references (since this class and CTX are the only places where the
                 // pointer is actually read from, and we emptied CTX prior to creating this reference)
-                unsafe {ptr.as_ref()}.set_view(&v.retain());
+                unsafe {ptr.as_mut()}.set_view(&v.retain());
                 CTX.set(ctx);
             }
         }
@@ -362,9 +366,7 @@ unsafe extern "C" fn CFBundleGetFunctionPointerForNameOverride(
                 "Redirecting NSGL function lookup of {:?} to OxideGL",
                 symbol
             );
-            let handle = OXIDEGL_HANDLE
-                .with(|v| *v.get_or_init(|| dlopen(c"liboxidegl.dylib".as_ptr(), RTLD_LAZY)));
-            dlsym(handle, symbol.as_ptr())
+            dlsym(get_oxidegl_handle(), symbol.as_ptr())
         } else {
             CFBundleGetFunctionPointerForName(bundle, function_name)
         }
