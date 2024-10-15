@@ -1,7 +1,6 @@
 /target
 generated
 
-/Cargo.lock
 *.DS_Store
 *install.sh
 /tests/HelloTriangle/bin/*

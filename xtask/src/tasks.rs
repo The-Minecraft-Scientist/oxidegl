@@ -137,6 +137,7 @@ impl TaskTrait for BuildOxideGL {
     }
 
     fn perform(&self) -> Result<()> {
+        //TODO: fix installing universal binary not working
         let debug_release = if self.release { "release" } else { "debug" };
         if self.universal {
             println!("merging universal binary");
