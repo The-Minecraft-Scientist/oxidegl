@@ -441,6 +441,9 @@ fn submodule_init(paths: &[&str]) -> Result<()> {
         "Checking uninitialized submodule(s) at: {}",
         paths.join(", ")
     );
+    if paths.is_empty() {
+        return Ok(());
+    }
     if !process::Command::new("git")
         .args(["submodule", "update", "--init", "--recursive", "--"])
         .args(paths)
