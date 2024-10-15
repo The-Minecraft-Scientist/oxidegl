@@ -6,7 +6,7 @@ use objc2::rc::Retained;
 use objc2_app_kit::NSView;
 
 use crate::{
-    context::{Context, CTX},
+    context::{with_ctx, Context, CTX},
     dispatch::gl_types::GLenum,
 };
 
@@ -19,7 +19,15 @@ pub fn set_context(ctx: Option<NonNull<Context>>) {
     CTX.set(ctx);
 }
 pub fn swap_buffers() {
-    debug!("swap buffers called");
+    with_ctx(|mut ctx| {
+        // thank god for deref patterns
+        let Context {
+            gl_state: state,
+            platform_state: platform,
+        } = &mut *ctx;
+        platform.swap_buffers(state);
+    });
+    trace!("swap buffers");
 }
 #[no_mangle]
 unsafe extern "C" fn oxidegl_swap_buffers(_ctx: Option<NonNull<Context>>) {
@@ -50,6 +58,7 @@ pub unsafe extern "C" fn oxidegl_platform_init() {
         set_var("MTL_DEBUG_LAYER", "1");
         set_var("MTL_SHADER_VALIDATION", "1");
         set_var("MTL_DEBUG_LAYER_VALIDATE_UNRETAINED_RESOURCES", "0x4");
+        set_var("RUST_BACKTRACE", "1");
     }
 }
 

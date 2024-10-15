@@ -5,6 +5,7 @@ use objc2_metal::{MTLBuffer, MTLDevice, MTLResourceOptions};
 
 use crate::{
     context::{
+        platform::NeedsRefreshBits,
         state::{NamedObject, ObjectName},
         Context,
     },
@@ -501,7 +502,8 @@ impl Context {
         data: *const GLvoid,
         flags: BufferStorageMask,
     ) {
-        self.gl_state
+        let buf = self
+            .gl_state
             .buffer_list
             .get_opt_mut(name)
             .expect("UB: buffer name not present in buffer list!");
@@ -529,7 +531,11 @@ impl Context {
                 .device
                 .newBufferWithLength_options(size, options);
         };
-        let buffer = buffer.expect("INTERNAL ERROR: Metal Buffer allocation failed");
+        let buffer = buffer.expect("Metal Buffer allocation failed");
+        buf.allocation = Some(RealizedBufferInternal {
+            mapping: None,
+            mtl: buffer,
+        });
     }
 }
 

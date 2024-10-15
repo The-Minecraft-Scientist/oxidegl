@@ -78,12 +78,6 @@ pub(crate) struct InternalDrawable {
     pub(crate) stencil: Option<ProtoObjRef<dyn MTLTexture>>,
 }
 impl InternalDrawable {
-    #[expect(clippy::cast_possible_truncation)]
-    pub(crate) fn with_ca_metal_drawable(&mut self, d: &ProtoObjRef<dyn CAMetalDrawable>) {
-        let tex = unsafe { d.texture() };
-        debug_assert_eq!(self.dimensions, (tex.width() as u32, tex.height() as u32),);
-        self.color = tex;
-    }
     pub(crate) fn new(color: ProtoObjRef<dyn MTLTexture>, dimensions: (u32, u32)) -> Self {
         Self {
             dimensions,

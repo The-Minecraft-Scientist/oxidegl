@@ -1,5 +1,6 @@
 use std::{
-    fs::{copy, create_dir, read_dir, remove_file},
+    fmt::format,
+    fs::{copy, create_dir, create_dir_all, read_dir, remove_file},
     path::{Path, PathBuf},
     process::{self, exit, Command, Stdio},
     sync::{Arc, OnceLock},
@@ -106,22 +107,80 @@ pub struct BuildOxideGL {
     /// Builds OxideGL x86 and arm64 targets, then constructs a universal binary in target/darwin-universal
     #[arg(short, long, default_value_t = false)]
     universal: bool,
+    /// rust target triple to build OxideGL for
+    #[arg(short, long)]
+    target: Option<String>,
 }
 impl TaskTrait for BuildOxideGL {
     fn dependencies(&self) -> Option<Box<[Task]>> {
-        None
+        if self.universal {
+            let mut subtask = self.clone();
+            subtask.install = false;
+            subtask.universal = false;
+            assert!(
+                subtask.target.is_none(),
+                "tried to create a universal binary with a single specified arch"
+            );
+            let mut x86 = subtask.clone();
+            let mut aarch = subtask;
+            x86.target = Some("x86_64-apple-darwin".to_string());
+            aarch.target = Some("aarch64-apple-darwin".to_string());
+
+            Some(Box::new([
+                x86.into(),
+                aarch.into(),
+                GetXcodeCommandLineTools.into(),
+            ]))
+        } else {
+            None
+        }
     }
 
     fn perform(&self) -> Result<()> {
-        println!("Building OxideGL");
+        let debug_release = if self.release { "release" } else { "debug" };
+        if self.universal {
+            println!("merging universal binary");
+            let univ_path = format!("target/darwin-universal/{debug_release}");
+            let x86_binary = format!("target/x86_64-apple-darwin/{debug_release}/liboxidegl.dylib");
+            let aarch_binary =
+                format!("target/aarch64-apple-darwin/{debug_release}/liboxidegl.dylib");
+            create_dir_all(&univ_path)
+                .expect("failed to create output directory for universal OxideGL binary");
+            let _c = Command::new("lipo")
+                .args([
+                    "-create",
+                    "-output",
+                    &format!("{univ_path}/liboxidegl.dylib"),
+                    &x86_binary,
+                    &aarch_binary,
+                ])
+                .output()
+                .ok()
+                .and_then(|v| if v.status.success() { Some(v) } else { None })
+                .expect("failed to run lipo universal binary utility");
+            return Ok(());
+        }
+        println!(
+            "Building OxideGL for architecture {}",
+            self.target.as_deref().unwrap_or("default")
+        );
         let mut c = Command::new("cargo");
         c.arg("build");
+
+        let debug_release = if self.release { "release" } else { "debug" };
+        let mut target_subpath = String::new();
+        if let Some(arch) = &self.target {
+            c.args(["--target", arch]);
+            target_subpath.push_str(arch);
+            target_subpath.push('/');
+        }
+        target_subpath.push_str(debug_release);
 
         if self.release {
             c.arg("-r");
             c.env("OXIDEGL_RELEASE", "1");
         }
-        c.env("CARGO_TARGET_DIR", "/tmp/oxidegl-target/");
+        //c.env("CARGO_TARGET_DIR", "/tmp/oxidegl-target/");
         c.args(["--features", &format!("max_log_{}", self.logging_level)]);
         if self.debug_assertions {
             c.args(["--config", "build-override.debug-assertions=true"]);
@@ -140,10 +199,7 @@ impl TaskTrait for BuildOxideGL {
         if self.install {
             let _ = remove_file("/usr/local/lib/liboxidegl.dylib");
             copy(
-                format!(
-                    "/tmp/oxidegl-target/{}/liboxidegl.dylib",
-                    if self.release { "release" } else { "debug" }
-                ),
+                format!("target/{}/liboxidegl.dylib", target_subpath),
                 "/usr/local/lib/liboxidegl.dylib",
             )?;
             println!("Installed OxideGL to /usr/local/lib/liboxidegl.dylib");

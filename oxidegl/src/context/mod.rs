@@ -32,8 +32,8 @@ thread_local! {
 #[derive(Debug)]
 #[repr(C)]
 pub struct Context {
-    gl_state: GLState,
-    platform_state: PlatformState,
+    pub(crate) gl_state: GLState,
+    pub(crate) platform_state: PlatformState,
 }
 impl Context {}
 
@@ -42,7 +42,7 @@ impl Context {
     pub fn new() -> Self {
         Self {
             gl_state: GLState::default(),
-            platform_state: PlatformState::new(MTLPixelFormat::RGBA8Unorm, None, None),
+            platform_state: PlatformState::new(MTLPixelFormat::BGRA8Unorm_sRGB, None, None),
         }
     }
     pub fn set_view(&mut self, view: &Retained<NSView>) {

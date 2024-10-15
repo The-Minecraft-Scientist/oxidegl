@@ -1,7 +1,7 @@
 use core::slice;
 use std::num::NonZeroU32;
 
-use log::debug;
+use log::{debug, trace};
 use objc2_metal::MTLVertexFormat;
 
 use crate::{
@@ -570,7 +570,7 @@ impl Context {
                 .is_some_and(|b| b),
             "UB: Tried to bind an uninitialized VAO name"
         );
-        debug!("bound {name:?} as current VAO");
+        trace!("bound {name:?} as current VAO");
         self.gl_state.vao_binding = name;
     }
 

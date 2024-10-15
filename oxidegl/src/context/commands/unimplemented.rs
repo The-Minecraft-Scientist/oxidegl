@@ -1,3 +1,5 @@
+use objc2_metal::{MTLPrimitiveType, MTLRenderCommandEncoder};
+
 use crate::context::Context;
 use crate::dispatch::gl_types::*;
 use crate::enums::{
@@ -14735,7 +14737,26 @@ impl Context {
     /// available only if the GL version is 3.2 or greater.
 
     pub fn oxidegl_draw_arrays(&mut self, mode: PrimitiveType, first: GLint, count: GLsizei) {
-        panic!("command oxidegl_draw_arrays not yet implemented");
+        //FIXME hack, move to module
+        let Context {
+            gl_state: state,
+            platform_state,
+        } = self;
+        platform_state.update_state(state, true);
+        #[expect(
+            clippy::cast_sign_loss,
+            reason = "OpenGL is a state of the art 3D graphics API"
+        )]
+        unsafe {
+            platform_state
+                .current_render_encoder()
+                .drawPrimitives_vertexStart_vertexCount(
+                    MTLPrimitiveType::Triangle,
+                    first as usize,
+                    count as usize,
+                );
+        };
+        //panic!("command oxidegl_draw_arrays not yet implemented");
     }
     /// ### Parameters
     /// `mode`

@@ -2,7 +2,7 @@ use std::mem;
 
 use ahash::{HashSet, HashSetExt};
 use glslang::Compiler as GlslLangCompiler;
-use log::{debug, trace};
+use log::{debug, error, trace};
 //use naga::back::msl::{Options, PipelineOptions};
 use crate::{context::shader::ShaderInternal, enums::ShaderType, NoDebug, ProtoObjRef};
 use objc2_foundation::NSString;
@@ -287,7 +287,7 @@ impl Program {
                 &mut self.fragment_shaders,
                 glslang_compiler,
             ) {
-                Ok(v) => new_linkage.vertex = Some(v),
+                Ok(v) => new_linkage.fragment = Some(v),
                 Err(s) => {
                     self.debug_log_str(&s);
                     return;
@@ -372,13 +372,13 @@ impl LinkedProgramResources {
             value.resources_for_type(spirv_cross2::reflect::ResourceType::GlPlainUniform)?,
             spirvc,
         )?;
-        Ok(dbg!(Self {
+        Ok(Self {
             uniform_buffers,
             shader_storage_buffers,
             atomic_counter_buffers,
             stage_inputs,
-            plain_uniforms
-        }))
+            plain_uniforms,
+        })
     }
 }
 #[derive(Debug)]

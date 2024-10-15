@@ -2,17 +2,18 @@ use std::mem;
 
 use ahash::{HashMap, HashMapExt, HashSet, HashSetExt};
 use log::{info, trace};
-use objc2::rc::Retained;
+use objc2::{rc::Retained, runtime::ProtocolObject};
 use objc2_app_kit::{NSScreen, NSView};
 use objc2_foundation::{is_main_thread, ns_string, MainThreadMarker, NSString};
 use objc2_metal::{
-    MTLBlitCommandEncoder, MTLCommandBuffer, MTLCommandBufferDescriptor,
-    MTLCommandBufferErrorOption, MTLCommandEncoder, MTLCommandQueue, MTLCreateSystemDefaultDevice,
-    MTLDevice, MTLPixelFormat, MTLPrimitiveTopologyClass, MTLRenderCommandEncoder,
-    MTLRenderPassColorAttachmentDescriptor, MTLRenderPassDepthAttachmentDescriptor,
-    MTLRenderPassDescriptor, MTLRenderPassStencilAttachmentDescriptor, MTLRenderPipelineDescriptor,
-    MTLRenderPipelineState, MTLStorageMode, MTLTexture, MTLTextureDescriptor, MTLTextureUsage,
-    MTLVertexAttributeDescriptor, MTLVertexDescriptor,
+    MTLBlitCommandEncoder, MTLBufferLayoutDescriptor, MTLClearColor, MTLCommandBuffer,
+    MTLCommandBufferDescriptor, MTLCommandBufferErrorOption, MTLCommandEncoder, MTLCommandQueue,
+    MTLCreateSystemDefaultDevice, MTLDevice, MTLDrawable, MTLLoadAction, MTLPixelFormat,
+    MTLPrimitiveTopologyClass, MTLRenderCommandEncoder, MTLRenderPassColorAttachmentDescriptor,
+    MTLRenderPassDepthAttachmentDescriptor, MTLRenderPassDescriptor,
+    MTLRenderPassStencilAttachmentDescriptor, MTLRenderPipelineDescriptor, MTLRenderPipelineState,
+    MTLStorageMode, MTLTexture, MTLTextureDescriptor, MTLTextureUsage,
+    MTLVertexAttributeDescriptor, MTLVertexBufferLayoutDescriptor, MTLVertexDescriptor,
 };
 use objc2_quartz_core::{kCAFilterNearest, CAMetalDrawable, CAMetalLayer};
 
@@ -31,7 +32,7 @@ use super::{
 #[derive(Debug)]
 pub struct PlatformState {
     /// dirty components
-    dirty_state: NeedsRefreshBits,
+    pub(crate) dirty_state: NeedsRefreshBits,
 
     /// the View this state is associated with
     view: Option<Retained<NSView>>,
@@ -73,6 +74,9 @@ pub struct PlatformState {
     /// Mapping from buffer name to metal vertex shader argument index
     pub(crate) vertex_buffer_map: ResourceMap<Buffer, MTL_MAX_ARGUMENT_BINDINGS>,
 
+    /// Mapping from metal vertex argument table index to vertex descriptor buffer offset
+    pub(crate) vertex_buffer_offsets: HashMap<ObjectName<Buffer>, usize>,
+
     /// Mapping from buffer name to metal fragment shader argument index
     pub(crate) fragment_buffer_map: ResourceMap<Buffer, MTL_MAX_ARGUMENT_BINDINGS>,
 
@@ -105,15 +109,20 @@ impl InternalDrawables {
         }
     }
 }
-const MTL_MAX_ARGUMENT_BINDINGS: usize = 32;
+const MTL_MAX_ARGUMENT_BINDINGS: usize = 31;
 bitflags::bitflags! {
     #[derive(Debug, Copy, Clone, Eq, PartialEq)]
     #[repr(transparent)]
     pub struct NeedsRefreshBits: u32 {
-        const RENDER_PASS =     1;
-        const RENDER_PIPELINE = 1 << 1;
-        const VAO =             1 << 2;
-        const PROGRAM =         1 << 3;
+        /// Create a fresh render encoder from the current GL state
+        const NEW_RENDER_ENCODER = 1;
+        /// Update dynamic render encoder state from the current GL state
+        const UPDATE_CURRENT_ENCODER = 1 << 1;
+        /// Create a fresh render pipeline state from the current GL state
+        const NEW_RENDER_PIPELINE = 1 << 2;
+        /// Update buffer maps (e.g. when a new VAO or program is bound)
+        const REMAP_BUFFERS = 1 << 3;
+
 
     }
 }
@@ -134,6 +143,7 @@ impl<const MAX_ENTRIES: usize, T: NamedObject + 'static> ResourceMap<T, MAX_ENTR
             dbg_check: HashMap::new(),
         }
     }
+    /// Build
     #[inline]
     pub(crate) fn build(
         &mut self,
@@ -152,7 +162,10 @@ impl<const MAX_ENTRIES: usize, T: NamedObject + 'static> ResourceMap<T, MAX_ENTR
         }
         #[expect(clippy::cast_possible_truncation, reason = "const checked")]
         let mut ctr = MAX_ENTRIES as u32 - 1;
-        assert!(pinned_resources.len() + include_resources.len() <= MAX_ENTRIES);
+        assert!(
+            pinned_resources.len() + include_resources.len() <= MAX_ENTRIES,
+            "OxideGL exceeded the maximum available resource "
+        );
         for res in include_resources.iter().copied() {
             loop {
                 // Could theoretically cause infinite loop, assert above should prevent this
@@ -186,6 +199,18 @@ impl PlatformState {
         view.setWantsLayer(true);
         trace!("injected layer {:?} into NSView", &self.layer);
     }
+    pub(crate) fn swap_buffers(&mut self, state: &mut GLState) {
+        self.update_state(state, false);
+
+        self.end_encoding();
+
+        if let Some(drawable) = self.drawable.take() {
+            self.current_command_buffer()
+                .presentDrawable(drawable.as_ref().as_ref());
+        }
+        self.current_command_buffer().commit();
+        self.command_buffer = None;
+    }
     pub(crate) fn new(
         pixel_format: MTLPixelFormat,
         depth_format: Option<MTLPixelFormat>,
@@ -216,7 +241,7 @@ impl PlatformState {
         queue.setLabel(Some(ns_string!("OxideGL command queue")));
 
         Self {
-            dirty_state: NeedsRefreshBits::empty(),
+            dirty_state: NeedsRefreshBits::all(),
 
             view: None,
             device,
@@ -233,6 +258,8 @@ impl PlatformState {
             render_pipeline_state: None,
 
             vertex_buffer_map: ResourceMap::new(),
+            vertex_buffer_offsets: HashMap::new(),
+
             fragment_buffer_map: ResourceMap::new(),
 
             pixel_format,
@@ -276,40 +303,105 @@ impl PlatformState {
             )
         })
     }
-    #[inline]
-    fn new_render_encoder(
-        buf: &ProtoObjRef<dyn MTLCommandBuffer>,
-        desc: &MTLRenderPassDescriptor,
-        label: Option<&'static NSString>,
-    ) -> ProtoObjRef<dyn MTLRenderCommandEncoder> {
-        let enc = buf
-            .renderCommandEncoderWithDescriptor(desc)
-            .expect("failed to create render command encoder");
-        if let Some(v) = label {
-            enc.setLabel(Some(v));
+    pub(crate) fn update_state(&mut self, state: &mut GLState, is_draw_command: bool) {
+        // if there is no VAO, we still need to modify render encoder state for some commands like glClear but not do any further work
+        if state.vao_binding.is_none() {
+            if is_draw_command {
+                panic!("tried to call a draw command without a VAO bound")
+            } else {
+                self.end_encoding();
+                self.render_encoder = Some(self.build_render_pass_descriptor(state));
+                return;
+            }
         }
-        enc
+
+        if self.dirty_state.contains(NeedsRefreshBits::REMAP_BUFFERS) {
+            self.remap_buffer_arguments(state);
+        }
+
+        if self
+            .dirty_state
+            .contains(NeedsRefreshBits::NEW_RENDER_ENCODER)
+        {
+            trace!("generating new render command encoder");
+            self.end_encoding();
+            self.render_encoder = Some(self.build_render_pass_descriptor(state));
+            self.update_dynamic_encoder_state(state);
+        }
+        if self
+            .dirty_state
+            .contains(NeedsRefreshBits::UPDATE_CURRENT_ENCODER)
+        {
+            self.update_dynamic_encoder_state(state);
+        }
+        if self
+            .dirty_state
+            .contains(NeedsRefreshBits::NEW_RENDER_PIPELINE)
+        {
+            trace!("generating new render pipeline state");
+            self.render_pipeline_state = Some(self.build_render_pipeline_state(state));
+        }
+        let ps = self.render_pipeline_state.as_ref().unwrap();
+        let enc = self.render_encoder.as_ref().unwrap();
+        enc.setRenderPipelineState(ps);
     }
-    pub(crate) fn update_state(&mut self, state: &mut GLState) {}
     //preconditions: buffer maps built, renderable program present
     pub(crate) fn build_render_pipeline_state(
         &mut self,
         state: &mut GLState,
     ) -> ProtoObjRef<dyn MTLRenderPipelineState> {
         let desc = MTLRenderPipelineDescriptor::new();
+        #[cfg(debug_assertions)]
+        desc.setLabel(Some(ns_string!("OxideGL render pipeline")));
         let (Some(f), Some(v)) = (
             Self::linked_stage(state, ShaderType::FragmentShader),
             Self::linked_stage(state, ShaderType::VertexShader),
         ) else {
             panic!("Tried to build a render pipeline while missing a linked vertex or fragment shader stage");
         };
+        let attachments = desc.colorAttachments();
+        if state.framebuffer_binding.is_some() {
+            todo!()
+        } else {
+            for i in 0..state.default_draw_buffers.drawbuf_iter().count() {
+                unsafe {
+                    attachments
+                        .objectAtIndexedSubscript(i)
+                        .setPixelFormat(self.pixel_format);
+                }
+            }
+            //TODO depth/stencil
+        }
         desc.setVertexFunction(Some(&v.function));
         desc.setFragmentFunction(Some(&f.function));
         //TODO: primitive topology real
-        unsafe { desc.setInputPrimitiveTopology(MTLPrimitiveTopologyClass::Triangle) };
+        // unsafe { desc.setInputPrimitiveTopology(MTLPrimitiveTopologyClass::Triangle) };
+        let v_desc = self.build_vertex_descriptor(state);
+        desc.setVertexDescriptor(Some(&v_desc));
         self.device
             .newRenderPipelineStateWithDescriptor_error(&desc)
             .expect("failed to create pipeline state")
+        // TODO clear state, depth test config, scissor box
+    }
+    // precondition buffers mapped
+    fn update_dynamic_encoder_state(&mut self, state: &mut GLState) {
+        self.bind_buffers_to_encoder(state);
+    }
+    fn bind_buffers_to_encoder(&mut self, state: &mut GLState) {
+        let enc = self.render_encoder.as_ref().unwrap();
+        for (&buf, &binding) in &self.vertex_buffer_map.inner {
+            let buf_obj = state.buffer_list.get(buf);
+            trace!("binding {buf:?} to metal argument table index {binding}");
+            if let Some(alloc) = buf_obj.allocation.as_ref() {
+                unsafe {
+                    enc.setVertexBuffer_offset_atIndex(
+                        Some(&alloc.mtl),
+                        *self.vertex_buffer_offsets.get(&buf).unwrap(),
+                        binding as usize,
+                    );
+                };
+            }
+        }
     }
     #[expect(
         clippy::cast_possible_truncation,
@@ -339,26 +431,37 @@ impl PlatformState {
                 .as_ref()
                 .expect("GL command called before setting the view for this context")
                 .frame();
-            let dims = (rect.size.width as u32, rect.size.width as u32);
-            let mut drawable = self.get_internal_drawbuffer(first, dims).clone();
-
-            if let Some(depth) = &drawable.depth {
+            let dims = (rect.size.width as u32, rect.size.height as u32);
+            let ca_drawable_tex = unsafe { self.current_drawable().texture() };
+            let drawbuffer = self.get_internal_drawbuffer(first, dims);
+            // When multiple draw buffers are present it's somewhat unclear which one should be responsible for the depth/stencil drawables, so we use the first one (index 0) as a sane default
+            if let Some(depth) = &drawbuffer.depth {
                 let a_desc = unsafe { MTLRenderPassDepthAttachmentDescriptor::new() };
                 a_desc.setTexture(Some(depth));
                 desc.setDepthAttachment(Some(&a_desc));
             }
-            if let Some(stencil) = &drawable.stencil {
+            if let Some(stencil) = &drawbuffer.stencil {
                 let a_desc = unsafe { MTLRenderPassStencilAttachmentDescriptor::new() };
                 a_desc.setTexture(Some(stencil));
                 desc.setStencilAttachment(Some(&a_desc));
             }
 
             for (idx, buf) in iter {
-                if buf == DrawBufferMode::FrontLeft {
-                    drawable.with_ca_metal_drawable(self.current_drawable());
-                }
                 let a_desc = MTLRenderPassColorAttachmentDescriptor::new();
-                a_desc.setTexture(Some(&drawable.color));
+                if buf == DrawBufferMode::FrontLeft {
+                    // Replace the texture with the current drawable
+                    debug_assert_eq!(
+                        (
+                            ca_drawable_tex.width() as u32,
+                            ca_drawable_tex.height() as u32
+                        ),
+                        drawbuffer.dimensions,
+                        "Metal drawable had different dimensions than associated drawbuffer!"
+                    );
+                    a_desc.setTexture(Some(&ca_drawable_tex));
+                } else {
+                    a_desc.setTexture(Some(&drawbuffer.color));
+                }
                 unsafe {
                     desc.colorAttachments()
                         .setObject_atIndexedSubscript(Some(&a_desc), idx);
@@ -367,13 +470,20 @@ impl PlatformState {
             desc.setRenderTargetWidth(dims.0 as usize);
             desc.setRenderTargetHeight(dims.1 as usize);
         }
-        todo!();
+        let enc = self
+            .current_command_buffer()
+            .renderCommandEncoderWithDescriptor(&desc)
+            .expect("failed to create new render command encoder");
+        #[cfg(debug_assertions)]
+        enc.setLabel(Some(ns_string!("OxideGL render encoder")));
+        enc
     }
     pub(crate) fn get_internal_drawbuffer(
         &mut self,
         target: DrawBufferMode,
         viewport_dims: (u32, u32),
     ) -> &InternalDrawable {
+        trace!("getting internal (default FB) drawbuffer for {target:?}");
         let r = match target {
             DrawBufferMode::FrontLeft => &mut self.internal_drawables.front_left,
             DrawBufferMode::FrontRight => &mut self.internal_drawables.front_right,
@@ -399,6 +509,11 @@ impl PlatformState {
         format: MTLPixelFormat,
         gpu_private: bool,
     ) -> ProtoObjRef<dyn MTLTexture> {
+        trace!(
+            "creating new {}x{} {format:?} drawable texture",
+            size.0,
+            size.1
+        );
         let desc = unsafe { MTLTextureDescriptor::new() };
         if gpu_private {
             desc.setAllowGPUOptimizedContents(true);
@@ -441,10 +556,15 @@ impl PlatformState {
             Self::linked_stage(state, ShaderType::VertexShader),
             state.vao_binding.and_then(|v| state.vao_list.get_opt(v)),
         ) {
+            self.vertex_buffer_offsets.clear();
             let vertex_buffers = vao
                 .buffer_bindings
                 .iter()
-                .filter_map(|b| b.buf)
+                .filter_map(|v| v.buf.map(|n| (n, v.offset)))
+                .map(|(name, offset)| {
+                    self.vertex_buffer_offsets.insert(name, offset);
+                    name
+                })
                 .collect::<Vec<_>>();
             let pinned_buffers = Self::stage_pinned_buffers(state, vert);
             self.vertex_buffer_map
@@ -501,8 +621,22 @@ impl PlatformState {
         &mut self,
         state: &mut GLState,
     ) -> Retained<MTLVertexDescriptor> {
+        trace!("generating Metal vertex descriptor from GL VAO state");
         let vao = state.vao_list.get(state.vao_binding.unwrap());
         let mtl_vertex_desc = unsafe { MTLVertexDescriptor::new() };
+        for bdg in &vao.buffer_bindings {
+            if let Some(buf) = bdg.buf {
+                let buffer_argument_index = self.vertex_buffer_map.get(buf).unwrap();
+                let desc = MTLVertexBufferLayoutDescriptor::new();
+                unsafe { desc.setStride(bdg.stride.into()) };
+
+                unsafe {
+                    mtl_vertex_desc
+                        .layouts()
+                        .setObject_atIndexedSubscript(Some(&desc), buffer_argument_index as usize);
+                };
+            }
+        }
         for (idx, attr) in vao.attribs.iter().enumerate() {
             let Some(attr) = attr else {
                 continue;
@@ -519,7 +653,7 @@ impl PlatformState {
 
             unsafe { mtl_attrib_desc.setBufferIndex(buffer_argument_index as usize) };
             mtl_attrib_desc.setFormat(attr.get_mtl_layout().to_vertex_format());
-            unsafe { mtl_attrib_desc.setOffset(attr_binding.offset) };
+            unsafe { mtl_attrib_desc.setOffset(attr.relative_offset as usize) };
 
             unsafe {
                 mtl_vertex_desc
@@ -527,19 +661,30 @@ impl PlatformState {
                     .setObject_atIndexedSubscript(Some(&mtl_attrib_desc), idx);
             };
         }
+
         mtl_vertex_desc
     }
     #[inline]
+    #[track_caller]
     pub(crate) fn current_render_encoder(&mut self) -> &ProtoObjRef<dyn MTLRenderCommandEncoder> {
         self.render_encoder
             .as_ref()
             .expect("render command encoder should have been created!")
     }
     #[inline]
-    pub(crate) fn current_drawable(&mut self) -> &mut ProtoObjRef<dyn CAMetalDrawable> {
-        self.drawable.get_or_insert_with(|| {
+    pub(crate) fn end_encoding(&mut self) {
+        if let Some(enc) = &self.render_encoder {
+            enc.endEncoding();
+        }
+        self.render_encoder = None;
+    }
+    #[inline]
+    #[track_caller]
+    pub(crate) fn current_drawable(&mut self) -> &ProtoObjRef<dyn CAMetalDrawable> {
+        let r = self.drawable.get_or_insert_with(|| {
             unsafe { self.layer.nextDrawable() }
                 .expect("Failed to get next drawable from CAMetalLayer")
-        })
+        });
+        &*r
     }
 }
