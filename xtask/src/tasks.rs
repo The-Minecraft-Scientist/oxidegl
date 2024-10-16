@@ -437,13 +437,13 @@ fn submodule_init(paths: &[&str]) -> Result<()> {
             })
         })
     });
-    println!(
-        "Checking uninitialized submodule(s) at: {}",
-        paths.join(", ")
-    );
     if paths.is_empty() {
         return Ok(());
     }
+    println!(
+        "getting uninitialized submodule(s) at: {}",
+        paths.join(", ")
+    );
     if !process::Command::new("git")
         .args(["submodule", "update", "--init", "--recursive", "--"])
         .args(paths)
