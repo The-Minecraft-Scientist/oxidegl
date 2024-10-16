@@ -408,6 +408,12 @@ impl PlatformState {
         clippy::cast_sign_loss,
         reason = "we hope this works"
     )]
+    pub(crate) fn default_fb_dimensions(&mut self) -> (u32, u32) {
+        let scale = self.layer.contentsScale();
+        let rect = &self.layer.frame().size;
+        ((rect.width * scale) as u32, (rect.height * scale) as u32)
+    }
+    #[expect(clippy::cast_possible_truncation, reason = "we hope this works")]
     //preconditions: view set on context
     pub(crate) fn build_render_pass_descriptor(
         &mut self,
@@ -426,12 +432,7 @@ impl PlatformState {
                 .enumerate()
                 .peekable();
             let &(_, first) = iter.peek().expect("No draw buffer set");
-            let rect = &self
-                .view
-                .as_ref()
-                .expect("GL command called before setting the view for this context")
-                .frame();
-            let dims = (rect.size.width as u32, rect.size.height as u32);
+            let dims = self.default_fb_dimensions();
             let ca_drawable_tex = unsafe { self.current_drawable().texture() };
             let drawbuffer = self.get_internal_drawbuffer(first, dims);
             // When multiple draw buffers are present it's somewhat unclear which one should be responsible for the depth/stencil drawables, so we use the first one (index 0) as a sane default
