@@ -98,14 +98,19 @@ impl Shader {
                         | ShaderMessage::from_bits_retain(1 << 2),
                 };
 
-                let input =
-                    match ShaderInput::new(&source, self.stage.to_glslang_stage(), &opts, None) {
-                        Ok(input) => input,
-                        Err(err) => {
-                            self.write_to_compiler_log(&err.to_string());
-                            return;
-                        }
-                    };
+                let input = match ShaderInput::new(
+                    &source,
+                    self.stage.to_glslang_stage(),
+                    &opts,
+                    None,
+                    None,
+                ) {
+                    Ok(input) => input,
+                    Err(err) => {
+                        self.write_to_compiler_log(&err.to_string());
+                        return;
+                    }
+                };
                 let shader = match comp.create_shader(input) {
                     Ok(shader) => shader,
                     Err(e) => {

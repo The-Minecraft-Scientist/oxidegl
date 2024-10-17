@@ -57,12 +57,12 @@ libc = { version = "0.2.158", optional = true }
 spirv-cross2 = { version = "0.4.4", default-features = false, features = [
     "msl",
 ] }
-glslang = "0.5.1"
+glslang = "0.6.1"
 
 
 # Expose max log level features
 [features]
-# default = ["nsgl_shim"]
+default = ["nsgl_shim"]
 max_log_trace = ["log/max_level_trace"]
 max_log_debug = ["log/max_level_debug"]
 max_log_info = ["log/max_level_info"]
