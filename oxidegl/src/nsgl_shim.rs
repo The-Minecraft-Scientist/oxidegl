@@ -134,7 +134,7 @@ declare_class! (
         fn set_view(&self, view: Option<&NSView>) {
             if let Some(v) = view {
                 let obj = self.get_assoc_obj();
-                let ptr = obj.ivars().cast::<Context>();
+                let mut ptr = obj.ivars().cast::<Context>();
 
                 // take current context to avoid potential aliasing references
                 let ctx = CTX.take();
@@ -316,10 +316,15 @@ fn get_oxidegl_handle() -> *mut c_void {
     })
 }
 unsafe extern "C" fn dlopen_override(filename: *const i8, flags: i32) -> *mut c_void {
-    // Safety: caller ensures filename points to a valid, nul-terminated C string
-    let str = unsafe { CStr::from_ptr(filename) };
-    if str.to_str().is_ok_and(|s| s.contains("libGL.dylib")) {
-        trace!("intercepted dlopen of libGL.dylib, returning oxidegl handle instead");
+    if !filename.is_null()
+    // Safety: caller ensures filename points to a valid, nul-terminated C string if non-null
+        && unsafe { CStr::from_ptr(filename) }
+            .to_str()
+            .is_ok_and(|s| s.contains("libGL.dylib") || s.contains("OpenGL.framework/OpenGL"))
+    {
+        trace!(
+            "intercepted dlopen of libGL.dylib/OpenGL.framework, returning oxidegl handle instead"
+        );
 
         get_oxidegl_handle()
     } else {
