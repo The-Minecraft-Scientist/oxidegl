@@ -174,7 +174,7 @@ pub(crate) struct DebugLogMessage {
 }
 pub struct OxideGLDebugLogWriter;
 
-const FID: Option<u16> = crate::generated::__FNAME_LOOKUP.get(file!());
+const FID: Option<u16> = crate::generated::FNAME_LOOKUP.get(file!());
 impl LogWriter for OxideGLDebugLogWriter {
     fn write(
         &self,
