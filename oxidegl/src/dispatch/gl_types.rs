@@ -19,7 +19,7 @@ pub type PtrToVoidPtr = *mut *mut c_void;
 pub type GLbitfield = u32;
 pub type GLshort = i16;
 pub type GLubyte = u8;
-pub type GLDEBUGPROC = extern "C" fn(
+pub type GLDEBUGPROC = unsafe extern "C" fn(
     source: GLenum,
     typ: GLenum,
     id: GLuint,

@@ -1,4 +1,4 @@
-use std::{marker::PhantomData, num::NonZeroU32};
+use std::{ffi::c_void, marker::PhantomData, num::NonZeroU32, sync::Arc};
 
 use ahash::{HashSet, HashSetExt};
 use log::debug;
@@ -7,7 +7,7 @@ use crate::{
     debug_unreachable,
     dispatch::{
         conversions::{GlDstType, SrcType},
-        gl_types::{GLboolean, GLenum, GLsizei, GLuint},
+        gl_types::{GLboolean, GLenum, GLsizei, GLuint, GLDEBUGPROC},
     },
     enums::{
         ClearBufferMask, GL_CONTEXT_CORE_PROFILE_BIT, GL_CONTEXT_FLAG_FORWARD_COMPATIBLE_BIT,
@@ -19,6 +19,7 @@ use crate::{
 use super::{
     commands::{buffer::Buffer, vao::Vao},
     framebuffer::{DrawBuffers, Framebuffer},
+    logging::DebugCallbackContainer,
     program::Program,
     shader::Shader,
 };
@@ -56,6 +57,9 @@ pub(crate) struct GLState {
     pub(crate) framebuffer_binding: Option<ObjectName<Framebuffer>>,
     /// draw buffer/attachment tracking for the default framebuffer
     pub(crate) default_draw_buffers: DrawBuffers,
+
+    /// current GL debug log callback
+    pub(crate) debug_log_callback: Option<DebugCallbackContainer>,
 
     /// TODO get rid of point size and line width, they are not changeable in gl46
     pub(crate) point_size: f32,
@@ -130,6 +134,7 @@ impl GLState {
             framebuffer_binding: None,
             default_draw_buffers: DrawBuffers::new_defaultfb(),
 
+            debug_log_callback: Some(DebugCallbackContainer::new_default()),
             point_size: 1.0,
             line_width: 1.0,
 

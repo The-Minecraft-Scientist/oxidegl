@@ -21,6 +21,7 @@ use crate::enums::{
     TransformFeedbackBufferMode, TransformFeedbackPName, TriangleFace, UniformBlockPName,
     UniformPName, UniformType, UseProgramStageMask, VertexArrayPName, VertexAttribEnum,
     VertexAttribPointerType, VertexAttribProperty, VertexBufferObjectUsage, VertexProvokingMode,
+    GL_NO_ERROR,
 };
 
 /// ### Parameters
@@ -17421,7 +17422,7 @@ impl Context {
     /// itself generates an error, it returns 0.
 
     pub fn oxidegl_get_error(&mut self) -> GLenum {
-        panic!("command oxidegl_get_error not yet implemented");
+        GL_NO_ERROR
     }
     /// ### Parameters
     /// `program`

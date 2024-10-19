@@ -313,32 +313,30 @@ impl TaskTrait for GenerateBindings {
         let spec = std::fs::read_to_string("reference/OpenGL-Registry/xml/gl.xml")?;
         let spec_doc = roxmltree::Document::parse(&spec)?;
         let (funcs, enums, group_map) = get_vals(&spec_doc)?;
-        if self.placeholder | self.dispatch | self.enums {
-            if self.placeholder {
-                let path_to_write = out_dir.join("unimplemented.rs");
-                let mut writer = open_file_writer(&path_to_write)?;
-                write_placeholder_impl(&mut writer, &funcs)?;
-                drop(writer);
-                rustfmt_file(path_to_write)?;
-                println!("generated unimplemented.rs placeholder");
-            }
+        if self.placeholder {
+            let path_to_write = out_dir.join("unimplemented.rs");
+            let mut writer = open_file_writer(&path_to_write)?;
+            write_placeholder_impl(&mut writer, &funcs)?;
+            drop(writer);
+            rustfmt_file(path_to_write)?;
+            println!("generated unimplemented.rs placeholder");
+        }
 
-            if self.dispatch {
-                let path_to_write = out_dir.join("gl_core.rs");
-                let mut writer = open_file_writer(&path_to_write)?;
-                write_dispatch_impl(&mut writer, &funcs)?;
-                drop(writer);
-                rustfmt_file(path_to_write)?;
-                println!("generated gl_core.rs dispatch");
-            }
-            if self.enums {
-                let path_to_write = out_dir.join("enums.rs");
-                let mut writer = open_file_writer(&path_to_write)?;
-                write_enum_impl(&mut writer, &enums, &group_map)?;
-                drop(writer);
-                rustfmt_file(path_to_write)?;
-                println!("generated enums.rs enums and groups");
-            }
+        if self.dispatch {
+            let path_to_write = out_dir.join("gl_core.rs");
+            let mut writer = open_file_writer(&path_to_write)?;
+            write_dispatch_impl(&mut writer, &funcs)?;
+            drop(writer);
+            rustfmt_file(path_to_write)?;
+            println!("generated gl_core.rs dispatch");
+        }
+        if self.enums {
+            let path_to_write = out_dir.join("enums.rs");
+            let mut writer = open_file_writer(&path_to_write)?;
+            write_enum_impl(&mut writer, &enums, &group_map)?;
+            drop(writer);
+            rustfmt_file(path_to_write)?;
+            println!("generated enums.rs enums and groups");
         }
 
         Ok(())
@@ -447,8 +445,8 @@ fn submodule_init(paths: &[&str]) -> Result<()> {
     if !process::Command::new("git")
         .args(["submodule", "update", "--init", "--recursive", "--"])
         .args(paths)
-        .spawn()?
-        .wait()?
+        .output()?
+        .status
         .success()
     {
         bail!("git process errored while trying to update a submodule")

@@ -1,4 +1,5 @@
 use self::state::GLState;
+use likely_stable::if_likely;
 use objc2::rc::Retained;
 use objc2_app_kit::NSView;
 use objc2_metal::MTLPixelFormat;
@@ -19,6 +20,7 @@ use std::ptr::NonNull;
 pub(crate) mod commands;
 
 pub(crate) mod framebuffer;
+pub(crate) mod logging;
 pub(crate) mod program;
 pub(crate) mod shader;
 pub(crate) mod state;
@@ -35,7 +37,6 @@ pub struct Context {
     pub(crate) gl_state: GLState,
     pub(crate) platform_state: PlatformState,
 }
-impl Context {}
 
 impl Context {
     #[must_use]
@@ -59,16 +60,22 @@ impl Default for Context {
 #[allow(clippy::inline_always)]
 #[inline(always)]
 pub fn with_ctx<Ret, Func: for<'a> Fn(Pin<&'a mut Context>) -> Ret>(f: Func) -> Ret {
-    // take the current context pointer
-    // (this effectively takes a single-threaded "lock" on the context which protects against
-    // the user doing Weird Stuff and running multiple GL commands simultaneously)
-    let mut ptr: NonNull<Context> = CTX.take().expect("No context set");
+    // use if_likely to tell LLVM that it should optimize for the Some(ptr) case
+    if_likely! {
+        // take the current context pointer
+        // (this effectively takes a single-threaded "lock" on the context which protects against
+        // the user doing Weird Stuff and running multiple GL commands simultaneously)
+        let Some(mut ptr) = CTX.take() => {
 
-    // Safety: we are the exclusive accessor of ptr due to its thread locality and the fact that we called `take` on it previously
-    // wrap the context reference in a pin to ensure it is not moved out of
-    let p = Pin::new(unsafe { ptr.as_mut() });
+        // Safety: we are the exclusive accessor of ptr due to its thread locality and the fact that we called `take` on it previously
+        // wrap the context reference in a pin to ensure it is not moved out of
+        let p = Pin::new(unsafe { ptr.as_mut() });
 
-    let ret = f(p);
-    CTX.set(Some(ptr));
-    ret
+        let ret = f(p);
+        CTX.set(Some(ptr));
+        ret
+        } else {
+            panic!("no context set!");
+        }
+    }
 }
