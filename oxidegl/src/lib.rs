@@ -16,6 +16,8 @@ mod dispatch;
 #[allow(non_upper_case_globals, unused)]
 pub mod enums;
 
+pub(crate) mod generated;
+
 #[macro_export]
 /// [`unreachable!`](unreachable!), but it reduces to [`std::hint::unreachable_unchecked()`] in builds without debug assertions.
 /// Usages must start with the `unsafe` keyword to indicate that this macro has the same semantics as unreachable unchecked

@@ -58,7 +58,10 @@ spirv-cross2 = { version = "0.4.4", default-features = false, features = [
     "msl",
 ] }
 glslang = "0.6.1"
+likely_stable = "0.1.2"
 
+[build-dependencies]
+deterministic-hash = "1.0.1"
 
 # Expose max log level features
 [features]
