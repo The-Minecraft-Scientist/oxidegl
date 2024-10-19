@@ -6,7 +6,7 @@ use objc2::rc::Retained;
 use objc2_app_kit::NSView;
 
 use crate::{
-    context::{with_ctx, Context, CTX},
+    context::{logging, with_ctx, Context, CTX},
     dispatch::gl_types::GLenum,
 };
 
@@ -16,7 +16,13 @@ unsafe extern "C" fn oxidegl_set_current_context(ctx: Option<NonNull<Context>>) 
 }
 pub fn set_context(ctx: Option<NonNull<Context>>) {
     trace!("set context to {:?}", ctx);
-    CTX.set(ctx);
+    if let Some(mut prev) = CTX.take() {
+        unsafe { prev.as_mut() }.uninstall_debug_state();
+    }
+    if let Some(mut c) = ctx {
+        unsafe { c.as_mut() }.install_debug_state();
+        CTX.set(ctx);
+    }
 }
 pub fn swap_buffers() {
     with_ctx(|mut ctx| {
@@ -34,7 +40,7 @@ unsafe extern "C" fn oxidegl_swap_buffers(_ctx: Option<NonNull<Context>>) {
     swap_buffers();
 }
 #[must_use]
-pub fn box_ctx(ctx: Context) -> NonNull<Context> {
+pub(crate) fn box_ctx(ctx: Context) -> NonNull<Context> {
     let p = Box::into_raw(Box::new(ctx));
     // Safety: Box guarantees that the pointer is non-null
     unsafe { NonNull::new_unchecked(p) }
@@ -43,11 +49,7 @@ pub fn box_ctx(ctx: Context) -> NonNull<Context> {
 /// # Safety
 /// This needs to be run as early as possible (ideally before the program spawns a thread other than the main thread)
 pub unsafe extern "C" fn oxidegl_platform_init() {
-    Logger::try_with_env_or_str("none, oxidegl=trace")
-        .unwrap()
-        .start()
-        .unwrap();
-    trace!("OxideGL Logger initialized");
+    logging::init_logger();
     info!("OxideGL {}", Context::VERSION_INFO);
     #[cfg(debug_assertions)]
     // Safety: We pray that we aren't racing with anyone else's code writing env vars.
@@ -59,6 +61,16 @@ pub unsafe extern "C" fn oxidegl_platform_init() {
         set_var("MTL_SHADER_VALIDATION", "1");
         set_var("MTL_DEBUG_LAYER_VALIDATE_UNRETAINED_RESOURCES", "0x4");
         set_var("RUST_BACKTRACE", "1");
+    }
+}
+
+#[no_mangle]
+/// # Safety
+/// This function must be called EXACTLY once per context, or it will result in a double free
+unsafe extern "C" fn oxidegl_destroy_context(ctx: Option<NonNull<Context>>) {
+    if let Some(c) = ctx {
+        // Safety: caller ensures c points to a valid Context struct, allocated via a Box with the same allocator
+        drop(unsafe { Box::from_raw(c.as_ptr()) });
     }
 }
 
