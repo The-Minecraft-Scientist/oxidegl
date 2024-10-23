@@ -5,7 +5,6 @@ use objc2_metal::{MTLBuffer, MTLDevice, MTLResourceOptions};
 
 use crate::{
     context::{
-        platform::NeedsRefreshBits,
         state::{LateInit, NamedObject, ObjectName},
         Context,
     },

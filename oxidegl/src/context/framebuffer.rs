@@ -1,7 +1,6 @@
 use std::any::Any;
 
 use objc2_metal::{MTLDevice, MTLTexture};
-use objc2_quartz_core::CAMetalDrawable;
 
 use crate::{
     enums::{ClearBufferMask, DrawBufferMode, TextureTarget},

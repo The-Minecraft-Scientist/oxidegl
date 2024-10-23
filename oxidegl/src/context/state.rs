@@ -1,5 +1,5 @@
 use std::{
-    cell::UnsafeCell, ffi::c_void, fmt::Debug, marker::PhantomData, num::NonZeroU32, sync::Arc,
+    cell::UnsafeCell, fmt::Debug, marker::PhantomData, num::NonZeroU32,
 };
 
 use ahash::{HashSet, HashSetExt};
@@ -9,7 +9,7 @@ use crate::{
     debug_unreachable,
     dispatch::{
         conversions::{GlDstType, SrcType},
-        gl_types::{GLboolean, GLenum, GLsizei, GLuint, GLDEBUGPROC},
+        gl_types::{GLboolean, GLenum, GLsizei, GLuint},
     },
     enums::{
         ClearBufferMask, GL_CONTEXT_CORE_PROFILE_BIT, GL_CONTEXT_FLAG_FORWARD_COMPATIBLE_BIT,

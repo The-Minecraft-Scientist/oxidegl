@@ -2,14 +2,13 @@ use std::mem;
 
 use ahash::{HashMap, HashMapExt, HashSet, HashSetExt};
 use log::{info, trace};
-use objc2::{rc::Retained, runtime::ProtocolObject};
+use objc2::rc::Retained;
 use objc2_app_kit::{NSScreen, NSView};
 use objc2_foundation::{is_main_thread, ns_string, MainThreadMarker, NSString};
 use objc2_metal::{
-    MTLBlitCommandEncoder, MTLBufferLayoutDescriptor, MTLClearColor, MTLCommandBuffer,
+    MTLBlitCommandEncoder, MTLCommandBuffer,
     MTLCommandBufferDescriptor, MTLCommandBufferErrorOption, MTLCommandEncoder, MTLCommandQueue,
-    MTLCreateSystemDefaultDevice, MTLDevice, MTLDrawable, MTLLoadAction, MTLPixelFormat,
-    MTLPrimitiveTopologyClass, MTLRenderCommandEncoder, MTLRenderPassColorAttachmentDescriptor,
+    MTLCreateSystemDefaultDevice, MTLDevice, MTLPixelFormat, MTLRenderCommandEncoder, MTLRenderPassColorAttachmentDescriptor,
     MTLRenderPassDepthAttachmentDescriptor, MTLRenderPassDescriptor,
     MTLRenderPassStencilAttachmentDescriptor, MTLRenderPipelineDescriptor, MTLRenderPipelineState,
     MTLStorageMode, MTLTexture, MTLTextureDescriptor, MTLTextureUsage,

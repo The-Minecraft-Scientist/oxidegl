@@ -9,9 +9,7 @@ use std::{
     mem::{self, MaybeUninit},
     pin::Pin,
     ptr,
-    rc::Rc,
     slice,
-    sync::Arc,
 };
 
 use ahash::{HashMap, HashMapExt, HashSet, HashSetExt};
@@ -24,7 +22,7 @@ use crate::{
 };
 
 use super::{
-    state::{NamedObject, ObjectName},
+    state::ObjectName,
     Context,
 };
 

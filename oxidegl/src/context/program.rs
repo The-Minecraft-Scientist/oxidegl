@@ -2,7 +2,7 @@ use std::mem;
 
 use ahash::{HashSet, HashSetExt};
 use glslang::Compiler as GlslLangCompiler;
-use log::{debug, error, trace};
+use log::{debug, trace};
 //use naga::back::msl::{Options, PipelineOptions};
 use crate::{context::shader::ShaderInternal, enums::ShaderType, NoDebug, ProtoObjRef};
 use objc2_foundation::NSString;

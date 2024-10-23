@@ -1,5 +1,4 @@
 use std::{
-    fmt::format,
     fs::{copy, create_dir, create_dir_all, read_dir, remove_file},
     path::{Path, PathBuf},
     process::{self, exit, Command, Stdio},

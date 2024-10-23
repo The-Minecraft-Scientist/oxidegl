@@ -1,6 +1,5 @@
 use std::{ffi::c_void, ptr::NonNull};
 
-use flexi_logger::Logger;
 use log::{debug, info, trace};
 use objc2::rc::Retained;
 use objc2_app_kit::NSView;
