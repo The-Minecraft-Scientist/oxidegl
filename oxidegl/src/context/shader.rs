@@ -13,7 +13,7 @@ use log::debug;
 // };
 use spirv_cross2::Module;
 
-use super::state::{NamedObject, ObjectName};
+use super::state::{NamedObject, NoLateInit, ObjectName};
 //TODO: write more debug logging to compiler_log
 #[derive(Debug)]
 pub struct Shader {
@@ -73,7 +73,9 @@ impl Shader {
         }
     }
 }
-impl NamedObject for Shader {}
+impl NamedObject for Shader {
+    type LateInitType = NoLateInit<Self>;
+}
 
 impl Shader {
     pub(crate) fn compile(&mut self) {

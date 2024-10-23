@@ -6,7 +6,7 @@ use objc2::rc::Retained;
 use objc2_app_kit::NSView;
 
 use crate::{
-    context::{logging, with_ctx, Context, CTX},
+    context::{debug, with_ctx, Context, CTX},
     dispatch::gl_types::GLenum,
 };
 
@@ -49,7 +49,7 @@ pub(crate) fn box_ctx(ctx: Context) -> NonNull<Context> {
 /// # Safety
 /// This needs to be run as early as possible (ideally before the program spawns a thread other than the main thread)
 pub unsafe extern "C" fn oxidegl_platform_init() {
-    logging::init_logger();
+    debug::init_logger();
     info!("OxideGL {}", Context::VERSION_INFO);
     #[cfg(debug_assertions)]
     // Safety: We pray that we aren't racing with anyone else's code writing env vars.

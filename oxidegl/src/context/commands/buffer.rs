@@ -6,7 +6,7 @@ use objc2_metal::{MTLBuffer, MTLDevice, MTLResourceOptions};
 use crate::{
     context::{
         platform::NeedsRefreshBits,
-        state::{NamedObject, ObjectName},
+        state::{LateInit, NamedObject, ObjectName},
         Context,
     },
     debug_unreachable,
@@ -689,4 +689,7 @@ pub struct MappingInfo {
     pub(crate) len: usize,
 }
 
-impl NamedObject for Buffer {}
+impl NamedObject for Buffer {
+    type LateInitType = LateInit<Self>;
+    const LATE_INIT_FUNC: fn(ObjectName<Self>) -> Self = Self::new_default;
+}

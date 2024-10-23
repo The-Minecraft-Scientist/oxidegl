@@ -1,4 +1,6 @@
-use std::{ffi::c_void, marker::PhantomData, num::NonZeroU32, sync::Arc};
+use std::{
+    cell::UnsafeCell, ffi::c_void, fmt::Debug, marker::PhantomData, num::NonZeroU32, sync::Arc,
+};
 
 use ahash::{HashSet, HashSetExt};
 use log::debug;
@@ -18,8 +20,8 @@ use crate::{
 
 use super::{
     commands::{buffer::Buffer, vao::Vao},
+    debug::{with_debug_state, DebugState},
     framebuffer::{DrawBuffers, Framebuffer},
-    logging::DebugCallbackContainer,
     program::Program,
     shader::Shader,
 };
@@ -59,9 +61,9 @@ pub(crate) struct GLState {
     pub(crate) default_draw_buffers: DrawBuffers,
 
     /// current GL debug log callback
-    pub(crate) debug_log_callback: Option<DebugCallbackContainer>,
+    pub(crate) debug_log_callback: Option<DebugState>,
 
-    /// TODO get rid of point size and line width, they are not changeable in gl46
+    /// TODO get rid of point size and line width, they are not modifiable in gl46
     pub(crate) point_size: f32,
     pub(crate) line_width: f32,
     //TODO move this stuff to a dedicated ClearState struct
@@ -134,7 +136,7 @@ impl GLState {
             framebuffer_binding: None,
             default_draw_buffers: DrawBuffers::new_defaultfb(),
 
-            debug_log_callback: Some(DebugCallbackContainer::new_default()),
+            debug_log_callback: Some(DebugState::new_default()),
             point_size: 1.0,
             line_width: 1.0,
 
@@ -181,6 +183,127 @@ pub enum NameState<T> {
     /// This object name is *bound* to an object with the given state
     Bound(T),
 }
+impl<T: GetLateInitTypes> Debug for NameStateLateInitCell<T>
+where
+    T::Obj: Debug,
+    T::Func: FnOnce(ObjectName<T::Obj>) -> T::Obj,
+{
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.debug_struct("NameStateLateInitCell")
+            .field("inner", &self.get())
+            .finish()
+    }
+}
+pub struct NameStateLateInitCell<Types: GetLateInitTypes>
+where
+    Types::Func: FnOnce(ObjectName<Types::Obj>) -> Types::Obj,
+{
+    inner: UnsafeCell<NameOrObj<Types::Obj>>,
+}
+enum NameOrObj<T> {
+    Name(ObjectName<T>),
+    Obj(T),
+}
+impl<T> NameOrObj<T> {
+    #[inline]
+    fn not_yet_initialized(&self) -> Option<ObjectName<T>> {
+        match self {
+            NameOrObj::Name(object_name) => Some(*object_name),
+            NameOrObj::Obj(_) => None,
+        }
+    }
+}
+impl<T: NamedObject> NameStateInterface<T> for Option<T> {
+    #[inline]
+    fn get(&self) -> Option<&T> {
+        self.as_ref()
+    }
+    #[inline]
+    fn get_mut(&mut self) -> Option<&mut T> {
+        self.as_mut()
+    }
+    #[inline]
+    fn new_empty(_name: ObjectName<T>) -> Self {
+        None
+    }
+    #[inline]
+    fn new_init(obj: T) -> Self {
+        Some(obj)
+    }
+}
+
+impl<T: GetLateInitTypes> NameStateInterface<T::Obj> for NameStateLateInitCell<T>
+where
+    <T as GetLateInitTypes>::Func: FnOnce(ObjectName<<T as GetLateInitTypes>::Obj>) -> T::Obj,
+{
+    #[inline]
+    fn get(&self) -> Option<&T::Obj> {
+        Some(self.ensure_init())
+    }
+    #[inline]
+    fn get_mut(&mut self) -> Option<&mut T::Obj> {
+        Some(self.ensure_init_mut())
+    }
+    #[inline]
+    fn new_empty(name: ObjectName<T::Obj>) -> Self {
+        Self {
+            inner: UnsafeCell::new(NameOrObj::Name(name)),
+        }
+    }
+    #[inline]
+    fn new_init(obj: T::Obj) -> Self {
+        Self {
+            inner: UnsafeCell::new(NameOrObj::Obj(obj)),
+        }
+    }
+}
+
+impl<T: GetLateInitTypes> NameStateLateInitCell<T>
+where
+    <T as GetLateInitTypes>::Func: FnOnce(ObjectName<<T as GetLateInitTypes>::Obj>) -> T::Obj,
+{
+    #[inline]
+    fn ensure_init(&self) -> &T::Obj {
+        if let Some(name) =
+            // Safety:
+            // self is borrowed via a shared reference. If this cell is initialized, it
+            // is always sound to create an additional shared reference to the inner value.
+            // (since the inner value cannot be borrowed mutably).
+            // If this cell is not yet initialized (i.e. `inner` contains the `Name` variant of `NameOrObj`),
+            // it is guaranteed that no function produces a non-temporary reference to the inner type,
+            // and this struct is !Sync, so two racing executions of this function are impossible
+            unsafe { self.inner.get().as_ref().unwrap_unchecked() }.not_yet_initialized()
+        {
+            Self::ensure_init_inner(
+                // Safety: No shared references to the inner type are present if has not yet been initialized (see above)
+                unsafe { self.inner.get().as_mut().unwrap_unchecked() },
+                name,
+            );
+        }
+        // Safety: valid to create shared references to initialized inner value (we just ensured it is initialized)
+        match unsafe { self.inner.get().as_ref().unwrap_unchecked() } {
+            // Safety: see ^
+            NameOrObj::Name(_) => unsafe { debug_unreachable!("bug in NameStateCell") },
+            NameOrObj::Obj(r) => r,
+        }
+    }
+    #[inline]
+    fn ensure_init_inner(inner_ref: &mut NameOrObj<T::Obj>, name: ObjectName<T::Obj>) {
+        *inner_ref = NameOrObj::Obj(T::Func::DEFAULT(name));
+    }
+    fn ensure_init_mut(&mut self) -> &mut T::Obj {
+        let inner_ref = self.inner.get_mut();
+        if let Some(name) = inner_ref.not_yet_initialized() {
+            Self::ensure_init_inner(inner_ref, name);
+        }
+        match self.inner.get_mut() {
+            //Safety: we just ensured that the inner type is initialized, it is impossible for it to be in this state
+            NameOrObj::Name(_) => unsafe { debug_unreachable!("bug in NameStateCell") },
+            NameOrObj::Obj(o) => o,
+        }
+    }
+}
+
 /// Represents the name of an object (whose type is given in its generic parameter).
 /// Note that the generic parameter is simply there to prevent accidental misuse of
 /// object names, since an arbitrary `ObjectName` can be safely created
@@ -204,13 +327,22 @@ impl<T: ?Sized + 'static> std::hash::Hash for ObjectName<T> {
         std::any::TypeId::of::<T>().hash(state);
     }
 }
-impl<T: ?Sized> core::fmt::Debug for ObjectName<T> {
+impl<T: ?Sized + 'static> core::fmt::Debug for ObjectName<T> {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        f.pad(&format!("{} #{}", trimmed_type_name::<T>(), self.0.get()))
+        let s = if let Some(label) = with_debug_state(|s| s.get_label(*self)).flatten() {
+            format!("({label})")
+        } else {
+            String::new()
+        };
+        f.pad(&format!(
+            "{} #{} {s}",
+            trimmed_type_name::<T>(),
+            self.0.get()
+        ))
     }
 }
 impl<T: ?Sized> Copy for ObjectName<T> {}
-impl<T: NamedObject> ObjectName<T> {
+impl<T: ?Sized> ObjectName<T> {
     #[allow(clippy::cast_possible_truncation)]
     #[inline]
     /// unsafely create an `ObjectName` from a 0-indexed internal object ID (without checking overflow)
@@ -257,19 +389,82 @@ impl<T: NamedObject> ObjectName<T> {
 }
 
 /// Marker trait that marks a struct as an openGL object
-pub trait NamedObject {}
+pub(crate) trait NamedObject: Sized + 'static {
+    type LateInitType: GetLateInitTypes<Obj = Self> + GetCellType<Obj = Self>;
+    const LATE_INIT_FUNC: <Self::LateInitType as GetLateInitTypes>::Func =
+        <Self::LateInitType as GetLateInitTypes>::Func::DEFAULT;
+}
+
+pub(crate) trait GetLateInitTypes {
+    type Obj: NamedObject + Debug;
+    type Func: ProvidesDefaultConst;
+}
+pub(crate) trait ProvidesDefaultConst {
+    const DEFAULT: Self;
+}
+impl ProvidesDefaultConst for () {
+    const DEFAULT: Self = ();
+}
+impl<T> ProvidesDefaultConst for fn(ObjectName<T>) -> T {
+    const DEFAULT: Self =
+        panic!("Please specify a late-init function in the corresponding ObjectName impl");
+}
+pub(crate) struct LateInit<T>(PhantomData<fn(&T)>);
+impl<T: NamedObject + Debug> GetLateInitTypes for LateInit<T> {
+    type Obj = T;
+    type Func = fn(ObjectName<T>) -> T;
+}
+pub(crate) struct NoLateInit<T>(PhantomData<fn(&T)>);
+impl<T: NamedObject + Debug> GetLateInitTypes for NoLateInit<T> {
+    type Obj = T;
+    type Func = ();
+}
+pub(crate) trait GetCellType {
+    type Obj;
+    type Cell: NameStateInterface<Self::Obj> + Debug;
+}
+impl<T: NamedObject + Debug> GetCellType for LateInit<T>
+where
+    <T::LateInitType as GetLateInitTypes>::Func: FnOnce(ObjectName<T>) -> T,
+{
+    type Obj = T;
+    type Cell = NameStateLateInitCell<T::LateInitType>;
+}
+impl<T: NamedObject + Debug> GetCellType for NoLateInit<T> {
+    type Obj = T;
+    type Cell = Option<T>;
+}
+pub(crate) trait NameStateInterface<T> {
+    /// Returns None if this object name has not yet been initialized, or Some containing a shared reference to the object's state
+    fn get(&self) -> Option<&T>;
+    /// Returns None if this object name has not yet been initialized, or Some containing a mutable reference to the object's state
+    fn get_mut(&mut self) -> Option<&mut T>;
+    /// Returns a new value of type Self that has not yet been initialized
+    fn new_empty(name: ObjectName<T>) -> Self;
+    /// Returns a new value of type Self that has been initialized (i.e. a call to `get` returns Some)
+    fn new_init(obj: T) -> Self;
+}
 
 impl<Dst: GlDstType, T> SrcType<Dst> for Option<ObjectName<T>> {
     fn convert(self) -> Dst {
         Dst::from_uint(self.map_or(0, |v| v.0.get()))
     }
 }
-#[derive(Debug)]
-pub struct NamedObjectList<T> {
-    objects: Vec<NameState<T>>,
+impl<T: NamedObject> Debug for NamedObjectList<T> {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.debug_struct("NamedObjectList")
+            .field("objects", &self.objects)
+            .finish()
+    }
+}
+pub struct NamedObjectList<T: NamedObject> {
+    objects: Vec<<T::LateInitType as GetCellType>::Cell>,
 }
 
 impl<Obj: NamedObject> NamedObjectList<Obj> {
+    const NONEXISTENT: &str = "Tried to use a nonexistent object name";
+    const NOT_INITIALIZED: &str =
+        "Tried to use an object name that was not initialized to an object";
     pub(crate) fn new() -> Self {
         Self {
             objects: Vec::with_capacity(32),
@@ -277,17 +472,11 @@ impl<Obj: NamedObject> NamedObjectList<Obj> {
     }
     #[inline]
     pub(crate) fn get(&self, name: ObjectName<Obj>) -> &Obj {
-        match self
-            .objects
+        self.objects
             .get(name.to_idx())
-            .expect("Tried to use an nonexistent object name")
-        {
-            NameState::Empty => panic!("Tried to use an object name that was previously deleted",),
-            NameState::Named => {
-                panic!("Tried to use an object name that was not initialized to an object")
-            }
-            NameState::Bound(obj) => obj,
-        }
+            .expect(Self::NONEXISTENT)
+            .get()
+            .expect(Self::NOT_INITIALIZED)
     }
     #[inline]
     pub(crate) fn get_raw(&self, name: GLuint) -> &Obj {
@@ -297,40 +486,26 @@ impl<Obj: NamedObject> NamedObjectList<Obj> {
     pub(crate) fn get_opt(&self, name: ObjectName<Obj>) -> Option<&Obj> {
         self.objects
             .get(name.to_idx())
-            .and_then(|name_state| match name_state {
-                NameState::Bound(ref b) => Some(b),
-                _ => None,
-            })
+            .and_then(|name_state| name_state.get())
     }
     #[inline]
     pub(crate) unsafe fn get_unchecked(&self, name: ObjectName<Obj>) -> &Obj {
         // Safety: Caller ensures that the object at name exists in the list
         unsafe {
-            match self.objects.get_unchecked(name.to_idx()) {
-                NameState::Bound(ref b) => b,
-                _ => {
-                    // Safety: Caller ensures that the object at name is bound
-                    debug_unreachable!(
-                        "UB: Tried to get a buffer with a name that has not yet been initialized"
-                    )
-                }
-            }
+            self.objects
+                .get_unchecked(name.to_idx())
+                .get()
+                .unwrap_unchecked()
         }
     }
 
     #[inline]
     pub(crate) fn get_mut(&mut self, name: ObjectName<Obj>) -> &mut Obj {
-        match self
-            .objects
+        self.objects
             .get_mut(name.to_idx())
-            .expect("Tried to use an nonexistent object name")
-        {
-            NameState::Empty => panic!("Tried to use an object name that was previously deleted",),
-            NameState::Named => {
-                panic!("Tried to use an object name that was not initialized to an object")
-            }
-            NameState::Bound(obj) => obj,
-        }
+            .expect(Self::NONEXISTENT)
+            .get_mut()
+            .expect(Self::NOT_INITIALIZED)
     }
     #[inline]
     pub(crate) fn get_raw_mut(&mut self, name: GLuint) -> &mut Obj {
@@ -340,24 +515,16 @@ impl<Obj: NamedObject> NamedObjectList<Obj> {
     pub(crate) fn get_opt_mut(&mut self, name: ObjectName<Obj>) -> Option<&mut Obj> {
         self.objects
             .get_mut(name.to_idx())
-            .and_then(|name_state| match name_state {
-                NameState::Bound(b) => Some(b),
-                _ => None,
-            })
+            .and_then(|name_state| name_state.get_mut())
     }
     #[inline]
     pub(crate) unsafe fn get_unchecked_mut(&mut self, name: ObjectName<Obj>) -> &mut Obj {
         // Safety: Caller ensures that the object at name exists in the list
         unsafe {
-            match self.objects.get_unchecked_mut(name.to_idx()) {
-                NameState::Bound(b) => b,
-                _ => {
-                    // Safety: Caller ensures that the object at name is bound
-                    debug_unreachable!(
-                        "UB: Tried to get an object with a name that has not yet been initialized"
-                    )
-                }
-            }
+            self.objects
+                .get_unchecked_mut(name.to_idx())
+                .get_mut()
+                .unwrap_unchecked()
         }
     }
     /// Generates a new valid object name (e.g. for glGen*)
@@ -372,7 +539,8 @@ impl<Obj: NamedObject> NamedObjectList<Obj> {
 
         // Safety: see assertion
         let name = unsafe { ObjectName::from_idx(self.objects.len()) };
-        self.objects.push(NameState::Named);
+        self.objects
+            .push(<Obj::LateInitType as GetCellType>::Cell::new_empty(name));
         name
     }
 
@@ -392,7 +560,10 @@ impl<Obj: NamedObject> NamedObjectList<Obj> {
         );
         // Safety: see assertion
         let name = unsafe { ObjectName::from_idx(self.objects.len()) };
-        self.objects.push(NameState::Bound(create(name)));
+        self.objects
+            .push(<Obj::LateInitType as GetCellType>::Cell::new_init(create(
+                name,
+            )));
         name
     }
     /// Whether the given object name points to a valid and initialized object
@@ -404,7 +575,7 @@ impl<Obj: NamedObject> NamedObjectList<Obj> {
     #[inline]
     pub(crate) fn delete(&mut self, name: ObjectName<Obj>) {
         if let Some(entry) = self.objects.get_mut(name.to_idx()) {
-            let mut e = NameState::Empty;
+            let mut e = <Obj::LateInitType as GetCellType>::Cell::new_empty(name);
             core::mem::swap(entry, &mut e);
             // make the drop explicit for clarity
             drop(e);
@@ -492,14 +663,13 @@ impl<Obj: NamedObject> NamedObjectList<Obj> {
         name: ObjectName<Obj>,
         default: impl Fn(ObjectName<Obj>) -> Obj,
     ) {
-        match self.objects.get(name.to_idx()) {
-            Some(NameState::Named) => {
-                self.objects[name.to_idx()] = NameState::Bound(default(name));
+        if let Some(v) = self.objects.get_mut(name.to_idx()) {
+            if v.get().is_some() {
+                return;
             }
-            Some(NameState::Bound(_)) => {}
-            _ => {
-                panic!("tried to ensure_init an uninitialized object name!")
-            }
+            *v = <Obj::LateInitType as GetCellType>::Cell::new_init(default(name));
+        } else {
+            panic!("object name wasnot initialized!");
         }
     }
 }

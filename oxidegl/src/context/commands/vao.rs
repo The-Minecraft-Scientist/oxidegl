@@ -7,7 +7,7 @@ use objc2_metal::MTLVertexFormat;
 use crate::{
     context::{
         commands::buffer::Buffer,
-        state::{NamedObject, ObjectName},
+        state::{LateInit, NamedObject, ObjectName},
         Context,
     },
     dispatch::{
@@ -565,11 +565,9 @@ impl Context {
     /// binding is broken.
     pub fn oxidegl_bind_vertex_array(&mut self, array: GLuint) {
         let name = ObjectName::try_from_raw(array);
-        debug_assert!(
-            name.map(|name| self.gl_state.vao_list.is(name))
-                .is_some_and(|b| b),
-            "UB: Tried to bind an uninitialized VAO name"
-        );
+        if let Some(name) = name {
+            self.gl_state.vao_list.ensure_init(name, Vao::new_default);
+        }
         trace!("bound {name:?} as current VAO");
         self.gl_state.vao_binding = name;
     }
@@ -1119,7 +1117,10 @@ impl Vao {
             .as_mut()
     }
 }
-impl NamedObject for Vao {}
+impl NamedObject for Vao {
+    type LateInitType = LateInit<Self>;
+    const LATE_INIT_FUNC: fn(ObjectName<Self>) -> Self = Self::new_default;
+}
 
 #[derive(Debug, Clone, Copy)]
 pub(crate) struct VertexAttrib {

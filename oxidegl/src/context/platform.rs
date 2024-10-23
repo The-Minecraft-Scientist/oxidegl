@@ -128,7 +128,7 @@ bitflags::bitflags! {
 }
 /// Utility that maps currently active object names to their location in the relevant Metal shader parameter table
 #[derive(Debug)]
-pub(crate) struct ResourceMap<T, const MAX_ENTRIES: usize = 32> {
+pub(crate) struct ResourceMap<T: NamedObject, const MAX_ENTRIES: usize = 32> {
     inner: HashMap<ObjectName<T>, u32>,
     buf: HashSet<u32>,
     #[cfg(debug_assertions)]
@@ -383,7 +383,7 @@ impl PlatformState {
             .expect("failed to create pipeline state")
         // TODO clear state, depth test config, scissor box
     }
-    // precondition buffers mapped
+    // precondition: buffers mapped
     fn update_dynamic_encoder_state(&mut self, state: &mut GLState) {
         self.bind_buffers_to_encoder(state);
     }
@@ -408,6 +408,7 @@ impl PlatformState {
         clippy::cast_sign_loss,
         reason = "we hope this works"
     )]
+    #[inline]
     pub(crate) fn default_fb_dimensions(&mut self) -> (u32, u32) {
         let scale = self.layer.contentsScale();
         let rect = &self.layer.frame().size;
@@ -431,6 +432,7 @@ impl PlatformState {
                 .drawbuf_iter()
                 .enumerate()
                 .peekable();
+            //FIXME this expect contradicts the spec, should be an early return of some kind
             let &(_, first) = iter.peek().expect("No draw buffer set");
             let dims = self.default_fb_dimensions();
             let ca_drawable_tex = unsafe { self.current_drawable().texture() };

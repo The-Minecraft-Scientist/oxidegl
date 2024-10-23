@@ -8,7 +8,7 @@ use crate::{
     ProtoObjRef,
 };
 
-use super::state::{NamedObject, ObjectName};
+use super::state::{LateInit, NamedObject, ObjectName};
 
 pub const MAX_COLOR_ATTACHMENTS: u32 = 8;
 #[derive(Debug)]
@@ -20,7 +20,7 @@ pub struct Framebuffer {
     stencil_attachment: Option<FramebufferAttachment>,
 }
 impl Framebuffer {
-    pub fn new_named(name: ObjectName<Self>) -> Self {
+    pub fn new_default(name: ObjectName<Self>) -> Self {
         Self {
             name,
             draw_buffers: DrawBuffers::new(),
@@ -30,7 +30,11 @@ impl Framebuffer {
         }
     }
 }
-impl NamedObject for Framebuffer {}
+
+impl NamedObject for Framebuffer {
+    type LateInitType = LateInit<Self>;
+    const LATE_INIT_FUNC: fn(ObjectName<Self>) -> Self = Self::new_default;
+}
 /// A Texture with extra steps (Metal doesn't support doing fancy things for render-only targets)
 pub struct RenderBuffer {
     name: ObjectName<Self>,

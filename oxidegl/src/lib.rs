@@ -16,15 +16,12 @@ mod dispatch;
 #[allow(non_upper_case_globals, unused)]
 pub mod enums;
 
-pub(crate) mod generated;
-
 #[macro_export]
 /// [`unreachable!`](unreachable!), but it reduces to [`std::hint::unreachable_unchecked()`] in builds without debug assertions.
-/// Usages must start with the `unsafe` keyword to indicate that this macro has the same semantics as unreachable unchecked
 macro_rules! debug_unreachable {
     ($($msg:tt)*) => {
         {
-            // Need to do something unsafe to advertise that this macro's semantics are unsafe in debug builds
+            // Need to do something unsafe to surface this macro's unsafety in builds with debug assertions enabled
             #[allow(clippy::useless_transmute)]
             let _: () = ::core::mem::transmute(());
             #[cfg(debug_assertions)]
@@ -36,6 +33,7 @@ macro_rules! debug_unreachable {
 }
 #[must_use]
 pub fn trimmed_type_name<T: ?Sized>() -> &'static str {
+    //TODO make this work correctly for generic types
     std::any::type_name::<T>().split("::").last().unwrap()
 }
 pub type ProtoObjRef<T> = Retained<ProtocolObject<T>>;

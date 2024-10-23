@@ -5,6 +5,7 @@ use objc2_app_kit::NSView;
 use objc2_metal::MTLPixelFormat;
 use platform::PlatformState;
 use std::cell::Cell;
+use std::panic;
 use std::pin::Pin;
 use std::ptr::NonNull;
 
@@ -19,8 +20,8 @@ use std::ptr::NonNull;
 )]
 pub(crate) mod commands;
 
+pub(crate) mod debug;
 pub(crate) mod framebuffer;
-pub(crate) mod logging;
 pub(crate) mod program;
 pub(crate) mod shader;
 pub(crate) mod state;
@@ -59,18 +60,19 @@ impl Default for Context {
 // This function is only used by GL dispatch. It is always advantageous for it to be inlined in that usage
 #[allow(clippy::inline_always)]
 #[inline(always)]
+#[expect(unused_mut, unused_variables, reason = "lint bug")]
 pub fn with_ctx<Ret, Func: for<'a> Fn(Pin<&'a mut Context>) -> Ret>(f: Func) -> Ret {
     // use if_likely to tell LLVM that it should optimize for the Some(ptr) case
     if_likely! {
         // take the current context pointer
         // (this effectively takes a single-threaded "lock" on the context which protects against
         // the user doing Weird Stuff and running multiple GL commands simultaneously)
+
         let Some(mut ptr) = CTX.take() => {
 
         // Safety: we are the exclusive accessor of ptr due to its thread locality and the fact that we called `take` on it previously
         // wrap the context reference in a pin to ensure it is not moved out of
         let p = Pin::new(unsafe { ptr.as_mut() });
-
         let ret = f(p);
         CTX.set(Some(ptr));
         ret

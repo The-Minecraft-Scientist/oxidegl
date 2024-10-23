@@ -142,8 +142,10 @@ impl Context {
             let len = lengths.map(|r| r[i]).and_then(|v| u32::try_from(v).ok());
             let str = if let Some(len) = len {
                 // Safety: caller ensures string points to an initialized slice of bytes with length len
-                core::str::from_utf8(unsafe { core::slice::from_raw_parts(string, len as usize) })
-                    .expect("Shader source contained non-UTF8 character!")
+                core::str::from_utf8(unsafe {
+                    core::slice::from_raw_parts(string.cast(), len as usize)
+                })
+                .expect("Shader source contained non-UTF8 character!")
             } else {
                 // Safety: caller ensures string points to a valid and null-terminated C string
                 let cstr = unsafe { std::ffi::CStr::from_ptr(string.cast()) };

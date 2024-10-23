@@ -16,7 +16,7 @@ use spirv_cross2::{
 
 use super::{
     shader::Shader,
-    state::{NamedObject, NamedObjectList, ObjectName},
+    state::{NamedObject, NamedObjectList, NoLateInit, ObjectName},
 };
 #[derive(Debug)]
 pub enum ProgramStageBinding {
@@ -313,7 +313,9 @@ impl Program {
     }
 }
 
-impl NamedObject for Program {}
+impl NamedObject for Program {
+    type LateInitType = NoLateInit<Self>;
+}
 
 #[derive(Debug)]
 pub struct LinkedProgram {
