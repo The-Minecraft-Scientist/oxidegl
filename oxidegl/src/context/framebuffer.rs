@@ -1,6 +1,6 @@
-use std::any::Any;
-
+#![allow(unused)] /* FIXME delete when implemented */
 use objc2_metal::{MTLDevice, MTLTexture};
+use std::any::Any;
 
 use crate::{
     enums::{ClearBufferMask, DrawBufferMode, TextureTarget},

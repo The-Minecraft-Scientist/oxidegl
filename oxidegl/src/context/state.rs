@@ -1,6 +1,4 @@
-use std::{
-    cell::UnsafeCell, fmt::Debug, marker::PhantomData, num::NonZeroU32,
-};
+use std::{cell::UnsafeCell, fmt::Debug, marker::PhantomData, num::NonZeroU32};
 
 use ahash::{HashSet, HashSetExt};
 use log::debug;

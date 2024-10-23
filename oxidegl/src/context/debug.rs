@@ -1,3 +1,4 @@
+#![allow(unused)] /* FIXME delete when implemented */
 use core::str;
 use std::{
     any,
@@ -8,8 +9,7 @@ use std::{
     fmt::Arguments,
     mem::{self, MaybeUninit},
     pin::Pin,
-    ptr,
-    slice,
+    ptr, slice,
 };
 
 use ahash::{HashMap, HashMapExt, HashSet, HashSetExt};
@@ -21,10 +21,7 @@ use crate::{
     enums::{DebugSeverity, DebugSource, DebugType},
 };
 
-use super::{
-    state::ObjectName,
-    Context,
-};
+use super::{state::ObjectName, Context};
 
 thread_local! {
     // We store the debug logging infrastructure in a separate thread local to avoid passing it in by-reference every log call (which cannot be avoided/worked around with macros)
