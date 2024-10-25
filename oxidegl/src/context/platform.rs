@@ -1,6 +1,7 @@
 use std::mem;
 
 use ahash::{HashMap, HashMapExt, HashSet, HashSetExt};
+use log::{info, trace};
 use objc2::rc::Retained;
 use objc2_app_kit::{NSScreen, NSView};
 use objc2_foundation::{is_main_thread, ns_string, MainThreadMarker, NSString};
@@ -196,7 +197,7 @@ impl PlatformState {
             unsafe { view.setLayer(Some(&self.layer)) };
         }
         view.setWantsLayer(true);
-        gl_trace!("injected layer {:?} into NSView", &self.layer);
+        trace!("injected layer {:?} into NSView", &self.layer);
     }
     pub(crate) fn swap_buffers(&mut self, state: &mut GLState) {
         self.update_state(state, false);
@@ -232,8 +233,8 @@ impl PlatformState {
             .unwrap()
             .backingScaleFactor();
         layer.setContentsScale(cscale);
-
-        gl_info!("Metal device: {}", device.name());
+        // use `info` because gl logging state isn't initialized yet
+        info!("Metal device: {}", device.name());
         let queue = device
             .newCommandQueue()
             .expect("failed to create command queue");

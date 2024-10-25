@@ -41,7 +41,7 @@ pub struct Context {
 
 impl Context {
     #[must_use]
-    pub fn new() -> Self {
+    pub(crate) fn new() -> Self {
         Self {
             gl_state: GLState::default(),
             platform_state: PlatformState::new(MTLPixelFormat::BGRA8Unorm_sRGB, None, None),
@@ -58,7 +58,7 @@ impl Default for Context {
     }
 }
 // This function is only used by GL dispatch. It is always advantageous for it to be inlined in that usage
-#[allow(clippy::inline_always)]
+#[expect(clippy::inline_always)]
 #[inline(always)]
 #[expect(unused_mut, unused_variables, reason = "lint bug")]
 pub fn with_ctx<Ret, Func: for<'a> Fn(Pin<&'a mut Context>) -> Ret>(f: Func) -> Ret {

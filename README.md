@@ -4,7 +4,7 @@ An open-source OpenGL 4.6 Core implementation atop Apple's Metal API, written in
 ## Goals
  * Easy to develop and hack on
     * builds a working artifact with a simple `cargo build`
-    * reasonable build times (currently ~55s on a 2010 6 core xeon)
+    * reasonable initial build times (around a minute on a 2010 6 core xeon)
     * focus on safety and correctness before maximum performance (prefer safe code, optimize where needed with unsafe later)
  * Run Minecraft
  * Have decent performance

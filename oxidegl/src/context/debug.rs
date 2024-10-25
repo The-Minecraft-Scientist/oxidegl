@@ -312,7 +312,10 @@ impl DebugState {
             id,
         };
         let Some(s) = DEBUG_STATE.take() else {
-            log::warn!("OxideGL tried to log but logging context wasn't set");
+            log::warn!(
+                "OxideGL tried to log the following message, but logging context wasn't set:"
+            );
+            logger().log(rec);
             return;
         };
         let mut state = Some(s);

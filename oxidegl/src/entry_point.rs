@@ -6,7 +6,7 @@ use objc2_app_kit::NSView;
 
 use crate::{
     context::{
-        debug::{self, gl_err},
+        debug::{self, gl_trace},
         with_ctx, Context, CTX,
     },
     dispatch::gl_types::GLenum,
@@ -17,15 +17,22 @@ unsafe extern "C" fn oxidegl_set_current_context(ctx: Option<NonNull<Context>>) 
     set_context(ctx);
 }
 pub fn set_context(ctx: Option<NonNull<Context>>) {
-    trace!("set context to {:?}", ctx);
     if let Some(mut prev) = CTX.take() {
+        // early return if we are setting the same context again
+        if ctx == Some(prev) {
+            return;
+        }
+        // Safety: we are the exclusive accessor of this context, as we just removed it from CTX
         unsafe { prev.as_mut() }.uninstall_debug_state();
     }
     if let Some(mut c) = ctx {
+        // Safety: we are the exclusive accessor of this context, because it has not been installed to CTX yet
         unsafe { c.as_mut() }.install_debug_state();
         CTX.set(ctx);
     }
-    gl_err!("asdfasdaf");
+    if ctx.is_some() {
+        gl_trace!("set context to {:?}", ctx);
+    }
 }
 pub fn swap_buffers() {
     with_ctx(|mut ctx| {
@@ -36,7 +43,7 @@ pub fn swap_buffers() {
         } = &mut *ctx;
         platform.swap_buffers(state);
     });
-    trace!("swap buffers");
+    gl_trace!("swap buffers");
 }
 #[no_mangle]
 unsafe extern "C" fn oxidegl_swap_buffers(_ctx: Option<NonNull<Context>>) {
