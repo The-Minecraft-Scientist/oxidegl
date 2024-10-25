@@ -325,7 +325,7 @@ impl DebugState {
         DEBUG_STATE.set(state);
     }
     fn log_internal(&mut self, rec: &Record, meta: DebugMessageMeta) {
-        if !dbg!(self.should_log(&meta)) {
+        if !self.should_log(&meta) {
             return;
         }
         logger().log(rec);
