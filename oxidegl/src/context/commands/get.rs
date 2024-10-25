@@ -1,9 +1,7 @@
-use log::debug;
-
 #[allow(clippy::wildcard_imports)]
 use crate::dispatch::gl_types::*;
 use crate::{
-    context::framebuffer::MAX_COLOR_ATTACHMENTS,
+    context::{debug::gl_debug, framebuffer::MAX_COLOR_ATTACHMENTS},
     dispatch::conversions::{IndexType, NoIndex},
 };
 
@@ -1514,7 +1512,7 @@ impl Context {
         ptr: *mut T,
         idx: I,
     ) {
-        debug!("glGet {parameter_name:?}");
+        gl_debug!("glGet {parameter_name:?}");
         macro_rules! subst {
             ($pref:ident {$($middle:ident),+} $tail:ident) => {
                 $(concat_idents::concat_idents!(enum_path = $pref, $middle, $tail, {

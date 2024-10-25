@@ -1,11 +1,14 @@
-use std::{ffi::c_void, ptr::NonNull};
+use std::{env, ffi::c_void, ptr::NonNull, sync::Once};
 
 use log::{debug, info, trace};
 use objc2::rc::Retained;
 use objc2_app_kit::NSView;
 
 use crate::{
-    context::{debug, with_ctx, Context, CTX},
+    context::{
+        debug::{self, gl_debug, gl_err},
+        with_ctx, Context, CTX,
+    },
     dispatch::gl_types::GLenum,
 };
 
@@ -22,6 +25,7 @@ pub fn set_context(ctx: Option<NonNull<Context>>) {
         unsafe { c.as_mut() }.install_debug_state();
         CTX.set(ctx);
     }
+    gl_err!("asdfasdaf");
 }
 pub fn swap_buffers() {
     with_ctx(|mut ctx| {
@@ -48,19 +52,24 @@ pub(crate) fn box_ctx(ctx: Context) -> NonNull<Context> {
 /// # Safety
 /// This needs to be run as early as possible (ideally before the program spawns a thread other than the main thread)
 pub unsafe extern "C" fn oxidegl_platform_init() {
-    debug::init_logger();
-    info!("OxideGL {}", Context::VERSION_INFO);
-    #[cfg(debug_assertions)]
-    // Safety: We pray that we aren't racing with anyone else's code writing env vars.
-    // This isn't *too* bad because we're running on the main thread, which is where
-    // a majority of the writes occur in practice.
-    unsafe {
-        use std::env::set_var;
-        set_var("MTL_DEBUG_LAYER", "1");
-        set_var("MTL_SHADER_VALIDATION", "1");
-        set_var("MTL_DEBUG_LAYER_VALIDATE_UNRETAINED_RESOURCES", "0x4");
-        set_var("RUST_BACKTRACE", "1");
-    }
+    // wrap in a Once to make sure we don't init twice
+    static INIT_ONCE: Once = Once::new();
+    INIT_ONCE.call_once(|| {
+        debug::init_logger();
+        info!("OxideGL {}", Context::VERSION_INFO);
+        #[cfg(debug_assertions)]
+        // Safety: We pray that we aren't racing with anyone else's code writing env vars.
+        // This isn't *too* bad because we're running on the main thread, which is where
+        // a majority of the writes occur in practice.
+        unsafe {
+            use std::env::set_var;
+
+            set_var("MTL_DEBUG_LAYER", "1");
+            set_var("MTL_SHADER_VALIDATION", "1");
+            set_var("MTL_DEBUG_LAYER_VALIDATE_UNRETAINED_RESOURCES", "0x4");
+            set_var("RUST_BACKTRACE", "1");
+        }
+    });
 }
 
 #[no_mangle]

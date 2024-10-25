@@ -718,7 +718,7 @@ fn print_dispatch_fn<'a>(name: &'a str, ret_type: GLTypes, params: &[Parameter<'
     let semi_if_ret_void = if ret_type == GLTypes::GLvoid { ";" } else { "" };
     let body = format!(
         "{{\n
-            ::log::trace!(\"{name} called, parameters: {params_trace} \", {params_string});
+            ::crate::context::debug::gl_trace!(\"{name} called, parameters: {params_trace} \", {params_string});
             with_ctx(|mut state|{} state.oxide{}({}){}){semi_if_ret_void}\n}}",
         if is_unsafe { " unsafe {" } else { "" },
         snake_case_name,
@@ -793,8 +793,7 @@ fn print_enum_group_enum<'a>(
             unsafe fn unsafe_from_gl_enum(val: u32) -> Self {{
                 #[cfg(debug_assertions)]
                 let Some(ret) = {name}::from_repr(val) else {{
-                    println!(\"Attempt to create a {name} from a GLenum with invalid value {{val:#X}}\");
-                    panic!();
+                    panic!(\"Attempt to create a {name} from a GLenum with invalid value {{val:#X}}\");
                 }};
                 #[cfg(not(debug_assertions))]
                 let ret = unsafe {{ std::mem::transmute(val) }};
@@ -843,8 +842,7 @@ fn print_enum_group_bitfield<'a>(
             unsafe fn unsafe_from_gl_enum(val: u32) -> Self {{
                 #[cfg(debug_assertions)]
                 let Some(ret) = {name}::from_bits(val) else {{
-                    println!(\"Attempt to create a {name} from a GLenum with an invalid bit set! {{val:#X}}\");
-                    panic!();
+                    panic!(\"Attempt to create a {name} from a GLenum with an invalid bit set! {{val:#X}}\");
                 }};
                 #[cfg(not(debug_assertions))]
                 let ret = unsafe {{ std::mem::transmute(val) }};

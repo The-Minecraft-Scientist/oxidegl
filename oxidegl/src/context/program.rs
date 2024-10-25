@@ -2,9 +2,15 @@ use std::mem;
 
 use ahash::{HashSet, HashSetExt};
 use glslang::Compiler as GlslLangCompiler;
-use log::{debug, trace};
 //use naga::back::msl::{Options, PipelineOptions};
-use crate::{context::shader::ShaderInternal, enums::ShaderType, NoDebug, ProtoObjRef};
+use crate::{
+    context::{
+        debug::{gl_debug, gl_trace},
+        shader::ShaderInternal,
+    },
+    enums::ShaderType,
+    NoDebug, ProtoObjRef,
+};
 use objc2_foundation::NSString;
 use objc2_metal::{MTLDevice, MTLFunction, MTLLibrary};
 use spirv_cross2::{
@@ -104,7 +110,7 @@ pub struct Program {
 }
 impl Program {
     pub(crate) fn new_named(name: ObjectName<Self>) -> Self {
-        debug!("created program {:?}", name);
+        gl_debug!("created program {:?}", name);
         Self {
             name,
             refcount: 0,
@@ -134,7 +140,7 @@ impl Program {
     }
     #[inline]
     pub(crate) fn debug_log_str(&mut self, msg: &str) {
-        debug!("{msg}");
+        gl_debug!("{msg}");
         self.info_log.push('\n');
         self.info_log.push_str(msg);
     }
@@ -231,7 +237,7 @@ impl Program {
         let artifact = stage_spirv.compile(&opts).map_err(|e| e.to_string())?;
 
         let msl_src = format!("{artifact}");
-        trace!("transformed metal sources for stage:\n{msl_src}");
+        gl_trace!(src: ShaderCompiler, "transformed metal sources for stage:\n{msl_src}");
 
         let lib = device
             .newLibraryWithSource_options_error(&NSString::from_str(&msl_src), None)
@@ -255,8 +261,8 @@ impl Program {
         device: &ProtoObjRef<dyn MTLDevice>,
     ) {
         self.latest_linkage = None;
-        debug!("attempting to link {:?}", self.name);
-        trace!("Current shader program state: {:?}", &self);
+        gl_debug!(src: ShaderCompiler, "attempting to link {:?}", self.name);
+        gl_trace!(src: ShaderCompiler, "Current shader program state: {:?}", &self);
         let glslang_compiler =
             GlslLangCompiler::acquire().expect("failed to acquire glslang instance");
         let mut new_linkage = LinkedProgram {
@@ -265,7 +271,7 @@ impl Program {
             compute: None,
         };
         if !self.vertex_shaders.is_empty() {
-            trace!("linking vertex shaders");
+            gl_trace!(src: ShaderCompiler, "linking vertex shaders");
             match Self::link_stage(
                 shader_list,
                 device,
@@ -280,7 +286,7 @@ impl Program {
             }
         }
         if !self.fragment_shaders.is_empty() {
-            trace!("linking fragment shaders");
+            gl_trace!(src: ShaderCompiler, "linking fragment shaders");
             match Self::link_stage(
                 shader_list,
                 device,
@@ -295,7 +301,7 @@ impl Program {
             }
         }
         if !self.compute_shaders.is_empty() {
-            trace!("linking compute shaders");
+            gl_trace!(src: ShaderCompiler, "linking compute shaders");
             match Self::link_stage(
                 shader_list,
                 device,

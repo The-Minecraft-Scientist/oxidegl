@@ -5,7 +5,6 @@ use glslang::{
     Compiler as GlslangCompiler, CompilerOptions, Shader as GlslLangShader, ShaderInput,
     ShaderMessage, ShaderSource, ShaderStage, SourceLanguage, Target,
 };
-use log::debug;
 // use naga::{
 //     front::glsl,
 //     valid::{Capabilities, ModuleInfo, ValidationFlags, Validator},
@@ -13,7 +12,10 @@ use log::debug;
 // };
 use spirv_cross2::Module;
 
-use super::state::{NamedObject, NoLateInit, ObjectName};
+use super::{
+    debug::gl_debug,
+    state::{NamedObject, NoLateInit, ObjectName},
+};
 //TODO: write more debug logging to compiler_log
 #[derive(Debug)]
 pub struct Shader {
@@ -43,7 +45,7 @@ impl ShaderInternal {
         matches!(self, ShaderInternal::Spirv(_))
     }
     //4gb shader is not real, 4gb shader cannot hurt you
-    #[allow(clippy::cast_possible_truncation)]
+    #[expect(clippy::cast_possible_truncation)]
     pub(crate) fn source_len(&self) -> u32 {
         (match self {
             ShaderInternal::Glsl(internal) => internal.source.len(),
@@ -57,13 +59,13 @@ impl ShaderInternal {
             ShaderInternal::Glsl(glsl_shader_internal) => {
                 glsl_shader_internal.latest_shader.is_some()
             }
-            ShaderInternal::Spirv(spirv_shader_internal) => todo!(),
+            ShaderInternal::Spirv(_spirv_shader_internal) => todo!(),
         }
     }
 }
 impl Shader {
     pub fn new_text_default(name: ObjectName<Self>, stage: ShaderType) -> Self {
-        debug!("created new GLSL {stage:?} {name:?}");
+        gl_debug!(src: ShaderCompiler,"created new GLSL {stage:?} {name:?}");
         Self {
             name,
             stage,
@@ -90,11 +92,12 @@ impl Shader {
                     source_language: SourceLanguage::GLSL,
                     target: Target::OpenGL {
                         version: glslang::OpenGlVersion::OpenGL4_5,
-                        spirv_version: Some(glslang::SpirvVersion::SPIRV1_5),
+                        spirv_version: Some(glslang::SpirvVersion::SPIRV1_0),
                     },
                     version_profile: None,
                     messages: ShaderMessage::RELAXED_ERRORS
                         | ShaderMessage::ENHANCED
+                        | ShaderMessage::DEBUG_INFO
                         | ShaderMessage::ONLY_PREPROCESSOR
                         // VULKAN_RULES_RELAXED
                         | ShaderMessage::from_bits_retain(1 << 2),
@@ -126,7 +129,7 @@ impl Shader {
         }
     }
     pub(crate) fn write_to_compiler_log(&mut self, info: &str) {
-        debug!("{:?} compiler log: {info}", self.name);
+        gl_debug!(src: ShaderCompiler, "{:?} compiler log: {info}", self.name);
         self.compiler_log.push_str(info);
         self.compiler_log.push('\n');
     }
@@ -152,8 +155,7 @@ impl Shader {
 // (see https://github.com/gfx-rs/wgpu/blob/trunk/wgpu-hal/src/metal/mod.rs#L201)
 // (see https://github.com/gfx-rs/wgpu/blob/trunk/wgpu-hal/src/metal/adapter.rs#L842)
 impl ShaderType {
-    //ShaderType is Copy
-    #[allow(clippy::must_use_candidate)]
+    #[must_use]
     pub fn to_glslang_stage(self) -> ShaderStage {
         match self {
             ShaderType::FragmentShader => ShaderStage::Fragment,

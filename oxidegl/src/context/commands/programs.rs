@@ -1,7 +1,5 @@
-use log::debug;
-
 use crate::{
-    context::{program::Program, state::ObjectName, Context},
+    context::{debug::gl_debug, program::Program, state::ObjectName, Context},
     dispatch::gl_types::{GLint, GLuint},
     enums::ProgramProperty,
 };
@@ -515,9 +513,9 @@ impl Context {
         params: *mut GLint,
     ) {
         let program = self.gl_state.program_list.get_raw(program);
-        debug!("getting program property {pname:?} of {:?}", program.name);
+        gl_debug!("getting program property {pname:?} of {:?}", program.name);
         //2gb shader is not real :3
-        #[allow(clippy::cast_possible_truncation, clippy::cast_possible_wrap)]
+        #[expect(clippy::cast_possible_truncation, clippy::cast_possible_wrap)]
         let ret = match pname {
             ProgramProperty::DeleteStatus => {
                 i32::from(self.gl_state.programs_to_delete.contains(&program.name))
@@ -609,6 +607,7 @@ impl Context {
     // This is a necessary step anyways, as draw* need to ensure the current shaders are compatible with
     // the gl state at that moment
     pub fn oxidegl_validate_program(&mut self, program: GLuint) {}
+
     /// ### Parameters
     /// `program`
     ///
@@ -701,6 +700,6 @@ impl Context {
             "UB: tried to bind an invalid shader program!"
         );
         self.gl_state.program_binding = name;
-        debug!("bound {name:?} as current shader program");
+        gl_debug!("bound {name:?} as current shader program");
     }
 }

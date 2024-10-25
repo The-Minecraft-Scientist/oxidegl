@@ -1,7 +1,6 @@
-use log::{debug, trace};
-
 use crate::{
     context::{
+        debug::{gl_debug, gl_trace},
         shader::{GlslShaderInternal, Shader, ShaderInternal},
         state::ObjectName,
         Context,
@@ -163,7 +162,7 @@ impl Context {
         for str in strings {
             s.push_str(str);
         }
-        trace!("set source of {:?} to:\n{}", shader.name, s);
+        gl_trace!(src: ShaderCompiler, "set source of {:?} to:\n{}", shader.name, s);
     }
     /// ### Parameters
     /// `shader`
@@ -312,7 +311,7 @@ impl Context {
 
     pub fn oxidegl_delete_shader(&mut self, shader: GLuint) {
         let name = ObjectName::from_raw(shader);
-        debug!("marking {:?} for deletion", name);
+        gl_debug!(src: ShaderCompiler, "marking {:?} for deletion", name);
         self.gl_state.shaders_to_delete.insert(name);
     }
 }

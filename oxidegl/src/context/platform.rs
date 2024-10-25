@@ -6,9 +6,9 @@ use objc2::rc::Retained;
 use objc2_app_kit::{NSScreen, NSView};
 use objc2_foundation::{is_main_thread, ns_string, MainThreadMarker, NSString};
 use objc2_metal::{
-    MTLBlitCommandEncoder, MTLCommandBuffer,
-    MTLCommandBufferDescriptor, MTLCommandBufferErrorOption, MTLCommandEncoder, MTLCommandQueue,
-    MTLCreateSystemDefaultDevice, MTLDevice, MTLPixelFormat, MTLRenderCommandEncoder, MTLRenderPassColorAttachmentDescriptor,
+    MTLBlitCommandEncoder, MTLCommandBuffer, MTLCommandBufferDescriptor,
+    MTLCommandBufferErrorOption, MTLCommandEncoder, MTLCommandQueue, MTLCreateSystemDefaultDevice,
+    MTLDevice, MTLPixelFormat, MTLRenderCommandEncoder, MTLRenderPassColorAttachmentDescriptor,
     MTLRenderPassDepthAttachmentDescriptor, MTLRenderPassDescriptor,
     MTLRenderPassStencilAttachmentDescriptor, MTLRenderPipelineDescriptor, MTLRenderPipelineState,
     MTLStorageMode, MTLTexture, MTLTextureDescriptor, MTLTextureUsage,
@@ -17,6 +17,7 @@ use objc2_metal::{
 use objc2_quartz_core::{kCAFilterNearest, CAMetalDrawable, CAMetalLayer};
 
 use crate::{
+    context::debug::{gl_info, gl_trace},
     enums::{DrawBufferMode, ShaderType},
     ProtoObjRef,
 };
@@ -196,7 +197,7 @@ impl PlatformState {
             unsafe { view.setLayer(Some(&self.layer)) };
         }
         view.setWantsLayer(true);
-        trace!("injected layer {:?} into NSView", &self.layer);
+        gl_trace!("injected layer {:?} into NSView", &self.layer);
     }
     pub(crate) fn swap_buffers(&mut self, state: &mut GLState) {
         self.update_state(state, false);
@@ -233,7 +234,7 @@ impl PlatformState {
             .backingScaleFactor();
         layer.setContentsScale(cscale);
 
-        info!("Metal device: {}", device.name());
+        gl_info!("Metal device: {}", device.name());
         let queue = device
             .newCommandQueue()
             .expect("failed to create command queue");
@@ -322,7 +323,7 @@ impl PlatformState {
             .dirty_state
             .contains(NeedsRefreshBits::NEW_RENDER_ENCODER)
         {
-            trace!("generating new render command encoder");
+            gl_trace!("generating new render command encoder");
             self.end_encoding();
             self.render_encoder = Some(self.build_render_pass_descriptor(state));
             self.update_dynamic_encoder_state(state);
@@ -337,7 +338,7 @@ impl PlatformState {
             .dirty_state
             .contains(NeedsRefreshBits::NEW_RENDER_PIPELINE)
         {
-            trace!("generating new render pipeline state");
+            gl_trace!("generating new render pipeline state");
             self.render_pipeline_state = Some(self.build_render_pipeline_state(state));
         }
         let ps = self.render_pipeline_state.as_ref().unwrap();
@@ -390,7 +391,7 @@ impl PlatformState {
         let enc = self.render_encoder.as_ref().unwrap();
         for (&buf, &binding) in &self.vertex_buffer_map.inner {
             let buf_obj = state.buffer_list.get(buf);
-            trace!("binding {buf:?} to metal argument table index {binding}");
+            gl_trace!("binding {buf:?} to metal argument table index {binding}");
             if let Some(alloc) = buf_obj.allocation.as_ref() {
                 unsafe {
                     enc.setVertexBuffer_offset_atIndex(
@@ -485,7 +486,7 @@ impl PlatformState {
         target: DrawBufferMode,
         viewport_dims: (u32, u32),
     ) -> &InternalDrawable {
-        trace!("getting internal (default FB) drawbuffer for {target:?}");
+        gl_trace!("getting internal (default FB) drawbuffer for {target:?}");
         let r = match target {
             DrawBufferMode::FrontLeft => &mut self.internal_drawables.front_left,
             DrawBufferMode::FrontRight => &mut self.internal_drawables.front_right,
@@ -511,7 +512,7 @@ impl PlatformState {
         format: MTLPixelFormat,
         gpu_private: bool,
     ) -> ProtoObjRef<dyn MTLTexture> {
-        trace!(
+        gl_trace!(
             "creating new {}x{} {format:?} drawable texture",
             size.0,
             size.1
@@ -623,7 +624,7 @@ impl PlatformState {
         &mut self,
         state: &mut GLState,
     ) -> Retained<MTLVertexDescriptor> {
-        trace!("generating Metal vertex descriptor from GL VAO state");
+        gl_trace!("generating Metal vertex descriptor from GL VAO state");
         let vao = state.vao_list.get(state.vao_binding.unwrap());
         let mtl_vertex_desc = unsafe { MTLVertexDescriptor::new() };
         for bdg in &vao.buffer_bindings {

@@ -1,10 +1,10 @@
 use core::{ffi::c_void, fmt::Debug, ptr::NonNull};
 
-use log::debug;
 use objc2_metal::{MTLBuffer, MTLDevice, MTLResourceOptions};
 
 use crate::{
     context::{
+        debug::gl_debug,
         state::{LateInit, NamedObject, ObjectName},
         Context,
     },
@@ -485,7 +485,7 @@ impl Context {
     ) {
         let name = ObjectName::try_from_raw(buffer)
             .expect("UB: Tried to allocate storage for buffer name 0");
-        debug!("Allocated {size} byte storage for {name:?}, initialized with ptr {data:?}");
+        gl_debug!("Allocated {size} byte storage for {name:?}, initialized with ptr {data:?}");
         // Safety: Caller ensures data pointer is correctly initialized
         unsafe {
             self.buffer_storage_internal(name, size, data, flags);
@@ -608,7 +608,7 @@ impl Context {
         let r = self.get_buffer_binding_mut(target, idx);
 
         *r = to_bind;
-        debug!("bound buffer {to_bind:?} to target {target:?} at index {idx:?}");
+        gl_debug!("bound buffer {to_bind:?} to target {target:?} at index {idx:?}");
     }
 }
 

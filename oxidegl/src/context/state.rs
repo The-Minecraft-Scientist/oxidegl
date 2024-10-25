@@ -1,7 +1,6 @@
 use std::{cell::UnsafeCell, fmt::Debug, marker::PhantomData, num::NonZeroU32};
 
 use ahash::{HashSet, HashSetExt};
-use log::debug;
 
 use crate::{
     debug_unreachable,
@@ -18,7 +17,7 @@ use crate::{
 
 use super::{
     commands::{buffer::Buffer, vao::Vao},
-    debug::{with_debug_state, DebugState},
+    debug::{gl_debug, with_debug_state, DebugState},
     framebuffer::{DrawBuffers, Framebuffer},
     program::Program,
     shader::Shader,
@@ -287,7 +286,7 @@ where
     }
     #[inline]
     fn ensure_init_inner(inner_ref: &mut NameOrObj<T::Obj>, name: ObjectName<T::Obj>) {
-        *inner_ref = NameOrObj::Obj(T::Func::DEFAULT(name));
+        *inner_ref = NameOrObj::Obj(T::Obj::LATE_INIT_FUNC(name));
     }
     fn ensure_init_mut(&mut self) -> &mut T::Obj {
         let inner_ref = self.inner.get_mut();
@@ -394,26 +393,26 @@ pub(crate) trait NamedObject: Sized + 'static {
 }
 
 pub(crate) trait GetLateInitTypes {
-    type Obj: NamedObject + Debug;
-    type Func: ProvidesDefaultConst;
+    type Obj: NamedObject<LateInitType = Self> + Debug;
+    type Func: DefaultConstOrError;
 }
-pub(crate) trait ProvidesDefaultConst {
+pub(crate) trait DefaultConstOrError {
     const DEFAULT: Self;
 }
-impl ProvidesDefaultConst for () {
+impl DefaultConstOrError for () {
     const DEFAULT: Self = ();
 }
-impl<T> ProvidesDefaultConst for fn(ObjectName<T>) -> T {
+impl<T> DefaultConstOrError for fn(ObjectName<T>) -> T {
     const DEFAULT: Self =
         panic!("Please specify a late-init function in the corresponding ObjectName impl");
 }
 pub(crate) struct LateInit<T>(PhantomData<fn(&T)>);
-impl<T: NamedObject + Debug> GetLateInitTypes for LateInit<T> {
+impl<T: NamedObject<LateInitType = LateInit<T>> + Debug> GetLateInitTypes for LateInit<T> {
     type Obj = T;
     type Func = fn(ObjectName<T>) -> T;
 }
 pub(crate) struct NoLateInit<T>(PhantomData<fn(&T)>);
-impl<T: NamedObject + Debug> GetLateInitTypes for NoLateInit<T> {
+impl<T: NamedObject<LateInitType = NoLateInit<T>> + Debug> GetLateInitTypes for NoLateInit<T> {
     type Obj = T;
     type Func = ();
 }
@@ -600,7 +599,7 @@ impl<Obj: NamedObject> NamedObjectList<Obj> {
             .flatten()
         {
             self.delete(name);
-            debug!(target: "object alloc", "deleted {} {name:?}", trimmed_type_name::<Obj>());
+            gl_debug!(target: "object alloc", "deleted {} {name:?}", trimmed_type_name::<Obj>());
         }
     }
     /// Helper implementing the glGen* pattern
@@ -611,7 +610,7 @@ impl<Obj: NamedObject> NamedObjectList<Obj> {
             names.is_aligned(),
             "UB: object name array pointer was not sufficiently aligned"
         );
-        debug!(target: "oxidegl::object_alloc", "writing {n} new {} names to {names:?}", trimmed_type_name::<Obj>());
+        gl_debug!(target: "oxidegl::object_alloc", "writing {n} new {} names to {names:?}", trimmed_type_name::<Obj>());
         let mut names = names.cast();
         for _ in 0..n {
             let name = self.new_name();
@@ -634,7 +633,7 @@ impl<Obj: NamedObject> NamedObjectList<Obj> {
             names.is_aligned(),
             "UB: object name array pointer was not sufficiently aligned"
         );
-        debug!(
+        gl_debug!(
             target: "oxidegl::object_alloc",
             "writing {n} new initialized {} names to {names:?}",
             trimmed_type_name::<Obj>()

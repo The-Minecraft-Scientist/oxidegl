@@ -51,7 +51,7 @@ fn main() {
         _ => unreachable!(),
     });
     let string = format!(
-        "pub(crate) const FNAME_LOOKUP: ConstStrToU16Map<{}> = ConstStrToU16Map {{
+        "const FNAME_LOOKUP: ConstStrToU16Map<{}> = ConstStrToU16Map {{
         vals: [{}],
         keys: [\"{}\"],
 
