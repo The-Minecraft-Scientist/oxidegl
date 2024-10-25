@@ -1,4 +1,4 @@
-use std::{env, ffi::c_void, ptr::NonNull, sync::Once};
+use std::{ffi::c_void, ptr::NonNull, sync::Once};
 
 use log::{debug, info, trace};
 use objc2::rc::Retained;
@@ -6,7 +6,7 @@ use objc2_app_kit::NSView;
 
 use crate::{
     context::{
-        debug::{self, gl_debug, gl_err},
+        debug::{self, gl_err},
         with_ctx, Context, CTX,
     },
     dispatch::gl_types::GLenum,

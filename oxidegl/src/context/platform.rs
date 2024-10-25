@@ -1,7 +1,6 @@
 use std::mem;
 
 use ahash::{HashMap, HashMapExt, HashSet, HashSetExt};
-use log::{info, trace};
 use objc2::rc::Retained;
 use objc2_app_kit::{NSScreen, NSView};
 use objc2_foundation::{is_main_thread, ns_string, MainThreadMarker, NSString};
