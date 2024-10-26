@@ -32,9 +32,17 @@ macro_rules! debug_unreachable {
     };
 }
 #[must_use]
-pub fn trimmed_type_name<T: ?Sized>() -> &'static str {
-    //TODO make this work correctly for generic types
-    std::any::type_name::<T>().split("::").last().unwrap()
+pub(crate) fn trimmed_type_name<T: ?Sized>() -> &'static str {
+    let s = std::any::type_name::<T>();
+
+    let mut last_ident_start_index = 0usize;
+    for substr in s.split("::") {
+        if substr.contains('<') {
+            break;
+        }
+        last_ident_start_index += substr.len() + 2;
+    }
+    &s[last_ident_start_index..]
 }
 pub type ProtoObjRef<T> = Retained<ProtocolObject<T>>;
 use std::fmt::Debug;
