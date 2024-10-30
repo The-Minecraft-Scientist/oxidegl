@@ -721,10 +721,14 @@ impl PlatformState {
                 .view
                 .as_ref()
                 .expect("Can't get metal drawable before attaching Context to a view");
-            unsafe {
-                self.layer
-                    .setDrawableSize(view.convertSizeToBacking(view.frame().size));
-            };
+            let maybe_new_size = unsafe { view.convertSizeToBacking(view.frame().size) };
+            if maybe_new_size != unsafe { self.layer.drawableSize() } {
+                unsafe {
+                    self.layer.setDrawableSize(maybe_new_size);
+                };
+                self.dirty_state |= NeedsRefreshBits::NEW_RENDER_ENCODER;
+            }
+
             unsafe { self.layer.nextDrawable() }
                 .expect("Failed to get next drawable from CAMetalLayer")
         });
