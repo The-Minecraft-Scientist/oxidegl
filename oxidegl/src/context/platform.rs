@@ -126,6 +126,7 @@ bitflags::bitflags! {
 
     }
 }
+
 /// Utility that maps currently active object names to their location in the relevant Metal shader parameter table
 #[derive(Debug)]
 pub(crate) struct ResourceMap<T: NamedObject, const MAX_ENTRIES: usize = 32> {
@@ -224,8 +225,8 @@ impl PlatformState {
             layer.setPixelFormat(pixel_format);
             layer.setDevice(Some(&device));
             layer.setFramebufferOnly(false);
-            layer.setMagnificationFilter(kCAFilterNearest);
         };
+        layer.setMagnificationFilter(unsafe { kCAFilterNearest });
 
         debug_assert!(is_main_thread());
         // Safety: GL must be called from the main thread on macOS
@@ -409,10 +410,15 @@ impl PlatformState {
         reason = "we hope this works"
     )]
     #[inline]
-    pub(crate) fn default_fb_dimensions(&mut self) -> (u32, u32) {
-        let scale = self.layer.contentsScale();
-        let rect = &self.layer.frame().size;
-        ((rect.width * scale) as u32, (rect.height * scale) as u32)
+    pub(crate) fn current_view_dimensions(&mut self) -> (u32, u32) {
+        let view = self
+            .view
+            .as_ref()
+            .expect("tried to draw without binding a view!");
+        let size =
+            unsafe { view.convertRectToBacking(view.convertRectFromLayer(self.layer.frame())) }
+                .size;
+        (size.width as u32, size.height as u32)
     }
     #[expect(clippy::cast_possible_truncation, reason = "we hope this works")]
     //preconditions: view set on context
@@ -434,10 +440,10 @@ impl PlatformState {
                 .peekable();
             //FIXME this expect contradicts the spec, should be an early return of some kind
             let &(_, first) = iter.peek().expect("No draw buffer set");
-            let dims = self.default_fb_dimensions();
+            let dims = self.current_view_dimensions();
             let ca_drawable_tex = unsafe { self.current_drawable().texture() };
             let drawbuffer = self.get_internal_drawbuffer(first, dims);
-            // When multiple draw buffers are present it's somewhat unclear which one should be responsible for the depth/stencil drawables, so we use the first one (index 0) as a sane default
+            // When multiple draw buffers are present with the default FB it's somewhat unclear which one should be responsible for the depth/stencil drawables, so we use the first one (index 0) as a sane default
             if let Some(depth) = &drawbuffer.depth {
                 let a_desc = unsafe { MTLRenderPassDepthAttachmentDescriptor::new() };
                 a_desc.setTexture(Some(depth));
@@ -581,6 +587,7 @@ impl PlatformState {
 
     // broadcast panic location up into calling functions for easier debugging
     #[track_caller]
+    #[inline]
     fn stage_pinned_buffers(
         state: &GLState,
         shader_stage: &LinkedShaderStage,

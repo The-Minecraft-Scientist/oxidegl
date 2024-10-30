@@ -4,6 +4,7 @@ use objc2::rc::Retained;
 use objc2_app_kit::NSView;
 use objc2_metal::MTLPixelFormat;
 use platform::PlatformState;
+use state::ScissorBox;
 use std::cell::Cell;
 use std::panic;
 use std::pin::Pin;
@@ -49,6 +50,20 @@ impl Context {
     }
     pub fn set_view(&mut self, view: &Retained<NSView>) {
         self.platform_state.set_view(view);
+
+        // init scissor box once we have an actual view
+        #[expect(
+            clippy::cast_possible_truncation,
+            clippy::cast_sign_loss,
+            reason = "all relevant values are exactly representable"
+        )]
+        if self.gl_state.scissor_box == ScissorBox::default() {
+            let frame = view.frame();
+            self.gl_state.scissor_box.x = frame.origin.x as u32;
+            self.gl_state.scissor_box.y = frame.origin.y as u32;
+            self.gl_state.scissor_box.width = frame.size.width as u32;
+            self.gl_state.scissor_box.hieght = frame.size.height as u32;
+        }
     }
 }
 

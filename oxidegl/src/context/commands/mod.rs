@@ -12,3 +12,7 @@ pub mod vao;
 pub mod shaders;
 
 pub mod programs;
+
+pub mod debug;
+
+pub mod misc;

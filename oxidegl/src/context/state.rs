@@ -1,6 +1,7 @@
-use std::{cell::UnsafeCell, fmt::Debug, marker::PhantomData, num::NonZeroU32};
+use std::{cell::UnsafeCell, ffi::CStr, fmt::Debug, marker::PhantomData, num::NonZeroU32};
 
 use ahash::{HashSet, HashSetExt};
+use bitflags::bitflags;
 
 use crate::{
     debug_unreachable,
@@ -27,6 +28,8 @@ use super::{
 pub(crate) struct GLState {
     // Static/immutable properties, mostly for glGet. Should probably be turned into constants
     pub(crate) characteristics: Characteristics,
+    /// Tracks whether a given GL capability is active or not
+    pub(crate) caps: Capabilities,
 
     /// Current state of buffer bindings to this context
     pub(crate) buffer_bindings: BufferBindings,
@@ -60,14 +63,99 @@ pub(crate) struct GLState {
     /// current GL debug log callback
     pub(crate) debug_log_callback: Option<DebugState>,
 
-    /// TODO get rid of point size and line width, they are not modifiable in gl46
-    pub(crate) point_size: f32,
-    pub(crate) line_width: f32,
+    pub(crate) scissor_box: ScissorBox,
     //TODO move this stuff to a dedicated ClearState struct
     pub(crate) clear_color: [f32; 4],
     pub(crate) clear_depth: f32,
     pub(crate) clear_mask: ClearBufferMask,
     pub(crate) clear_stencil: i32,
+
+    /// TODO get rid of point size and line width, they are not modifiable in gl46
+    pub(crate) point_size: f32,
+    pub(crate) line_width: f32,
+}
+macro_rules! bf_bits {
+    {$( #[$attr:meta] )* $v:vis struct $name:ident: $t:tt bits: { $( $bit_name:ident: $bit:expr ),+ $(,)? }} => {
+        bitflags! {
+            $(#[$attr])*
+            $v struct $name: $t {
+                $(const $bit_name = 1 << $bit);+
+                ;
+            }
+        }
+    }
+}
+bf_bits! {
+    #[derive(Debug, Copy, Clone, Eq, PartialEq)]
+    #[repr(transparent)]
+    pub struct Capabilities: u64
+        bits: {
+        // BLEND: 0,
+        // SCISSOR_TEST: 19,
+        MULTISAMPLE: 1,
+        SAMPLE_ALPHA_TO_COVERAGE: 2,
+        SAMPLE_ALPHA_TO_ONE: 3,
+        SAMPLE_COVERAGE: 4,
+        RASTERIZER_DISCARD: 5,
+        FRAMEBUFFER_SRGB: 6,
+        DEPTH_CLAMP: 7,
+        TEXTURE_CUBE_MAP_SEAMLESS: 8,
+        SAMPLE_MASK: 9,
+        SAMPLE_SHADING: 10,
+        DEBUG_OUTPUT_SYNCHRONOUS: 11,
+        DEBUG_OUTPUT: 12,
+        LINE_SMOOTH: 13,
+        POLYGON_SMOOTH: 14,
+        CULL_FACE: 15,
+        DEPTH_TEST: 16,
+        STENCIL_TEST: 17,
+        DITHER: 18,
+        POINT_SMOOTH: 20,
+        LINE_STIPPLE: 21,
+        POLYGON_STIPPLE: 22,
+        LIGHTING: 23,
+        COLOR_MATERIAL: 24,
+        FOG: 25,
+        NORMALIZE: 26,
+        ALPHA_TEST: 27,
+        TEXTURE_GEN_S: 28,
+        TEXTURE_GEN_T: 29,
+        TEXTURE_GEN_R: 30,
+        TEXTURE_GEN_Q: 31,
+        AUTO_NORMAL: 32,
+        COLOR_LOGIC_OP: 33,
+        POLYGON_OFFSET_POINT: 34,
+        POLYGON_OFFSET_LINE: 35,
+        POLYGON_OFFSET_FILL: 36,
+        INDEX_LOGIC_OP: 37,
+        NORMAL_ARRAY: 38,
+        COLOR_ARRAY: 39,
+        INDEX_ARRAY: 40,
+        TEXTURE_COORD_ARRAY: 41,
+        EDGE_FLAG_ARRAY: 42,
+        PROGRAM_POINT_SIZE: 43,
+        PRIMITIVE_RESTART: 44,
+        PRIMITIVE_RESTART_FIXED_INDEX: 45,
+    }
+
+}
+impl Capabilities {
+    fn is_enabled(self, cap: Self) -> bool {
+        self.contains(cap)
+    }
+    fn disable(&mut self, cap: Self) {
+        *self = self.difference(cap);
+    }
+    fn enable(&mut self, cap: Self) {
+        *self = self.union(cap);
+    }
+}
+#[derive(Debug, Clone, Copy, Default, PartialEq)]
+pub(crate) struct ScissorBox {
+    pub(crate) x: u32,
+    pub(crate) y: u32,
+    pub(crate) width: u32,
+    pub(crate) hieght: u32,
 }
 
 pub const MAX_ATOMIC_COUNTER_BUFFER_BINDINGS: usize = 16;
@@ -116,6 +204,8 @@ impl GLState {
         GLState {
             characteristics: Characteristics::new(),
 
+            caps: Capabilities::empty(),
+
             buffer_bindings: BufferBindings::default(),
             buffer_list: NamedObjectList::new(),
 
@@ -134,13 +224,15 @@ impl GLState {
             default_draw_buffers: DrawBuffers::new_defaultfb(),
 
             debug_log_callback: Some(DebugState::new_default()),
-            point_size: 1.0,
-            line_width: 1.0,
 
+            scissor_box: ScissorBox::default(),
             clear_color: [0.0; 4],
             clear_depth: 0.0,
             clear_mask: ClearBufferMask::empty(),
             clear_stencil: 0,
+
+            point_size: 1.0,
+            line_width: 1.0,
         }
     }
 }
@@ -170,16 +262,6 @@ impl Characteristics {
     }
 }
 
-#[derive(Debug)]
-/// Tracks the state of a given object *name* throughout the object's lifetime
-pub enum NameState<T> {
-    /// No object is present; the object previously resident in this name has been deleted
-    Empty,
-    /// Intermediate state that lies between glGen* and glBind* for non-DSA access
-    Named,
-    /// This object name is *bound* to an object with the given state
-    Bound(T),
-}
 impl<T: GetLateInitTypes> Debug for NameStateLateInitCell<T>
 where
     T::Obj: Debug,
@@ -265,9 +347,9 @@ where
             // Safety:
             // self is borrowed via a shared reference. If this cell is initialized, it
             // is always sound to create an additional shared reference to the inner value.
-            // (since the inner value cannot be borrowed mutably).
+            // (since the inner value cannot also be borrowed mutably).
             // If this cell is not yet initialized (i.e. `inner` contains the `Name` variant of `NameOrObj`),
-            // it is guaranteed that no function produces a non-temporary reference to the inner type,
+            // it is guaranteed that no function produces a non-temporary reference of any kind to the inner type,
             // and this struct is !Sync, so two racing executions of this function are impossible
             unsafe { self.inner.get().as_ref().unwrap_unchecked() }.not_yet_initialized()
         {
@@ -288,6 +370,7 @@ where
     fn ensure_init_inner(inner_ref: &mut NameOrObj<T::Obj>, name: ObjectName<T::Obj>) {
         *inner_ref = NameOrObj::Obj(T::Obj::LATE_INIT_FUNC(name));
     }
+    #[inline]
     fn ensure_init_mut(&mut self) -> &mut T::Obj {
         let inner_ref = self.inner.get_mut();
         if let Some(name) = inner_ref.not_yet_initialized() {
@@ -327,7 +410,7 @@ impl<T: ?Sized + 'static> std::hash::Hash for ObjectName<T> {
 impl<T: ?Sized + 'static> core::fmt::Debug for ObjectName<T> {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         let s = if let Some(label) = with_debug_state(|s| s.get_label(*self)).flatten() {
-            format!("({label})")
+            format!("({})", label.to_str().unwrap_or("invalid utf-8 for label"))
         } else {
             String::new()
         };
@@ -385,9 +468,12 @@ impl<T: ?Sized> ObjectName<T> {
     }
 }
 
-/// Marker trait that marks a struct as an openGL object
+/// Marker trait that marks a struct as an OpenGL object, providing information on whether it has init-at-bind (LateInit) semantics or normal semantics, and (optionally) how to set the underlying debug label
 pub(crate) trait NamedObject: Sized + 'static {
+    fn set_debug_label(&mut self, _label: Option<&CStr>) {}
+
     type LateInitType: GetLateInitTypes<Obj = Self> + GetCellType<Obj = Self>;
+
     const LATE_INIT_FUNC: <Self::LateInitType as GetLateInitTypes>::Func =
         <Self::LateInitType as GetLateInitTypes>::Func::DEFAULT;
 }
@@ -438,7 +524,7 @@ pub(crate) trait NameStateInterface<T> {
     fn get_mut(&mut self) -> Option<&mut T>;
     /// Returns a new value of type Self that has not yet been initialized
     fn new_empty(name: ObjectName<T>) -> Self;
-    /// Returns a new value of type Self that has been initialized (i.e. a call to `get` returns Some)
+    /// Returns a new value of type Self that has been initialized (i.e. a call to `get` on the returned value returns Some(&obj))
     fn new_init(obj: T) -> Self;
 }
 
@@ -459,7 +545,7 @@ pub struct NamedObjectList<T: NamedObject> {
 }
 
 impl<Obj: NamedObject> NamedObjectList<Obj> {
-    const NONEXISTENT: &str = "Tried to use a nonexistent object name";
+    const NON_EXISTENT: &str = "Tried to use a nonexistent object name";
     const NOT_INITIALIZED: &str =
         "Tried to use an object name that was not initialized to an object";
     pub(crate) fn new() -> Self {
@@ -471,7 +557,7 @@ impl<Obj: NamedObject> NamedObjectList<Obj> {
     pub(crate) fn get(&self, name: ObjectName<Obj>) -> &Obj {
         self.objects
             .get(name.to_idx())
-            .expect(Self::NONEXISTENT)
+            .expect(Self::NON_EXISTENT)
             .get()
             .expect(Self::NOT_INITIALIZED)
     }
@@ -500,7 +586,7 @@ impl<Obj: NamedObject> NamedObjectList<Obj> {
     pub(crate) fn get_mut(&mut self, name: ObjectName<Obj>) -> &mut Obj {
         self.objects
             .get_mut(name.to_idx())
-            .expect(Self::NONEXISTENT)
+            .expect(Self::NON_EXISTENT)
             .get_mut()
             .expect(Self::NOT_INITIALIZED)
     }
@@ -668,5 +754,23 @@ impl<Obj: NamedObject> NamedObjectList<Obj> {
         } else {
             panic!("object name wasnot initialized!");
         }
+    }
+}
+
+#[cfg(test)]
+mod test {
+    use super::NameStateInterface;
+    use super::{GetCellType, NamedObject, ObjectName};
+    use crate::context::commands::buffer::Buffer;
+
+    #[test]
+    fn name_state_cell_soundness() {
+        let l = <<Buffer as NamedObject>::LateInitType as GetCellType>::Cell::new_empty(
+            ObjectName::from_raw(2u32),
+        );
+        let r1 = &l;
+        let r2 = &l;
+        dbg!(r2.get());
+        dbg!(r1);
     }
 }

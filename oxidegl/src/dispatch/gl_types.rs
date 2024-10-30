@@ -15,15 +15,17 @@ pub type GLenum = u32;
 pub type GLbitfield = u32;
 pub type GLshort = i16;
 pub type GLubyte = u8;
-pub type GLDEBUGPROC = unsafe extern "C" fn(
-    source: GLenum,
-    typ: GLenum,
-    id: GLuint,
-    severity: GLenum,
-    length: GLsizei,
-    message: *const GLchar,
-    userParam: *const c_void,
-);
+pub type GLDEBUGPROC = Option<
+    unsafe extern "C" fn(
+        source: GLenum,
+        typ: GLenum,
+        id: GLuint,
+        severity: GLenum,
+        length: GLsizei,
+        message: *const GLchar,
+        userParam: *const c_void,
+    ),
+>;
 pub type GLbyte = i8;
 pub type GLsync =
     extern "C" fn(_cl_context: *mut c_void, _cl_event: *mut c_void, flags: GLbitfield);

@@ -7,11 +7,10 @@ use objc2::{rc::Retained, runtime::ProtocolObject};
 pub mod context;
 pub mod entry_point;
 
-#[cfg(feature = "nsgl_shim")]
-mod nsgl_shim;
-
 #[allow(clippy::undocumented_unsafe_blocks)]
 mod dispatch;
+#[cfg(all(feature = "nsgl_shim", not(test)))]
+mod nsgl_shim;
 
 #[allow(non_upper_case_globals, unused)]
 pub mod enums;
@@ -35,14 +34,23 @@ macro_rules! debug_unreachable {
 pub(crate) fn trimmed_type_name<T: ?Sized>() -> &'static str {
     let s = std::any::type_name::<T>();
 
-    let mut last_ident_start_index = 0usize;
+    let mut last_ident_start_index = 0;
+    let mut last_substr = "";
+    let mut gen_flag = false;
+
     for substr in s.split("::") {
+        last_substr = substr;
         if substr.contains('<') {
+            gen_flag = true;
             break;
         }
         last_ident_start_index += substr.len() + 2;
     }
-    &s[last_ident_start_index..]
+    if gen_flag {
+        &s[last_ident_start_index..]
+    } else {
+        last_substr
+    }
 }
 pub type ProtoObjRef<T> = Retained<ProtocolObject<T>>;
 use std::fmt::Debug;

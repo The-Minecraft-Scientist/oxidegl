@@ -34,7 +34,7 @@ impl NamedObject for Framebuffer {
     type LateInitType = LateInit<Self>;
     const LATE_INIT_FUNC: fn(ObjectName<Self>) -> Self = Self::new_default;
 }
-/// A Texture with extra steps (Metal doesn't support doing fancy things for render-only targets)
+/// A Texture with extra steps
 pub struct RenderBuffer {
     name: ObjectName<Self>,
     mtl: ProtoObjRef<dyn MTLTexture>,

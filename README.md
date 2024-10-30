@@ -12,7 +12,7 @@ An open-source OpenGL 4.6 Core implementation atop Apple's Metal API, written in
 
 ## Non-Goals
  * Full OpenGL 4.6 compliance (Metal itself is not specified strongly enough for this to be worthwhile)
- * Multithreading support
+ * Multithreading support/share context (this may actually be practical, `Context` is currently still `Send`)
 
 
 ## Current State
@@ -36,4 +36,4 @@ All tasks implicitly run the necessary dependencies (e.g. `cargo xtask build-glf
 This project uses Clippy for linting. If you use VS Code or a derivative thereof, this should be enabled already (via a `.vscode` with the appropriate configuration in the repository root). If not, check if your IDE supports changing the rust analyzer check command or simply run `cargo clippy` from your shell.
 
 ## UB Propagation, Errors and `GL_NOERROR`
-Since this implementation only provides a `GL_NOERROR` context, its behavior in an errored state may be undefined according to the GL Spec. In release builds, upon recieving erroring input, OxideGL will propagate UB (i.e. raise GL UB to Rust language level UB) where there is a measurable and significant performance advantage in doing so (e.g. skipping array bounds checking in a hot path), otherwise it will abort the calling program. However, in debug builds, OxideGL will attempt to abort with a helpful message (and a stack trace including the calling function that caused the error) as soon as possible after recieving an incorrect input.
+Since this implementation only provides a `GL_NOERROR` context, its behavior in an errored state may be undefined according to the GL spec. In release builds, upon recieving erroring input, OxideGL will propagate UB (i.e. raise GL UB to Rust language level UB) where there is a measurable and significant performance advantage in doing so (e.g. skipping array bounds checking in a hot path), otherwise it will abort the calling program. However, in debug builds, OxideGL will attempt to abort with a helpful message (and a stack trace including the calling function that caused the error) as soon as possible after recieving an incorrect input.

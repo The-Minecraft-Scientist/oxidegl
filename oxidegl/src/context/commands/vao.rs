@@ -18,6 +18,7 @@ use crate::{
 };
 
 //TODO glGetVertexAttribiv
+//TODO move logical components out of this file, should be ffi only
 
 /// ### Parameters
 /// `vaobj`

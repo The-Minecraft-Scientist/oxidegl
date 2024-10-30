@@ -19,6 +19,7 @@ use crate::{
     },
     ProtoObjRef,
 };
+//TODO move logical components out of this file, should be ffi only
 
 impl Context {
     /// ### Parameters
