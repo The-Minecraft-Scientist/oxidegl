@@ -407,7 +407,7 @@ impl PlatformState {
             .view
             .as_ref()
             .expect("tried to draw without binding a view!");
-        let size = unsafe { view.convertSizeToBacking(view.frame().size) };
+        let size = unsafe { self.layer.drawableSize() };
         dbg!(size.width, size.height);
         (size.width as u32, size.height as u32)
     }
