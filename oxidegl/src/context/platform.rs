@@ -403,13 +403,12 @@ impl PlatformState {
     )]
     #[inline]
     pub(crate) fn current_defaultfb_dimensions(&mut self) -> (u32, u32) {
-        let view = self
-            .view
-            .as_ref()
-            .expect("tried to draw without binding a view!");
-        let size = unsafe { self.layer.drawableSize() };
-        dbg!(size.width, size.height);
-        (size.width as u32, size.height as u32)
+        // see https://developer.apple.com/documentation/quartzcore/cametallayer/1478174-drawablesize?language=objc
+        let size = unsafe { self.layer.bounds().size };
+        let scale = self.layer.contentsScale();
+        let size = (size.width * scale, size.height * scale);
+        dbg!(size.0, size.1);
+        (size.0 as u32, size.1 as u32)
     }
     #[expect(clippy::cast_possible_truncation, reason = "we hope this works")]
     //preconditions: view set on context
