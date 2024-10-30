@@ -404,10 +404,16 @@ impl PlatformState {
     #[inline]
     pub(crate) fn current_defaultfb_dimensions(&mut self) -> (u32, u32) {
         // see https://developer.apple.com/documentation/quartzcore/cametallayer/1478174-drawablesize?language=objc
-        let size = unsafe { self.layer.bounds().size };
+        let size = self.layer.bounds().size;
         let scale = self.layer.contentsScale();
         let size = (size.width * scale, size.height * scale);
-        dbg!(size.0, size.1);
+        debug_assert!(
+            (size.0 - size.0.floor()) == 0.0
+                && (size.1 - size.1.floor()) == 0.0
+                && size.0 > 0.0
+                && size.1 > 0.0,
+            "bad size ({size:?})"
+        );
         (size.0 as u32, size.1 as u32)
     }
     #[expect(clippy::cast_possible_truncation, reason = "we hope this works")]
