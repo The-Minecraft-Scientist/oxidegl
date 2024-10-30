@@ -191,13 +191,11 @@ impl PlatformState {
     pub(crate) fn set_view(&mut self, view: &Retained<NSView>) {
         self.view = Some(view.clone());
         self.layer.setFrame(view.frame());
-
-        if let Some(l) = unsafe { view.layer() } {
-            l.addSublayer(&self.layer);
-        } else {
-            unsafe { view.setLayer(Some(&self.layer)) };
-        }
+        // set backing layer
+        unsafe { view.setLayer(Some(&self.layer)) };
+        // tell the view it is now layer-backed
         view.setWantsLayer(true);
+
         trace!("injected layer {:?} into NSView", &self.layer);
     }
     pub(crate) fn swap_buffers(&mut self, state: &mut GLState) {
@@ -228,12 +226,6 @@ impl PlatformState {
         };
         layer.setMagnificationFilter(unsafe { kCAFilterNearest });
 
-        debug_assert!(is_main_thread());
-        // Safety: GL must be called from the main thread on macOS
-        let cscale = NSScreen::mainScreen(unsafe { MainThreadMarker::new_unchecked() })
-            .unwrap()
-            .backingScaleFactor();
-        layer.setContentsScale(cscale);
         // use `info` because gl logging state isn't initialized yet
         info!("Metal device: {}", device.name());
         let queue = device
@@ -410,14 +402,13 @@ impl PlatformState {
         reason = "we hope this works"
     )]
     #[inline]
-    pub(crate) fn current_view_dimensions(&mut self) -> (u32, u32) {
+    pub(crate) fn current_defaultfb_dimensions(&mut self) -> (u32, u32) {
         let view = self
             .view
             .as_ref()
             .expect("tried to draw without binding a view!");
-        let size =
-            unsafe { view.convertRectToBacking(view.convertRectFromLayer(self.layer.frame())) }
-                .size;
+        let size = unsafe { view.convertSizeToBacking(view.frame().size) };
+        dbg!(size.width, size.height);
         (size.width as u32, size.height as u32)
     }
     #[expect(clippy::cast_possible_truncation, reason = "we hope this works")]
@@ -440,7 +431,7 @@ impl PlatformState {
                 .peekable();
             //FIXME this expect contradicts the spec, should be an early return of some kind
             let &(_, first) = iter.peek().expect("No draw buffer set");
-            let dims = self.current_view_dimensions();
+            let dims = self.current_defaultfb_dimensions();
             let ca_drawable_tex = unsafe { self.current_drawable().texture() };
             let drawbuffer = self.get_internal_drawbuffer(first, dims);
             // When multiple draw buffers are present with the default FB it's somewhat unclear which one should be responsible for the depth/stencil drawables, so we use the first one (index 0) as a sane default
