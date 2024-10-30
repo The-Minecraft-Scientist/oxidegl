@@ -454,6 +454,7 @@ impl PlatformState {
             //FIXME this expect contradicts the spec, should be an early return of some kind
             let &(_, first) = iter.peek().expect("No draw buffer set");
             let ca_drawable_tex = unsafe { self.current_drawable().texture() };
+            // Use the current drawable size as the targeted size for rendering. If the drawable size changes, a new render encoder will be created, which will inherit the new size from the new drawawble
             let dims = (
                 ca_drawable_tex.width() as u32,
                 ca_drawable_tex.height() as u32,
