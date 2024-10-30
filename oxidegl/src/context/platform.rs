@@ -6,13 +6,14 @@ use objc2::rc::Retained;
 use objc2_app_kit::{NSScreen, NSView};
 use objc2_foundation::{is_main_thread, ns_string, MainThreadMarker, NSString};
 use objc2_metal::{
-    MTLBlitCommandEncoder, MTLCommandBuffer, MTLCommandBufferDescriptor,
+    MTLBlitCommandEncoder, MTLClearColor, MTLCommandBuffer, MTLCommandBufferDescriptor,
     MTLCommandBufferErrorOption, MTLCommandEncoder, MTLCommandQueue, MTLCreateSystemDefaultDevice,
-    MTLDevice, MTLPixelFormat, MTLRenderCommandEncoder, MTLRenderPassColorAttachmentDescriptor,
-    MTLRenderPassDepthAttachmentDescriptor, MTLRenderPassDescriptor,
-    MTLRenderPassStencilAttachmentDescriptor, MTLRenderPipelineDescriptor, MTLRenderPipelineState,
-    MTLStorageMode, MTLTexture, MTLTextureDescriptor, MTLTextureUsage,
+    MTLDevice, MTLLoadAction, MTLPixelFormat, MTLRenderCommandEncoder,
+    MTLRenderPassColorAttachmentDescriptor, MTLRenderPassDepthAttachmentDescriptor,
+    MTLRenderPassDescriptor, MTLRenderPassStencilAttachmentDescriptor, MTLRenderPipelineDescriptor,
+    MTLRenderPipelineState, MTLStorageMode, MTLTexture, MTLTextureDescriptor, MTLTextureUsage,
     MTLVertexAttributeDescriptor, MTLVertexBufferLayoutDescriptor, MTLVertexDescriptor,
+    MTLViewport,
 };
 use objc2_quartz_core::{kCAFilterNearest, CAMetalDrawable, CAMetalLayer};
 
@@ -206,6 +207,7 @@ impl PlatformState {
         if let Some(drawable) = self.drawable.take() {
             self.current_command_buffer()
                 .presentDrawable(drawable.as_ref().as_ref());
+            drop(drawable);
         }
         self.current_command_buffer().commit();
         self.command_buffer = None;
@@ -303,7 +305,7 @@ impl PlatformState {
                 panic!("tried to call a draw command without a VAO bound")
             } else {
                 self.end_encoding();
-                self.render_encoder = Some(self.build_render_pass_descriptor(state));
+                self.render_encoder = Some(self.build_render_encoder(state));
                 return;
             }
         }
@@ -318,7 +320,7 @@ impl PlatformState {
         {
             gl_trace!("generating new render command encoder");
             self.end_encoding();
-            self.render_encoder = Some(self.build_render_pass_descriptor(state));
+            self.render_encoder = Some(self.build_render_encoder(state));
             self.update_dynamic_encoder_state(state);
         }
         if self
@@ -379,6 +381,20 @@ impl PlatformState {
     // precondition: buffers mapped
     fn update_dynamic_encoder_state(&mut self, state: &mut GLState) {
         self.bind_buffers_to_encoder(state);
+
+        #[expect(
+            clippy::cast_lossless,
+            reason = "pixel aligned rect only uses 32, always exactly representable as f64"
+        )]
+        self.current_render_encoder().setViewport(MTLViewport {
+            originX: state.viewport.x as f64,
+            originY: state.viewport.y as f64,
+            width: state.viewport.width as f64,
+            height: state.viewport.height as f64,
+            // TODO: depth range
+            znear: 0.0,
+            zfar: 1.0,
+        });
     }
     fn bind_buffers_to_encoder(&mut self, state: &mut GLState) {
         let enc = self.render_encoder.as_ref().unwrap();
@@ -403,7 +419,8 @@ impl PlatformState {
     )]
     #[inline]
     pub(crate) fn current_defaultfb_dimensions(&mut self) -> (u32, u32) {
-        // see https://developer.apple.com/documentation/quartzcore/cametallayer/1478174-drawablesize?language=objc
+        // reproduce the calculation done by the CAMetalLayer when generating the next drawable size
+        // (from https://developer.apple.com/documentation/quartzcore/cametallayer/1478174-drawablesize)
         let size = self.layer.bounds().size;
         let scale = self.layer.contentsScale();
         let size = (size.width * scale, size.height * scale);
@@ -418,7 +435,7 @@ impl PlatformState {
     }
     #[expect(clippy::cast_possible_truncation, reason = "we hope this works")]
     //preconditions: view set on context
-    pub(crate) fn build_render_pass_descriptor(
+    pub(crate) fn build_render_encoder(
         &mut self,
         state: &mut GLState,
     ) -> ProtoObjRef<dyn MTLRenderCommandEncoder> {
@@ -436,8 +453,11 @@ impl PlatformState {
                 .peekable();
             //FIXME this expect contradicts the spec, should be an early return of some kind
             let &(_, first) = iter.peek().expect("No draw buffer set");
-            let dims = self.current_defaultfb_dimensions();
             let ca_drawable_tex = unsafe { self.current_drawable().texture() };
+            let dims = (
+                ca_drawable_tex.width() as u32,
+                ca_drawable_tex.height() as u32,
+            );
             let drawbuffer = self.get_internal_drawbuffer(first, dims);
             // When multiple draw buffers are present with the default FB it's somewhat unclear which one should be responsible for the depth/stencil drawables, so we use the first one (index 0) as a sane default
             if let Some(depth) = &drawbuffer.depth {
@@ -467,6 +487,14 @@ impl PlatformState {
                 } else {
                     a_desc.setTexture(Some(&drawbuffer.color));
                 }
+                // FIXME need to do load action real
+                // a_desc.setLoadAction(MTLLoadAction::Clear);
+                // a_desc.setClearColor(MTLClearColor {
+                //     red: 1.0,
+                //     green: 0.0,
+                //     blue: 0.0,
+                //     alpha: 0.5,
+                // });
                 unsafe {
                     desc.colorAttachments()
                         .setObject_atIndexedSubscript(Some(&a_desc), idx);
@@ -684,10 +712,19 @@ impl PlatformState {
         }
         self.render_encoder = None;
     }
+    //TODO: use onresized or something for updating drawable size instead of effectively polling
     #[inline]
     #[track_caller]
     pub(crate) fn current_drawable(&mut self) -> &ProtoObjRef<dyn CAMetalDrawable> {
         let r = self.drawable.get_or_insert_with(|| {
+            let view = self
+                .view
+                .as_ref()
+                .expect("Can't get metal drawable before attaching Context to a view");
+            unsafe {
+                self.layer
+                    .setDrawableSize(view.convertSizeToBacking(view.frame().size));
+            };
             unsafe { self.layer.nextDrawable() }
                 .expect("Failed to get next drawable from CAMetalLayer")
         });

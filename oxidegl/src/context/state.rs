@@ -63,7 +63,8 @@ pub(crate) struct GLState {
     /// current GL debug log callback
     pub(crate) debug_log_callback: Option<DebugState>,
 
-    pub(crate) scissor_box: ScissorBox,
+    pub(crate) scissor_box: PixelAlignedRect,
+    pub(crate) viewport: PixelAlignedRect,
     //TODO move this stuff to a dedicated ClearState struct
     pub(crate) clear_color: [f32; 4],
     pub(crate) clear_depth: f32,
@@ -151,11 +152,11 @@ impl Capabilities {
     }
 }
 #[derive(Debug, Clone, Copy, Default, PartialEq)]
-pub(crate) struct ScissorBox {
+pub(crate) struct PixelAlignedRect {
     pub(crate) x: u32,
     pub(crate) y: u32,
     pub(crate) width: u32,
-    pub(crate) hieght: u32,
+    pub(crate) height: u32,
 }
 
 pub const MAX_ATOMIC_COUNTER_BUFFER_BINDINGS: usize = 16;
@@ -225,7 +226,8 @@ impl GLState {
 
             debug_log_callback: Some(DebugState::new_default()),
 
-            scissor_box: ScissorBox::default(),
+            scissor_box: PixelAlignedRect::default(),
+            viewport: PixelAlignedRect::default(),
             clear_color: [0.0; 4],
             clear_depth: 0.0,
             clear_mask: ClearBufferMask::empty(),
