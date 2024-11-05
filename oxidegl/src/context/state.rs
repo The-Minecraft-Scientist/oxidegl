@@ -1,17 +1,20 @@
-use std::{cell::UnsafeCell, ffi::CStr, fmt::Debug, marker::PhantomData, num::NonZeroU32};
+use std::{
+    cell::UnsafeCell, ffi::CStr, fmt::Debug, marker::PhantomData, num::NonZeroU32, ops::Deref, ptr,
+    u32,
+};
 
 use ahash::{HashSet, HashSetExt};
 use bitflags::bitflags;
 
 use crate::{
-    debug_unreachable,
+    bitflag_bits, debug_unreachable,
     dispatch::{
         conversions::{GlDstType, SrcType},
         gl_types::{GLboolean, GLenum, GLsizei, GLuint},
     },
     enums::{
-        ClearBufferMask, GL_CONTEXT_CORE_PROFILE_BIT, GL_CONTEXT_FLAG_FORWARD_COMPATIBLE_BIT,
-        GL_CONTEXT_FLAG_NO_ERROR_BIT,
+        ClearBufferMask, DepthFunction, StencilFunction, StencilOp, GL_CONTEXT_CORE_PROFILE_BIT,
+        GL_CONTEXT_FLAG_FORWARD_COMPATIBLE_BIT, GL_CONTEXT_FLAG_NO_ERROR_BIT,
     },
     trimmed_type_name,
 };
@@ -19,7 +22,7 @@ use crate::{
 use super::{
     commands::{buffer::Buffer, vao::Vao},
     debug::{gl_debug, with_debug_state, DebugState},
-    framebuffer::{DrawBuffers, Framebuffer},
+    framebuffer::{DrawBuffers, Framebuffer, MAX_COLOR_ATTACHMENTS},
     program::Program,
     shader::Shader,
 };
@@ -60,39 +63,80 @@ pub(crate) struct GLState {
     /// draw buffer/attachment tracking for the default framebuffer
     pub(crate) default_draw_buffers: DrawBuffers,
 
-    /// current GL debug log callback
-    pub(crate) debug_log_callback: Option<DebugState>,
-
+    //TODO: this should be an array in order to support viewport arrays
     pub(crate) scissor_box: PixelAlignedRect,
     pub(crate) viewport: PixelAlignedRect,
-    //TODO move this stuff to a dedicated ClearState struct
-    pub(crate) clear_color: [f32; 4],
-    pub(crate) clear_depth: f32,
-    pub(crate) clear_mask: ClearBufferMask,
-    pub(crate) clear_stencil: i32,
 
-    /// TODO get rid of point size and line width, they are not modifiable in gl46
-    pub(crate) point_size: f32,
-    pub(crate) line_width: f32,
+    pub(crate) clear_values: ClearState,
+    pub(crate) stencil: StencilState,
+    pub(crate) writemasks: Writemasks,
+
+    pub(crate) depth_func: DepthFunction,
+
+    /// storage for the debug state associated with this context (if it is not the current context). If this context is
+    /// current, you'll need to use [`with_debug_state`](super::debug::with_debug_state) or
+    /// [`with_debug_state_mut`](super::debug::with_debug_state_mut) to interact with the current debug state
+    pub(crate) debug_state_store: Option<DebugState>,
 }
-macro_rules! bf_bits {
-    {$( #[$attr:meta] )* $v:vis struct $name:ident: $t:tt bits: { $( $bit_name:ident: $bit:expr ),+ $(,)? }} => {
-        bitflags! {
-            $(#[$attr])*
-            $v struct $name: $t {
-                $(const $bit_name = 1 << $bit);+
-                ;
-            }
+
+#[derive(Clone, Copy, Debug)]
+pub(crate) struct ClearState {
+    pub(crate) color: [f32; 4],
+    pub(crate) depth: f32,
+    pub(crate) stencil: u32,
+    pub(crate) mask: ClearBufferMask,
+}
+impl Default for ClearState {
+    fn default() -> Self {
+        Self {
+            color: [0.0; 4],
+            depth: 1.0,
+            stencil: 0,
+            mask: ClearBufferMask::empty(),
         }
     }
 }
-bf_bits! {
+#[derive(Clone, Copy, Debug, Default)]
+pub(crate) struct StencilState {
+    pub(crate) front: StencilFaceState,
+    pub(crate) back: StencilFaceState,
+}
+
+#[derive(Clone, Copy, Debug)]
+pub struct StencilFaceState {
+    /// Comparison function used to decide whether to discard the fragment or not
+    pub(crate) func: StencilFunction,
+    /// Bitmask whose least-significant N bits (where N is the bit-depth of the stencil component of the stencil buffer's pixel format)
+    /// are bitwise AND-ed together with both the stencil value and reference before comparison
+    pub(crate) mask: u32,
+    /// reference value for comparison
+    pub(crate) reference: u32,
+    pub(crate) fail_action: StencilOp,
+    pub(crate) depth_fail_action: StencilOp,
+    pub(crate) depth_pass_action: StencilOp,
+}
+impl Default for StencilFaceState {
+    fn default() -> Self {
+        Self {
+            func: StencilFunction::Always,
+            mask: u32::MAX,
+            reference: 0,
+            fail_action: StencilOp::Keep,
+            depth_fail_action: StencilOp::Keep,
+            depth_pass_action: StencilOp::Keep,
+        }
+    }
+}
+
+bitflag_bits! {
     #[derive(Debug, Copy, Clone, Eq, PartialEq)]
     #[repr(transparent)]
-    pub struct Capabilities: u64
-        bits: {
+    pub struct Capabilities: u64 bits: {
+
+        // Comment out indexed caps
         // BLEND: 0,
         // SCISSOR_TEST: 19,
+
         MULTISAMPLE: 1,
         SAMPLE_ALPHA_TO_COVERAGE: 2,
         SAMPLE_ALPHA_TO_ONE: 3,
@@ -141,22 +185,42 @@ bf_bits! {
 
 }
 impl Capabilities {
-    fn is_enabled(self, cap: Self) -> bool {
-        self.contains(cap)
+    /// Returns true if any set bit in `cap` is also set in `self`
+    #[inline]
+    pub(crate) fn is_any_enabled(self, cap: Self) -> bool {
+        self.intersects(cap)
     }
-    fn disable(&mut self, cap: Self) {
+    #[inline]
+    pub(crate) fn disable(&mut self, cap: Self) {
         *self = self.difference(cap);
     }
-    fn enable(&mut self, cap: Self) {
+    #[inline]
+    pub(crate) fn enable(&mut self, cap: Self) {
         *self = self.union(cap);
     }
 }
 #[derive(Debug, Clone, Copy, Default, PartialEq)]
+#[repr(C)]
 pub(crate) struct PixelAlignedRect {
+    // INVARIANT do not change layout without changing Deref impl!
     pub(crate) x: u32,
     pub(crate) y: u32,
     pub(crate) width: u32,
     pub(crate) height: u32,
+}
+impl Deref for PixelAlignedRect {
+    type Target = [u32; 4];
+    #[inline]
+    fn deref(&self) -> &Self::Target {
+        // Safety: repr(C) layout guarantees of PixelAlignedRef give it an identical repr to [u32; 4]
+        // reference creation is infallible because the pointer is originally derived from a reference and cannot be null
+        unsafe {
+            ptr::from_ref(self)
+                .cast::<[u32; 4]>()
+                .as_ref()
+                .unwrap_unchecked()
+        }
+    }
 }
 
 pub const MAX_ATOMIC_COUNTER_BUFFER_BINDINGS: usize = 16;
@@ -200,9 +264,9 @@ pub struct BufferBindings {
     pub(crate) uniform: [Option<ObjectName<Buffer>>; MAX_UNIFORM_BUFFER_BINDINGS],
 }
 
-impl GLState {
-    pub fn default() -> Self {
-        GLState {
+impl Default for GLState {
+    fn default() -> Self {
+        Self {
             characteristics: Characteristics::new(),
 
             caps: Capabilities::empty(),
@@ -224,30 +288,74 @@ impl GLState {
             framebuffer_binding: None,
             default_draw_buffers: DrawBuffers::new_defaultfb(),
 
-            debug_log_callback: Some(DebugState::new_default()),
+            debug_state_store: Some(DebugState::new_default()),
 
             scissor_box: PixelAlignedRect::default(),
             viewport: PixelAlignedRect::default(),
-            clear_color: [0.0; 4],
-            clear_depth: 0.0,
-            clear_mask: ClearBufferMask::empty(),
-            clear_stencil: 0,
 
-            point_size: 1.0,
-            line_width: 1.0,
+            clear_values: ClearState::default(),
+            stencil: StencilState::default(),
+            depth_func: DepthFunction::Less,
+            writemasks: Writemasks::default(),
         }
     }
 }
 
 #[derive(Default, Debug, Clone, Copy)]
 pub struct Characteristics {
+    pub(crate) point_size: f32,
     pub(crate) point_size_range: [f32; 2],
     pub(crate) point_size_granularity: f32,
+    pub(crate) line_width: f32,
     pub(crate) line_width_range: [f32; 2],
     pub(crate) line_width_granularity: f32,
     pub(crate) context_flags: GLenum,
     pub(crate) context_profile_mask: GLenum,
     pub(crate) num_extensions: u32,
+}
+#[derive(Debug, Copy, Clone)]
+pub(crate) struct Writemasks {
+    pub(crate) color: [ColorWriteMask; MAX_COLOR_ATTACHMENTS as usize],
+    pub(crate) depth: bool,
+    pub(crate) stencil_front: u32,
+    pub(crate) stencil_back: u32,
+}
+impl Default for Writemasks {
+    fn default() -> Self {
+        Self {
+            color: [[true; 4].into(); MAX_COLOR_ATTACHMENTS as usize],
+            depth: true,
+            // all bits set for bitmasks
+            stencil_front: u32::MAX,
+            stencil_back: u32::MAX,
+        }
+    }
+}
+#[repr(C)]
+#[derive(Debug, Copy, Clone)]
+pub(crate) struct ColorWriteMask {
+    pub(crate) red: bool,
+    pub(crate) green: bool,
+    pub(crate) blue: bool,
+    pub(crate) alpha: bool,
+}
+// both of these impls will be inlined to no-ops, no need to transmute
+impl From<ColorWriteMask> for [bool; 4] {
+    #[inline]
+    fn from(value: ColorWriteMask) -> Self {
+        [value.red, value.green, value.blue, value.alpha]
+    }
+}
+impl From<[bool; 4]> for ColorWriteMask {
+    #[inline]
+    fn from(value: [bool; 4]) -> Self {
+        Self {
+            red: value[0],
+            green: value[1],
+            blue: value[2],
+            alpha: value[3],
+        }
+    }
 }
 
 impl Characteristics {
@@ -256,10 +364,12 @@ impl Characteristics {
             point_size_range: [1.0, 1.0],
             point_size_granularity: 0.0001,
             line_width_range: [1.0, 1.0],
-            line_width_granularity: 0.0001,
+            line_width_granularity: 0.0,
             context_flags: GL_CONTEXT_FLAG_FORWARD_COMPATIBLE_BIT | GL_CONTEXT_FLAG_NO_ERROR_BIT,
             context_profile_mask: GL_CONTEXT_CORE_PROFILE_BIT,
             num_extensions: 1,
+            point_size: 1.0,
+            line_width: 1.0,
         }
     }
 }

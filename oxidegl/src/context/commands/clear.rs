@@ -58,7 +58,7 @@ impl Context {
     /// [**glGet**](crate::context::Context::oxidegl_get) with argument [`GL_STENCIL_CLEAR_VALUE`](crate::enums::GL_STENCIL_CLEAR_VALUE)
 
     pub fn oxidegl_clear(&mut self, mask: ClearBufferMask) {
-        self.gl_state.clear_mask = mask;
+        self.gl_state.clear_values.mask = mask;
     }
     /// ### Parameters
     /// `red`
@@ -94,7 +94,7 @@ impl Context {
         blue: GLfloat,
         alpha: GLfloat,
     ) {
-        self.gl_state.clear_color = [red, green, blue, alpha];
+        self.gl_state.clear_values.color = [red, green, blue, alpha];
     }
     /// ### Parameters
     /// `s`
@@ -111,9 +111,12 @@ impl Context {
     /// [**glGet**](crate::context::Context::oxidegl_get) with argument [`GL_STENCIL_CLEAR_VALUE`](crate::enums::GL_STENCIL_CLEAR_VALUE)
     ///
     /// [**glGet**](crate::context::Context::oxidegl_get) with argument [`GL_STENCIL_BITS`](crate::enums::GL_STENCIL_BITS)
-
+    #[expect(
+        clippy::cast_sign_loss,
+        reason = "we want a bitcast anyways, the numeric value doesnt matter all that much"
+    )]
     pub fn oxidegl_clear_stencil(&mut self, s: GLint) {
-        self.gl_state.clear_stencil = s;
+        self.gl_state.clear_values.stencil = s as u32;
     }
 }
 
@@ -142,9 +145,9 @@ impl Context {
     // Metal depth buffer is 32 bits so we might as well just truncate here instead of storing an f64
     #[allow(clippy::cast_possible_truncation)]
     pub fn oxidegl_clear_depth(&mut self, depth: GLdouble) {
-        self.gl_state.clear_depth = depth as f32;
+        self.gl_state.clear_values.depth = depth as f32;
     }
     pub fn oxidegl_clear_depthf(&mut self, d: GLfloat) {
-        self.gl_state.clear_depth = d;
+        self.gl_state.clear_values.depth = d;
     }
 }

@@ -4,7 +4,6 @@ use objc2::rc::Retained;
 use objc2_app_kit::NSView;
 use objc2_metal::MTLPixelFormat;
 use platform::PlatformState;
-use state::PixelAlignedRect;
 use std::cell::Cell;
 use std::panic;
 use std::pin::Pin;
@@ -48,11 +47,10 @@ impl Context {
             platform_state: PlatformState::new(MTLPixelFormat::BGRA8Unorm_sRGB, None, None),
         }
     }
-    pub fn set_view(&mut self, view: &Retained<NSView>) {
-        self.platform_state.set_view(view);
-
+    pub fn set_view(&mut self, view: &Retained<NSView>, backing_scale_factor: f64) {
+        self.platform_state.set_view(view, backing_scale_factor);
         // init scissor box/viewport now that we have an actual view
-        let dims = self.platform_state.current_defaultfb_dimensions();
+        let dims = self.platform_state.target_defaultfb_dims();
         self.gl_state.viewport.width = dims.0;
         self.gl_state.viewport.height = dims.1;
 
@@ -70,7 +68,7 @@ impl Default for Context {
 #[expect(clippy::inline_always)]
 #[inline(always)]
 #[expect(unused_mut, unused_variables, reason = "lint bug")]
-pub fn with_ctx<Ret, Func: for<'a> Fn(Pin<&'a mut Context>) -> Ret>(f: Func) -> Ret {
+pub fn with_ctx_mut<Ret, Func: for<'a> Fn(Pin<&'a mut Context>) -> Ret>(f: Func) -> Ret {
     // use if_likely to tell LLVM that it should optimize for the Some(ptr) case
     if_likely! {
         // take the current context pointer

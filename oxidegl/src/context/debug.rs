@@ -60,10 +60,10 @@ where
 
 impl Context {
     pub(crate) fn install_debug_state(&mut self) {
-        DEBUG_STATE.replace(self.gl_state.debug_log_callback.take());
+        DEBUG_STATE.replace(self.gl_state.debug_state_store.take());
     }
     pub(crate) fn uninstall_debug_state(&mut self) {
-        self.gl_state.debug_log_callback = DEBUG_STATE.take();
+        self.gl_state.debug_state_store = DEBUG_STATE.take();
     }
 }
 impl From<Level> for DebugSeverity {

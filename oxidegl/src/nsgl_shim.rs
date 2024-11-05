@@ -1,12 +1,3 @@
-use std::{
-    cell::OnceCell,
-    ffi::{c_void, CStr},
-    hint::black_box,
-    mem,
-    ptr::{self, NonNull},
-    sync::Once,
-};
-
 use crate::{
     context::{Context, CTX},
     entry_point::{box_ctx, oxidegl_platform_init, set_context, swap_buffers},
@@ -29,6 +20,16 @@ use objc2::{
     rc::{Allocated, Retained},
     runtime::{AnyClass, NSObject},
     sel, ClassType, DeclaredClass,
+};
+use objc2_app_kit::NSScreen;
+use objc2_foundation::{is_main_thread, MainThreadMarker};
+use std::{
+    cell::OnceCell,
+    ffi::{c_void, CStr},
+    hint::black_box,
+    mem,
+    ptr::{self, NonNull},
+    sync::Once,
 };
 
 // Sometimes when I'm bored I click onto this file and read what I've wrote. It reads like an abyss
@@ -138,10 +139,18 @@ declare_class! (
 
                 // take current context to avoid potential aliasing references
                 let ctx = CTX.take();
+
+                // Safety: GL will only be called from the main thread
+                let mtm = unsafe { MainThreadMarker::new_unchecked() };
+                debug_assert!(is_main_thread(), "Tried to call setView on an OpenGLContext that was not on the main thread!");
+                let main_screen = NSScreen::mainScreen(mtm).expect("failed to get main screen for content scale hack");
+                let scale_factor = main_screen.backingScaleFactor();
+
                 // Safety: pointer is non null, points to an initialized and heap-allocated Context.
                 // pointer cannot have aliasing Rust references (since this class and CTX are the only places where the
                 // pointer is actually read from, and we emptied CTX prior to creating this reference)
-                unsafe {ptr.as_mut()}.set_view(&v.retain());
+
+                unsafe {ptr.as_mut()}.set_view(&v.retain(), scale_factor);
                 CTX.set(ctx);
             }
         }
@@ -298,7 +307,6 @@ impl OXGLOxideGlCtxShim {
         });
     }
 }
-
 thread_local! {
     static OXIDEGL_HANDLE: OnceCell<*mut c_void> = const { OnceCell::new() };
 }

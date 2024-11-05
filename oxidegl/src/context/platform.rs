@@ -3,23 +3,28 @@ use std::mem;
 use ahash::{HashMap, HashMapExt, HashSet, HashSetExt};
 use log::{info, trace};
 use objc2::rc::Retained;
-use objc2_app_kit::{NSScreen, NSView};
-use objc2_foundation::{is_main_thread, ns_string, MainThreadMarker, NSString};
+use objc2_app_kit::NSView;
+use objc2_foundation::{ns_string, NSString};
 use objc2_metal::{
     MTLBlitCommandEncoder, MTLClearColor, MTLCommandBuffer, MTLCommandBufferDescriptor,
-    MTLCommandBufferErrorOption, MTLCommandEncoder, MTLCommandQueue, MTLCreateSystemDefaultDevice,
-    MTLDevice, MTLLoadAction, MTLPixelFormat, MTLRenderCommandEncoder,
-    MTLRenderPassColorAttachmentDescriptor, MTLRenderPassDepthAttachmentDescriptor,
-    MTLRenderPassDescriptor, MTLRenderPassStencilAttachmentDescriptor, MTLRenderPipelineDescriptor,
-    MTLRenderPipelineState, MTLStorageMode, MTLTexture, MTLTextureDescriptor, MTLTextureUsage,
-    MTLVertexAttributeDescriptor, MTLVertexBufferLayoutDescriptor, MTLVertexDescriptor,
-    MTLViewport,
+    MTLCommandBufferErrorOption, MTLCommandEncoder, MTLCommandQueue, MTLCompareFunction,
+    MTLCreateSystemDefaultDevice, MTLDepthStencilDescriptor, MTLDevice, MTLLoadAction,
+    MTLPixelFormat, MTLRenderCommandEncoder, MTLRenderPassColorAttachmentDescriptor,
+    MTLRenderPassDepthAttachmentDescriptor, MTLRenderPassDescriptor,
+    MTLRenderPassStencilAttachmentDescriptor, MTLRenderPipelineDescriptor, MTLRenderPipelineState,
+    MTLStencilDescriptor, MTLStencilOperation, MTLStorageMode, MTLTexture, MTLTextureDescriptor,
+    MTLTextureUsage, MTLVertexAttributeDescriptor, MTLVertexBufferLayoutDescriptor,
+    MTLVertexDescriptor, MTLViewport,
 };
 use objc2_quartz_core::{kCAFilterNearest, CAMetalDrawable, CAMetalLayer};
 
 use crate::{
-    context::debug::{gl_info, gl_trace},
-    enums::{DrawBufferMode, ShaderType},
+    bitflag_bits,
+    context::{
+        debug::{gl_debug, gl_info, gl_trace},
+        state::StencilFaceState,
+    },
+    enums::{DepthFunction, DrawBufferMode, ShaderType, StencilFunction, StencilOp},
     ProtoObjRef,
 };
 
@@ -27,13 +32,13 @@ use super::{
     commands::buffer::Buffer,
     framebuffer::InternalDrawable,
     program::LinkedShaderStage,
-    state::{GLState, NamedObject, ObjectName},
+    state::{Capabilities, GLState, NamedObject, ObjectName},
 };
 
 #[derive(Debug)]
 pub struct PlatformState {
     /// dirty components
-    pub(crate) dirty_state: NeedsRefreshBits,
+    pub(crate) dirty_state: Dirty,
 
     /// the View this state is associated with
     view: Option<Retained<NSView>>,
@@ -110,23 +115,31 @@ impl InternalDrawables {
         }
     }
 }
-const MTL_MAX_ARGUMENT_BINDINGS: usize = 31;
-bitflags::bitflags! {
+bitflag_bits! {
     #[derive(Debug, Copy, Clone, Eq, PartialEq)]
     #[repr(transparent)]
-    pub struct NeedsRefreshBits: u32 {
+    pub(crate) struct Dirty: u32 bits: {
         /// Create a fresh render encoder from the current GL state
-        const NEW_RENDER_ENCODER = 1;
+        NEW_RENDER_ENCODER: 0,
         /// Update dynamic render encoder state from the current GL state
-        const UPDATE_CURRENT_ENCODER = 1 << 1;
+        UPDATE_CURRENT_ENCODER: 1,
         /// Create a fresh render pipeline state from the current GL state
-        const NEW_RENDER_PIPELINE = 1 << 2;
+        NEW_RENDER_PIPELINE: 2,
         /// Update buffer maps (e.g. when a new VAO or program is bound)
-        const REMAP_BUFFERS = 1 << 3;
-
-
+        REMAP_BUFFERS: 3,
     }
 }
+impl Dirty {
+    #[inline]
+    pub(crate) fn any_set(self, other: Self) -> bool {
+        self.intersects(other)
+    }
+    #[inline]
+    pub(crate) fn unset(&mut self, other: Self) {
+        *self = self.difference(other);
+    }
+}
+const MTL_MAX_ARGUMENT_BINDINGS: usize = 31;
 
 /// Utility that maps currently active object names to their location in the relevant Metal shader parameter table
 #[derive(Debug)]
@@ -166,7 +179,7 @@ impl<const MAX_ENTRIES: usize, T: NamedObject + 'static> ResourceMap<T, MAX_ENTR
         let mut ctr = MAX_ENTRIES as u32 - 1;
         assert!(
             pinned_resources.len() + include_resources.len() <= MAX_ENTRIES,
-            "OxideGL exceeded the maximum available resource "
+            "OxideGL exceeded the maximum number of Metal buffer binding points (31)"
         );
         for res in include_resources.iter().copied() {
             loop {
@@ -189,13 +202,14 @@ impl<const MAX_ENTRIES: usize, T: NamedObject + 'static> ResourceMap<T, MAX_ENTR
 
 #[allow(clippy::undocumented_unsafe_blocks)]
 impl PlatformState {
-    pub(crate) fn set_view(&mut self, view: &Retained<NSView>) {
+    pub(crate) fn set_view(&mut self, view: &Retained<NSView>, backing_scale_factor: f64) {
         self.view = Some(view.clone());
         self.layer.setFrame(view.frame());
-        // set backing layer
-        unsafe { view.setLayer(Some(&self.layer)) };
-        // tell the view it is now layer-backed
+        self.layer.setContentsScale(backing_scale_factor);
+        // ensure the view is layer-backed
         view.setWantsLayer(true);
+        // set the backing layer
+        unsafe { view.setLayer(Some(&self.layer)) };
 
         trace!("injected layer {:?} into NSView", &self.layer);
     }
@@ -236,7 +250,7 @@ impl PlatformState {
         queue.setLabel(Some(ns_string!("OxideGL command queue")));
 
         Self {
-            dirty_state: NeedsRefreshBits::all(),
+            dirty_state: Dirty::all(),
 
             view: None,
             device,
@@ -299,6 +313,7 @@ impl PlatformState {
         })
     }
     pub(crate) fn update_state(&mut self, state: &mut GLState, is_draw_command: bool) {
+        let all_dirty = self.dirty_state;
         // if there is no VAO, we still need to modify render encoder state for some commands like glClear but not do any further work
         if state.vao_binding.is_none() {
             if is_draw_command {
@@ -310,31 +325,25 @@ impl PlatformState {
             }
         }
 
-        if self.dirty_state.contains(NeedsRefreshBits::REMAP_BUFFERS) {
+        if all_dirty.any_set(Dirty::REMAP_BUFFERS) {
             self.remap_buffer_arguments(state);
         }
 
-        if self
-            .dirty_state
-            .contains(NeedsRefreshBits::NEW_RENDER_ENCODER)
-        {
+        if all_dirty.any_set(Dirty::NEW_RENDER_ENCODER) {
             gl_trace!("generating new render command encoder");
             self.end_encoding();
             self.render_encoder = Some(self.build_render_encoder(state));
-            self.update_dynamic_encoder_state(state);
+            self.dirty_state.unset(Dirty::NEW_RENDER_ENCODER);
         }
-        if self
-            .dirty_state
-            .contains(NeedsRefreshBits::UPDATE_CURRENT_ENCODER)
-        {
+        // this code path is taken if we have a new encoder and need to finish initializing it, or if we just need to update the dynamic state of the current encoder
+        if all_dirty.any_set(Dirty::UPDATE_CURRENT_ENCODER | Dirty::NEW_RENDER_ENCODER) {
             self.update_dynamic_encoder_state(state);
+            self.dirty_state.unset(Dirty::UPDATE_CURRENT_ENCODER);
         }
-        if self
-            .dirty_state
-            .contains(NeedsRefreshBits::NEW_RENDER_PIPELINE)
-        {
+        if all_dirty.any_set(Dirty::NEW_RENDER_PIPELINE) {
             gl_trace!("generating new render pipeline state");
             self.render_pipeline_state = Some(self.build_render_pipeline_state(state));
+            self.dirty_state.unset(Dirty::NEW_RENDER_PIPELINE);
         }
         let ps = self.render_pipeline_state.as_ref().unwrap();
         let enc = self.render_encoder.as_ref().unwrap();
@@ -365,7 +374,7 @@ impl PlatformState {
                         .setPixelFormat(self.pixel_format);
                 }
             }
-            //TODO depth/stencil
+            //TODO depth/stencil attachment formats
         }
         desc.setVertexFunction(Some(&v.function));
         desc.setFragmentFunction(Some(&f.function));
@@ -380,11 +389,56 @@ impl PlatformState {
     }
     // precondition: buffers mapped
     fn update_dynamic_encoder_state(&mut self, state: &mut GLState) {
-        self.bind_buffers_to_encoder(state);
+        fn stencil_descriptor_for_stencil_state(
+            state: &StencilFaceState,
+            writemask: u32,
+        ) -> Retained<MTLStencilDescriptor> {
+            let desc = unsafe { MTLStencilDescriptor::new() };
+            desc.setStencilCompareFunction(state.func.into());
+            desc.setStencilFailureOperation(state.fail_action.into());
 
+            desc.setDepthFailureOperation(state.depth_fail_action.into());
+            desc.setDepthStencilPassOperation(state.depth_pass_action.into());
+
+            desc.setWriteMask(writemask);
+            desc.setReadMask(state.mask);
+            desc
+        }
+        self.bind_buffers_to_render_encoder(state);
+
+        if state
+            .caps
+            .is_any_enabled(Capabilities::DEPTH_TEST | Capabilities::STENCIL_TEST)
+        {
+            let desc = unsafe { MTLDepthStencilDescriptor::new() };
+            if state.caps.is_any_enabled(Capabilities::DEPTH_TEST) {
+                desc.setDepthCompareFunction(state.depth_func.into());
+                desc.setDepthWriteEnabled(state.writemasks.depth);
+            }
+            if state.caps.is_any_enabled(Capabilities::STENCIL_TEST) {
+                let front = stencil_descriptor_for_stencil_state(
+                    &state.stencil.front,
+                    state.writemasks.stencil_front,
+                );
+                desc.setFrontFaceStencil(Some(&front));
+                let back = stencil_descriptor_for_stencil_state(
+                    &state.stencil.back,
+                    state.writemasks.stencil_back,
+                );
+                desc.setBackFaceStencil(Some(&back));
+            }
+            let ds_state = self
+                .device
+                .newDepthStencilStateWithDescriptor(&desc)
+                .expect("failed to create MTLDepthStencilState");
+            self.current_render_encoder()
+                .setDepthStencilState(Some(&ds_state));
+        }
+
+        // TODO scissor test
         #[expect(
             clippy::cast_lossless,
-            reason = "pixel aligned rect only uses 32, always exactly representable as f64"
+            reason = "pixel aligned rect values are always 32 bits, and as such are exactly representable as f64"
         )]
         self.current_render_encoder().setViewport(MTLViewport {
             originX: state.viewport.x as f64,
@@ -396,7 +450,7 @@ impl PlatformState {
             zfar: 1.0,
         });
     }
-    fn bind_buffers_to_encoder(&mut self, state: &mut GLState) {
+    fn bind_buffers_to_render_encoder(&mut self, state: &mut GLState) {
         let enc = self.render_encoder.as_ref().unwrap();
         for (&buf, &binding) in &self.vertex_buffer_map.inner {
             let buf_obj = state.buffer_list.get(buf);
@@ -418,7 +472,8 @@ impl PlatformState {
         reason = "we hope this works"
     )]
     #[inline]
-    pub(crate) fn current_defaultfb_dimensions(&mut self) -> (u32, u32) {
+    // "guesstimate," it can still get out of sync with the actual size of the current drawable
+    pub(crate) fn target_defaultfb_dims(&mut self) -> (u32, u32) {
         // reproduce the calculation done by the CAMetalLayer when generating the next drawable size
         // (from https://developer.apple.com/documentation/quartzcore/cametallayer/1478174-drawablesize)
         let size = self.layer.bounds().size;
@@ -454,7 +509,8 @@ impl PlatformState {
             //FIXME this expect contradicts the spec, should be an early return of some kind
             let &(_, first) = iter.peek().expect("No draw buffer set");
             let ca_drawable_tex = unsafe { self.current_drawable().texture() };
-            // Use the current drawable size as the targeted size for rendering. If the drawable size changes, a new render encoder will be created, which will inherit the new size from the new drawawble
+            // Use the current drawable size as the targeted size for rendering. If the drawable size changes, a new
+            // render encoder will be created, which will inherit the new size from the new drawawable
             let dims = (
                 ca_drawable_tex.width() as u32,
                 ca_drawable_tex.height() as u32,
@@ -527,7 +583,7 @@ impl PlatformState {
         };
         let device = &self.device;
         if !r.as_ref().is_some_and(|v| v.dimensions == viewport_dims) {
-            // Need a new internaldrawable
+            // Need a new internal drawable
             let new_tex =
                 Self::new_drawbuffer_size_format(device, viewport_dims, self.pixel_format, false);
             let mut replacement = Some(InternalDrawable::new(new_tex, viewport_dims));
@@ -543,15 +599,15 @@ impl PlatformState {
         format: MTLPixelFormat,
         gpu_private: bool,
     ) -> ProtoObjRef<dyn MTLTexture> {
-        gl_trace!(
+        gl_debug!(
             "creating new {}x{} {format:?} drawable texture",
             size.0,
             size.1
         );
         let desc = unsafe { MTLTextureDescriptor::new() };
         if gpu_private {
-            desc.setAllowGPUOptimizedContents(true);
             desc.setStorageMode(MTLStorageMode::Private);
+            desc.setAllowGPUOptimizedContents(true);
         }
         unsafe { desc.setWidth(size.0 as usize) };
         unsafe { desc.setHeight(size.1 as usize) };
@@ -727,12 +783,41 @@ impl PlatformState {
                 unsafe {
                     self.layer.setDrawableSize(maybe_new_size);
                 };
-                self.dirty_state |= NeedsRefreshBits::NEW_RENDER_ENCODER;
+                self.dirty_state |= Dirty::NEW_RENDER_ENCODER;
             }
 
             unsafe { self.layer.nextDrawable() }
                 .expect("Failed to get next drawable from CAMetalLayer")
         });
         &*r
+    }
+}
+
+impl From<DepthFunction> for MTLCompareFunction {
+    fn from(value: DepthFunction) -> Self {
+        // 1:1 correspondance between depthfunc and MTLCompareFunction after an offsetting subtraction
+        Self((value as u32 - DepthFunction::Never as u32) as usize)
+    }
+}
+impl From<StencilFunction> for MTLCompareFunction {
+    fn from(value: StencilFunction) -> Self {
+        // 1:1 correspondance between stencilfunc and MTLCompareFunction after an offsetting subtraction
+        Self((value as u32 - StencilFunction::Never as u32) as usize)
+    }
+}
+
+impl From<StencilOp> for MTLStencilOperation {
+    #[inline]
+    fn from(value: StencilOp) -> Self {
+        match value {
+            StencilOp::Zero => Self::Zero,
+            StencilOp::Invert => Self::Invert,
+            StencilOp::Keep => Self::Keep,
+            StencilOp::Replace => Self::Replace,
+            StencilOp::Incr => Self::IncrementClamp,
+            StencilOp::Decr => Self::DecrementClamp,
+            StencilOp::IncrWrap => Self::IncrementWrap,
+            StencilOp::DecrWrap => Self::DecrementWrap,
+        }
     }
 }

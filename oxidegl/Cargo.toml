@@ -13,6 +13,7 @@ objc2 = "0.5.2"
 # Need to speak Cocoa for interacting with window layers
 objc2-app-kit = { version = "0.2.2", features = [
     "NSView",
+    "NSWindow",
     "NSResponder",
     "NSScreen",
     "objc2-quartz-core",

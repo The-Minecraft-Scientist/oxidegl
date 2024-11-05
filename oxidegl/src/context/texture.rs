@@ -31,6 +31,7 @@ impl GLPixelTypeFormat {
                 RedInteger => MF::R8Sint,
                 RgInteger => MF::RG8Sint,
                 RgbaInteger => MF::RGBA8Sint,
+
                 _ => panic!("invalid source pixel format"),
             },
             PixelType::UnsignedByte => match self.fmt {

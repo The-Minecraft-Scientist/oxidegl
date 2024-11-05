@@ -124,7 +124,7 @@ impl<It: SrcType<Dst>, Dst: GlDstType> StateQueryWrite<Dst> for [It] {
         if let Some(i) = idx.get() {
             debug_assert!(
                 i < self.len(),
-                "Tried to read outside the bounds of a single item"
+                "Tried to read outside the bounds of an array of items"
             );
             // Safety: Caller ensures ptr points to an allocation with the correct size and alignment to store a
             // single value of type Dst

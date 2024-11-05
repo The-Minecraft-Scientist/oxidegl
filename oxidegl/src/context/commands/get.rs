@@ -1,7 +1,10 @@
 #[allow(clippy::wildcard_imports)]
 use crate::dispatch::gl_types::*;
 use crate::{
-    context::{debug::gl_debug, framebuffer::MAX_COLOR_ATTACHMENTS},
+    context::{
+        debug::{gl_debug, gl_err},
+        framebuffer::MAX_COLOR_ATTACHMENTS,
+    },
     dispatch::conversions::{IndexType, NoIndex},
 };
 
@@ -1500,13 +1503,12 @@ use crate::{
 /// and [`GL_MAX_VERTEX_ATTRIB_BINDINGS`](crate::enums::GL_MAX_VERTEX_ATTRIB_BINDINGS)
 /// are available only if the GL version is 4.3 or greater.
 impl Context {
-    #[inline]
     ///
     ///
     /// # Safety
     /// TODO
-    #[allow(clippy::too_many_lines)]
-    pub unsafe fn oxidegl_get<T: GlDstType, I: IndexType>(
+    #[allow(clippy::too_many_lines, clippy::inline_always)]
+    pub(crate) unsafe fn oxidegl_get<T: GlDstType, I: IndexType>(
         &self,
         parameter_name: GetPName,
         ptr: *mut T,
@@ -1520,7 +1522,14 @@ impl Context {
                 } ))|+
             };
         }
-        // Safety: Parameters are guaranteed to uphold invariants needed to write to them by the GL spec and we are allowed to cause UB if they don't
+        if ptr.is_null() {
+            gl_err!(ty: UndefinedBehavior, "ptr in glGet* was null!");
+        }
+        if !ptr.is_aligned() {
+            gl_err!(ty: UndefinedBehavior, "ptr in glGet* was not adequately aligned!");
+        }
+        let state = &self.gl_state;
+        // Safety: Parameters are guaranteed to uphold invariants needed to write to them by the GL spec
         unsafe {
             match parameter_name {
                 subst!(Max{Combined, Compute, Vertex, TessControl, TessEvaluation, Fragment}AtomicCounterBuffers) =>
@@ -1543,78 +1552,66 @@ impl Context {
 
                 // singleton buffer bindings
                 ArrayBufferBinding => {
-                    self.gl_state.buffer_bindings.array.write_out(idx, ptr);
+                    state.buffer_bindings.array.write_out(idx, ptr);
                 }
                 CopyReadBufferBinding => {
-                    self.gl_state.buffer_bindings.copy_read.write_out(idx, ptr);
+                    state.buffer_bindings.copy_read.write_out(idx, ptr);
                 }
                 CopyWriteBufferBinding => {
-                    self.gl_state.buffer_bindings.copy_write.write_out(idx, ptr);
+                    state.buffer_bindings.copy_write.write_out(idx, ptr);
                 }
                 DispatchIndirectBufferBinding => {
-                    self.gl_state
-                        .buffer_bindings
-                        .dispatch_indirect
-                        .write_out(idx, ptr);
+                    state.buffer_bindings.dispatch_indirect.write_out(idx, ptr);
                 }
                 DrawIndirectBufferBinding => {
-                    self.gl_state
-                        .buffer_bindings
-                        .draw_indirect
-                        .write_out(idx, ptr);
+                    state.buffer_bindings.draw_indirect.write_out(idx, ptr);
                 }
                 ElementArrayBufferBinding => {
-                    self.gl_state
-                        .buffer_bindings
-                        .element_array
-                        .write_out(idx, ptr);
+                    state.buffer_bindings.element_array.write_out(idx, ptr);
                 }
                 ParameterBufferBinding => {
-                    self.gl_state.buffer_bindings.parameter.write_out(idx, ptr);
+                    state.buffer_bindings.parameter.write_out(idx, ptr);
                 }
                 PixelPackBufferBinding => {
-                    self.gl_state.buffer_bindings.pixel_pack.write_out(idx, ptr);
+                    state.buffer_bindings.pixel_pack.write_out(idx, ptr);
                 }
                 PixelUnpackBufferBinding => self
                     .gl_state
                     .buffer_bindings
                     .pixel_unpack
                     .write_out(idx, ptr),
-                QueryBufferBinding => self.gl_state.buffer_bindings.query.write_out(idx, ptr),
-                TextureBufferBinding => self.gl_state.buffer_bindings.texture.write_out(idx, ptr),
+                QueryBufferBinding => state.buffer_bindings.query.write_out(idx, ptr),
+                TextureBufferBinding => state.buffer_bindings.texture.write_out(idx, ptr),
 
                 //Indexed buffer bindings
-                TransformFeedbackBufferBinding => self.gl_state.buffer_bindings.transform_feedback
+                TransformFeedbackBufferBinding => state.buffer_bindings.transform_feedback
                     [idx.get().unwrap_or(0)]
                 .write_noindex(ptr),
                 ShaderStorageBufferBinding => {
-                    self.gl_state.buffer_bindings.shader_storage[idx.get().unwrap_or(0)]
-                        .write_noindex(ptr);
+                    state.buffer_bindings.shader_storage[idx.get().unwrap_or(0)].write_noindex(ptr);
                 }
                 UniformBufferBinding => {
-                    self.gl_state.buffer_bindings.uniform[idx.get().unwrap_or(0)]
-                        .write_noindex(ptr);
+                    state.buffer_bindings.uniform[idx.get().unwrap_or(0)].write_noindex(ptr);
                 }
                 AtomicCounterBufferBinding => {
-                    self.gl_state.buffer_bindings.atomic_counter[idx.get().unwrap_or(0)]
-                        .write_noindex(ptr);
+                    state.buffer_bindings.atomic_counter[idx.get().unwrap_or(0)].write_noindex(ptr);
                 }
                 //VAO binding
-                VertexArrayBinding => self.gl_state.vao_binding.write_out(idx, ptr),
+                VertexArrayBinding => state.vao_binding.write_out(idx, ptr),
 
-                PointSize => self.gl_state.point_size.write_out(idx, ptr),
+                PointSize => state.characteristics.point_size.write_out(idx, ptr),
                 PointSizeRange => self
                     .gl_state
                     .characteristics
                     .point_size_range
                     .write_out(idx, ptr),
                 PointSizeGranularity => {
-                    self.gl_state
+                    state
                         .characteristics
                         .point_size_granularity
                         .write_out(idx, ptr);
                 }
-                LineWidth => self.gl_state.line_width.write_out(idx, ptr),
+                LineWidth => state.characteristics.line_width.write_out(idx, ptr),
 
                 //Context Attributes
                 NumExtensions => self
@@ -1634,9 +1631,40 @@ impl Context {
                     .write_out(idx, ptr),
                 MajorVersion => 4.write_out(idx, ptr),
                 MinorVersion => 6.write_out(idx, ptr),
+                //todo constants for these
                 MaxTextureSize => 16384.write_out(idx, ptr),
                 MaxTextureBufferSize => 64_000_000.write_out(idx, ptr),
                 MaxArrayTextureLayers => 2048.write_out(idx, ptr),
+
+                DepthWritemask => state.writemasks.depth.write_out(idx, ptr),
+                DepthClearValue => state.clear_values.depth.write_out(idx, ptr),
+                DepthFunc => state.depth_func.write_out(idx, ptr),
+
+                StencilClearValue => state.clear_values.stencil.write_out(idx, ptr),
+                StencilWritemask => state.writemasks.stencil_front.write_out(idx, ptr),
+                StencilBackWritemask => state.writemasks.stencil_back.write_out(idx, ptr),
+
+                StencilFunc => state.stencil.front.func.write_out(idx, ptr),
+                StencilValueMask => state.stencil.front.mask.write_out(idx, ptr),
+                StencilFail => state.stencil.front.fail_action.write_out(idx, ptr),
+                StencilPassDepthFail => state.stencil.front.depth_fail_action.write_out(idx, ptr),
+                StencilPassDepthPass => state.stencil.front.depth_pass_action.write_out(idx, ptr),
+                StencilRef => state.stencil.front.reference.write_out(idx, ptr),
+
+                StencilBackFunc => state.stencil.back.func.write_out(idx, ptr),
+                StencilBackValueMask => state.stencil.back.mask.write_out(idx, ptr),
+                StencilBackFail => state.stencil.back.fail_action.write_out(idx, ptr),
+                StencilBackPassDepthFail => {
+                    state.stencil.back.depth_fail_action.write_out(idx, ptr);
+                }
+                StencilBackPassDepthPass => {
+                    state.stencil.back.depth_pass_action.write_out(idx, ptr);
+                }
+                StencilBackRef => state.stencil.back.reference.write_out(idx, ptr),
+
+                // TODO: indexed viewports (scissor rect and viewport is per-viewport indexed state)
+                Viewport => state.viewport.write_noindex(ptr),
+                //ScissorBox => state.scissor_box.write_out(idx, ptr),
 
                 //Bindings
 
@@ -1650,20 +1678,6 @@ impl Context {
                 // 0x0B46 => self.state.front_face.into(), // GL_FRONT_FACE
 
                 // 0x0B70 => self.attribs.depth_range, 2.into(), // GL_DEPTH_RANGE
-
-                // 0x0B72 => self.state.depth_writemask.into(), // GL_DEPTH_WRITEMASK
-                // 0x0B73 => self.state.depth_clear_value.into(), // GL_DEPTH_CLEAR_VALUE
-                // 0x0B74 => self.state.depth_func.into(), // GL_DEPTH_FUNC
-                // 0x0B91 => self.state.stencil_clear_value.into(), // GL_STENCIL_CLEAR_VALUE
-                // 0x0B92 => self.state.stencil_func.into(), // GL_STENCIL_FUNC
-                // 0x0B93 => self.state.stencil_value_mask.into(), // GL_STENCIL_VALUE_MASK
-                // 0x0B94 => self.state.stencil_fail.into(), // GL_STENCIL_FAIL
-                // 0x0B95 => self.state.stencil_pass_depth_fail.into(), // GL_STENCIL_PASS_DEPTH_FAIL
-                // 0x0B96 => self.state.stencil_pass_depth_pass.into(), // GL_STENCIL_PASS_DEPTH_PASS
-                // 0x0B97 => self.state.stencil_ref.into(), // GL_STENCIL_REF
-                // 0x0B98 => self.state.stencil_writemask.into(), // GL_STENCIL_WRITEMASK
-
-                // 0x0BA2 => RET_TYPE_COUNT(type, viewport, 4.into(), // GL_VIEWPORT
 
                 // 0x0BE0 => self.state.blend_dst_rgb[0].into(), // GL_BLEND_DST
                 // 0x0BE1 => self.state.blend_src_rgb[0].into(), // GL_BLEND_SRC
@@ -1932,7 +1946,7 @@ impl Context {
                 // 0x82D9 => self.state.max_vertex_attrib_relative_offset.into(), // GL_MAX_VERTEX_ATTRIB_RELATIVE_OFFSET
                 // 0x82DA => self.state.max_vertex_attrib_bindings.into(), // GL_MAX_VERTEX_ATTRIB_BINDINGS
                 u => {
-                    panic!("unrecognized enum {u:?}")
+                    panic!("unimplemented GetPName: \"{u:?}\"")
                 }
             };
         }
