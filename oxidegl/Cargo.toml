@@ -5,9 +5,10 @@ edition = "2021"
 [lib]
 crate-type = ["cdylib"]
 
-# Lock MacOS-Only dependencies to the platform, ensuring an early compile error 
-# if someone tries to build this on a non-Mac system
-[target.'cfg(target_os = "macos")'.dependencies]
+
+[dependencies]
+#MacOS deps
+
 # Objective C Base
 objc2 = "0.5.2"
 # Need to speak Cocoa for interacting with window layers
@@ -20,19 +21,21 @@ objc2-app-kit = { version = "0.2.2", features = [
 ] }
 # Need to speak Metal for... well... doing graphics
 objc2-metal = { version = "0.2.2", features = ["all"] }
-# Need to speak CoreAnimation for creating and setting backing layers
+# Need to speak CoreAnimation for creating and setting the backing layer of an NSView
 objc2-quartz-core = { version = "0.2.2", features = [
     "objc2-metal",
     "CAMetalLayer",
     "CALayer",
 ] }
+# needed for MainThreadMarker/`is_main_thread`
 objc2-foundation = { version = "0.2.2", features = ["NSThread"] }
 
 # Need access to raw mach vm_allocate for [MTLDevice newBufferWithBytesNoCopy]
 # mach2 = { git = "https://github.com/JohnTitor/mach2/" }
 # TODO: rework buffer alloc
 
-[dependencies]
+
+#General deps
 # FromRepr used for checked GLenum wrapper creation on debug builds
 strum_macros = "0.26.3"
 
@@ -54,14 +57,18 @@ ctor = { version = "0.2.8", optional = true }
 core-foundation-sys = { version = "0.8.7", optional = true }
 libc = { version = "0.2.158", optional = true }
 
-# GLSL -> MSL conversion
+# SPIR-V -> MSL conversion
 spirv-cross2 = { version = "0.4.4", default-features = false, features = [
     "msl",
 ] }
+# GLSL -> SPIR-V conversion
 glslang = "0.6.1"
+
+# used to optimize for the hot path in `with_context`
 likely_stable = "0.1.2"
 
 [build-dependencies]
+# you do not want to know what this is for
 deterministic-hash = "1.0.1"
 
 # Expose max log level features
