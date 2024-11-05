@@ -1,13 +1,13 @@
 use std::{ffi::c_void, ptr::NonNull, sync::Once};
 
-use log::{debug, info, trace};
+use log::{debug, info};
 use objc2::rc::Retained;
-use objc2_app_kit::NSView;
+use objc2_app_kit::{NSView, NSWindow};
 
 use crate::{
     context::{
         debug::{self, gl_trace},
-        with_ctx, Context, CTX,
+        with_ctx_mut, Context, CTX,
     },
     dispatch::gl_types::GLenum,
 };
@@ -35,7 +35,7 @@ pub fn set_context(ctx: Option<NonNull<Context>>) {
     }
 }
 pub fn swap_buffers() {
-    with_ctx(|mut ctx| {
+    with_ctx_mut(|mut ctx| {
         // thank god for deref patterns
         let Context {
             gl_state: state,
@@ -92,6 +92,7 @@ unsafe extern "C" fn oxidegl_destroy_context(ctx: Option<NonNull<Context>>) {
 #[no_mangle]
 unsafe extern "C" fn oxidegl_create_context(
     view: *mut NSView,
+    window: *mut NSWindow,
     format: GLenum,
     typ: GLenum,
     depth_format: GLenum,
@@ -103,7 +104,12 @@ unsafe extern "C" fn oxidegl_create_context(
     // Safety: caller ensures ptr is a pointer to a valid, initialized NSView.
     // It is retained because we need it to live until we've injected our layer. (which happens in PlatformState::new)
     let view = unsafe { Retained::retain(view).unwrap() };
-    ctx.set_view(&view);
+
+    // Safety: caller ensures ptr is a pointer to a valid, initialized NSWindow.
+    let window = unsafe { Retained::retain(window).unwrap() };
+
+    let scale_factor = window.backingScaleFactor();
+    ctx.set_view(&view, scale_factor);
     debug!("Created context");
     box_ctx(ctx).as_ptr().cast()
 }

@@ -15,7 +15,6 @@ mod nsgl_shim;
 #[allow(non_upper_case_globals, unused)]
 pub mod enums;
 
-#[macro_export]
 /// [`unreachable!`](unreachable!), but it reduces to [`std::hint::unreachable_unchecked()`] in builds without debug assertions.
 macro_rules! debug_unreachable {
     ($($msg:tt)*) => {
@@ -30,6 +29,9 @@ macro_rules! debug_unreachable {
         }
     };
 }
+
+pub(crate) use debug_unreachable;
+
 #[must_use]
 pub(crate) fn trimmed_type_name<T: ?Sized>() -> &'static str {
     let s = std::any::type_name::<T>();
@@ -97,3 +99,24 @@ where
         }
     }
 }
+
+macro_rules! bitflag_bits {{
+    $( #[$attr:meta] )*
+     $v:vis struct $name:ident: $t:tt bits: {
+        $(
+            $( #[doc = $doc:literal] )*
+            $bit_name:ident: $bit:expr ),+ $(,)?
+    }} => {
+        ::bitflags::bitflags! {
+            $(#[$attr])*
+            $v struct $name: $t {
+                $(
+                    $( #[doc = $doc] )*
+                    const $bit_name = 1 << $bit);+
+                ;
+            }
+        }
+    }
+}
+
+pub(crate) use bitflag_bits;

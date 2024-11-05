@@ -19,7 +19,7 @@ pub const CONTEXT_MOD_PATH: &str = "crate::context::";
 pub const CONTEXT_STRUCT_NAME: &str = "Context";
 pub const CONTEXT_STRUCT_PATH: &str = concatcp!(CONTEXT_MOD_PATH, CONTEXT_STRUCT_NAME);
 pub const CONTEXT_USE: &str = concatcp!("use ", CONTEXT_STRUCT_PATH, ";");
-pub const WITH_CTX_USE: &str = concatcp!("use ", CONTEXT_MOD_PATH, "with_ctx", ";");
+pub const WITH_CTX_USE: &str = concatcp!("use ", CONTEXT_MOD_PATH, "with_ctx_mut", ";");
 pub const TYPES_USE: &str = "use crate::dispatch::gl_types::*;";
 pub const ENUM_UTILS_USE: &str =
     "use crate::dispatch::conversions::{GLenumExt, GlDstType, SrcType, UnsafeFromGLenum};";
@@ -719,7 +719,7 @@ fn print_dispatch_fn<'a>(name: &'a str, ret_type: GLTypes, params: &[Parameter<'
     let body = format!(
         "{{\n
             ::crate::context::debug::gl_trace!(\"{name} called, parameters: {params_trace} \", {params_string});
-            with_ctx(|mut state|{} state.oxide{}({}){}){semi_if_ret_void}\n}}",
+            with_ctx_mut(|mut state|{} state.oxide{}({}){}){semi_if_ret_void}\n}}",
         if is_unsafe { " unsafe {" } else { "" },
         snake_case_name,
         paramnl,
