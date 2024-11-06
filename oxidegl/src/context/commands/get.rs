@@ -1516,10 +1516,10 @@ impl Context {
     ) {
         gl_debug!("glGet {parameter_name:?}");
         macro_rules! subst {
-            ($pref:ident {$($middle:ident),+} $tail:ident) => {
-                $(concat_idents::concat_idents!(enum_path = $pref, $middle, $tail, {
+            ( $pref:ident { $( $middle:ident ),+ } $tail:ident ) => {
+                $( concat_idents::concat_idents!(enum_path = $pref, $middle, $tail, {
                     crate::enums::GetPName::enum_path
-                } ))|+
+                } ) )|+
             };
         }
         if ptr.is_null() {

@@ -60,10 +60,10 @@ where
 
 impl Context {
     pub(crate) fn install_debug_state(&mut self) {
-        DEBUG_STATE.replace(self.gl_state.debug_state_store.take());
+        DEBUG_STATE.replace(self.gl_state.debug_state_holder.0.take());
     }
     pub(crate) fn uninstall_debug_state(&mut self) {
-        self.gl_state.debug_state_store = DEBUG_STATE.take();
+        self.gl_state.debug_state_holder.0 = DEBUG_STATE.take();
     }
 }
 impl From<Level> for DebugSeverity {
@@ -492,7 +492,9 @@ impl DebugState {
             let _ = map_for_type.remove(&name.to_raw());
         }
     }
-    pub(crate) fn new_default() -> Self {
+}
+impl Default for DebugState {
+    fn default() -> Self {
         let debug_groups = vec![DebugGroup {
             message: c"default debug group".into(),
             id: 0,

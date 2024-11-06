@@ -49,8 +49,15 @@ pub struct FramebufferAttachment {
     tex_name: ObjectName<dyn AttachableTexture>,
 }
 #[derive(Debug, Clone, Copy)]
-pub struct DrawBuffers {
+pub(crate) struct DrawBuffers {
     draw_buffers: [Option<DrawBufferMode>; MAX_COLOR_ATTACHMENTS as usize],
+}
+impl Default for DrawBuffers {
+    fn default() -> Self {
+        let mut s = Self::new();
+        s.draw_buffers[0] = Some(DrawBufferMode::FrontLeft);
+        s
+    }
 }
 
 impl DrawBuffers {
@@ -59,11 +66,7 @@ impl DrawBuffers {
             draw_buffers: [None; MAX_COLOR_ATTACHMENTS as usize],
         }
     }
-    pub(crate) fn new_defaultfb() -> Self {
-        let mut s = Self::new();
-        s.draw_buffers[0] = Some(DrawBufferMode::FrontLeft);
-        s
-    }
+
     pub(crate) fn drawbuf_iter(&self) -> impl Iterator<Item = DrawBufferMode> + '_ {
         self.draw_buffers
             .iter()

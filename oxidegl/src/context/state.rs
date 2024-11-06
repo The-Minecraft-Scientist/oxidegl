@@ -5,6 +5,7 @@ use std::{
 
 use ahash::{HashSet, HashSetExt};
 use bitflags::bitflags;
+use objc2_metal::{MTLBlendFactor, MTLBlendOperation};
 
 use crate::{
     bitflag_bits, debug_unreachable,
@@ -13,8 +14,9 @@ use crate::{
         gl_types::{GLboolean, GLenum, GLsizei, GLuint},
     },
     enums::{
-        ClearBufferMask, DepthFunction, StencilFunction, StencilOp, GL_CONTEXT_CORE_PROFILE_BIT,
-        GL_CONTEXT_FLAG_FORWARD_COMPATIBLE_BIT, GL_CONTEXT_FLAG_NO_ERROR_BIT,
+        BlendEquationModeEXT, BlendingFactor, ClearBufferMask, DepthFunction, StencilFunction,
+        StencilOp, GL_CONTEXT_CORE_PROFILE_BIT, GL_CONTEXT_FLAG_FORWARD_COMPATIBLE_BIT,
+        GL_CONTEXT_FLAG_NO_ERROR_BIT,
     },
     trimmed_type_name,
 };
@@ -27,7 +29,7 @@ use super::{
     shader::Shader,
 };
 
-#[derive(Debug)]
+#[derive(Debug, Default)]
 pub(crate) struct GLState {
     // Static/immutable properties, mostly for glGet. Should probably be turned into constants
     pub(crate) characteristics: Characteristics,
@@ -70,13 +72,31 @@ pub(crate) struct GLState {
     pub(crate) clear_values: ClearState,
     pub(crate) stencil: StencilState,
     pub(crate) writemasks: Writemasks,
+    pub(crate) blend: BlendState,
 
     pub(crate) depth_func: DepthFunction,
 
     /// storage for the debug state associated with this context (if it is not the current context). If this context is
     /// current, you'll need to use [`with_debug_state`](super::debug::with_debug_state) or
     /// [`with_debug_state_mut`](super::debug::with_debug_state_mut) to interact with the current debug state
-    pub(crate) debug_state_store: Option<DebugState>,
+    pub(crate) debug_state_holder: DebugStateHolder,
+}
+
+#[derive(Debug)]
+pub(crate) struct DebugStateHolder(pub Option<DebugState>);
+impl Default for DebugStateHolder {
+    fn default() -> Self {
+        Self(Some(DebugState::default()))
+    }
+}
+#[expect(
+    clippy::derivable_impls,
+    reason = "lint suggests placing the impl in generated code"
+)]
+impl Default for DepthFunction {
+    fn default() -> Self {
+        DepthFunction::Less
+    }
 }
 
 #[derive(Clone, Copy, Debug)]
@@ -127,13 +147,91 @@ impl Default for StencilFaceState {
         }
     }
 }
+#[derive(Debug, Clone, Copy)]
+pub struct DrawbufferBlendState {
+    pub(crate) blend_enabled: bool,
+    pub(crate) src_rgb: BlendingFactor,
+    pub(crate) src_alpha: BlendingFactor,
+    pub(crate) dst_rgb: BlendingFactor,
+    pub(crate) dst_alpha: BlendingFactor,
+    pub(crate) eq_rgb: BlendEquationModeEXT,
+    pub(crate) eq_alpha: BlendEquationModeEXT,
+}
+impl Default for DrawbufferBlendState {
+    fn default() -> Self {
+        Self {
+            blend_enabled: false,
+            src_rgb: BlendingFactor::One,
+            src_alpha: BlendingFactor::One,
+            dst_rgb: BlendingFactor::Zero,
+            dst_alpha: BlendingFactor::Zero,
+            eq_rgb: BlendEquationModeEXT::FuncAdd,
+            eq_alpha: BlendEquationModeEXT::FuncAdd,
+        }
+    }
+}
+#[derive(Debug, Default, Clone, Copy)]
+pub struct BlendState {
+    pub(crate) blend_color: [f32; 4],
+    pub(crate) drawbuffer_states: [DrawbufferBlendState; MAX_COLOR_ATTACHMENTS as usize],
+}
+
+impl From<BlendingFactor> for MTLBlendFactor {
+    #[inline]
+    fn from(value: BlendingFactor) -> Self {
+        #[expect(clippy::enum_glob_use)]
+        use BlendingFactor::*;
+        match value {
+            // constants
+            Zero => Self::Zero,
+            One => Self::One,
+
+            // source color/alpha
+            SrcColor => Self::SourceColor,
+            OneMinusSrcColor => Self::OneMinusSourceColor,
+            SrcAlpha => Self::SourceAlpha,
+            OneMinusSrcAlpha => Self::OneMinusSourceAlpha,
+            SrcAlphaSaturate => Self::SourceAlphaSaturated,
+
+            // destination color/alpha
+            DstColor => Self::DestinationColor,
+            OneMinusDstColor => Self::OneMinusDestinationColor,
+            DstAlpha => Self::DestinationAlpha,
+            OneMinusDstAlpha => Self::OneMinusDestinationAlpha,
+
+            // constant color/alpha
+            ConstantColor => Self::BlendColor,
+            OneMinusConstantColor => Self::OneMinusBlendColor,
+            ConstantAlpha => Self::BlendAlpha,
+            OneMinusConstantAlpha => Self::OneMinusBlendAlpha,
+
+            // source #2 color/alpha (for dual-source blending)
+            Src1Alpha => Self::Source1Alpha,
+            Src1Color => Self::Source1Color,
+            OneMinusSrc1Color => Self::OneMinusSource1Color,
+            OneMinusSrc1Alpha => Self::OneMinusSource1Alpha,
+        }
+    }
+}
+impl From<BlendEquationModeEXT> for MTLBlendOperation {
+    #[inline]
+    fn from(value: BlendEquationModeEXT) -> Self {
+        match value {
+            BlendEquationModeEXT::FuncAdd => Self::Add,
+            BlendEquationModeEXT::FuncReverseSubtract => Self::ReverseSubtract,
+            BlendEquationModeEXT::FuncSubtract => Self::Subtract,
+            BlendEquationModeEXT::Min => Self::Min,
+            BlendEquationModeEXT::Max => Self::Max,
+        }
+    }
+}
 
 bitflag_bits! {
     #[derive(Debug, Copy, Clone, Eq, PartialEq)]
     #[repr(transparent)]
     pub struct Capabilities: u64 bits: {
 
-        // Comment out indexed caps
+        // don't use indexed caps
         // BLEND: 0,
         // SCISSOR_TEST: 19,
 
@@ -197,6 +295,11 @@ impl Capabilities {
     #[inline]
     pub(crate) fn enable(&mut self, cap: Self) {
         *self = self.union(cap);
+    }
+}
+impl Default for Capabilities {
+    fn default() -> Self {
+        Self::empty()
     }
 }
 #[derive(Debug, Clone, Copy, Default, PartialEq)]
@@ -264,55 +367,6 @@ pub struct BufferBindings {
     pub(crate) uniform: [Option<ObjectName<Buffer>>; MAX_UNIFORM_BUFFER_BINDINGS],
 }
 
-impl Default for GLState {
-    fn default() -> Self {
-        Self {
-            characteristics: Characteristics::new(),
-
-            caps: Capabilities::empty(),
-
-            buffer_bindings: BufferBindings::default(),
-            buffer_list: NamedObjectList::new(),
-
-            vao_list: NamedObjectList::new(),
-            vao_binding: None,
-
-            shader_list: NamedObjectList::new(),
-            shaders_to_delete: HashSet::new(),
-
-            program_list: NamedObjectList::new(),
-            programs_to_delete: HashSet::new(),
-            program_binding: None,
-
-            framebufer_list: NamedObjectList::new(),
-            framebuffer_binding: None,
-            default_draw_buffers: DrawBuffers::new_defaultfb(),
-
-            debug_state_store: Some(DebugState::new_default()),
-
-            scissor_box: PixelAlignedRect::default(),
-            viewport: PixelAlignedRect::default(),
-
-            clear_values: ClearState::default(),
-            stencil: StencilState::default(),
-            depth_func: DepthFunction::Less,
-            writemasks: Writemasks::default(),
-        }
-    }
-}
-
-#[derive(Default, Debug, Clone, Copy)]
-pub struct Characteristics {
-    pub(crate) point_size: f32,
-    pub(crate) point_size_range: [f32; 2],
-    pub(crate) point_size_granularity: f32,
-    pub(crate) line_width: f32,
-    pub(crate) line_width_range: [f32; 2],
-    pub(crate) line_width_granularity: f32,
-    pub(crate) context_flags: GLenum,
-    pub(crate) context_profile_mask: GLenum,
-    pub(crate) num_extensions: u32,
-}
 #[derive(Debug, Copy, Clone)]
 pub(crate) struct Writemasks {
     pub(crate) color: [ColorWriteMask; MAX_COLOR_ATTACHMENTS as usize],
@@ -358,8 +412,20 @@ impl From<[bool; 4]> for ColorWriteMask {
     }
 }
 
-impl Characteristics {
-    fn new() -> Self {
+#[derive(Debug, Clone, Copy)]
+pub struct Characteristics {
+    pub(crate) point_size: f32,
+    pub(crate) point_size_range: [f32; 2],
+    pub(crate) point_size_granularity: f32,
+    pub(crate) line_width: f32,
+    pub(crate) line_width_range: [f32; 2],
+    pub(crate) line_width_granularity: f32,
+    pub(crate) context_flags: GLenum,
+    pub(crate) context_profile_mask: GLenum,
+    pub(crate) num_extensions: u32,
+}
+impl Default for Characteristics {
+    fn default() -> Self {
         Self {
             point_size_range: [1.0, 1.0],
             point_size_granularity: 0.0001,
@@ -374,16 +440,64 @@ impl Characteristics {
     }
 }
 
-impl<T: GetLateInitTypes> Debug for NameStateLateInitCell<T>
+/// Marker trait that marks a struct as an OpenGL object, providing information on whether it has init-at-bind (LateInit) semantics or normal semantics, and (optionally) how to set the underlying debug label
+pub(crate) trait NamedObject: Sized + 'static {
+    fn set_debug_label(&mut self, _label: Option<&CStr>) {}
+
+    type LateInitType: GetLateInitTypes<Obj = Self> + GetCellType<Obj = Self>;
+
+    const LATE_INIT_FUNC: <Self::LateInitType as GetLateInitTypes>::Func =
+        <Self::LateInitType as GetLateInitTypes>::Func::DEFAULT;
+}
+
+pub(crate) trait GetLateInitTypes {
+    type Obj: NamedObject<LateInitType = Self> + Debug;
+    type Func: DefaultConstOrError;
+}
+pub(crate) trait DefaultConstOrError {
+    const DEFAULT: Self;
+}
+impl DefaultConstOrError for () {
+    const DEFAULT: Self = ();
+}
+impl<T> DefaultConstOrError for fn(ObjectName<T>) -> T {
+    const DEFAULT: Self =
+        panic!("Please specify a late-init function in the corresponding ObjectName impl");
+}
+pub(crate) struct LateInit<T>(PhantomData<fn(&T)>);
+impl<T: NamedObject<LateInitType = LateInit<T>> + Debug> GetLateInitTypes for LateInit<T> {
+    type Obj = T;
+    type Func = fn(ObjectName<T>) -> T;
+}
+pub(crate) struct NoLateInit<T>(PhantomData<fn(&T)>);
+impl<T: NamedObject<LateInitType = NoLateInit<T>> + Debug> GetLateInitTypes for NoLateInit<T> {
+    type Obj = T;
+    type Func = ();
+}
+pub(crate) trait GetCellType {
+    type Obj;
+    type Cell: NameStateInterface<Self::Obj> + Debug;
+}
+impl<T: NamedObject + Debug> GetCellType for LateInit<T>
 where
-    T::Obj: Debug,
-    T::Func: FnOnce(ObjectName<T::Obj>) -> T::Obj,
+    <T::LateInitType as GetLateInitTypes>::Func: FnOnce(ObjectName<T>) -> T,
 {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        f.debug_struct("NameStateLateInitCell")
-            .field("inner", &self.get())
-            .finish()
-    }
+    type Obj = T;
+    type Cell = NameStateLateInitCell<T::LateInitType>;
+}
+impl<T: NamedObject + Debug> GetCellType for NoLateInit<T> {
+    type Obj = T;
+    type Cell = Option<T>;
+}
+pub(crate) trait NameStateInterface<T> {
+    /// Returns None if this object name has not yet been initialized, or Some containing a shared reference to the object's state
+    fn get(&self) -> Option<&T>;
+    /// Returns None if this object name has not yet been initialized, or Some containing a mutable reference to the object's state
+    fn get_mut(&mut self) -> Option<&mut T>;
+    /// Returns a new value of type Self that has not yet been initialized
+    fn new_empty(name: ObjectName<T>) -> Self;
+    /// Returns a new value of type Self that has been initialized (i.e. a call to `get` on the returned value returns Some(&obj))
+    fn new_init(obj: T) -> Self;
 }
 pub struct NameStateLateInitCell<Types: GetLateInitTypes>
 where
@@ -404,48 +518,16 @@ impl<T> NameOrObj<T> {
         }
     }
 }
-impl<T: NamedObject> NameStateInterface<T> for Option<T> {
-    #[inline]
-    fn get(&self) -> Option<&T> {
-        self.as_ref()
-    }
-    #[inline]
-    fn get_mut(&mut self) -> Option<&mut T> {
-        self.as_mut()
-    }
-    #[inline]
-    fn new_empty(_name: ObjectName<T>) -> Self {
-        None
-    }
-    #[inline]
-    fn new_init(obj: T) -> Self {
-        Some(obj)
-    }
-}
 
-impl<T: GetLateInitTypes> NameStateInterface<T::Obj> for NameStateLateInitCell<T>
+impl<T: GetLateInitTypes> Debug for NameStateLateInitCell<T>
 where
-    <T as GetLateInitTypes>::Func: FnOnce(ObjectName<<T as GetLateInitTypes>::Obj>) -> T::Obj,
+    T::Obj: Debug,
+    T::Func: FnOnce(ObjectName<T::Obj>) -> T::Obj,
 {
-    #[inline]
-    fn get(&self) -> Option<&T::Obj> {
-        Some(self.ensure_init())
-    }
-    #[inline]
-    fn get_mut(&mut self) -> Option<&mut T::Obj> {
-        Some(self.ensure_init_mut())
-    }
-    #[inline]
-    fn new_empty(name: ObjectName<T::Obj>) -> Self {
-        Self {
-            inner: UnsafeCell::new(NameOrObj::Name(name)),
-        }
-    }
-    #[inline]
-    fn new_init(obj: T::Obj) -> Self {
-        Self {
-            inner: UnsafeCell::new(NameOrObj::Obj(obj)),
-        }
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.debug_struct("NameStateLateInitCell")
+            .field("inner", &self.get())
+            .finish()
     }
 }
 
@@ -493,6 +575,51 @@ where
             NameOrObj::Name(_) => unsafe { debug_unreachable!("bug in NameStateCell") },
             NameOrObj::Obj(o) => o,
         }
+    }
+}
+
+impl<T: GetLateInitTypes> NameStateInterface<T::Obj> for NameStateLateInitCell<T>
+where
+    <T as GetLateInitTypes>::Func: FnOnce(ObjectName<<T as GetLateInitTypes>::Obj>) -> T::Obj,
+{
+    #[inline]
+    fn get(&self) -> Option<&T::Obj> {
+        Some(self.ensure_init())
+    }
+    #[inline]
+    fn get_mut(&mut self) -> Option<&mut T::Obj> {
+        Some(self.ensure_init_mut())
+    }
+    #[inline]
+    fn new_empty(name: ObjectName<T::Obj>) -> Self {
+        Self {
+            inner: UnsafeCell::new(NameOrObj::Name(name)),
+        }
+    }
+    #[inline]
+    fn new_init(obj: T::Obj) -> Self {
+        Self {
+            inner: UnsafeCell::new(NameOrObj::Obj(obj)),
+        }
+    }
+}
+
+impl<T: NamedObject> NameStateInterface<T> for Option<T> {
+    #[inline]
+    fn get(&self) -> Option<&T> {
+        self.as_ref()
+    }
+    #[inline]
+    fn get_mut(&mut self) -> Option<&mut T> {
+        self.as_mut()
+    }
+    #[inline]
+    fn new_empty(_name: ObjectName<T>) -> Self {
+        None
+    }
+    #[inline]
+    fn new_init(obj: T) -> Self {
+        Some(obj)
     }
 }
 
@@ -580,66 +707,6 @@ impl<T: ?Sized> ObjectName<T> {
     }
 }
 
-/// Marker trait that marks a struct as an OpenGL object, providing information on whether it has init-at-bind (LateInit) semantics or normal semantics, and (optionally) how to set the underlying debug label
-pub(crate) trait NamedObject: Sized + 'static {
-    fn set_debug_label(&mut self, _label: Option<&CStr>) {}
-
-    type LateInitType: GetLateInitTypes<Obj = Self> + GetCellType<Obj = Self>;
-
-    const LATE_INIT_FUNC: <Self::LateInitType as GetLateInitTypes>::Func =
-        <Self::LateInitType as GetLateInitTypes>::Func::DEFAULT;
-}
-
-pub(crate) trait GetLateInitTypes {
-    type Obj: NamedObject<LateInitType = Self> + Debug;
-    type Func: DefaultConstOrError;
-}
-pub(crate) trait DefaultConstOrError {
-    const DEFAULT: Self;
-}
-impl DefaultConstOrError for () {
-    const DEFAULT: Self = ();
-}
-impl<T> DefaultConstOrError for fn(ObjectName<T>) -> T {
-    const DEFAULT: Self =
-        panic!("Please specify a late-init function in the corresponding ObjectName impl");
-}
-pub(crate) struct LateInit<T>(PhantomData<fn(&T)>);
-impl<T: NamedObject<LateInitType = LateInit<T>> + Debug> GetLateInitTypes for LateInit<T> {
-    type Obj = T;
-    type Func = fn(ObjectName<T>) -> T;
-}
-pub(crate) struct NoLateInit<T>(PhantomData<fn(&T)>);
-impl<T: NamedObject<LateInitType = NoLateInit<T>> + Debug> GetLateInitTypes for NoLateInit<T> {
-    type Obj = T;
-    type Func = ();
-}
-pub(crate) trait GetCellType {
-    type Obj;
-    type Cell: NameStateInterface<Self::Obj> + Debug;
-}
-impl<T: NamedObject + Debug> GetCellType for LateInit<T>
-where
-    <T::LateInitType as GetLateInitTypes>::Func: FnOnce(ObjectName<T>) -> T,
-{
-    type Obj = T;
-    type Cell = NameStateLateInitCell<T::LateInitType>;
-}
-impl<T: NamedObject + Debug> GetCellType for NoLateInit<T> {
-    type Obj = T;
-    type Cell = Option<T>;
-}
-pub(crate) trait NameStateInterface<T> {
-    /// Returns None if this object name has not yet been initialized, or Some containing a shared reference to the object's state
-    fn get(&self) -> Option<&T>;
-    /// Returns None if this object name has not yet been initialized, or Some containing a mutable reference to the object's state
-    fn get_mut(&mut self) -> Option<&mut T>;
-    /// Returns a new value of type Self that has not yet been initialized
-    fn new_empty(name: ObjectName<T>) -> Self;
-    /// Returns a new value of type Self that has been initialized (i.e. a call to `get` on the returned value returns Some(&obj))
-    fn new_init(obj: T) -> Self;
-}
-
 impl<Dst: GlDstType, T> SrcType<Dst> for Option<ObjectName<T>> {
     fn convert(self) -> Dst {
         Dst::from_uint(self.map_or(0, |v| v.0.get()))
@@ -654,6 +721,11 @@ impl<T: NamedObject> Debug for NamedObjectList<T> {
 }
 pub struct NamedObjectList<T: NamedObject> {
     objects: Vec<<T::LateInitType as GetCellType>::Cell>,
+}
+impl<T: NamedObject> Default for NamedObjectList<T> {
+    fn default() -> Self {
+        Self::new()
+    }
 }
 
 impl<Obj: NamedObject> NamedObjectList<Obj> {
