@@ -1,6 +1,7 @@
 use crate::{
     context::{debug::gl_debug, state::PixelAlignedRect, Context},
     dispatch::gl_types::{GLfloat, GLint, GLsizei, GLuint},
+    run_if_changed,
 };
 
 impl Context {
@@ -131,12 +132,12 @@ impl Context {
     pub fn oxidegl_viewport(&mut self, x: GLint, y: GLint, width: GLsizei, height: GLsizei) {
         gl_debug!("glViewport, x {x} y {y} width {width} height {height}");
         debug_assert!(x >= 0 && y >= 0, "negative base coordinate in glViewport");
-        self.gl_state.viewport = PixelAlignedRect {
+        run_if_changed!(self.gl_state.viewport;= PixelAlignedRect {
             x: x as u32,
             y: y as u32,
             width,
             height,
-        };
+        } => self.update_encoder());
     }
     /// ### Parameters
     /// `first`

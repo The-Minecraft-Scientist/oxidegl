@@ -2,6 +2,7 @@ use crate::{
     context::{debug::gl_debug, program::Program, state::ObjectName, Context},
     dispatch::gl_types::{GLint, GLuint},
     enums::ProgramProperty,
+    run_if_changed,
 };
 
 impl Context {
@@ -243,6 +244,18 @@ impl Context {
     ///
     /// [**glIsProgram**](crate::context::Context::oxidegl_is_program)
     pub fn oxidegl_link_program(&mut self, program: GLuint) {
+        // regenerate program-related state if this program is the currently bound one
+        // TODO program pipelines will complicate this
+        if self
+            .gl_state
+            .program_binding
+            .is_some_and(|n| n.to_raw() == program)
+        {
+            self.new_pipeline();
+            self.new_encoder();
+            self.remap_buffers();
+        }
+
         let program = self.gl_state.program_list.get_raw_mut(program);
         program.link(&mut self.gl_state.shader_list, &self.platform_state.device);
     }
@@ -602,10 +615,7 @@ impl Context {
     ///
     /// [**glIsProgram**](crate::context::Context::oxidegl_is_program)
 
-    //HACK: validation is a no-op since we run naga validation on all shaders at compile time anyways
-    // We need a runtime validation harness for all programs to evaluate shaders against rendering state
-    // This is a necessary step anyways, as draw* need to ensure the current shaders are compatible with
-    // the gl state at that moment
+    //HACK: validation is a no-op because it's Complicated™
     pub fn oxidegl_validate_program(&mut self, program: GLuint) {}
 
     /// ### Parameters
@@ -699,7 +709,12 @@ impl Context {
                 .is_some_and(|b| b),
             "UB: tried to bind an invalid shader program!"
         );
-        self.gl_state.program_binding = name;
+        run_if_changed!(self.gl_state.program_binding;= name => {
+                self.new_pipeline();
+                self.new_encoder();
+                self.remap_buffers();
+            }
+        );
         gl_debug!("bound {name:?} as current shader program");
     }
 }

@@ -1,18 +1,11 @@
+pub mod buffer;
+pub mod clear;
+pub mod debug;
+pub mod draw;
 pub mod get;
-
+pub mod misc;
+pub mod programs;
+pub mod shaders;
 #[allow(clippy::missing_safety_doc)]
 pub mod unimplemented;
-
-pub mod clear;
-
-pub mod buffer;
-
 pub mod vao;
-
-pub mod shaders;
-
-pub mod programs;
-
-pub mod debug;
-
-pub mod misc;

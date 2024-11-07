@@ -34,6 +34,7 @@ use super::{
     framebuffer::InternalDrawable,
     program::LinkedShaderStage,
     state::{Capabilities, ColorWriteMask, DrawbufferBlendState, GLState, NamedObject, ObjectName},
+    Context,
 };
 
 #[derive(Debug)]
@@ -115,7 +116,7 @@ bitflag_bits! {
         /// Create a fresh render encoder from the current GL state
         NEW_RENDER_ENCODER: 0,
         /// Update dynamic render encoder state from the current GL state
-        UPDATE_CURRENT_ENCODER: 1,
+        UPDATE_ENCODER: 1,
         /// Create a fresh render pipeline state from the current GL state
         NEW_RENDER_PIPELINE: 2,
         /// Update buffer maps (e.g. when a new VAO or program is bound)
@@ -128,8 +129,35 @@ impl Dirty {
         self.intersects(other)
     }
     #[inline]
+    pub(crate) fn set_bits(&mut self, other: Self) {
+        *self = self.union(other);
+    }
+    #[inline]
     pub(crate) fn unset(&mut self, other: Self) {
         *self = self.difference(other);
+    }
+}
+impl Context {
+    pub(crate) fn new_encoder(&mut self) {
+        // need to update the new encoder after creation
+        self.platform_state
+            .dirty_state
+            .set_bits(Dirty::NEW_RENDER_ENCODER);
+    }
+    pub(crate) fn update_encoder(&mut self) {
+        self.platform_state
+            .dirty_state
+            .set_bits(Dirty::UPDATE_ENCODER);
+    }
+    pub(crate) fn remap_buffers(&mut self) {
+        self.platform_state
+            .dirty_state
+            .set_bits(Dirty::REMAP_BUFFERS);
+    }
+    pub(crate) fn new_pipeline(&mut self) {
+        self.platform_state
+            .dirty_state
+            .set_bits(Dirty::NEW_RENDER_PIPELINE);
     }
 }
 const MTL_MAX_ARGUMENT_BINDINGS: usize = 31;
@@ -305,7 +333,52 @@ impl PlatformState {
             )
         })
     }
+    #[inline]
+    #[track_caller]
+    pub(crate) fn current_render_encoder(&mut self) -> &ProtoObjRef<dyn MTLRenderCommandEncoder> {
+        self.render_encoder
+            .as_ref()
+            .expect("render command encoder should have been created!")
+    }
+    #[inline]
+    pub(crate) fn end_encoding(&mut self) {
+        if let Some(enc) = &self.render_encoder {
+            enc.endEncoding();
+        }
+        self.render_encoder = None;
+    }
+    //TODO: use onresized or something for updating drawable size instead of effectively polling every frame
+    #[inline]
+    #[track_caller]
+    pub(crate) fn current_drawable(&mut self) -> &ProtoObjRef<dyn CAMetalDrawable> {
+        self.drawable.get_or_insert_with(|| {
+            let view = self
+                .view
+                .as_ref()
+                .expect("Can't get metal drawable before attaching Context to a view");
+            let maybe_new_size = unsafe { view.convertSizeToBacking(view.frame().size) };
+            if maybe_new_size != unsafe { self.layer.drawableSize() } {
+                unsafe {
+                    self.layer.setDrawableSize(maybe_new_size);
+                };
+                self.dirty_state |= Dirty::NEW_RENDER_ENCODER;
+            }
+
+            unsafe { self.layer.nextDrawable() }
+                .expect("Failed to get next drawable from CAMetalLayer")
+        })
+    }
+
+    /// Core function of OpenGL state machine emulation. "steps" the state forward,
+    /// reintegrating all of the state that has been made dirty since the last step
     pub(crate) fn update_state(&mut self, state: &mut GLState, is_draw_command: bool) {
+        // if we don't currently have an encoder, make sure we make a new one
+        // (in case there are no state changes that mark it dirty over the course of a frame)
+        if self.render_encoder.is_none() {
+            self.dirty_state
+                .set_bits(Dirty::NEW_RENDER_ENCODER | Dirty::UPDATE_ENCODER);
+        }
+
         let all_dirty = self.dirty_state;
         // if there is no VAO, we still need to modify render encoder state for some commands like glClear but not do any further work
         if state.vao_binding.is_none() {
@@ -322,16 +395,16 @@ impl PlatformState {
             self.remap_buffer_arguments(state);
         }
 
-        if all_dirty.any_set(Dirty::NEW_RENDER_ENCODER) {
+        if all_dirty.any_set(Dirty::NEW_RENDER_ENCODER) || self.render_encoder.is_none() {
             gl_trace!("generating new render command encoder");
             self.end_encoding();
             self.render_encoder = Some(self.build_render_encoder(state));
             self.dirty_state.unset(Dirty::NEW_RENDER_ENCODER);
         }
         // this code path is taken if we have a new encoder and need to finish initializing it, or if we just need to update the dynamic state of the current encoder
-        if all_dirty.any_set(Dirty::UPDATE_CURRENT_ENCODER | Dirty::NEW_RENDER_ENCODER) {
+        if all_dirty.any_set(Dirty::UPDATE_ENCODER | Dirty::NEW_RENDER_ENCODER) {
             self.update_dynamic_encoder_state(state);
-            self.dirty_state.unset(Dirty::UPDATE_CURRENT_ENCODER);
+            self.dirty_state.unset(Dirty::UPDATE_ENCODER);
         }
         if all_dirty.any_set(Dirty::NEW_RENDER_PIPELINE) {
             gl_trace!("generating new render pipeline state");
@@ -361,12 +434,14 @@ impl PlatformState {
             todo!()
         } else {
             for (i, mode) in state.default_draw_buffers.modes.iter().enumerate() {
-                if let Some(mode) = mode {
-                    let desc = unsafe { MTLRenderPipelineColorAttachmentDescriptor::new() };
-                    desc.setPixelFormat(self.pixel_format);
+                if mode.is_some() {
+                    let attachment_desc =
+                        unsafe { MTLRenderPipelineColorAttachmentDescriptor::new() };
+                    attachment_desc.setPixelFormat(self.pixel_format);
 
                     // Apply blend state if present
-                    state.blend.drawbuffer_states[i].apply_to_mtl_desc(&desc);
+                    state.blend.drawbuffer_states[i].apply_to_mtl_desc(&attachment_desc);
+                    unsafe { attachments.setObject_atIndexedSubscript(Some(&attachment_desc), i) };
                 }
             }
             //TODO depth/stencil attachment formats
@@ -622,14 +697,14 @@ impl PlatformState {
             &mut self.internal_drawables.depth,
         )
     }
-    // precondition: user specifies depth format
+    // precondition: user specifies stencil format
     pub(crate) fn get_internal_stencilbuffer(&mut self, dims: (u32, u32)) -> &InternalDrawable {
         Self::check_drawable_size(
             &self.device,
             dims,
             self.depth_format.expect("tried to generate a depth buffer for the default framebuffer, but no depth format was specified by the user!"),
             true,
-            &mut self.internal_drawables.depth,
+            &mut self.internal_drawables.stencil,
         )
     }
     pub(crate) fn new_drawbuffer_size_format(
@@ -794,42 +869,6 @@ impl PlatformState {
 
         mtl_vertex_desc
     }
-    #[inline]
-    #[track_caller]
-    pub(crate) fn current_render_encoder(&mut self) -> &ProtoObjRef<dyn MTLRenderCommandEncoder> {
-        self.render_encoder
-            .as_ref()
-            .expect("render command encoder should have been created!")
-    }
-    #[inline]
-    pub(crate) fn end_encoding(&mut self) {
-        if let Some(enc) = &self.render_encoder {
-            enc.endEncoding();
-        }
-        self.render_encoder = None;
-    }
-    //TODO: use onresized or something for updating drawable size instead of effectively polling
-    #[inline]
-    #[track_caller]
-    pub(crate) fn current_drawable(&mut self) -> &ProtoObjRef<dyn CAMetalDrawable> {
-        let r = self.drawable.get_or_insert_with(|| {
-            let view = self
-                .view
-                .as_ref()
-                .expect("Can't get metal drawable before attaching Context to a view");
-            let maybe_new_size = unsafe { view.convertSizeToBacking(view.frame().size) };
-            if maybe_new_size != unsafe { self.layer.drawableSize() } {
-                unsafe {
-                    self.layer.setDrawableSize(maybe_new_size);
-                };
-                self.dirty_state |= Dirty::NEW_RENDER_ENCODER;
-            }
-
-            unsafe { self.layer.nextDrawable() }
-                .expect("Failed to get next drawable from CAMetalLayer")
-        });
-        &*r
-    }
 }
 
 impl From<DepthFunction> for MTLCompareFunction {
@@ -883,10 +922,10 @@ impl From<ColorWriteMask> for MTLColorWriteMask {
     fn from(value: ColorWriteMask) -> Self {
         let arr: [bool; 4] = value.into();
         // See: MTLRenderPipeline.h L#54
-        let val = arr[3] as usize
-            | ((arr[2] as usize) << 1)
-            | ((arr[1] as usize) << 2)
-            | ((arr[0] as usize) << 3);
+        let val = usize::from(arr[3])
+            | usize::from(arr[2]) << 1
+            | usize::from(arr[1]) << 2
+            | usize::from(arr[0]) << 3;
         Self(val)
     }
 }

@@ -718,6 +718,9 @@ impl Context {
         data: *const GLvoid,
         flags: BufferStorageMask,
     ) {
+        // a bound buffer might have just gained its storage
+        self.update_encoder();
+
         let buf = self
             .gl_state
             .buffer_list

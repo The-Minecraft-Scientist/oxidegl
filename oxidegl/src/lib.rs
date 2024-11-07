@@ -15,23 +15,6 @@ mod nsgl_shim;
 #[allow(non_upper_case_globals, unused)]
 pub mod enums;
 
-/// [`unreachable!`](unreachable!), but it reduces to [`std::hint::unreachable_unchecked()`] in builds without debug assertions.
-macro_rules! debug_unreachable {
-    ($($msg:tt)*) => {
-        {
-            // Need to do something unsafe to surface this macro's unsafety in builds with debug assertions enabled
-            #[allow(clippy::useless_transmute)]
-            let _: () = ::core::mem::transmute(());
-            #[cfg(debug_assertions)]
-            unreachable!($($msg)*);
-            #[cfg(not(debug_assertions))]
-            ::core::hint::unreachable_unchecked()
-        }
-    };
-}
-
-pub(crate) use debug_unreachable;
-
 #[must_use]
 pub(crate) fn trimmed_type_name<T: ?Sized>() -> &'static str {
     let s = std::any::type_name::<T>();
@@ -120,3 +103,30 @@ macro_rules! bitflag_bits {{
 }
 
 pub(crate) use bitflag_bits;
+
+/// [`unreachable!`](unreachable!), but it reduces to [`std::hint::unreachable_unchecked()`] in builds without debug assertions.
+macro_rules! debug_unreachable {
+    ($($msg:tt)*) => {
+        {
+            // Need to do something unsafe to surface this macro's unsafety in builds with debug assertions enabled
+            #[allow(clippy::useless_transmute)]
+            let _: () = ::core::mem::transmute(());
+            #[cfg(debug_assertions)]
+            unreachable!($($msg)*);
+            #[cfg(not(debug_assertions))]
+            ::core::hint::unreachable_unchecked()
+        }
+    };
+}
+
+pub(crate) use debug_unreachable;
+
+macro_rules! run_if_changed {
+    ( $place:expr ;= $new_val:expr => $action:expr ) => {
+        if $place != $new_val {
+            $place = $new_val;
+            $action
+        }
+    };
+}
+pub(crate) use run_if_changed;

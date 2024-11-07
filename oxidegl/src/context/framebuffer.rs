@@ -34,13 +34,16 @@ impl NamedObject for Framebuffer {
     type LateInitType = LateInit<Self>;
     const LATE_INIT_FUNC: fn(ObjectName<Self>) -> Self = Self::new_default;
 }
-/// A Texture with extra steps
+/// GL object wrapping an internal drawable
 pub(crate) struct RenderBuffer {
     pub(crate) name: ObjectName<Self>,
     pub(crate) drawable: InternalDrawable,
 }
 pub trait AttachableTexture: Any {}
 impl AttachableTexture for RenderBuffer {}
+
+// TODO uncomment when Texture is impled :3
+// impl AttachableTexture for Texture {}
 #[derive(Debug)]
 pub struct FramebufferAttachment {
     clear_color: [f32; 4],
@@ -64,6 +67,12 @@ impl DrawBuffers {
     pub(crate) fn new() -> Self {
         Self {
             modes: [None; MAX_COLOR_ATTACHMENTS as usize],
+        }
+    }
+    pub(crate) fn sanitize_mode(mode: DrawBufferMode) -> Option<DrawBufferMode> {
+        match mode {
+            DrawBufferMode::None => None,
+            v => Some(v),
         }
     }
 

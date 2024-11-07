@@ -2,6 +2,7 @@ use crate::{
     context::Context,
     dispatch::gl_types::{GLdouble, GLfloat, GLint},
     enums::ClearBufferMask,
+    run_if_changed,
 };
 
 impl Context {
@@ -56,10 +57,10 @@ impl Context {
     /// [**glGet**](crate::context::Context::oxidegl_get) with argument [`GL_COLOR_CLEAR_VALUE`](crate::enums::GL_COLOR_CLEAR_VALUE)
     ///
     /// [**glGet**](crate::context::Context::oxidegl_get) with argument [`GL_STENCIL_CLEAR_VALUE`](crate::enums::GL_STENCIL_CLEAR_VALUE)
-
     pub fn oxidegl_clear(&mut self, mask: ClearBufferMask) {
-        self.gl_state.clear_values.mask = mask;
+        run_if_changed!(self.gl_state.clear_values.mask;= mask => self.new_encoder());
     }
+
     /// ### Parameters
     /// `red`
     ///
@@ -86,7 +87,6 @@ impl Context {
     ///
     /// ### Associated Gets
     /// [**glGet**](crate::context::Context::oxidegl_get) with argument [`GL_COLOR_CLEAR_VALUE`](crate::enums::GL_COLOR_CLEAR_VALUE)
-
     pub fn oxidegl_clear_color(
         &mut self,
         red: GLfloat,
@@ -94,7 +94,11 @@ impl Context {
         blue: GLfloat,
         alpha: GLfloat,
     ) {
-        self.gl_state.clear_values.color = [red, green, blue, alpha];
+        #[expect(
+            clippy::float_cmp,
+            reason = "false negatives due to NaN are OK (besides the fact that NaN/inf color components are Not Good™"
+        )]
+        run_if_changed!(self.gl_state.clear_values.color;= [red, green, blue, alpha] => self.new_encoder());
     }
     /// ### Parameters
     /// `s`
@@ -116,7 +120,7 @@ impl Context {
         reason = "we want a bitcast anyways, the numeric value doesnt matter all that much"
     )]
     pub fn oxidegl_clear_stencil(&mut self, s: GLint) {
-        self.gl_state.clear_values.stencil = s as u32;
+        run_if_changed!(self.gl_state.clear_values.stencil;= s as u32 => self.new_encoder());
     }
 }
 
@@ -141,13 +145,17 @@ impl Context {
 ///
 /// ### Associated Gets
 /// [**glGet**](crate::context::Context::oxidegl_get) with argument [`GL_DEPTH_CLEAR_VALUE`](crate::enums::GL_DEPTH_CLEAR_VALUE)
+#[expect(
+    clippy::float_cmp,
+    reason = "if someone sets NaN as the depth buffer clear value they have bigger problems"
+)]
 impl Context {
     // Metal depth buffer is 32 bits so we might as well just truncate here instead of storing an f64
     #[allow(clippy::cast_possible_truncation)]
     pub fn oxidegl_clear_depth(&mut self, depth: GLdouble) {
-        self.gl_state.clear_values.depth = depth as f32;
+        run_if_changed!(self.gl_state.clear_values.depth;= depth as f32 => self.new_encoder());
     }
     pub fn oxidegl_clear_depthf(&mut self, d: GLfloat) {
-        self.gl_state.clear_values.depth = d;
+        run_if_changed!(self.gl_state.clear_values.depth;= d => self.new_encoder());
     }
 }

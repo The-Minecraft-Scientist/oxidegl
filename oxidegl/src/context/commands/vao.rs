@@ -15,6 +15,7 @@ use crate::{
         gl_types::{GLboolean, GLenum, GLint, GLintptr, GLsizei, GLuint, GLvoid},
     },
     enums::{VertexAttribIType, VertexAttribPointerType, VertexAttribType},
+    run_if_changed,
 };
 
 //TODO glGetVertexAttribiv
@@ -364,10 +365,13 @@ impl Context {
                 );
             }
         }
+        let current_vao_binding = self.gl_state.vao_binding;
         let vao = self
             .get_vao(vao)
             .expect("UB: Tried to bind a vertex buffer to unbound VAO");
         let vao_name = vao.name;
+        // mark dirty state if this vao is current
+
         let mut bindingindex = idx;
         for (&name, (&offset, &stride)) in buffers.iter().zip(offsets.iter().zip(strides.iter())) {
             let r = vao.get_binding_mut(bindingindex);
@@ -381,6 +385,10 @@ impl Context {
             r.stride = stride as u16;
 
             bindingindex += 1;
+        }
+        if current_vao_binding.is_some_and(|n| n == vao_name) {
+            self.remap_buffers();
+            self.update_encoder();
         }
     }
 }
@@ -570,7 +578,11 @@ impl Context {
             self.gl_state.vao_list.ensure_init(name, Vao::new_default);
         }
         trace!("bound {name:?} as current VAO");
-        self.gl_state.vao_binding = name;
+        run_if_changed!(self.gl_state.vao_binding;= name => {
+                self.remap_buffers();
+                self.update_encoder();
+            }
+        );
     }
 
     /// ### Parameters
