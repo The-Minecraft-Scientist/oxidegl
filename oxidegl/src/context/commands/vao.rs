@@ -219,7 +219,7 @@ impl Context {
         panic!("OxideGL does not currently support vertex attributes of double type");
     }
     #[allow(clippy::cast_possible_truncation)]
-    pub fn oxidegl_vertex_attrib_format_internal(
+    pub(crate) fn oxidegl_vertex_attrib_format_internal(
         &mut self,
         attrib_index: u32,
         num_components: u32,

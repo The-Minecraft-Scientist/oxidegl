@@ -1,5 +1,4 @@
 use core::ptr;
-use std::num::NonZeroU32;
 
 use crate::context::state::{NamedObject, ObjectName};
 
@@ -7,11 +6,11 @@ use super::gl_types::GLenum;
 use core::fmt::Debug;
 /// Trait defined for all custom bitfield and enum types which allows them to be unsafely created
 /// from an underlying `GLenum` (u32) value with checks on debug builds
-pub trait UnsafeFromGLenum {
+pub(crate) trait UnsafeFromGLenum {
     unsafe fn unsafe_from_gl_enum(val: GLenum) -> Self;
 }
 /// Helper trait to convert from "raw" [`GLenums`](crate::dispatch::gl_types::GLenum) to wrappers around subsets of those that are valid for certain functions
-pub trait GLenumExt<T> {
+pub(crate) trait GLenumExt<T> {
     unsafe fn into_enum(self) -> T;
 }
 
@@ -24,23 +23,7 @@ where
     }
 }
 
-/// Trait that describes a type that may be returned from a glGet* function.
-pub trait GlDstType: Copy {
-    fn from_uint(val: u32) -> Self;
-    fn from_ulong(val: u64) -> Self;
-    fn from_int(val: i32) -> Self;
-    fn from_long(val: i64) -> Self;
-    fn from_float(val: f32) -> Self;
-    fn from_double(val: f64) -> Self;
-    fn from_bool(val: bool) -> Self;
-}
-/// Trait that describes how to convert a given type into a value that may be returned according to the
-/// conversion rules for state items in the GL spec
-pub trait SrcType<Dst: GlDstType>: Copy {
-    /// Convert from source type Self to the given destination type
-    fn convert(self) -> Dst;
-}
-pub trait MaybeObjectName<T> {
+pub(crate) trait MaybeObjectName<T> {
     fn get(self) -> Option<ObjectName<T>>;
 }
 impl<T> MaybeObjectName<T> for ObjectName<T> {
@@ -53,44 +36,88 @@ impl<T: NamedObject> MaybeObjectName<T> for u32 {
         Some(ObjectName::try_from_raw(self).expect("raw name was not a valid object name"))
     }
 }
-pub struct CurrentBinding;
+pub(crate) struct CurrentBinding;
 impl<T> MaybeObjectName<T> for CurrentBinding {
     fn get(self) -> Option<ObjectName<T>> {
         None
     }
 }
-/// Trait that abstracts indexing for cases where a function should return
-pub trait IndexType: Copy + Sized + Debug {
-    fn get(self) -> Option<usize>;
-    fn get_numeric(self) -> usize {
-        self.get().unwrap_or(0)
+
+/// Trait that describes a type that may be returned from a glGet* function.
+pub(crate) trait GlDstType: Copy {
+    fn from_uint(val: u32) -> Self;
+    fn from_ulong(val: u64) -> Self;
+    fn from_int(val: i32) -> Self;
+    fn from_long(val: i64) -> Self;
+    fn from_float(val: f32) -> Self;
+    fn from_double(val: f64) -> Self;
+    fn from_bool(val: bool) -> Self;
+}
+/// Trait that describes how to convert a given type into a value that may be returned according to the
+/// conversion rules for state items laid out by the GL spec
+pub(crate) trait SrcType<Dst: GlDstType>: Copy {
+    /// Convert from source type Self to the given destination type
+    fn convert(self) -> Dst;
+}
+
+pub(crate) trait GlGetItem<Dst: GlDstType> {
+    unsafe fn write_out(&self, ptr: *mut Dst);
+}
+impl<Dst: GlDstType, T: SrcType<LocalWrap<Dst>>> GlGetItem<Dst> for T {
+    #[inline]
+    unsafe fn write_out(&self, ptr: *mut Dst) {
+        // Safety: caller ensures `ptr` is valid for a write of type `Dst`
+        unsafe {
+            ptr::write(ptr, LocalInto::into(self.convert()));
+        }
     }
 }
-impl IndexType for u32 {
-    fn get(self) -> Option<usize> {
-        Some(self as usize)
+// Either an index or a lazily evaluated panic
+pub(crate) trait MaybeIndex: Copy + Sized + Debug {
+    fn get(self) -> usize;
+    fn get_opt(self) -> Option<usize> {
+        Some(self.get())
     }
 }
-impl IndexType for Option<u32> {
-    fn get(self) -> Option<usize> {
-        self.map(|v| v as usize)
+// Either an index type or a ZST which corresponds to zero
+pub(crate) trait IndexOrZero: Copy + Sized + Debug {
+    fn get(self) -> usize;
+}
+impl IndexOrZero for u32 {
+    fn get(self) -> usize {
+        self as usize
     }
 }
-impl IndexType for Option<NonZeroU32> {
-    fn get(self) -> Option<usize> {
-        self.map(|v| v.get() as usize)
+impl IndexOrZero for usize {
+    fn get(self) -> usize {
+        self
     }
 }
-impl IndexType for usize {
-    fn get(self) -> Option<usize> {
-        Some(self)
+impl IndexOrZero for NoIndex {
+    fn get(self) -> usize {
+        0
+    }
+}
+impl MaybeIndex for u32 {
+    fn get(self) -> usize {
+        self as usize
+    }
+}
+
+impl MaybeIndex for usize {
+    fn get(self) -> usize {
+        self
     }
 }
 #[derive(Clone, Copy)]
-pub struct NoIndex;
-impl IndexType for NoIndex {
+pub(crate) struct NoIndex;
+impl MaybeIndex for NoIndex {
     #[inline]
-    fn get(self) -> Option<usize> {
+    fn get(self) -> usize {
+        panic!("index should have been specified!")
+    }
+    #[inline]
+    fn get_opt(self) -> Option<usize> {
         None
     }
 }
@@ -100,61 +127,107 @@ impl Debug for NoIndex {
     }
 }
 
-/// Trait that allows converting a value to an inferred Dst type according to the conversion rules
-/// given by the GL Spec for state entries and unsafely writing it to a type-erased allocation
-pub trait StateQueryWrite<Dst: GlDstType> {
-    type It: SrcType<Dst>;
-    /// Write the GL state attributes stored in Self at index I to the destination pointer
-    unsafe fn write_out<I: IndexType>(&self, idx: I, ptr: *mut Dst);
-    /// Write the GL state attributes stored in Self to the destination pointer
-    unsafe fn write_noindex(&self, ptr: *mut Dst) {
-        // Safety: See Self::write_out
-        unsafe { self.write_out(NoIndex, ptr) };
+pub(crate) trait StateQueryWriteSliceExt<Dst: GlDstType> {
+    type SliceItem;
+    unsafe fn write_out_index_mapped<
+        I: MaybeIndex,
+        Out: GlGetItem<Dst>,
+        F: FnOnce(&Self::SliceItem) -> Out,
+    >(
+        &self,
+        idx: I,
+        ptr: *mut Dst,
+        map: F,
+    );
+    unsafe fn write_out_index<I: MaybeIndex>(&self, idx: I, ptr: *mut Dst)
+    where
+        Self::SliceItem: GlGetItem<Dst>;
+}
+impl<T, Dst: GlDstType> StateQueryWriteSliceExt<Dst> for [T] {
+    type SliceItem = T;
+
+    unsafe fn write_out_index_mapped<
+        I: MaybeIndex,
+        Out: GlGetItem<Dst>,
+        F: FnOnce(&Self::SliceItem) -> Out,
+    >(
+        &self,
+        idx: I,
+        ptr: *mut Dst,
+        map: F,
+    ) {
+        unsafe { map(&self[idx.get()]).write_out(ptr) }
+    }
+
+    unsafe fn write_out_index<I: MaybeIndex>(&self, idx: I, ptr: *mut Dst)
+    where
+        Self::SliceItem: GlGetItem<Dst>,
+    {
+        unsafe { self[idx.get()].write_out(ptr) };
     }
 }
 
-impl<It: SrcType<Dst>, Dst: GlDstType> StateQueryWrite<Dst> for [It] {
-    type It = It;
+#[derive(Copy, Clone)]
+#[repr(transparent)]
+struct LocalWrap<T>(T);
+impl<T> LocalFrom<LocalWrap<T>> for T {
     #[inline]
-    unsafe fn write_out<I: IndexType>(&self, idx: I, mut ptr: *mut Dst) {
-        debug_assert!(
-            ptr.is_aligned(),
-            "Destination pointer passed to write_out should have been aligned correctly!"
-        );
-        if let Some(i) = idx.get() {
-            debug_assert!(
-                i < self.len(),
-                "Tried to read outside the bounds of an array of items"
-            );
-            // Safety: Caller ensures ptr points to an allocation with the correct size and alignment to store a
-            // single value of type Dst
-            unsafe { ptr::write(ptr, self.get_unchecked(i).convert()) }
-            return;
-        }
-        for item in self {
-            // Safety: Caller ensures that ptr points to an allocation with the same size and alignment as this array.
-            unsafe { ptr::write(ptr, item.convert()) }
-            // Safety: Caller ensures the length of the allocation is equal to the length of this array
-            unsafe { ptr = ptr.add(1) }
-        }
+    fn from(value: LocalWrap<T>) -> Self {
+        value.0
+    }
+}
+trait LocalFrom<T> {
+    fn from(value: T) -> Self;
+}
+trait LocalInto<T> {
+    fn into(self) -> T;
+}
+impl<U, T: LocalFrom<U>> LocalInto<T> for U {
+    #[inline]
+    fn into(self) -> T {
+        T::from(self)
+    }
+}
+impl<T: GlDstType> GlDstType for LocalWrap<T> {
+    #[inline]
+    fn from_uint(val: u32) -> Self {
+        Self(T::from_uint(val))
+    }
+    #[inline]
+    fn from_ulong(val: u64) -> Self {
+        Self(T::from_ulong(val))
+    }
+    #[inline]
+    fn from_int(val: i32) -> Self {
+        Self(T::from_int(val))
+    }
+    #[inline]
+    fn from_long(val: i64) -> Self {
+        Self(T::from_long(val))
+    }
+    #[inline]
+    fn from_float(val: f32) -> Self {
+        Self(T::from_float(val))
+    }
+    #[inline]
+    fn from_double(val: f64) -> Self {
+        Self(T::from_double(val))
+    }
+    #[inline]
+    fn from_bool(val: bool) -> Self {
+        Self(T::from_bool(val))
     }
 }
 
-impl<It: SrcType<Dst>, Dst: GlDstType> StateQueryWrite<Dst> for It {
-    type It = Self;
+impl<Dst: GlDstType, T: SrcType<LocalWrap<Dst>>, const N: usize> GlGetItem<Dst> for [T; N] {
     #[inline]
-    unsafe fn write_out<I: IndexType>(&self, idx: I, ptr: *mut Dst) {
-        let i = idx.get();
-        debug_assert!(
-            i.is_none() || i.map(|v| v == 0) == Some(true),
-            "UB: Tried to read outside the bounds of a single item"
-        );
-        debug_assert!(
-            ptr.is_aligned(),
-            "UB: Destination pointer passed to write_out should have been aligned correctly!"
-        );
-        // Safety: caller ensures that Dst is the correct type for the allocation being written to
-        unsafe { ptr::write(ptr, self.convert()) }
+    unsafe fn write_out(&self, mut ptr: *mut Dst) {
+        for i in self {
+            // Safety: caller ensures `ptr` is valid for writes
+            unsafe { ptr::write(ptr, LocalInto::into(i.convert())) };
+            // Safety: caller ensures `ptr` points to an allocation with enough space for a [Dst; N]
+            unsafe { ptr = ptr.add(1) };
+        }
     }
 }
 

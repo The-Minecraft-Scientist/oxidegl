@@ -35,9 +35,9 @@ impl NamedObject for Framebuffer {
     const LATE_INIT_FUNC: fn(ObjectName<Self>) -> Self = Self::new_default;
 }
 /// A Texture with extra steps
-pub struct RenderBuffer {
-    name: ObjectName<Self>,
-    mtl: ProtoObjRef<dyn MTLTexture>,
+pub(crate) struct RenderBuffer {
+    pub(crate) name: ObjectName<Self>,
+    pub(crate) drawable: InternalDrawable,
 }
 pub trait AttachableTexture: Any {}
 impl AttachableTexture for RenderBuffer {}
@@ -50,12 +50,12 @@ pub struct FramebufferAttachment {
 }
 #[derive(Debug, Clone, Copy)]
 pub(crate) struct DrawBuffers {
-    draw_buffers: [Option<DrawBufferMode>; MAX_COLOR_ATTACHMENTS as usize],
+    pub(crate) modes: [Option<DrawBufferMode>; MAX_COLOR_ATTACHMENTS as usize],
 }
 impl Default for DrawBuffers {
     fn default() -> Self {
         let mut s = Self::new();
-        s.draw_buffers[0] = Some(DrawBufferMode::FrontLeft);
+        s.modes[0] = Some(DrawBufferMode::FrontLeft);
         s
     }
 }
@@ -63,12 +63,12 @@ impl Default for DrawBuffers {
 impl DrawBuffers {
     pub(crate) fn new() -> Self {
         Self {
-            draw_buffers: [None; MAX_COLOR_ATTACHMENTS as usize],
+            modes: [None; MAX_COLOR_ATTACHMENTS as usize],
         }
     }
 
     pub(crate) fn drawbuf_iter(&self) -> impl Iterator<Item = DrawBufferMode> + '_ {
-        self.draw_buffers
+        self.modes
             .iter()
             .copied()
             .take_while(std::option::Option::is_some)
@@ -79,17 +79,13 @@ impl DrawBuffers {
 #[derive(Debug, Clone)]
 pub(crate) struct InternalDrawable {
     pub(crate) dimensions: (u32, u32),
-    pub(crate) color: ProtoObjRef<dyn MTLTexture>,
-    pub(crate) depth: Option<ProtoObjRef<dyn MTLTexture>>,
-    pub(crate) stencil: Option<ProtoObjRef<dyn MTLTexture>>,
+    pub(crate) tex: ProtoObjRef<dyn MTLTexture>,
 }
 impl InternalDrawable {
     pub(crate) fn new(color: ProtoObjRef<dyn MTLTexture>, dimensions: (u32, u32)) -> Self {
         Self {
             dimensions,
-            color,
-            depth: None,
-            stencil: None,
+            tex: color,
         }
     }
 }

@@ -1,17 +1,14 @@
+use crate::context::{
+    debug::{gl_debug, gl_err},
+    framebuffer::MAX_COLOR_ATTACHMENTS,
+};
 #[allow(clippy::wildcard_imports)]
 use crate::dispatch::gl_types::*;
-use crate::{
-    context::{
-        debug::{gl_debug, gl_err},
-        framebuffer::MAX_COLOR_ATTACHMENTS,
-    },
-    dispatch::conversions::{IndexType, NoIndex},
-};
 
 #[allow(clippy::enum_glob_use)]
 use crate::{
     context::Context,
-    dispatch::conversions::{GlDstType, StateQueryWrite},
+    dispatch::conversions::{GlDstType, GlGetItem, MaybeIndex, NoIndex, StateQueryWriteSliceExt},
     enums::GetPName::{self, *},
 };
 /// ### Parameters
@@ -1508,7 +1505,7 @@ impl Context {
     /// # Safety
     /// TODO
     #[allow(clippy::too_many_lines, clippy::inline_always)]
-    pub(crate) unsafe fn oxidegl_get<T: GlDstType, I: IndexType>(
+    pub(crate) unsafe fn oxidegl_get<T: GlDstType, I: MaybeIndex>(
         &self,
         parameter_name: GetPName,
         ptr: *mut T,
@@ -1534,136 +1531,133 @@ impl Context {
             match parameter_name {
                 subst!(Max{Combined, Compute, Vertex, TessControl, TessEvaluation, Fragment}AtomicCounterBuffers) =>
                 {
-                    crate::context::state::MAX_ATOMIC_COUNTER_BUFFER_BINDINGS.write_out(idx, ptr);
+                    crate::context::state::MAX_ATOMIC_COUNTER_BUFFER_BINDINGS.write_out(ptr);
                 }
                 subst!(Max{Combined, Compute, Vertex, TessControl, TessEvaluation, Fragment}ShaderStorageBlocks) =>
                 {
-                    crate::context::state::MAX_SHADER_STORAGE_BUFFER_BINDINGS.write_out(idx, ptr);
+                    crate::context::state::MAX_SHADER_STORAGE_BUFFER_BINDINGS.write_out(ptr);
                 }
                 subst!(Max{Combined, Compute, Vertex, TessControl, TessEvaluation, Fragment}UniformBlocks) =>
                 {
-                    crate::context::state::MAX_UNIFORM_BUFFER_BINDINGS.write_out(idx, ptr);
+                    crate::context::state::MAX_UNIFORM_BUFFER_BINDINGS.write_out(ptr);
                 }
                 MaxTransformFeedbackBuffers => {
-                    crate::context::state::MAX_TRANSFORM_FEEDBACK_BUFFER_BINDINGS
-                        .write_out(idx, ptr);
+                    crate::context::state::MAX_TRANSFORM_FEEDBACK_BUFFER_BINDINGS.write_out(ptr);
                 }
-                MaxColorAttachments => MAX_COLOR_ATTACHMENTS.write_out(idx, ptr),
+                MaxColorAttachments => MAX_COLOR_ATTACHMENTS.write_out(ptr),
 
                 // singleton buffer bindings
                 ArrayBufferBinding => {
-                    state.buffer_bindings.array.write_out(idx, ptr);
+                    state.buffer_bindings.array.write_out(ptr);
                 }
                 CopyReadBufferBinding => {
-                    state.buffer_bindings.copy_read.write_out(idx, ptr);
+                    state.buffer_bindings.copy_read.write_out(ptr);
                 }
                 CopyWriteBufferBinding => {
-                    state.buffer_bindings.copy_write.write_out(idx, ptr);
+                    state.buffer_bindings.copy_write.write_out(ptr);
                 }
                 DispatchIndirectBufferBinding => {
-                    state.buffer_bindings.dispatch_indirect.write_out(idx, ptr);
+                    state.buffer_bindings.dispatch_indirect.write_out(ptr);
                 }
                 DrawIndirectBufferBinding => {
-                    state.buffer_bindings.draw_indirect.write_out(idx, ptr);
+                    state.buffer_bindings.draw_indirect.write_out(ptr);
                 }
                 ElementArrayBufferBinding => {
-                    state.buffer_bindings.element_array.write_out(idx, ptr);
+                    state.buffer_bindings.element_array.write_out(ptr);
                 }
                 ParameterBufferBinding => {
-                    state.buffer_bindings.parameter.write_out(idx, ptr);
+                    state.buffer_bindings.parameter.write_out(ptr);
                 }
                 PixelPackBufferBinding => {
-                    state.buffer_bindings.pixel_pack.write_out(idx, ptr);
+                    state.buffer_bindings.pixel_pack.write_out(ptr);
                 }
-                PixelUnpackBufferBinding => self
-                    .gl_state
-                    .buffer_bindings
-                    .pixel_unpack
-                    .write_out(idx, ptr),
-                QueryBufferBinding => state.buffer_bindings.query.write_out(idx, ptr),
-                TextureBufferBinding => state.buffer_bindings.texture.write_out(idx, ptr),
+                PixelUnpackBufferBinding => {
+                    self.gl_state.buffer_bindings.pixel_unpack.write_out(ptr);
+                }
+                QueryBufferBinding => state.buffer_bindings.query.write_out(ptr),
+                TextureBufferBinding => state.buffer_bindings.texture.write_out(ptr),
 
                 //Indexed buffer bindings
-                TransformFeedbackBufferBinding => state.buffer_bindings.transform_feedback
-                    [idx.get().unwrap_or(0)]
-                .write_noindex(ptr),
+                TransformFeedbackBufferBinding => state
+                    .buffer_bindings
+                    .transform_feedback
+                    .write_out_index(idx, ptr),
                 ShaderStorageBufferBinding => {
-                    state.buffer_bindings.shader_storage[idx.get().unwrap_or(0)].write_noindex(ptr);
+                    state
+                        .buffer_bindings
+                        .shader_storage
+                        .write_out_index(idx, ptr);
                 }
                 UniformBufferBinding => {
-                    state.buffer_bindings.uniform[idx.get().unwrap_or(0)].write_noindex(ptr);
+                    state.buffer_bindings.uniform.write_out_index(idx, ptr);
                 }
                 AtomicCounterBufferBinding => {
-                    state.buffer_bindings.atomic_counter[idx.get().unwrap_or(0)].write_noindex(ptr);
+                    state
+                        .buffer_bindings
+                        .atomic_counter
+                        .write_out_index(idx, ptr);
                 }
                 //VAO binding
-                VertexArrayBinding => state.vao_binding.write_out(idx, ptr),
+                VertexArrayBinding => state.vao_binding.write_out(ptr),
 
-                PointSize => state.characteristics.point_size.write_out(idx, ptr),
+                PointSize => state.characteristics.point_size.write_out(ptr),
                 PointSizeRange => self
                     .gl_state
                     .characteristics
                     .point_size_range
-                    .write_out(idx, ptr),
+                    .write_out(ptr),
                 PointSizeGranularity => {
-                    state
-                        .characteristics
-                        .point_size_granularity
-                        .write_out(idx, ptr);
+                    state.characteristics.point_size_granularity.write_out(ptr);
                 }
-                LineWidth => state.characteristics.line_width.write_out(idx, ptr),
+                LineWidth => state.characteristics.line_width.write_out(ptr),
 
                 //Context Attributes
-                NumExtensions => self
-                    .gl_state
-                    .characteristics
-                    .num_extensions
-                    .write_out(idx, ptr),
-                ContextFlags => self
-                    .gl_state
-                    .characteristics
-                    .context_flags
-                    .write_out(idx, ptr),
+                NumExtensions => self.gl_state.characteristics.num_extensions.write_out(ptr),
+                ContextFlags => self.gl_state.characteristics.context_flags.write_out(ptr),
                 ContextProfileMask => self
                     .gl_state
                     .characteristics
                     .context_profile_mask
-                    .write_out(idx, ptr),
-                MajorVersion => 4.write_out(idx, ptr),
-                MinorVersion => 6.write_out(idx, ptr),
+                    .write_out(ptr),
+                MajorVersion => 4.write_out(ptr),
+                MinorVersion => 6.write_out(ptr),
                 //todo constants for these
-                MaxTextureSize => 16384.write_out(idx, ptr),
-                MaxTextureBufferSize => 64_000_000.write_out(idx, ptr),
-                MaxArrayTextureLayers => 2048.write_out(idx, ptr),
+                MaxTextureSize => 16384.write_out(ptr),
+                MaxTextureBufferSize => 64_000_000.write_out(ptr),
+                MaxArrayTextureLayers => 2048.write_out(ptr),
 
-                DepthWritemask => state.writemasks.depth.write_out(idx, ptr),
-                DepthClearValue => state.clear_values.depth.write_out(idx, ptr),
-                DepthFunc => state.depth_func.write_out(idx, ptr),
+                // Depth state
+                DepthWritemask => state.writemasks.depth.write_out(ptr),
+                DepthClearValue => state.clear_values.depth.write_out(ptr),
+                DepthFunc => state.depth_func.write_out(ptr),
 
-                StencilClearValue => state.clear_values.stencil.write_out(idx, ptr),
-                StencilWritemask => state.writemasks.stencil_front.write_out(idx, ptr),
-                StencilBackWritemask => state.writemasks.stencil_back.write_out(idx, ptr),
+                // Stencil state
+                StencilClearValue => state.clear_values.stencil.write_out(ptr),
+                StencilWritemask => state.writemasks.stencil_front.write_out(ptr),
+                StencilBackWritemask => state.writemasks.stencil_back.write_out(ptr),
 
-                StencilFunc => state.stencil.front.func.write_out(idx, ptr),
-                StencilValueMask => state.stencil.front.mask.write_out(idx, ptr),
-                StencilFail => state.stencil.front.fail_action.write_out(idx, ptr),
-                StencilPassDepthFail => state.stencil.front.depth_fail_action.write_out(idx, ptr),
-                StencilPassDepthPass => state.stencil.front.depth_pass_action.write_out(idx, ptr),
-                StencilRef => state.stencil.front.reference.write_out(idx, ptr),
+                StencilFunc => state.stencil.front.func.write_out(ptr),
+                StencilValueMask => state.stencil.front.mask.write_out(ptr),
+                StencilFail => state.stencil.front.fail_action.write_out(ptr),
+                StencilPassDepthFail => state.stencil.front.depth_fail_action.write_out(ptr),
+                StencilPassDepthPass => state.stencil.front.depth_pass_action.write_out(ptr),
+                StencilRef => state.stencil.front.reference.write_out(ptr),
 
-                StencilBackFunc => state.stencil.back.func.write_out(idx, ptr),
-                StencilBackValueMask => state.stencil.back.mask.write_out(idx, ptr),
-                StencilBackFail => state.stencil.back.fail_action.write_out(idx, ptr),
+                StencilBackFunc => state.stencil.back.func.write_out(ptr),
+                StencilBackValueMask => state.stencil.back.mask.write_out(ptr),
+                StencilBackFail => state.stencil.back.fail_action.write_out(ptr),
                 StencilBackPassDepthFail => {
-                    state.stencil.back.depth_fail_action.write_out(idx, ptr);
+                    state.stencil.back.depth_fail_action.write_out(ptr);
                 }
                 StencilBackPassDepthPass => {
-                    state.stencil.back.depth_pass_action.write_out(idx, ptr);
+                    state.stencil.back.depth_pass_action.write_out(ptr);
                 }
-                StencilBackRef => state.stencil.back.reference.write_out(idx, ptr),
+                StencilBackRef => state.stencil.back.reference.write_out(ptr),
+
+                // BlendSrcRgb => state.blend.
 
                 // TODO: indexed viewports (scissor rect and viewport is per-viewport indexed state)
-                Viewport => state.viewport.write_noindex(ptr),
+                Viewport => state.viewport.write_out(ptr),
                 //ScissorBox => state.scissor_box.write_out(idx, ptr),
 
                 //Bindings

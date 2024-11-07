@@ -1,10 +1,8 @@
 use std::{
     cell::UnsafeCell, ffi::CStr, fmt::Debug, marker::PhantomData, num::NonZeroU32, ops::Deref, ptr,
-    u32,
 };
 
-use ahash::{HashSet, HashSetExt};
-use bitflags::bitflags;
+use ahash::HashSet;
 use objc2_metal::{MTLBlendFactor, MTLBlendOperation};
 
 use crate::{
@@ -71,8 +69,8 @@ pub(crate) struct GLState {
 
     pub(crate) clear_values: ClearState,
     pub(crate) stencil: StencilState,
-    pub(crate) writemasks: Writemasks,
     pub(crate) blend: BlendState,
+    pub(crate) writemasks: Writemasks,
 
     pub(crate) depth_func: DepthFunction,
 
@@ -85,15 +83,14 @@ pub(crate) struct GLState {
 #[derive(Debug)]
 pub(crate) struct DebugStateHolder(pub Option<DebugState>);
 impl Default for DebugStateHolder {
+    #[inline]
     fn default() -> Self {
         Self(Some(DebugState::default()))
     }
 }
-#[expect(
-    clippy::derivable_impls,
-    reason = "lint suggests placing the impl in generated code"
-)]
+
 impl Default for DepthFunction {
+    #[inline]
     fn default() -> Self {
         DepthFunction::Less
     }
@@ -107,6 +104,7 @@ pub(crate) struct ClearState {
     pub(crate) mask: ClearBufferMask,
 }
 impl Default for ClearState {
+    #[inline]
     fn default() -> Self {
         Self {
             color: [0.0; 4],
@@ -136,6 +134,7 @@ pub struct StencilFaceState {
     pub(crate) depth_pass_action: StencilOp,
 }
 impl Default for StencilFaceState {
+    #[inline]
     fn default() -> Self {
         Self {
             func: StencilFunction::Always,
@@ -158,6 +157,7 @@ pub struct DrawbufferBlendState {
     pub(crate) eq_alpha: BlendEquationModeEXT,
 }
 impl Default for DrawbufferBlendState {
+    #[inline]
     fn default() -> Self {
         Self {
             blend_enabled: false,
@@ -179,7 +179,7 @@ pub struct BlendState {
 impl From<BlendingFactor> for MTLBlendFactor {
     #[inline]
     fn from(value: BlendingFactor) -> Self {
-        #[expect(clippy::enum_glob_use)]
+        #[allow(clippy::enum_glob_use)]
         use BlendingFactor::*;
         match value {
             // constants
@@ -298,6 +298,7 @@ impl Capabilities {
     }
 }
 impl Default for Capabilities {
+    #[inline]
     fn default() -> Self {
         Self::empty()
     }
@@ -440,7 +441,7 @@ impl Default for Characteristics {
     }
 }
 
-/// Marker trait that marks a struct as an OpenGL object, providing information on whether it has init-at-bind (LateInit) semantics or normal semantics, and (optionally) how to set the underlying debug label
+/// Marker trait that marks a struct as an OpenGL object, providing information on whether it has init-at-bind (`LateInit`) semantics or normal semantics, and (optionally) how to set the underlying debug label
 pub(crate) trait NamedObject: Sized + 'static {
     fn set_debug_label(&mut self, _label: Option<&CStr>) {}
 
@@ -623,11 +624,11 @@ impl<T: NamedObject> NameStateInterface<T> for Option<T> {
     }
 }
 
-/// Represents the name of an object (whose type is given in its generic parameter).
+/// Represents the name of an OpenGL object type T.
 /// Note that the generic parameter is simply there to prevent accidental misuse of
-/// object names, since an arbitrary `ObjectName` can be safely created
+/// object names, since an arbitrary `ObjectName` can be created safely (i.e. these are identifiers, not true "handles")
 #[repr(transparent)]
-pub struct ObjectName<Obj: ?Sized>(NonZeroU32, PhantomData<for<'a> fn(&'a Obj) -> &'a Obj>);
+pub struct ObjectName<T: ?Sized>(NonZeroU32, PhantomData<for<'a> fn(&'a T) -> &'a T>);
 
 impl<T: ?Sized> PartialEq for ObjectName<T> {
     fn eq(&self, other: &Self) -> bool {

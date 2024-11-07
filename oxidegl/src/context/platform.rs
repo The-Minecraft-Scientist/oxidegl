@@ -6,22 +6,23 @@ use objc2::rc::Retained;
 use objc2_app_kit::NSView;
 use objc2_foundation::{ns_string, NSString};
 use objc2_metal::{
-    MTLBlitCommandEncoder, MTLClearColor, MTLCommandBuffer, MTLCommandBufferDescriptor,
+    MTLBlitCommandEncoder, MTLColorWriteMask, MTLCommandBuffer, MTLCommandBufferDescriptor,
     MTLCommandBufferErrorOption, MTLCommandEncoder, MTLCommandQueue, MTLCompareFunction,
-    MTLCreateSystemDefaultDevice, MTLDepthStencilDescriptor, MTLDevice, MTLLoadAction,
-    MTLPixelFormat, MTLRenderCommandEncoder, MTLRenderPassColorAttachmentDescriptor,
+    MTLCreateSystemDefaultDevice, MTLDepthStencilDescriptor, MTLDevice, MTLPixelFormat,
+    MTLRenderCommandEncoder, MTLRenderPassColorAttachmentDescriptor,
     MTLRenderPassDepthAttachmentDescriptor, MTLRenderPassDescriptor,
-    MTLRenderPassStencilAttachmentDescriptor, MTLRenderPipelineDescriptor, MTLRenderPipelineState,
-    MTLStencilDescriptor, MTLStencilOperation, MTLStorageMode, MTLTexture, MTLTextureDescriptor,
-    MTLTextureUsage, MTLVertexAttributeDescriptor, MTLVertexBufferLayoutDescriptor,
-    MTLVertexDescriptor, MTLViewport,
+    MTLRenderPassStencilAttachmentDescriptor, MTLRenderPipelineColorAttachmentDescriptor,
+    MTLRenderPipelineDescriptor, MTLRenderPipelineState, MTLStencilDescriptor, MTLStencilOperation,
+    MTLStorageMode, MTLTexture, MTLTextureDescriptor, MTLTextureUsage,
+    MTLVertexAttributeDescriptor, MTLVertexBufferLayoutDescriptor, MTLVertexDescriptor,
+    MTLViewport,
 };
 use objc2_quartz_core::{kCAFilterNearest, CAMetalDrawable, CAMetalLayer};
 
 use crate::{
     bitflag_bits,
     context::{
-        debug::{gl_debug, gl_info, gl_trace},
+        debug::{gl_debug, gl_trace},
         state::StencilFaceState,
     },
     enums::{DepthFunction, DrawBufferMode, ShaderType, StencilFunction, StencilOp},
@@ -32,7 +33,7 @@ use super::{
     commands::buffer::Buffer,
     framebuffer::InternalDrawable,
     program::LinkedShaderStage,
-    state::{Capabilities, GLState, NamedObject, ObjectName},
+    state::{Capabilities, ColorWriteMask, DrawbufferBlendState, GLState, NamedObject, ObjectName},
 };
 
 #[derive(Debug)]
@@ -98,22 +99,14 @@ pub struct PlatformState {
     /// Stencil buffer format of the default framebuffer
     pub(crate) stencil_format: Option<MTLPixelFormat>,
 }
-#[derive(Debug, Clone)]
+#[derive(Default, Debug, Clone)]
 pub struct InternalDrawables {
     front_left: Option<InternalDrawable>,
     front_right: Option<InternalDrawable>,
     back_left: Option<InternalDrawable>,
     back_right: Option<InternalDrawable>,
-}
-impl InternalDrawables {
-    fn new() -> Self {
-        Self {
-            front_left: None,
-            front_right: None,
-            back_left: None,
-            back_right: None,
-        }
-    }
+    depth: Option<InternalDrawable>,
+    stencil: Option<InternalDrawable>,
 }
 bitflag_bits! {
     #[derive(Debug, Copy, Clone, Eq, PartialEq)]
@@ -261,7 +254,7 @@ impl PlatformState {
             blit_command_buffer: None,
             blit_encoder: None,
 
-            internal_drawables: InternalDrawables::new(),
+            internal_drawables: InternalDrawables::default(),
 
             render_encoder: None,
             render_pipeline_state: None,
@@ -367,11 +360,13 @@ impl PlatformState {
         if state.framebuffer_binding.is_some() {
             todo!()
         } else {
-            for i in 0..state.default_draw_buffers.drawbuf_iter().count() {
-                unsafe {
-                    attachments
-                        .objectAtIndexedSubscript(i)
-                        .setPixelFormat(self.pixel_format);
+            for (i, mode) in state.default_draw_buffers.modes.iter().enumerate() {
+                if let Some(mode) = mode {
+                    let desc = unsafe { MTLRenderPipelineColorAttachmentDescriptor::new() };
+                    desc.setPixelFormat(self.pixel_format);
+
+                    // Apply blend state if present
+                    state.blend.drawbuffer_states[i].apply_to_mtl_desc(&desc);
                 }
             }
             //TODO depth/stencil attachment formats
@@ -434,6 +429,15 @@ impl PlatformState {
             self.current_render_encoder()
                 .setDepthStencilState(Some(&ds_state));
         }
+        // we *could* set this only when blending is actually enabled, but that's done on a per-attachment basis anyways and this call is quite cheap (just sets a similar variable somewhere deep within the encoder state)
+        let blend_col = state.blend.blend_color;
+        self.current_render_encoder()
+            .setBlendColorRed_green_blue_alpha(
+                blend_col[0],
+                blend_col[1],
+                blend_col[2],
+                blend_col[3],
+            );
 
         // TODO scissor test
         #[expect(
@@ -503,33 +507,39 @@ impl PlatformState {
             // default FBO
             let mut iter = state
                 .default_draw_buffers
-                .drawbuf_iter()
+                .modes
+                .iter()
+                .copied()
                 .enumerate()
+                .filter_map(|(idx, v)| v.map(|v| (idx, v)))
                 .peekable();
             //FIXME this expect contradicts the spec, should be an early return of some kind
             let &(_, first) = iter.peek().expect("No draw buffer set");
             let ca_drawable_tex = unsafe { self.current_drawable().texture() };
+
             // Use the current drawable size as the targeted size for rendering. If the drawable size changes, a new
             // render encoder will be created, which will inherit the new size from the new drawawable
             let dims = (
                 ca_drawable_tex.width() as u32,
                 ca_drawable_tex.height() as u32,
             );
-            let drawbuffer = self.get_internal_drawbuffer(first, dims);
-            // When multiple draw buffers are present with the default FB it's somewhat unclear which one should be responsible for the depth/stencil drawables, so we use the first one (index 0) as a sane default
-            if let Some(depth) = &drawbuffer.depth {
+
+            if state.caps.is_any_enabled(Capabilities::DEPTH_TEST) {
                 let a_desc = unsafe { MTLRenderPassDepthAttachmentDescriptor::new() };
-                a_desc.setTexture(Some(depth));
+                a_desc.setTexture(Some(&self.get_internal_depthbuffer(dims).tex));
+
                 desc.setDepthAttachment(Some(&a_desc));
             }
-            if let Some(stencil) = &drawbuffer.stencil {
+            if state.caps.is_any_enabled(Capabilities::STENCIL_TEST) {
                 let a_desc = unsafe { MTLRenderPassStencilAttachmentDescriptor::new() };
-                a_desc.setTexture(Some(stencil));
+                a_desc.setTexture(Some(&self.get_internal_stencilbuffer(dims).tex));
                 desc.setStencilAttachment(Some(&a_desc));
             }
 
+            let drawbuffer = self.get_internal_drawbuffer(first, dims);
             for (idx, buf) in iter {
                 let a_desc = MTLRenderPassColorAttachmentDescriptor::new();
+                // set attachment texture
                 if buf == DrawBufferMode::FrontLeft {
                     // Replace the texture with the current drawable
                     debug_assert_eq!(
@@ -542,8 +552,9 @@ impl PlatformState {
                     );
                     a_desc.setTexture(Some(&ca_drawable_tex));
                 } else {
-                    a_desc.setTexture(Some(&drawbuffer.color));
+                    a_desc.setTexture(Some(&drawbuffer.tex));
                 }
+
                 // FIXME need to do load action real
                 // a_desc.setLoadAction(MTLLoadAction::Clear);
                 // a_desc.setClearColor(MTLClearColor {
@@ -568,10 +579,28 @@ impl PlatformState {
         enc.setLabel(Some(ns_string!("OxideGL render encoder")));
         enc
     }
+    #[inline]
+    fn check_drawable_size<'a>(
+        device: &ProtoObjRef<dyn MTLDevice>,
+        dims: (u32, u32),
+        pixel_format: MTLPixelFormat,
+        gpu_private: bool,
+        r: &'a mut Option<InternalDrawable>,
+    ) -> &'a InternalDrawable {
+        if !r.as_ref().is_some_and(|v| v.dimensions == dims) {
+            // Need a new internal drawable
+            let new_tex = Self::new_drawbuffer_size_format(device, dims, pixel_format, gpu_private);
+            let mut replacement = Some(InternalDrawable::new(new_tex, dims));
+            mem::swap(r, &mut replacement);
+            drop(replacement);
+        };
+        // must be Some due to code above
+        r.as_ref().unwrap()
+    }
     pub(crate) fn get_internal_drawbuffer(
         &mut self,
         target: DrawBufferMode,
-        viewport_dims: (u32, u32),
+        dims: (u32, u32),
     ) -> &InternalDrawable {
         gl_trace!("getting internal (default FB) drawbuffer for {target:?}");
         let r = match target {
@@ -581,17 +610,27 @@ impl PlatformState {
             DrawBufferMode::BackRight => &mut self.internal_drawables.back_right,
             _ => todo!("oxidegl does not support aliased draw buffer modes"),
         };
-        let device = &self.device;
-        if !r.as_ref().is_some_and(|v| v.dimensions == viewport_dims) {
-            // Need a new internal drawable
-            let new_tex =
-                Self::new_drawbuffer_size_format(device, viewport_dims, self.pixel_format, false);
-            let mut replacement = Some(InternalDrawable::new(new_tex, viewport_dims));
-            mem::swap(r, &mut replacement);
-            drop(replacement);
-        };
-        // must be Some due to code above
-        r.as_ref().unwrap()
+        Self::check_drawable_size(&self.device, dims, self.pixel_format, false, r)
+    }
+    // precondition: user specifies depth format
+    pub(crate) fn get_internal_depthbuffer(&mut self, dims: (u32, u32)) -> &InternalDrawable {
+        Self::check_drawable_size(
+            &self.device,
+            dims,
+            self.depth_format.expect("tried to generate a depth buffer for the default framebuffer, but no depth format was specified by the user!"),
+            true,
+            &mut self.internal_drawables.depth,
+        )
+    }
+    // precondition: user specifies depth format
+    pub(crate) fn get_internal_stencilbuffer(&mut self, dims: (u32, u32)) -> &InternalDrawable {
+        Self::check_drawable_size(
+            &self.device,
+            dims,
+            self.depth_format.expect("tried to generate a depth buffer for the default framebuffer, but no depth format was specified by the user!"),
+            true,
+            &mut self.internal_drawables.depth,
+        )
     }
     pub(crate) fn new_drawbuffer_size_format(
         device: &ProtoObjRef<dyn MTLDevice>,
@@ -819,5 +858,35 @@ impl From<StencilOp> for MTLStencilOperation {
             StencilOp::IncrWrap => Self::IncrementWrap,
             StencilOp::DecrWrap => Self::DecrementWrap,
         }
+    }
+}
+
+impl DrawbufferBlendState {
+    #[inline]
+    fn apply_to_mtl_desc(&self, desc: &Retained<MTLRenderPipelineColorAttachmentDescriptor>) {
+        if !self.blend_enabled {
+            return;
+        }
+        desc.setBlendingEnabled(true);
+
+        desc.setSourceRGBBlendFactor(self.src_rgb.into());
+        desc.setSourceAlphaBlendFactor(self.src_alpha.into());
+
+        desc.setDestinationRGBBlendFactor(self.dst_rgb.into());
+        desc.setDestinationAlphaBlendFactor(self.dst_alpha.into());
+
+        desc.setRgbBlendOperation(self.eq_rgb.into());
+        desc.setAlphaBlendOperation(self.eq_alpha.into());
+    }
+}
+impl From<ColorWriteMask> for MTLColorWriteMask {
+    fn from(value: ColorWriteMask) -> Self {
+        let arr: [bool; 4] = value.into();
+        // See: MTLRenderPipeline.h L#54
+        let val = arr[3] as usize
+            | ((arr[2] as usize) << 1)
+            | ((arr[1] as usize) << 2)
+            | ((arr[0] as usize) << 3);
+        Self(val)
     }
 }

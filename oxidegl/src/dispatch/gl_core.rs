@@ -40,7 +40,7 @@ unsafe extern "C" fn glBeginConditionalRender(id: GLuint, mode: GLenum) {
         mode
     );
     with_ctx_mut(|mut state| {
-        state.oxidegl_begin_conditional_render(id, unsafe { mode.into_enum() })
+        state.oxidegl_begin_conditional_render(id, unsafe { mode.into_enum() });
     });
 }
 #[no_mangle]
@@ -177,7 +177,7 @@ unsafe extern "C" fn glBindFragDataLocation(program: GLuint, color: GLuint, name
         name
     );
     with_ctx_mut(|mut state| unsafe {
-        state.oxidegl_bind_frag_data_location(program, color, name)
+        state.oxidegl_bind_frag_data_location(program, color, name);
     });
 }
 #[no_mangle]
@@ -323,7 +323,7 @@ unsafe extern "C" fn glBindVertexBuffer(
 ) {
     crate::context::debug::gl_trace!("glBindVertexBuffer called, parameters: bindingindex: {:?}, buffer: {:?}, offset: {:?}, stride: {:?} ", bindingindex, buffer, offset, stride);
     with_ctx_mut(|mut state| {
-        state.oxidegl_bind_vertex_buffer(bindingindex, buffer, offset, stride)
+        state.oxidegl_bind_vertex_buffer(bindingindex, buffer, offset, stride);
     });
 }
 #[no_mangle]
@@ -1572,7 +1572,7 @@ unsafe extern "C" fn glCreateTextures(target: GLenum, n: GLsizei, textures: *mut
         textures
     );
     with_ctx_mut(|mut state| unsafe {
-        state.oxidegl_create_textures(target.into_enum(), n, textures)
+        state.oxidegl_create_textures(target.into_enum(), n, textures);
     });
 }
 #[no_mangle]
@@ -1805,7 +1805,7 @@ unsafe extern "C" fn glDispatchCompute(
 ) {
     crate::context::debug::gl_trace!("glDispatchCompute called, parameters: num_groups_x: {:?}, num_groups_y: {:?}, num_groups_z: {:?} ", num_groups_x, num_groups_y, num_groups_z);
     with_ctx_mut(|mut state| {
-        state.oxidegl_dispatch_compute(num_groups_x, num_groups_y, num_groups_z)
+        state.oxidegl_dispatch_compute(num_groups_x, num_groups_y, num_groups_z);
     });
 }
 #[no_mangle]
@@ -1834,7 +1834,7 @@ unsafe extern "C" fn glDrawArraysIndirect(mode: GLenum, indirect: *const GLvoid)
         indirect
     );
     with_ctx_mut(|mut state| unsafe {
-        state.oxidegl_draw_arrays_indirect(mode.into_enum(), indirect)
+        state.oxidegl_draw_arrays_indirect(mode.into_enum(), indirect);
     });
 }
 #[no_mangle]
@@ -2095,7 +2095,7 @@ unsafe extern "C" fn glDrawTransformFeedback(mode: GLenum, id: GLuint) {
         id
     );
     with_ctx_mut(|mut state| {
-        state.oxidegl_draw_transform_feedback(unsafe { mode.into_enum() }, id)
+        state.oxidegl_draw_transform_feedback(unsafe { mode.into_enum() }, id);
     });
 }
 #[no_mangle]
@@ -2588,7 +2588,7 @@ unsafe extern "C" fn glGetBooleani_v(target: GLenum, index: GLuint, data: *mut G
         data
     );
     with_ctx_mut(|mut state| unsafe {
-        state.oxidegl_get_booleani_v(target.into_enum(), index, data)
+        state.oxidegl_get_booleani_v(target.into_enum(), index, data);
     });
 }
 #[no_mangle]
@@ -2600,7 +2600,7 @@ unsafe extern "C" fn glGetIntegeri_v(target: GLenum, index: GLuint, data: *mut G
         data
     );
     with_ctx_mut(|mut state| unsafe {
-        state.oxidegl_get_integeri_v(target.into_enum(), index, data)
+        state.oxidegl_get_integeri_v(target.into_enum(), index, data);
     });
 }
 #[no_mangle]
@@ -2633,7 +2633,7 @@ unsafe extern "C" fn glGetFloati_v(target: GLenum, index: GLuint, data: *mut GLf
         data
     );
     with_ctx_mut(|mut state| unsafe {
-        state.oxidegl_get_floati_v(target.into_enum(), index, data)
+        state.oxidegl_get_floati_v(target.into_enum(), index, data);
     });
 }
 #[no_mangle]
@@ -2645,7 +2645,7 @@ unsafe extern "C" fn glGetDoublei_v(target: GLenum, index: GLuint, data: *mut GL
         data
     );
     with_ctx_mut(|mut state| unsafe {
-        state.oxidegl_get_doublei_v(target.into_enum(), index, data)
+        state.oxidegl_get_doublei_v(target.into_enum(), index, data);
     });
 }
 #[no_mangle]
@@ -2937,7 +2937,7 @@ unsafe extern "C" fn glGetNamedBufferPointerv(
         params
     );
     with_ctx_mut(|mut state| unsafe {
-        state.oxidegl_get_named_buffer_pointerv(buffer, pname, params)
+        state.oxidegl_get_named_buffer_pointerv(buffer, pname, params);
     });
 }
 #[no_mangle]
@@ -3607,7 +3607,7 @@ unsafe extern "C" fn glGetShaderiv(shader: GLuint, pname: GLenum, params: *mut G
         params
     );
     with_ctx_mut(|mut state| unsafe {
-        state.oxidegl_get_shaderiv(shader, pname.into_enum(), params)
+        state.oxidegl_get_shaderiv(shader, pname.into_enum(), params);
     });
 }
 #[no_mangle]
@@ -4567,7 +4567,7 @@ unsafe extern "C" fn glMemoryBarrierByRegion(barriers: GLenum) {
         barriers
     );
     with_ctx_mut(|mut state| {
-        state.oxidegl_memory_barrier_by_region(unsafe { barriers.into_enum() })
+        state.oxidegl_memory_barrier_by_region(unsafe { barriers.into_enum() });
     });
 }
 #[no_mangle]
@@ -5595,7 +5595,7 @@ unsafe extern "C" fn glStencilMaskSeparate(face: GLenum, mask: GLuint) {
         mask
     );
     with_ctx_mut(|mut state| {
-        state.oxidegl_stencil_mask_separate(unsafe { face.into_enum() }, mask)
+        state.oxidegl_stencil_mask_separate(unsafe { face.into_enum() }, mask);
     });
 }
 #[no_mangle]
@@ -7738,7 +7738,7 @@ unsafe extern "C" fn glVertexArrayBindingDivisor(
 ) {
     crate::context::debug::gl_trace!("glVertexArrayBindingDivisor called, parameters: vaobj: {:?}, bindingindex: {:?}, divisor: {:?} ", vaobj, bindingindex, divisor);
     with_ctx_mut(|mut state| {
-        state.oxidegl_vertex_array_binding_divisor(vaobj, bindingindex, divisor)
+        state.oxidegl_vertex_array_binding_divisor(vaobj, bindingindex, divisor);
     });
 }
 #[no_mangle]

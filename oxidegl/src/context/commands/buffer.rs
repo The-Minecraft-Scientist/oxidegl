@@ -10,8 +10,8 @@ use crate::{
     },
     debug_unreachable,
     dispatch::{
-        conversions::{IndexType, NoIndex},
-        gl_types::{GLboolean, GLsizei, GLsizeiptr, GLuint, GLvoid},
+        conversions::{MaybeIndex, NoIndex},
+        gl_types::{GLboolean, GLintptr, GLsizei, GLsizeiptr, GLuint, GLvoid},
     },
     enums::{
         BufferAccess, BufferStorageMask, BufferStorageTarget, BufferTarget, BufferUsage,
@@ -259,6 +259,222 @@ impl Context {
 
     pub fn oxidegl_bind_buffer(&mut self, target: BufferTarget, buffer: GLuint) {
         self.bind_buffer_internal(ObjectName::try_from_raw(buffer), target, NoIndex);
+    }
+    /// ### Parameters
+    /// `target`
+    ///
+    /// > Specify the target of the bind operation. `target` must be one of [`GL_ATOMIC_COUNTER_BUFFER`](crate::enums::GL_ATOMIC_COUNTER_BUFFER),
+    /// > [`GL_TRANSFORM_FEEDBACK_BUFFER`](crate::enums::GL_TRANSFORM_FEEDBACK_BUFFER),
+    /// > [`GL_UNIFORM_BUFFER`](crate::enums::GL_UNIFORM_BUFFER) or [`GL_SHADER_STORAGE_BUFFER`](crate::enums::GL_SHADER_STORAGE_BUFFER).
+    ///
+    /// `index`
+    ///
+    /// > Specify the index of the binding point within the array specified by `target`.
+    ///
+    /// `buffer`
+    ///
+    /// > The name of a buffer object to bind to the specified binding point.
+    ///
+    /// ### Description
+    /// [**glBindBufferBase**](crate::context::Context::oxidegl_bind_buffer_base)
+    /// binds the buffer object `buffer` to the binding point at index `index`
+    /// of the array of targets specified by `target`. Each `target` represents
+    /// an indexed array of buffer binding points, as well as a single general
+    /// binding point that can be used by other buffer manipulation functions such
+    /// as [**glBindBuffer**](crate::context::Context::oxidegl_bind_buffer) or
+    /// [**glMapBuffer**](crate::context::Context::oxidegl_map_buffer). In addition
+    /// to binding `buffer` to the indexed buffer binding target, [**glBindBufferBase**](crate::context::Context::oxidegl_bind_buffer_base)
+    /// also binds `buffer` to the generic buffer binding point specified by `target`.
+    ///
+    /// ### Notes
+    /// Calling [**glBindBufferBase**](crate::context::Context::oxidegl_bind_buffer_base)
+    /// is equivalent to calling [**glBindBufferRange**](crate::context::Context::oxidegl_bind_buffer_range)
+    /// with `offset` zero and `size` equal to the size of the buffer.
+    ///
+    /// The [`GL_ATOMIC_COUNTER_BUFFER`](crate::enums::GL_ATOMIC_COUNTER_BUFFER)
+    /// target is available only if the GL version is 4.2 or greater.
+    ///
+    /// The [`GL_SHADER_STORAGE_BUFFER`](crate::enums::GL_SHADER_STORAGE_BUFFER)
+    /// target is available only if the GL version is 4.3 or greater.
+
+    pub fn oxidegl_bind_buffer_base(
+        &mut self,
+        target: BufferTarget,
+        index: GLuint,
+        buffer: GLuint,
+    ) {
+        panic!("command oxidegl_bind_buffer_base not yet implemented");
+    }
+    /// ### Parameters
+    /// `target`
+    ///
+    /// > Specify the target of the bind operation. `target` must be one of [`GL_ATOMIC_COUNTER_BUFFER`](crate::enums::GL_ATOMIC_COUNTER_BUFFER),
+    /// > [`GL_TRANSFORM_FEEDBACK_BUFFER`](crate::enums::GL_TRANSFORM_FEEDBACK_BUFFER),
+    /// > [`GL_UNIFORM_BUFFER`](crate::enums::GL_UNIFORM_BUFFER), or [`GL_SHADER_STORAGE_BUFFER`](crate::enums::GL_SHADER_STORAGE_BUFFER).
+    ///
+    /// `index`
+    ///
+    /// > Specify the index of the binding point within the array specified by `target`.
+    ///
+    /// `buffer`
+    ///
+    /// > The name of a buffer object to bind to the specified binding point.
+    ///
+    /// `offset`
+    ///
+    /// > The starting offset in basic machine units into the buffer object `buffer`.
+    ///
+    /// `size`
+    ///
+    /// > The amount of data in machine units that can be read from the buffer object
+    /// > while used as an indexed target.
+    ///
+    /// ### Description
+    /// [**glBindBufferRange**](crate::context::Context::oxidegl_bind_buffer_range)
+    /// binds a range the buffer object `buffer` represented by `offset` and `size`
+    /// to the binding point at index `index` of the array of targets specified
+    /// by `target`. Each `target` represents an indexed array of buffer binding
+    /// points, as well as a single general binding point that can be used by other
+    /// buffer manipulation functions such as [**glBindBuffer**](crate::context::Context::oxidegl_bind_buffer)
+    /// or [**glMapBuffer**](crate::context::Context::oxidegl_map_buffer). In addition
+    /// to binding a range of `buffer` to the indexed buffer binding target, [**glBindBufferRange**](crate::context::Context::oxidegl_bind_buffer_range)
+    /// also binds the range to the generic buffer binding point specified by `target`.
+    ///
+    /// `offset` specifies the offset in basic machine units into the buffer object
+    /// `buffer` and `size` specifies the amount of data that can be read from
+    /// the buffer object while used as an indexed target.
+    ///
+    /// ### Notes
+    /// The [`GL_ATOMIC_COUNTER_BUFFER`](crate::enums::GL_ATOMIC_COUNTER_BUFFER)
+    /// target is available only if the GL version is 4.2 or greater.
+    ///
+    /// The [`GL_SHADER_STORAGE_BUFFER`](crate::enums::GL_SHADER_STORAGE_BUFFER)
+    /// target is available only if the GL version is 4.3 or greater.
+
+    pub fn oxidegl_bind_buffer_range(
+        &mut self,
+        target: BufferTarget,
+        index: GLuint,
+        buffer: GLuint,
+        offset: GLintptr,
+        size: GLsizeiptr,
+    ) {
+        panic!("command oxidegl_bind_buffer_range not yet implemented");
+    }
+    /// ### Parameters
+    /// `target`
+    ///
+    /// > Specify the target of the bind operation. `target` must be one of [`GL_ATOMIC_COUNTER_BUFFER`](crate::enums::GL_ATOMIC_COUNTER_BUFFER),
+    /// > [`GL_TRANSFORM_FEEDBACK_BUFFER`](crate::enums::GL_TRANSFORM_FEEDBACK_BUFFER),
+    /// > [`GL_UNIFORM_BUFFER`](crate::enums::GL_UNIFORM_BUFFER) or [`GL_SHADER_STORAGE_BUFFER`](crate::enums::GL_SHADER_STORAGE_BUFFER).
+    ///
+    /// `first`
+    ///
+    /// > Specify the index of the first binding point within the array specified
+    /// > by `target`.
+    ///
+    /// `count`
+    ///
+    /// > Specify the number of contiguous binding points to which to bind buffers.
+    ///
+    /// `buffers`
+    ///
+    /// > A pointer to an array of names of buffer objects to bind to the targets
+    /// > on the specified binding point, or [`NULL`](crate::enums::NULL).
+    ///
+    /// ### Description
+    /// [**glBindBuffersBase**](crate::context::Context::oxidegl_bind_buffers_base)
+    /// binds a set of `count` buffer objects whose names are given in the array
+    /// `buffers` to the `count` consecutive binding points starting from index
+    /// `first` of the array of targets specified by `target`. If `buffers` is
+    /// [`NULL`](crate::enums::NULL) then [**glBindBuffersBase**](crate::context::Context::oxidegl_bind_buffers_base)
+    /// unbinds any buffers that are currently bound to the referenced binding
+    /// points. Assuming no errors are generated, it is equivalent to the following
+    /// pseudo-code, which calls [**glBindBufferBase**](crate::context::Context::oxidegl_bind_buffer_base),
+    /// with the exception that the non-indexed `target` is not changed by [**glBindBuffersBase**](crate::context::Context::oxidegl_bind_buffers_base):
+    ///
+    /// Each entry in `buffers` will be checked individually and if found to be
+    /// invalid, the state for that buffer binding index will not be changed and
+    /// an error will be generated. However, the state for other buffer binding
+    /// indices referenced by the command will still be updated.
+    ///
+    /// ### Notes
+    /// [**glBindBuffersBase**](crate::context::Context::oxidegl_bind_buffers_base)
+    /// is available only if the GL version is 4.4 or higher.
+
+    pub unsafe fn oxidegl_bind_buffers_base(
+        &mut self,
+        target: BufferTarget,
+        first: GLuint,
+        count: GLsizei,
+        buffers: *const GLuint,
+    ) {
+        panic!("command oxidegl_bind_buffers_base not yet implemented");
+    }
+    /// ### Parameters
+    /// `target`
+    ///
+    /// > Specify the target of the bind operation. `target` must be one of [`GL_ATOMIC_COUNTER_BUFFER`](crate::enums::GL_ATOMIC_COUNTER_BUFFER),
+    /// > [`GL_TRANSFORM_FEEDBACK_BUFFER`](crate::enums::GL_TRANSFORM_FEEDBACK_BUFFER),
+    /// > [`GL_UNIFORM_BUFFER`](crate::enums::GL_UNIFORM_BUFFER) or [`GL_SHADER_STORAGE_BUFFER`](crate::enums::GL_SHADER_STORAGE_BUFFER).
+    ///
+    /// `first`
+    ///
+    /// > Specify the index of the first binding point within the array specified
+    /// > by `target`.
+    ///
+    /// `count`
+    ///
+    /// > Specify the number of contiguous binding points to which to bind buffers.
+    ///
+    /// `buffers`
+    ///
+    /// > A pointer to an array of names of buffer objects to bind to the targets
+    /// > on the specified binding point, or [`NULL`](crate::enums::NULL).
+    ///
+    /// `offsets`
+    ///
+    /// > A pointer to an array of offsets into the corresponding buffer in `buffers`
+    /// > to bind, or [`NULL`](crate::enums::NULL) if `buffers` is [`NULL`](crate::enums::NULL).
+    ///
+    /// `sizes`
+    ///
+    /// > A pointer to an array of sizes of the corresponding buffer in `buffers`
+    /// > to bind, or [`NULL`](crate::enums::NULL) if `buffers` is [`NULL`](crate::enums::NULL).
+    ///
+    /// ### Description
+    /// [**glBindBuffersRange**](crate::context::Context::oxidegl_bind_buffers_range)
+    /// binds a set of `count` ranges from buffer objects whose names are given
+    /// in the array `buffers` to the `count` consecutive binding points starting
+    /// from index `first` of the array of targets specified by `target`. `offsets`
+    /// specifies the address of an array containing `count` starting offsets within
+    /// the buffers, and `sizes` specifies the address of an array of `count` sizes
+    /// of the ranges. If `buffers` is [`NULL`](crate::enums::NULL) then `offsets`
+    /// and `sizes` are ignored and [**glBindBuffersRange**](crate::context::Context::oxidegl_bind_buffers_range)
+    /// unbinds any buffers that are currently bound to the referenced binding
+    /// points. Assuming no errors are generated, it is equivalent to the following
+    /// pseudo-code, which calls [**glBindBufferRange**](crate::context::Context::oxidegl_bind_buffer_range),
+    /// with the exception that the non-indexed `target` is not changed by [**glBindBuffersRange**](crate::context::Context::oxidegl_bind_buffers_range):
+    ///
+    /// Each entry in `buffers`, `offsets`, and `sizes` will be checked individually
+    /// and if found to be invalid, the state for that buffer binding index will
+    /// not be changed and an error will be generated. However, the state for other
+    /// buffer binding indices referenced by the command will still be updated.
+    ///
+    /// ### Notes
+    /// [**glBindBuffersBase**](crate::context::Context::oxidegl_bind_buffers_base)
+    /// is available only if the GL version is 4.4 or higher.
+
+    pub unsafe fn oxidegl_bind_buffers_range(
+        &mut self,
+        target: BufferTarget,
+        first: GLuint,
+        count: GLsizei,
+        buffers: *const GLuint,
+        offsets: *const GLintptr,
+        sizes: *const GLsizeiptr,
+    ) {
+        panic!("command oxidegl_bind_buffers_range not yet implemented");
     }
     /// ### Parameters
     /// `buffer`
@@ -541,27 +757,25 @@ impl Context {
 
 impl Context {
     #[inline]
-    pub(crate) fn get_buffer_binding_mut<I: IndexType>(
+    pub(crate) fn get_buffer_binding_mut<I: MaybeIndex>(
         &mut self,
         target: BufferTarget,
         idx: I,
     ) -> &mut Option<ObjectName<Buffer>> {
         match target {
-            BufferTarget::UniformBuffer => {
-                &mut self.gl_state.buffer_bindings.uniform[idx.get_numeric()]
-            }
+            BufferTarget::UniformBuffer => &mut self.gl_state.buffer_bindings.uniform[idx.get()],
             BufferTarget::AtomicCounterBuffer => {
-                &mut self.gl_state.buffer_bindings.atomic_counter[idx.get_numeric()]
+                &mut self.gl_state.buffer_bindings.atomic_counter[idx.get()]
             }
             BufferTarget::ShaderStorageBuffer => {
-                &mut self.gl_state.buffer_bindings.shader_storage[idx.get_numeric()]
+                &mut self.gl_state.buffer_bindings.shader_storage[idx.get()]
             }
             BufferTarget::TransformFeedbackBuffer => {
-                &mut self.gl_state.buffer_bindings.transform_feedback[idx.get_numeric()]
+                &mut self.gl_state.buffer_bindings.transform_feedback[idx.get()]
             }
             t => {
                 debug_assert!(
-                    idx.get().is_none(),
+                    idx.get_opt().is_none(),
                     "UB: Tried to bind at an index of a non-indexed binding target"
                 );
                 match t {
@@ -584,14 +798,13 @@ impl Context {
                     }
                     BufferTarget::QueryBuffer => &mut self.gl_state.buffer_bindings.query,
                     BufferTarget::ParameterBuffer => &mut self.gl_state.buffer_bindings.parameter,
-                    #[allow(unused_unsafe)]
                     // Safety: all other variants are covered
                     _ => unsafe { debug_unreachable!() },
                 }
             }
         }
     }
-    pub(crate) fn bind_buffer_internal<I: IndexType>(
+    pub(crate) fn bind_buffer_internal<I: MaybeIndex>(
         &mut self,
         to_bind: Option<ObjectName<Buffer>>,
         target: BufferTarget,
