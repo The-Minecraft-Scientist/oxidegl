@@ -747,10 +747,11 @@ impl PlatformState {
         match shader_type {
             ShaderType::FragmentShader => &link.fragment,
             ShaderType::VertexShader => &link.vertex,
-            ShaderType::GeometryShader => &link.compute,
+            ShaderType::ComputeShader => &link.compute,
+
             ShaderType::TessEvaluationShader => todo!(),
             ShaderType::TessControlShader => todo!(),
-            ShaderType::ComputeShader => todo!(),
+            ShaderType::GeometryShader => todo!(),
         }
     }
 
@@ -783,6 +784,7 @@ impl PlatformState {
     // broadcast panic location up into calling functions for easier debugging
     #[track_caller]
     #[inline]
+    // TODO cache this info inside of LinkedShaderStage
     fn stage_pinned_buffers(
         state: &GLState,
         shader_stage: &LinkedShaderStage,

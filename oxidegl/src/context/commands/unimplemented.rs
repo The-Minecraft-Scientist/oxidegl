@@ -1,4 +1,3 @@
-use objc2_metal::{MTLPrimitiveType, MTLRenderCommandEncoder};
 
 use crate::context::Context;
 use crate::dispatch::gl_types::*;

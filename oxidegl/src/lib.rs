@@ -1,6 +1,10 @@
 #![deny(unsafe_op_in_unsafe_fn)]
 #![warn(clippy::pedantic, clippy::undocumented_unsafe_blocks)]
-#![allow(clippy::missing_panics_doc, clippy::module_name_repetitions)]
+#![allow(
+    clippy::missing_panics_doc,
+    clippy::module_name_repetitions,
+    clippy::float_cmp
+)]
 
 use objc2::{rc::Retained, runtime::ProtocolObject};
 
@@ -104,7 +108,7 @@ macro_rules! bitflag_bits {{
 
 pub(crate) use bitflag_bits;
 
-/// [`unreachable!`](unreachable!), but it reduces to [`std::hint::unreachable_unchecked()`] in builds without debug assertions.
+/// [`unreachable!`](unreachable!), but it reduces to [`core::hint::unreachable_unchecked()`] in builds without debug assertions.
 macro_rules! debug_unreachable {
     ($($msg:tt)*) => {
         {

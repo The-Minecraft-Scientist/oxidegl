@@ -79,25 +79,6 @@ pub(crate) trait MaybeIndex: Copy + Sized + Debug {
         Some(self.get())
     }
 }
-// Either an index type or a ZST which corresponds to zero
-pub(crate) trait IndexOrZero: Copy + Sized + Debug {
-    fn get(self) -> usize;
-}
-impl IndexOrZero for u32 {
-    fn get(self) -> usize {
-        self as usize
-    }
-}
-impl IndexOrZero for usize {
-    fn get(self) -> usize {
-        self
-    }
-}
-impl IndexOrZero for NoIndex {
-    fn get(self) -> usize {
-        0
-    }
-}
 impl MaybeIndex for u32 {
     fn get(self) -> usize {
         self as usize

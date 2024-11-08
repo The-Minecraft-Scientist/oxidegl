@@ -39,17 +39,28 @@ pub(crate) struct RenderBuffer {
     pub(crate) name: ObjectName<Self>,
     pub(crate) drawable: InternalDrawable,
 }
-pub trait AttachableTexture: Any {}
+#[derive(Debug, Clone, Copy)]
+pub(crate) enum ClearValue {
+    // float/normalized color
+    Float([f32; 4]),
+    // integer (might be bitcast i32) color
+    Integer([u32; 4]),
+
+    // depth
+    Depth(f32),
+    // stencil
+    Stencil(i32),
+}
+pub trait AttachableTexture {}
 impl AttachableTexture for RenderBuffer {}
 
 // TODO uncomment when Texture is impled :3
 // impl AttachableTexture for Texture {}
 #[derive(Debug)]
-pub struct FramebufferAttachment {
-    clear_color: [f32; 4],
-    clear_bitmask: ClearBufferMask,
-    target: TextureTarget,
-    tex_name: ObjectName<dyn AttachableTexture>,
+pub(crate) struct FramebufferAttachment {
+    pub(crate) clear: Option<ClearValue>,
+    pub(crate) target: TextureTarget,
+    pub(crate) tex_name: ObjectName<dyn AttachableTexture>,
 }
 #[derive(Debug, Clone, Copy)]
 pub(crate) struct DrawBuffers {
@@ -87,6 +98,7 @@ impl DrawBuffers {
 /// A drawable for usage in rendering
 #[derive(Debug, Clone)]
 pub(crate) struct InternalDrawable {
+    // TODO might not need this field (dims are tracked by the texture object)
     pub(crate) dimensions: (u32, u32),
     pub(crate) tex: ProtoObjRef<dyn MTLTexture>,
 }

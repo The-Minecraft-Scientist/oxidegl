@@ -94,10 +94,6 @@ impl Context {
         blue: GLfloat,
         alpha: GLfloat,
     ) {
-        #[expect(
-            clippy::float_cmp,
-            reason = "false negatives due to NaN are OK (besides the fact that NaN/inf color components are Not Good™"
-        )]
         run_if_changed!(self.gl_state.clear_values.color;= [red, green, blue, alpha] => self.new_encoder());
     }
     /// ### Parameters

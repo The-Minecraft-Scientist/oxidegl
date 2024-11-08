@@ -624,7 +624,7 @@ impl<T: NamedObject> NameStateInterface<T> for Option<T> {
     }
 }
 
-/// Represents the name of an OpenGL object type T.
+/// Represents the name of an OpenGL object of type T.
 /// Note that the generic parameter is simply there to prevent accidental misuse of
 /// object names, since an arbitrary `ObjectName` can be created safely (i.e. these are identifiers, not true "handles")
 #[repr(transparent)]
