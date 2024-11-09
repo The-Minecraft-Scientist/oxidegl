@@ -13,8 +13,8 @@ use crate::{
     },
     enums::{
         BlendEquationModeEXT, BlendingFactor, ClearBufferMask, DepthFunction, StencilFunction,
-        StencilOp, GL_CONTEXT_CORE_PROFILE_BIT, GL_CONTEXT_FLAG_FORWARD_COMPATIBLE_BIT,
-        GL_CONTEXT_FLAG_NO_ERROR_BIT,
+        StencilOp, TriangleFace, GL_CONTEXT_CORE_PROFILE_BIT,
+        GL_CONTEXT_FLAG_FORWARD_COMPATIBLE_BIT, GL_CONTEXT_FLAG_NO_ERROR_BIT,
     },
     trimmed_type_name,
 };
@@ -71,6 +71,7 @@ pub(crate) struct GLState {
     pub(crate) stencil: StencilState,
     pub(crate) blend: BlendState,
     pub(crate) writemasks: Writemasks,
+    pub(crate) cull_face_mode: TriangleFace,
 
     pub(crate) depth_func: DepthFunction,
 
@@ -93,6 +94,12 @@ impl Default for DepthFunction {
     #[inline]
     fn default() -> Self {
         DepthFunction::Less
+    }
+}
+impl Default for TriangleFace {
+    #[inline]
+    fn default() -> Self {
+        TriangleFace::Back
     }
 }
 
@@ -295,6 +302,18 @@ impl Capabilities {
     #[inline]
     pub(crate) fn enable(&mut self, cap: Self) {
         *self = self.union(cap);
+    }
+    // FIXME this is pretty silly
+    #[inline]
+    pub(crate) fn set_to(&mut self, to: bool, cap: Self) -> bool {
+        let mut r = self.intersects(cap);
+        if to {
+            r = !r;
+            self.enable(cap);
+        } else {
+            self.disable(cap);
+        }
+        r
     }
 }
 impl Default for Capabilities {

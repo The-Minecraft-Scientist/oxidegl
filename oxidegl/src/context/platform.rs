@@ -8,8 +8,8 @@ use objc2_foundation::{ns_string, NSString};
 use objc2_metal::{
     MTLBlitCommandEncoder, MTLColorWriteMask, MTLCommandBuffer, MTLCommandBufferDescriptor,
     MTLCommandBufferErrorOption, MTLCommandEncoder, MTLCommandQueue, MTLCompareFunction,
-    MTLCreateSystemDefaultDevice, MTLDepthStencilDescriptor, MTLDevice, MTLPixelFormat,
-    MTLRenderCommandEncoder, MTLRenderPassColorAttachmentDescriptor,
+    MTLCreateSystemDefaultDevice, MTLCullMode, MTLDepthStencilDescriptor, MTLDevice,
+    MTLPixelFormat, MTLRenderCommandEncoder, MTLRenderPassColorAttachmentDescriptor,
     MTLRenderPassDepthAttachmentDescriptor, MTLRenderPassDescriptor,
     MTLRenderPassStencilAttachmentDescriptor, MTLRenderPipelineColorAttachmentDescriptor,
     MTLRenderPipelineDescriptor, MTLRenderPipelineState, MTLStencilDescriptor, MTLStencilOperation,
@@ -25,7 +25,7 @@ use crate::{
         debug::{gl_debug, gl_trace},
         state::StencilFaceState,
     },
-    enums::{DepthFunction, DrawBufferMode, ShaderType, StencilFunction, StencilOp},
+    enums::{DepthFunction, DrawBufferMode, ShaderType, StencilFunction, StencilOp, TriangleFace},
     ProtoObjRef,
 };
 
@@ -116,7 +116,7 @@ bitflag_bits! {
         /// Create a fresh render encoder from the current GL state
         NEW_RENDER_ENCODER: 0,
         /// Update dynamic render encoder state from the current GL state
-        UPDATE_ENCODER: 1,
+        UPDATE_RENDER_ENCODER: 1,
         /// Create a fresh render pipeline state from the current GL state
         NEW_RENDER_PIPELINE: 2,
         /// Update buffer maps (e.g. when a new VAO or program is bound)
@@ -147,7 +147,7 @@ impl Context {
     pub(crate) fn update_encoder(&mut self) {
         self.platform_state
             .dirty_state
-            .set_bits(Dirty::UPDATE_ENCODER);
+            .set_bits(Dirty::UPDATE_RENDER_ENCODER);
     }
     pub(crate) fn remap_buffers(&mut self) {
         self.platform_state
@@ -376,7 +376,7 @@ impl PlatformState {
         // (in case there are no state changes that mark it dirty over the course of a frame)
         if self.render_encoder.is_none() {
             self.dirty_state
-                .set_bits(Dirty::NEW_RENDER_ENCODER | Dirty::UPDATE_ENCODER);
+                .set_bits(Dirty::NEW_RENDER_ENCODER | Dirty::UPDATE_RENDER_ENCODER);
         }
 
         let all_dirty = self.dirty_state;
@@ -402,9 +402,9 @@ impl PlatformState {
             self.dirty_state.unset(Dirty::NEW_RENDER_ENCODER);
         }
         // this code path is taken if we have a new encoder and need to finish initializing it, or if we just need to update the dynamic state of the current encoder
-        if all_dirty.any_set(Dirty::UPDATE_ENCODER | Dirty::NEW_RENDER_ENCODER) {
-            self.update_dynamic_encoder_state(state);
-            self.dirty_state.unset(Dirty::UPDATE_ENCODER);
+        if all_dirty.any_set(Dirty::UPDATE_RENDER_ENCODER | Dirty::NEW_RENDER_ENCODER) {
+            self.update_encoder(state);
+            self.dirty_state.unset(Dirty::UPDATE_RENDER_ENCODER);
         }
         if all_dirty.any_set(Dirty::NEW_RENDER_PIPELINE) {
             gl_trace!("generating new render pipeline state");
@@ -444,6 +444,9 @@ impl PlatformState {
                     unsafe { attachments.setObject_atIndexedSubscript(Some(&attachment_desc), i) };
                 }
             }
+            if state.caps.is_any_enabled(Capabilities::DEPTH_TEST) {
+                desc.setDepthAttachmentPixelFormat(self.depth_format.expect("Tried to use depth test on the default framebuffer without specifying a depth format during context creation!"));
+            }
             //TODO depth/stencil attachment formats
         }
         desc.setVertexFunction(Some(&v.function));
@@ -458,7 +461,7 @@ impl PlatformState {
         // TODO clear state, depth test config, scissor box
     }
     // precondition: buffers mapped
-    fn update_dynamic_encoder_state(&mut self, state: &mut GLState) {
+    fn update_encoder(&mut self, state: &mut GLState) {
         fn stencil_descriptor_for_stencil_state(
             state: &StencilFaceState,
             writemask: u32,
@@ -475,7 +478,7 @@ impl PlatformState {
             desc
         }
         self.bind_buffers_to_render_encoder(state);
-
+        let enc;
         if state
             .caps
             .is_any_enabled(Capabilities::DEPTH_TEST | Capabilities::STENCIL_TEST)
@@ -501,18 +504,23 @@ impl PlatformState {
                 .device
                 .newDepthStencilStateWithDescriptor(&desc)
                 .expect("failed to create MTLDepthStencilState");
-            self.current_render_encoder()
-                .setDepthStencilState(Some(&ds_state));
+            enc = self.current_render_encoder();
+            enc.setDepthStencilState(Some(&ds_state));
+        } else {
+            enc = self.current_render_encoder();
         }
-        // we *could* set this only when blending is actually enabled, but that's done on a per-attachment basis anyways and this call is quite cheap (just sets a similar variable somewhere deep within the encoder state)
+        if state.caps.is_any_enabled(Capabilities::CULL_FACE) {
+            enc.setCullMode(state.cull_face_mode.into());
+        }
+        // we *could* set this only when blending is actually enabled, but that's done on a per-attachment basis anyways and
+        // this call is quite cheap (just sets a similar variable somewhere within the encoder state)
         let blend_col = state.blend.blend_color;
-        self.current_render_encoder()
-            .setBlendColorRed_green_blue_alpha(
-                blend_col[0],
-                blend_col[1],
-                blend_col[2],
-                blend_col[3],
-            );
+        enc.setBlendColorRed_green_blue_alpha(
+            blend_col[0],
+            blend_col[1],
+            blend_col[2],
+            blend_col[3],
+        );
 
         // TODO scissor test
         #[expect(
@@ -921,6 +929,7 @@ impl DrawbufferBlendState {
     }
 }
 impl From<ColorWriteMask> for MTLColorWriteMask {
+    #[inline]
     fn from(value: ColorWriteMask) -> Self {
         let arr: [bool; 4] = value.into();
         // See: MTLRenderPipeline.h L#54
@@ -929,5 +938,16 @@ impl From<ColorWriteMask> for MTLColorWriteMask {
             | usize::from(arr[1]) << 2
             | usize::from(arr[0]) << 3;
         Self(val)
+    }
+}
+impl From<TriangleFace> for MTLCullMode {
+    #[inline]
+    fn from(value: TriangleFace) -> Self {
+        match value {
+            TriangleFace::Front => Self::Front,
+            //FIXME this is incorrect. This should cull all faces but not other polygons
+            TriangleFace::FrontAndBack => Self::None,
+            TriangleFace::Back => Self::Back,
+        }
     }
 }

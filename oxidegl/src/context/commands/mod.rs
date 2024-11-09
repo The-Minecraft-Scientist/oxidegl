@@ -1,4 +1,5 @@
 pub mod buffer;
+pub mod caps;
 pub mod clear;
 pub mod debug;
 pub mod draw;
