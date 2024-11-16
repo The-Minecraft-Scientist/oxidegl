@@ -8,7 +8,7 @@ use crate::dispatch::gl_types::*;
 #[allow(clippy::enum_glob_use)]
 use crate::{
     context::Context,
-    dispatch::conversions::{GlDstType, GlGetItem, MaybeIndex, NoIndex, StateQueryWriteSliceExt},
+    dispatch::conversions::{GlDstType, GlGetItem, GlGetItemSliceExt, MaybeIndex, NoIndex},
     enums::GetPName::{self, *},
 };
 /// ### Parameters

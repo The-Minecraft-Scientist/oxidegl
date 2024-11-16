@@ -392,8 +392,11 @@ impl DebugState {
             self.messages.push_back(DebugLogMessage { text, meta });
         }
     }
-    #[expect(clippy::too_many_arguments, reason = "blame the GL spec for this one")]
-    #[expect(clippy::undocumented_unsafe_blocks)]
+    #[expect(
+        clippy::undocumented_unsafe_blocks,
+        clippy::too_many_arguments,
+        reason = "blame the GL spec for this one"
+    )]
     pub(crate) unsafe fn get_log_message(
         &mut self,
         count: u32,
@@ -670,14 +673,10 @@ pub(crate) mod macros {
         (src: $src:ident, ty: $ty:ident, level: $level:expr, target: $target:expr, $($rest:tt)+) => {
             let _: () = {
                 const TARGET: &str = $target;
-                const ID: u32 = {
-                    let line =  $crate::context::debug::__logging_private::line!();
-                    let Some(f_id) = $crate::context::debug::__logging_private::get_file_id($crate::context::debug::__logging_private::file!()) else {
-                        panic!("couldn't get current file id from the filename lookup. Running the build script by rebuilding may fix this.")
-                    };
-                    assert!((line - 1) <= u16::MAX as u32, "can't log from line # past u16::MAX");
-                    (line - 1) & ((f_id as u32) << 16)
-                };
+                const ID: u32 = $crate::context::debug::__logging_private::make_message_id(
+                    $crate::context::debug::__logging_private::file!(),
+                    $crate::context::debug::__logging_private::line!()
+                );
                 mod ns_src_lvl {
                     #![allow(unused_imports)]
                     use $crate::context::debug::__logging_private as log_impl;
@@ -733,14 +732,10 @@ pub(crate) mod macros {
         (src: $src:ident, ty: $ty:ident, level: $level:expr, $($rest:tt)+) => {
             let _: () = {
                 const TARGET: &str = $crate::context::debug::__logging_private::module_path!();
-                const ID: u32 = {
-                    let line =  $crate::context::debug::__logging_private::line!();
-                    let Some(f_id) = $crate::context::debug::__logging_private::get_file_id($crate::context::debug::__logging_private::file!()) else {
-                        panic!("couldn't get current file id from the filename lookup. Running the build script by rebuilding may fix this.")
-                    };
-                    assert!((line - 1) <= u16::MAX as u32, "can't log from line # past u16::MAX");
-                    (line - 1) & ((f_id as u32) << 16)
-                };
+                const ID: u32 = $crate::context::debug::__logging_private::make_message_id(
+                    $crate::context::debug::__logging_private::file!(),
+                    $crate::context::debug::__logging_private::line!()
+                );
                 mod ns_src_lvl {
                     #![allow(unused_imports)]
                     use $crate::context::debug::__logging_private as log_impl;
@@ -864,8 +859,16 @@ pub(crate) mod __logging_private {
     pub use core::module_path;
     pub use log::Level;
     pub use log::Record;
-    pub(crate) const fn get_file_id(file: &'static str) -> Option<u16> {
-        FNAME_LOOKUP.get(file)
+    pub(crate) const fn make_message_id(file: &'static str, mut line: u32) -> u32 {
+        let Some(fileid) = FNAME_LOOKUP.get(file) else {
+            panic!("Failed to get file ID when trying to generate message id for log call");
+        };
+        assert!(
+            line <= u16::MAX as u32 + 1,
+            "Line number too large when trying to generate message id for log call at"
+        );
+        line -= 1;
+        line | ((fileid as u32) << 16)
     }
     pub use core::fmt::Arguments;
     include!(concat!(env!("OUT_DIR"), "/generated.rs"));

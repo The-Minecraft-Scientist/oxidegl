@@ -259,6 +259,7 @@ use crate::{
 ///
 /// [**glGet**](crate::context::Context::oxidegl_get)
 impl Context {
+    #[inline]
     fn set_unindexed_cap_internal(&mut self, cap: EnableCap, state: bool) {
         // TODO: track dirty caps in platform state, platform is better informed about what exactly a cap state change
         // needs to be lowered to
@@ -297,7 +298,7 @@ impl Context {
             EnableCap::FramebufferSrgb => todo!(),
             EnableCap::TextureRectangle => todo!(),
             EnableCap::PrimitiveRestart => todo!(),
-            EnableCap::ProgramPointSize => todo!(),
+            EnableCap::ProgramPointSize => (Dirty::empty(), Capabilities::PROGRAM_POINT_SIZE),
             EnableCap::DepthClamp => todo!(),
             EnableCap::TextureCubeMapSeamless => todo!(),
             EnableCap::SampleMask => todo!(),

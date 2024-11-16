@@ -13,7 +13,7 @@ pub mod entry_point;
 
 #[allow(clippy::undocumented_unsafe_blocks)]
 mod dispatch;
-#[cfg(all(feature = "nsgl_shim", not(test)))]
+#[cfg(feature = "nsgl_shim")]
 mod nsgl_shim;
 
 #[allow(non_upper_case_globals, unused)]

@@ -445,7 +445,10 @@ impl PlatformState {
                 }
             }
             if state.caps.is_any_enabled(Capabilities::DEPTH_TEST) {
-                desc.setDepthAttachmentPixelFormat(self.depth_format.expect("Tried to use depth test on the default framebuffer without specifying a depth format during context creation!"));
+                desc.setDepthAttachmentPixelFormat(
+                    self.depth_format
+                    .expect("Tried to use depth test on the default framebuffer without specifying a depth format during context creation!")
+                );
             }
             //TODO depth/stencil attachment formats
         }
@@ -700,7 +703,7 @@ impl PlatformState {
         Self::check_drawable_size(
             &self.device,
             dims,
-            self.depth_format.expect("tried to generate a depth buffer for the default framebuffer, but no depth format was specified by the user!"),
+            self.depth_format.expect("tried to generate a depth buffer for the default framebuffer, but no depth format was specified at context creation!"),
             true,
             &mut self.internal_drawables.depth,
         )
@@ -710,7 +713,7 @@ impl PlatformState {
         Self::check_drawable_size(
             &self.device,
             dims,
-            self.depth_format.expect("tried to generate a depth buffer for the default framebuffer, but no depth format was specified by the user!"),
+            self.depth_format.expect("tried to generate a stencil buffer for the default framebuffer, but no stencil format was specified at context creation!"),
             true,
             &mut self.internal_drawables.stencil,
         )
@@ -828,7 +831,6 @@ impl PlatformState {
             #[allow(clippy::cast_possible_truncation)]
             v.push((name, binding as u8));
         }
-        //TODO XFBs
         v
     }
     /// precondition: Buffer maps built, VAO present

@@ -72,6 +72,19 @@ impl<Dst: GlDstType, T: SrcType<LocalWrap<Dst>>> GlGetItem<Dst> for T {
         }
     }
 }
+
+impl<Dst: GlDstType, T: SrcType<LocalWrap<Dst>>, const N: usize> GlGetItem<Dst> for [T; N] {
+    #[inline]
+    unsafe fn write_out(&self, mut ptr: *mut Dst) {
+        for i in self {
+            // Safety: caller ensures `ptr` is valid for writes
+            unsafe { ptr::write(ptr, LocalInto::into(i.convert())) };
+            // Safety: caller ensures `ptr` points to an allocation with enough space for a [Dst; N]
+            unsafe { ptr = ptr.add(1) };
+        }
+    }
+}
+
 // Either an index or a lazily evaluated panic
 pub(crate) trait MaybeIndex: Copy + Sized + Debug {
     fn get(self) -> usize;
@@ -95,7 +108,7 @@ pub(crate) struct NoIndex;
 impl MaybeIndex for NoIndex {
     #[inline]
     fn get(self) -> usize {
-        panic!("index should have been specified!")
+        panic!("Tried to index an array but no NoIndex was specified!")
     }
     #[inline]
     fn get_opt(self) -> Option<usize> {
@@ -108,7 +121,7 @@ impl Debug for NoIndex {
     }
 }
 
-pub(crate) trait StateQueryWriteSliceExt<Dst: GlDstType> {
+pub(crate) trait GlGetItemSliceExt<Dst: GlDstType> {
     type SliceItem;
     unsafe fn write_out_index_mapped<
         I: MaybeIndex,
@@ -124,7 +137,7 @@ pub(crate) trait StateQueryWriteSliceExt<Dst: GlDstType> {
     where
         Self::SliceItem: GlGetItem<Dst>;
 }
-impl<T, Dst: GlDstType> StateQueryWriteSliceExt<Dst> for [T] {
+impl<T, Dst: GlDstType> GlGetItemSliceExt<Dst> for [T] {
     type SliceItem = T;
 
     unsafe fn write_out_index_mapped<
@@ -197,18 +210,6 @@ impl<T: GlDstType> GlDstType for LocalWrap<T> {
     #[inline]
     fn from_bool(val: bool) -> Self {
         Self(T::from_bool(val))
-    }
-}
-
-impl<Dst: GlDstType, T: SrcType<LocalWrap<Dst>>, const N: usize> GlGetItem<Dst> for [T; N] {
-    #[inline]
-    unsafe fn write_out(&self, mut ptr: *mut Dst) {
-        for i in self {
-            // Safety: caller ensures `ptr` is valid for writes
-            unsafe { ptr::write(ptr, LocalInto::into(i.convert())) };
-            // Safety: caller ensures `ptr` points to an allocation with enough space for a [Dst; N]
-            unsafe { ptr = ptr.add(1) };
-        }
     }
 }
 

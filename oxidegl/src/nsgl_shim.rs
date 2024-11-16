@@ -398,30 +398,31 @@ unsafe impl Sync for DyldInterposeTuple {}
 
 // ...
 // I love linker magic
+#[used]
 #[link_section = "__DATA,__interpose"]
 #[allow(private_interfaces)]
 /// Installs a pointer to the above override function into a special section in the binary that tells dyld to actually do the override
-static DYLD_CF_BUNDLE_GET_FUNCTION_PTR_FOR_NAME_INTERPOSE: DyldInterposeTuple =
+pub static DYLD_CF_BUNDLE_GET_FUNCTION_PTR_FOR_NAME_INTERPOSE: DyldInterposeTuple =
     DyldInterposeTuple {
         replacement: CFBundleGetFunctionPointerForNameOverride as unsafe extern "C" fn(_, _) -> _
             as *const c_void,
         replacee: CFBundleGetFunctionPointerForName as unsafe extern "C" fn(_, _) -> _
             as *const c_void,
     };
+#[used]
 #[link_section = "__DATA,__interpose"]
 #[allow(private_interfaces)]
-static DYLD_LIBC_DLOPEN_INTERPOSE: DyldInterposeTuple = DyldInterposeTuple {
+pub static DYLD_LIBC_DLOPEN_INTERPOSE: DyldInterposeTuple = DyldInterposeTuple {
     replacement: dlopen_override as unsafe extern "C" fn(_, _) -> _ as *const c_void,
     replacee: dlopen as unsafe extern "C" fn(_, _) -> _ as *const c_void,
 };
-
+// our crimes break the Rust test runner infra so we need to not do them if this is a test build
+#[cfg(not(test))]
 #[ctor]
 fn ctor() {
+    println!("OxideGL running static constructor. Ensure liboxidegl is loaded BEFORE main is run. Loading liboxidegl after main WILL result in delivery of nasal demons to your front door");
     // Safety: we are living the good life (before main), so there are no other threads to race on environment variables with
     unsafe { oxidegl_platform_init() }
-    // Need to actually use the static somewhere to keep the linker/rustc from stripping it from the binary, might as well put it here
-    let _ = black_box(&DYLD_CF_BUNDLE_GET_FUNCTION_PTR_FOR_NAME_INTERPOSE);
-    let _ = black_box(&DYLD_LIBC_DLOPEN_INTERPOSE);
     // Safety: running from static ctor (equivalent to objc +load context)
     unsafe { OXGLOxideGlCtxShim::clobber_ns_opengl() }
 }
