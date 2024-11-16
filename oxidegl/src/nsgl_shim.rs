@@ -7,7 +7,6 @@ use core_foundation_sys::{
     bundle::{CFBundleGetFunctionPointerForName, CFBundleGetIdentifier, CFBundleRef},
     string::{kCFStringEncodingASCII, CFStringCreateWithCString, CFStringGetCString, CFStringRef},
 };
-use ctor::ctor;
 use libc::{dlopen, dlsym, RTLD_LAZY};
 use log::trace;
 use objc2::{
@@ -26,7 +25,6 @@ use objc2_foundation::{is_main_thread, MainThreadMarker};
 use std::{
     cell::OnceCell,
     ffi::{c_void, CStr},
-    hint::black_box,
     mem,
     ptr::{self, NonNull},
     sync::Once,
@@ -398,10 +396,10 @@ unsafe impl Sync for DyldInterposeTuple {}
 
 // ...
 // I love linker magic
-#[used]
-#[link_section = "__DATA,__interpose"]
+
 #[allow(private_interfaces)]
-/// Installs a pointer to the above override function into a special section in the binary that tells dyld to actually do the override
+#[link_section = "__DATA,__interpose"]
+#[used]
 pub static DYLD_CF_BUNDLE_GET_FUNCTION_PTR_FOR_NAME_INTERPOSE: DyldInterposeTuple =
     DyldInterposeTuple {
         replacement: CFBundleGetFunctionPointerForNameOverride as unsafe extern "C" fn(_, _) -> _
@@ -409,20 +407,27 @@ pub static DYLD_CF_BUNDLE_GET_FUNCTION_PTR_FOR_NAME_INTERPOSE: DyldInterposeTupl
         replacee: CFBundleGetFunctionPointerForName as unsafe extern "C" fn(_, _) -> _
             as *const c_void,
     };
-#[used]
-#[link_section = "__DATA,__interpose"]
+
 #[allow(private_interfaces)]
+#[link_section = "__DATA,__interpose"]
+#[used]
 pub static DYLD_LIBC_DLOPEN_INTERPOSE: DyldInterposeTuple = DyldInterposeTuple {
     replacement: dlopen_override as unsafe extern "C" fn(_, _) -> _ as *const c_void,
     replacee: dlopen as unsafe extern "C" fn(_, _) -> _ as *const c_void,
 };
-// our crimes break the Rust test runner infra so we need to not do them if this is a test build
+
+// our crimes break the Rust test runner infra for some reason (probably due to nasal demons) so we need to not commit them if this is a test build
 #[cfg(not(test))]
-#[ctor]
-fn ctor() {
-    println!("OxideGL running static constructor. Ensure liboxidegl is loaded BEFORE main is run. Loading liboxidegl after main WILL result in delivery of nasal demons to your front door");
-    // Safety: we are living the good life (before main), so there are no other threads to race on environment variables with
-    unsafe { oxidegl_platform_init() }
-    // Safety: running from static ctor (equivalent to objc +load context)
-    unsafe { OXGLOxideGlCtxShim::clobber_ns_opengl() }
+mod ctor {
+    use ctor::ctor;
+
+    use crate::{entry_point::oxidegl_platform_init, nsgl_shim::OXGLOxideGlCtxShim};
+    #[ctor]
+    fn ctor() {
+        println!("OxideGL running static constructor. Ensure liboxidegl is loaded BEFORE main is run. Loading liboxidegl after main WILL result in delivery of nasal demons to your front door");
+        // Safety: we are living the good life (before main), so there are no other threads to race on environment variables with
+        unsafe { oxidegl_platform_init() }
+        // Safety: running from static ctor (equivalent to objc +load context)
+        unsafe { OXGLOxideGlCtxShim::clobber_ns_opengl() }
+    }
 }
