@@ -1,6 +1,6 @@
 use crate::{
     context::{Context, CTX},
-    entry_point::{box_ctx, oxidegl_platform_init, set_context, swap_buffers},
+    entry_point::{box_ctx, set_context, swap_buffers},
 };
 use core_foundation_sys::{
     base::CFEqual,
