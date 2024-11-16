@@ -197,10 +197,10 @@ impl OXGLOxideGlCtxShim {
     }
     /// # Safety
     /// Must be called from a serial objc context (e.g. a static initializer or +load method)
-    #[allow(clippy::too_many_lines)]
+    #[allow(unused)]
     unsafe fn clobber_ns_opengl() {
-        static BUTCHER_ONCE: Once = Once::new();
-        BUTCHER_ONCE.call_once(|| {
+        static CLOBBER_ONCE: Once = Once::new();
+        CLOBBER_ONCE.call_once(|| {
             trace!("Clobbering NSOpenGLContext");
             // Calling `class` ensures that the class actually gets loaded and registered before we try to do things with it
             let opengl_ctx_class_ptr = ptr::from_ref(NSOpenGLContext::class())
