@@ -188,6 +188,7 @@ impl From<BlendingFactor> for MTLBlendFactor {
     fn from(value: BlendingFactor) -> Self {
         #[allow(clippy::enum_glob_use)]
         use BlendingFactor::*;
+
         match value {
             // constants
             Zero => Self::Zero,
@@ -238,7 +239,7 @@ bitflag_bits! {
     #[repr(transparent)]
     pub struct Capabilities: u64 bits: {
 
-        // don't use indexed caps
+        // don't include indexed caps
         // BLEND: 0,
         // SCISSOR_TEST: 19,
 
@@ -567,7 +568,7 @@ where
             // and this struct is !Sync, so two racing executions of this function are impossible
             unsafe { self.inner.get().as_ref().unwrap_unchecked() }.not_yet_initialized()
         {
-            Self::ensure_init_inner(
+            Self::init_inner(
                 // Safety: No shared references to the inner type are present if has not yet been initialized (see above)
                 unsafe { self.inner.get().as_mut().unwrap_unchecked() },
                 name,
@@ -581,14 +582,14 @@ where
         }
     }
     #[inline]
-    fn ensure_init_inner(inner_ref: &mut NameOrObj<T::Obj>, name: ObjectName<T::Obj>) {
+    fn init_inner(inner_ref: &mut NameOrObj<T::Obj>, name: ObjectName<T::Obj>) {
         *inner_ref = NameOrObj::Obj(T::Obj::LATE_INIT_FUNC(name));
     }
     #[inline]
     fn ensure_init_mut(&mut self) -> &mut T::Obj {
         let inner_ref = self.inner.get_mut();
         if let Some(name) = inner_ref.not_yet_initialized() {
-            Self::ensure_init_inner(inner_ref, name);
+            Self::init_inner(inner_ref, name);
         }
         match self.inner.get_mut() {
             //Safety: we just ensured that the inner type is initialized, it is impossible for it to be in this state
@@ -645,7 +646,7 @@ impl<T: NamedObject> NameStateInterface<T> for Option<T> {
 
 /// Represents the name of an OpenGL object of type T.
 /// Note that the generic parameter is simply there to prevent accidental misuse of
-/// object names, since an arbitrary `ObjectName` can be created safely (i.e. these are identifiers, not true "handles")
+/// object names, since an arbitrary `ObjectName` can be created safely (i.e. these are identifiers, not true "handles" in the RAII sense)
 #[repr(transparent)]
 pub struct ObjectName<T: ?Sized>(NonZeroU32, PhantomData<for<'a> fn(&'a T) -> &'a T>);
 

@@ -1,12 +1,137 @@
 use log::trace;
 use objc2_metal::MTLPixelFormat;
 
-use crate::enums::{PixelFormat, PixelType};
+use crate::enums::{InternalFormat, PixelFormat, PixelType};
 
 #[derive(Debug, Copy, Clone)]
 pub struct GLPixelTypeFormat {
     ty: PixelType,
     fmt: PixelFormat,
+}
+#[allow(clippy::enum_glob_use)]
+impl InternalFormat {
+    #[expect(clippy::too_many_lines)]
+    pub(crate) fn to_mtl_format(self) -> MTLPixelFormat {
+        use InternalFormat::*;
+        use MTLPixelFormat as MF;
+        // falback to uncompressed for "default" compressed formats. People shouldn't really be using these anyways
+        match self {
+            Rgb4 | Rgba4 => MF::ABGR4Unorm,
+            Rgb5 | Rgb5A1 => MF::A1BGR5Unorm,
+
+            CompressedRgba | CompressedRgb | Rgb8 | Rgb | Rgba | Rgba8 => MF::RGBA8Unorm,
+            Rgba8Snorm | Rgb8Snorm => MF::RGBA8Snorm,
+
+            Rgb10 | Rgb10A2 => MF::RGB10A2Unorm,
+            Rgba16Snorm | Rgb16Snorm => MF::RGBA16Snorm,
+            Rgb16 | Rgb12 | Rgba16 | Rgba12 => MF::RGBA16Unorm,
+
+            DepthComponent16 => MF::Depth16Unorm,
+            DepthComponent | DepthComponent32f | DepthComponent32 => MF::Depth32Float,
+
+            Depth32fStencil8 => MF::Depth32Float_Stencil8,
+            DepthComponent24 | Depth24Stencil8 | DepthStencil => MF::Depth24Unorm_Stencil8,
+
+            CompressedSrgbAlpha | CompressedSrgb | Srgb8 | Srgb | Srgb8Alpha8 | SrgbAlpha => {
+                MF::RGBA8Unorm_sRGB
+            }
+
+            // etc2 and eac
+            CompressedRgb8Etc2 => MF::ETC2_RGB8,
+            CompressedSrgb8Etc2 => MF::ETC2_RGB8_sRGB,
+            CompressedRgba8Etc2Eac => MF::ETC2_RGB8A1,
+            CompressedSrgb8Alpha8Etc2Eac => MF::ETC2_RGB8A1_sRGB,
+            CompressedR11Eac => MF::EAC_R11Unorm,
+            CompressedSignedR11Eac => MF::EAC_R11Snorm,
+            CompressedRg11Eac => MF::EAC_RG11Unorm,
+            CompressedSignedRg11Eac => MF::EAC_RG11Snorm,
+
+            // rgtc (aka BC4)
+            CompressedRedRgtc1 => MF::BC4_RUnorm,
+            CompressedSignedRedRgtc1 => MF::BC4_RSnorm,
+            CompressedRgRgtc2 => MF::BC5_RGUnorm,
+            CompressedSignedRgRgtc2 => MF::BC5_RGSnorm,
+
+            // bptc (aka BC6H and BC7)
+            CompressedRgbaBptcUnorm => MF::BC7_RGBAUnorm,
+            CompressedSrgbAlphaBptcUnorm => MF::BC7_RGBAUnorm_sRGB,
+            CompressedRgbBptcSignedFloat => MF::BC6H_RGBFloat,
+            CompressedRgbBptcUnsignedFloat => MF::BC6H_RGBUfloat,
+
+            Rgb32f | Rgba32f => MF::RGBA32Float,
+            Rgb16f | Rgba16f => MF::RGBA16Float,
+            R11fG11fB10f => MF::RG11B10Float,
+
+            Rgb9E5 => MF::RGB9E5Float,
+            Rgb32ui | Rgba32ui => MF::RGBA32Uint,
+            Rgb16ui | Rgba16ui => MF::RGBA16Uint,
+            Rgb8ui | Rgba8ui => MF::RGBA8Uint,
+
+            Rgb32i | Rgba32i => MF::RGBA32Sint,
+            Rgb16i | Rgba16i => MF::RGBA16Sint,
+            Rgb8i | Rgba8i => MF::RGBA8Sint,
+            StencilIndex1 | StencilIndex4 | StencilIndex | StencilIndex8 => MF::Stencil8,
+
+            R8 | CompressedRed | Red => MF::R8Unorm,
+            R8Snorm => MF::R8Snorm,
+            R8i => MF::R8Sint,
+            R8ui => MF::R8Uint,
+
+            R16 => MF::R16Unorm,
+            R16Snorm => MF::R16Snorm,
+            R16i => MF::R16Sint,
+            R16ui => MF::R16Uint,
+            R16f => MF::R16Float,
+
+            R32i => MF::R32Sint,
+            R32ui => MF::R32Uint,
+            R32f => MF::R32Float,
+
+            CompressedRg | Rg | Rg8 => MF::RG8Unorm,
+            Rg8Snorm => MF::RG8Snorm,
+            Rg8i => MF::RG8Sint,
+            Rg8ui => MF::RG8Uint,
+
+            Rg16 => MF::RG16Unorm,
+            Rg16Snorm => MF::RG16Snorm,
+            Rg16ui => MF::RG16Uint,
+            Rg16i => MF::RG16Sint,
+            Rg16f => MF::RG16Float,
+
+            Rg32f => MF::RG32Float,
+            Rg32i => MF::RG32Sint,
+            Rg32ui => MF::RG32Uint,
+
+            Rgb10A2ui => MF::RGB10A2Uint,
+
+            // would require emulating stencil test for only this stencil type
+            StencilIndex16 => todo!(),
+            // oddball formats that metal (rightly) dropped
+            Rgb565 => todo!(),
+            R3G3B2 => todo!(),
+            Rgba2 => todo!(),
+
+            // unsupported EAC modes
+            CompressedRgb8PunchthroughAlpha1Etc2 => todo!(),
+            CompressedSrgb8PunchthroughAlpha1Etc2 => todo!(),
+        }
+    }
+    fn is_gl_copyable(self) -> bool {
+        use InternalFormat::*;
+        !matches!(
+            self,
+            CompressedRgb8Etc2
+                | CompressedSrgb8Etc2
+                | CompressedRgb8PunchthroughAlpha1Etc2
+                | CompressedSrgb8PunchthroughAlpha1Etc2
+                | CompressedRgba8Etc2Eac
+                | CompressedSrgb8Alpha8Etc2Eac
+                | CompressedR11Eac
+                | CompressedSignedR11Eac
+                | CompressedRg11Eac
+                | CompressedSignedRg11Eac
+        )
+    }
 }
 impl GLPixelTypeFormat {
     pub fn new(ty: PixelType, fmt: PixelFormat) -> Self {
@@ -108,8 +233,8 @@ impl GLPixelTypeFormat {
             PixelType::UnsignedShort4444 => todo!(),
             PixelType::UnsignedShort5551 => todo!(),
             PixelType::UnsignedByte233Rev => todo!(),
-            PixelType::UnsignedShort4444Rev => todo!(),
-            PixelType::UnsignedShort1555Rev => todo!(),
+            PixelType::UnsignedShort4444Rev => MF::ABGR4Unorm,
+            PixelType::UnsignedShort1555Rev => MF::A1BGR5Unorm,
             PixelType::UnsignedInt5999Rev => todo!(),
             PixelType::Float32UnsignedInt248Rev => todo!(),
             PixelType::UnsignedInt248 => todo!(),

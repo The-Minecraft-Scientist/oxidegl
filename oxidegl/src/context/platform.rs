@@ -515,6 +515,7 @@ impl PlatformState {
         if state.caps.is_any_enabled(Capabilities::CULL_FACE) {
             enc.setCullMode(state.cull_face_mode.into());
         }
+
         // we *could* set this only when blending is actually enabled, but that's done on a per-attachment basis anyways and
         // this call is quite cheap (just sets a similar variable somewhere within the encoder state)
         let blend_col = state.blend.blend_color;
@@ -530,7 +531,7 @@ impl PlatformState {
             clippy::cast_lossless,
             reason = "pixel aligned rect values are always 32 bits, and as such are exactly representable as f64"
         )]
-        self.current_render_encoder().setViewport(MTLViewport {
+        enc.setViewport(MTLViewport {
             originX: state.viewport.x as f64,
             originY: state.viewport.y as f64,
             width: state.viewport.width as f64,
@@ -698,7 +699,7 @@ impl PlatformState {
         };
         Self::check_drawable_size(&self.device, dims, self.pixel_format, false, r)
     }
-    // precondition: user specifies depth format
+    // precondition: user specifies depth format for defaultfb
     pub(crate) fn get_internal_depthbuffer(&mut self, dims: (u32, u32)) -> &InternalDrawable {
         Self::check_drawable_size(
             &self.device,
@@ -708,7 +709,7 @@ impl PlatformState {
             &mut self.internal_drawables.depth,
         )
     }
-    // precondition: user specifies stencil format
+    // precondition: user specifies stencil format for defaultfb
     pub(crate) fn get_internal_stencilbuffer(&mut self, dims: (u32, u32)) -> &InternalDrawable {
         Self::check_drawable_size(
             &self.device,

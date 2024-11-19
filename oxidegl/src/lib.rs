@@ -7,6 +7,8 @@
 )]
 
 use objc2::{rc::Retained, runtime::ProtocolObject};
+use std::fmt::Debug;
+use std::ops::{Deref, DerefMut};
 
 pub mod context;
 pub mod entry_point;
@@ -42,8 +44,6 @@ pub(crate) fn trimmed_type_name<T: ?Sized>() -> &'static str {
     }
 }
 pub type ProtoObjRef<T> = Retained<ProtocolObject<T>>;
-use std::fmt::Debug;
-use std::ops::{Deref, DerefMut};
 
 pub struct NoDebug<T> {
     inner: T,
