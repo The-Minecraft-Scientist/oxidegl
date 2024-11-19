@@ -25,7 +25,7 @@ pub fn remove_multi(s: &str, m: &[&str]) -> String {
 
 trait NodeExt: Sized {
     fn find_named_child(&self, name: &str) -> Option<Self>;
-    fn find_named_attribute<'a>(&'a self, name: &'a str) -> Option<Attribute<'a, '_>>;
+    fn find_named_attribute<'a>(&'a self, name: &'a str) -> Option<Attribute<'a, 'a>>;
 }
 impl<'a, 'input> NodeExt for Node<'a, 'input> {
     fn find_named_child(&self, name: &str) -> Option<Self> {
@@ -33,7 +33,7 @@ impl<'a, 'input> NodeExt for Node<'a, 'input> {
             .find(|child| child.tag_name().name() == name)
     }
 
-    fn find_named_attribute<'b>(&'b self, name: &'b str) -> Option<Attribute<'b, '_>> {
+    fn find_named_attribute<'b>(&'b self, name: &'b str) -> Option<Attribute<'b, 'b>> {
         let mut attrs = self.attributes();
         attrs.find(|attr| attr.name() == name)
     }

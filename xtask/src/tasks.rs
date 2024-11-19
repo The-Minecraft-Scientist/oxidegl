@@ -109,6 +109,9 @@ pub struct BuildOxideGL {
     /// rust target triple to build OxideGL for
     #[arg(short, long)]
     target: Option<String>,
+    // Whether to compile with the -Z threads argument set to 8. Requires `rustup` and a nightly toolchain installed on the target platform
+    #[arg(short, long)]
+    parallel: bool,
 }
 impl TaskTrait for BuildOxideGL {
     fn dependencies(&self) -> Option<Box<[Task]>> {
@@ -165,6 +168,9 @@ impl TaskTrait for BuildOxideGL {
             self.target.as_deref().unwrap_or("default")
         );
         let mut c = Command::new("cargo");
+        if self.parallel {
+            c.arg("+nightly");
+        }
         c.arg("build");
 
         let debug_release = if self.release { "release" } else { "debug" };
@@ -186,16 +192,33 @@ impl TaskTrait for BuildOxideGL {
             c.args(["--config", "build-override.debug-assertions=true"]);
         }
 
+        let mut rustflags = "build.rustflags=[".to_string();
+
+        if self.parallel {
+            println!("parallel build requested, using nightly toolchain");
+
+            rustflags.push_str("\"-Z\", \"threads=8\", ");
+            if !Command::new("rustup")
+                .args(["override", "set", "nightly"])
+                .output()?
+                .status
+                .success()
+            {
+                bail!("failed to override toolchain to nightly");
+            }
+        }
         if self.target_cpu_native {
-            c.args([
-                "--config",
-                "build.rustflags=[\"-C\", \"target-cpu=native\"]",
-            ]);
+            rustflags.push_str("\"-C\", \"target-cpu=native\"");
+        }
+        if rustflags.len() > 1 {
+            rustflags.push(']');
+            c.args(["--config", &rustflags]);
         }
         c.current_dir("oxidegl");
         if !c.spawn()?.wait()?.success() {
             bail!("failed to compile OxideGL!");
         }
+
         if self.install {
             let _ = remove_file("/usr/local/lib/liboxidegl.dylib");
             copy(
