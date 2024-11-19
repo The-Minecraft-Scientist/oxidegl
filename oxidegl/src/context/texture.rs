@@ -1,20 +1,31 @@
 use log::trace;
 use objc2_metal::MTLPixelFormat;
 
-use crate::enums::{InternalFormat, PixelFormat, PixelType};
+use crate::enums::{InternalFormat, PixelFormat, PixelType, GL_VIEW_CLASS_128_BITS};
+
+use super::state::ObjectName;
 
 #[derive(Debug, Copy, Clone)]
 pub struct GLPixelTypeFormat {
     ty: PixelType,
     fmt: PixelFormat,
 }
+
+pub struct Texture {
+    name: ObjectName<Self>,
+    format: InternalFormat,
+    width: u32,
+    height: u32,
+    is_tex_array: bool,
+}
+
 #[allow(clippy::enum_glob_use)]
 impl InternalFormat {
-    #[expect(clippy::too_many_lines)]
-    pub(crate) fn to_mtl_format(self) -> MTLPixelFormat {
+    #[allow(clippy::too_many_lines)]
+    pub(crate) fn mtl_format(self) -> MTLPixelFormat {
         use InternalFormat::*;
         use MTLPixelFormat as MF;
-        // falback to uncompressed for "default" compressed formats. People shouldn't really be using these anyways
+        // falback to uncompressed for "default" compressed formats. People really shouldn't be using them anyways...
         match self {
             Rgb4 | Rgba4 => MF::ABGR4Unorm,
             Rgb5 | Rgb5A1 => MF::A1BGR5Unorm,
@@ -116,7 +127,7 @@ impl InternalFormat {
             CompressedSrgb8PunchthroughAlpha1Etc2 => todo!(),
         }
     }
-    fn is_gl_copyable(self) -> bool {
+    pub(crate) fn is_gl_copyable(self) -> bool {
         use InternalFormat::*;
         !matches!(
             self,
@@ -132,6 +143,50 @@ impl InternalFormat {
                 | CompressedSignedRg11Eac
         )
     }
+    pub(crate) fn view_class(self) -> Option<TextureViewClass> {
+        use InternalFormat::*;
+        match self {
+            Rgba32f | Rgba32ui | Rgba32i => Some(TextureViewClass::Bits128),
+            Rgb32f | Rgb32ui | Rgb32i => Some(TextureViewClass::Bits96),
+            Rgba16f | Rgba16ui | Rgba16i | Rgba16Snorm | Rgba16 | Rg32f | Rg32i | Rg32ui => {
+                Some(TextureViewClass::Bits64)
+            }
+            Rgb16 | Rgb16Snorm | Rgb16f | Rgb16ui | Rgb16i => Some(TextureViewClass::Bits48),
+            Rg16f | R11fG11fB10f | R32f | Rgb10A2ui | Rgba8ui | Rg16ui | R32ui | Rgba8i | Rg16i
+            | R32i | Rgb10A2 | Rgba8 | Rg16 | Rgba8Snorm | Srgb8Alpha8 | Rgb9E5 => {
+                Some(TextureViewClass::Bits32)
+            }
+            Rgb8 | Rgb8Snorm | Srgb8 | Rgb8i | Rgb8ui => Some(TextureViewClass::Bits24),
+            R16f | Rg8ui | R16ui | Rg8i | R16i | Rg8 | R16 | Rg8Snorm | R16Snorm => {
+                Some(TextureViewClass::Bits16)
+            }
+            R8ui | R8i | R8 | R8Snorm => Some(TextureViewClass::Bits8),
+            CompressedRedRgtc1 | CompressedSignedRedRgtc1 => Some(TextureViewClass::RgtcRed),
+            CompressedRgRgtc2 | CompressedSignedRgRgtc2 => Some(TextureViewClass::RgtcRg),
+            CompressedRgbaBptcUnorm | CompressedSrgbAlphaBptcUnorm => {
+                Some(TextureViewClass::BptcUnorm)
+            }
+            CompressedRgbBptcSignedFloat | CompressedRgbBptcUnsignedFloat => {
+                Some(TextureViewClass::BptcFloat)
+            }
+            _ => None,
+        }
+    }
+}
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub(crate) enum TextureViewClass {
+    Bits128,
+    Bits96,
+    Bits64,
+    Bits48,
+    Bits32,
+    Bits24,
+    Bits16,
+    Bits8,
+    RgtcRed,
+    RgtcRg,
+    BptcUnorm,
+    BptcFloat,
 }
 impl GLPixelTypeFormat {
     pub fn new(ty: PixelType, fmt: PixelFormat) -> Self {
