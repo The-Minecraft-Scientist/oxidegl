@@ -1501,10 +1501,9 @@ use crate::{
 /// are available only if the GL version is 4.3 or greater.
 impl Context {
     ///
-    ///
     /// # Safety
     /// TODO
-    #[allow(clippy::too_many_lines, clippy::inline_always)]
+    #[allow(clippy::too_many_lines)]
     pub(crate) unsafe fn oxidegl_get<T: GlDstType, I: MaybeIndex>(
         &self,
         parameter_name: GetPName,

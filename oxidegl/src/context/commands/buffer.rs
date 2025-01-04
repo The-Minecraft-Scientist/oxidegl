@@ -46,7 +46,6 @@ impl Context {
     ///
     /// ### Associated Gets
     /// [**glIsBuffer**](crate::context::Context::oxidegl_is_buffer)
-
     pub unsafe fn oxidegl_gen_buffers(&mut self, n: GLsizei, buffers: *mut GLuint) {
         // Safety: Caller ensures validity
         unsafe { self.gl_state.buffer_list.gen_obj(n, buffers) }
@@ -66,7 +65,6 @@ impl Context {
     /// returns `n` previously unused buffer names in `buffers`, each representing
     /// a new buffer object initialized as if it had been bound to an unspecified
     /// target.
-
     pub unsafe fn oxidegl_create_buffers(&mut self, n: GLsizei, buffers: *mut GLuint) {
         // Safety: Caller ensures validity
         unsafe {
@@ -256,7 +254,6 @@ impl Context {
     /// [**glGet**](crate::context::Context::oxidegl_get) with argument [`GL_TRANSFORM_FEEDBACK_BUFFER_BINDING`](crate::enums::GL_TRANSFORM_FEEDBACK_BUFFER_BINDING)
     ///
     /// [**glGet**](crate::context::Context::oxidegl_get) with argument [`GL_UNIFORM_BUFFER_BINDING`](crate::enums::GL_UNIFORM_BUFFER_BINDING)
-
     pub fn oxidegl_bind_buffer(&mut self, target: BufferTarget, buffer: GLuint) {
         self.bind_buffer_internal(ObjectName::try_from_raw(buffer), target, NoIndex);
     }
@@ -296,7 +293,6 @@ impl Context {
     ///
     /// The [`GL_SHADER_STORAGE_BUFFER`](crate::enums::GL_SHADER_STORAGE_BUFFER)
     /// target is available only if the GL version is 4.3 or greater.
-
     pub fn oxidegl_bind_buffer_base(
         &mut self,
         target: BufferTarget,
@@ -350,7 +346,6 @@ impl Context {
     ///
     /// The [`GL_SHADER_STORAGE_BUFFER`](crate::enums::GL_SHADER_STORAGE_BUFFER)
     /// target is available only if the GL version is 4.3 or greater.
-
     pub fn oxidegl_bind_buffer_range(
         &mut self,
         target: BufferTarget,
@@ -401,7 +396,6 @@ impl Context {
     /// ### Notes
     /// [**glBindBuffersBase**](crate::context::Context::oxidegl_bind_buffers_base)
     /// is available only if the GL version is 4.4 or higher.
-
     pub unsafe fn oxidegl_bind_buffers_base(
         &mut self,
         target: BufferTarget,
@@ -464,7 +458,6 @@ impl Context {
     /// ### Notes
     /// [**glBindBuffersBase**](crate::context::Context::oxidegl_bind_buffers_base)
     /// is available only if the GL version is 4.4 or higher.
-
     pub unsafe fn oxidegl_bind_buffers_range(
         &mut self,
         target: BufferTarget,
@@ -491,7 +484,6 @@ impl Context {
     /// A name returned by [**glGenBuffers**](crate::context::Context::oxidegl_gen_buffers),
     /// but not yet associated with a buffer object by calling [**glBindBuffer**](crate::context::Context::oxidegl_bind_buffer),
     /// is not the name of a buffer object.
-
     pub fn oxidegl_is_buffer(&mut self, buffer: GLuint) -> GLboolean {
         self.gl_state.buffer_list.is_obj(buffer)
     }

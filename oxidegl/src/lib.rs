@@ -3,7 +3,8 @@
 #![allow(
     clippy::missing_panics_doc,
     clippy::module_name_repetitions,
-    clippy::float_cmp
+    clippy::float_cmp,
+    clippy::too_many_lines
 )]
 
 use objc2::{rc::Retained, runtime::ProtocolObject};
@@ -15,6 +16,8 @@ pub mod entry_point;
 
 #[allow(clippy::undocumented_unsafe_blocks)]
 mod dispatch;
+
+mod device_properties;
 #[cfg(feature = "nsgl_shim")]
 mod nsgl_shim;
 
@@ -92,7 +95,8 @@ macro_rules! bitflag_bits {{
      $v:vis struct $name:ident: $t:tt bits: {
         $(
             $( #[doc = $doc:literal] )*
-            $bit_name:ident: $bit:expr ),+ $(,)?
+            $bit_name:ident: $bit:expr
+        ),+ $(,)?
     }} => {
         ::bitflags::bitflags! {
             $(#[$attr])*

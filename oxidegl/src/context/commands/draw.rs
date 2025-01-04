@@ -50,7 +50,6 @@ impl Context {
     /// [`GL_TRIANGLE_STRIP_ADJACENCY`](crate::enums::GL_TRIANGLE_STRIP_ADJACENCY)
     /// and [`GL_TRIANGLES_ADJACENCY`](crate::enums::GL_TRIANGLES_ADJACENCY) are
     /// available only if the GL version is 3.2 or greater.
-
     pub fn oxidegl_draw_arrays(&mut self, mode: PrimitiveType, first: GLint, count: GLsizei) {
         //FIXME hack, move to module
         let Context {

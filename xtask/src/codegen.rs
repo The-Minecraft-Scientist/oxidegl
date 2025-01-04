@@ -166,7 +166,7 @@ impl<'a> OrderedFeatureStorage<'a> {
     }
 }
 
-impl<'a> Default for OrderedFeatureStorage<'a> {
+impl Default for OrderedFeatureStorage<'_> {
     fn default() -> Self {
         Self::new()
     }
@@ -611,7 +611,7 @@ pub fn write_placeholder_impl<T: Write>(w: &mut T, v: &[FnCollection<'_>]) -> Re
                 continue;
             };
             if let Some(doc) = &individual.docs {
-                writeln!(w, "{doc}")?;
+                write!(w, "{doc}")?;
             }
             writeln!(
                 w,

@@ -1,22 +1,26 @@
-use log::trace;
-use objc2_metal::MTLPixelFormat;
+use std::num::NonZeroU32;
 
-use crate::enums::{InternalFormat, PixelFormat, PixelType, GL_VIEW_CLASS_128_BITS};
+use log::trace;
+use objc2_metal::{MTLPixelFormat, MTLTexture};
+
+use crate::{
+    enums::{InternalFormat, PixelFormat, PixelType, TextureTarget},
+    ProtoObjRef,
+};
 
 use super::state::ObjectName;
 
-#[derive(Debug, Copy, Clone)]
-pub struct GLPixelTypeFormat {
-    ty: PixelType,
-    fmt: PixelFormat,
-}
-
+#[derive(Debug)]
 pub struct Texture {
     name: ObjectName<Self>,
+    target: TextureTarget,
+    mtl_tex: ProtoObjRef<dyn MTLTexture>,
+
     format: InternalFormat,
     width: u32,
-    height: u32,
-    is_tex_array: bool,
+    height: Option<NonZeroU32>,
+    depth: Option<NonZeroU32>,
+    array_length: Option<NonZeroU32>,
 }
 
 #[allow(clippy::enum_glob_use)]
@@ -24,96 +28,97 @@ impl InternalFormat {
     #[allow(clippy::too_many_lines)]
     pub(crate) fn mtl_format(self) -> MTLPixelFormat {
         use InternalFormat::*;
-        use MTLPixelFormat as MF;
-        // falback to uncompressed for "default" compressed formats. People really shouldn't be using them anyways...
+        use MTLPixelFormat as M;
+        // fallback to uncompressed for "default" compressed formats. People really shouldn't be using them anyways...
         match self {
-            Rgb4 | Rgba4 => MF::ABGR4Unorm,
-            Rgb5 | Rgb5A1 => MF::A1BGR5Unorm,
+            Rgb4 | Rgba4 => M::ABGR4Unorm,
+            Rgb5 | Rgb5A1 => M::A1BGR5Unorm,
 
-            CompressedRgba | CompressedRgb | Rgb8 | Rgb | Rgba | Rgba8 => MF::RGBA8Unorm,
-            Rgba8Snorm | Rgb8Snorm => MF::RGBA8Snorm,
+            CompressedRgba | CompressedRgb | Rgb8 | Rgb | Rgba | Rgba8 => M::RGBA8Unorm,
+            Rgba8Snorm | Rgb8Snorm => M::RGBA8Snorm,
 
-            Rgb10 | Rgb10A2 => MF::RGB10A2Unorm,
-            Rgba16Snorm | Rgb16Snorm => MF::RGBA16Snorm,
-            Rgb16 | Rgb12 | Rgba16 | Rgba12 => MF::RGBA16Unorm,
+            Rgb10 | Rgb10A2 => M::RGB10A2Unorm,
+            Rgba16Snorm | Rgb16Snorm => M::RGBA16Snorm,
+            Rgb16 | Rgb12 | Rgba16 | Rgba12 => M::RGBA16Unorm,
 
-            DepthComponent16 => MF::Depth16Unorm,
-            DepthComponent | DepthComponent32f | DepthComponent32 => MF::Depth32Float,
+            DepthComponent16 => M::Depth16Unorm,
+            DepthComponent | DepthComponent32f | DepthComponent32 => M::Depth32Float,
 
-            Depth32fStencil8 => MF::Depth32Float_Stencil8,
-            DepthComponent24 | Depth24Stencil8 | DepthStencil => MF::Depth24Unorm_Stencil8,
+            Depth32fStencil8 => M::Depth32Float_Stencil8,
+            DepthComponent24 | Depth24Stencil8 | DepthStencil => M::Depth24Unorm_Stencil8,
+
+            StencilIndex1 | StencilIndex4 | StencilIndex | StencilIndex8 => M::Stencil8,
 
             CompressedSrgbAlpha | CompressedSrgb | Srgb8 | Srgb | Srgb8Alpha8 | SrgbAlpha => {
-                MF::RGBA8Unorm_sRGB
+                M::RGBA8Unorm_sRGB
             }
 
             // etc2 and eac
-            CompressedRgb8Etc2 => MF::ETC2_RGB8,
-            CompressedSrgb8Etc2 => MF::ETC2_RGB8_sRGB,
-            CompressedRgba8Etc2Eac => MF::ETC2_RGB8A1,
-            CompressedSrgb8Alpha8Etc2Eac => MF::ETC2_RGB8A1_sRGB,
-            CompressedR11Eac => MF::EAC_R11Unorm,
-            CompressedSignedR11Eac => MF::EAC_R11Snorm,
-            CompressedRg11Eac => MF::EAC_RG11Unorm,
-            CompressedSignedRg11Eac => MF::EAC_RG11Snorm,
+            CompressedRgb8Etc2 => M::ETC2_RGB8,
+            CompressedSrgb8Etc2 => M::ETC2_RGB8_sRGB,
+            CompressedRgba8Etc2Eac => M::ETC2_RGB8A1,
+            CompressedSrgb8Alpha8Etc2Eac => M::ETC2_RGB8A1_sRGB,
+            CompressedR11Eac => M::EAC_R11Unorm,
+            CompressedSignedR11Eac => M::EAC_R11Snorm,
+            CompressedRg11Eac => M::EAC_RG11Unorm,
+            CompressedSignedRg11Eac => M::EAC_RG11Snorm,
 
-            // rgtc (aka BC4)
-            CompressedRedRgtc1 => MF::BC4_RUnorm,
-            CompressedSignedRedRgtc1 => MF::BC4_RSnorm,
-            CompressedRgRgtc2 => MF::BC5_RGUnorm,
-            CompressedSignedRgRgtc2 => MF::BC5_RGSnorm,
+            // rgtc (aka BC4 and 5)
+            CompressedRedRgtc1 => M::BC4_RUnorm,
+            CompressedSignedRedRgtc1 => M::BC4_RSnorm,
+            CompressedRgRgtc2 => M::BC5_RGUnorm,
+            CompressedSignedRgRgtc2 => M::BC5_RGSnorm,
 
             // bptc (aka BC6H and BC7)
-            CompressedRgbaBptcUnorm => MF::BC7_RGBAUnorm,
-            CompressedSrgbAlphaBptcUnorm => MF::BC7_RGBAUnorm_sRGB,
-            CompressedRgbBptcSignedFloat => MF::BC6H_RGBFloat,
-            CompressedRgbBptcUnsignedFloat => MF::BC6H_RGBUfloat,
+            CompressedRgbaBptcUnorm => M::BC7_RGBAUnorm,
+            CompressedSrgbAlphaBptcUnorm => M::BC7_RGBAUnorm_sRGB,
+            CompressedRgbBptcSignedFloat => M::BC6H_RGBFloat,
+            CompressedRgbBptcUnsignedFloat => M::BC6H_RGBUfloat,
 
-            Rgb32f | Rgba32f => MF::RGBA32Float,
-            Rgb16f | Rgba16f => MF::RGBA16Float,
-            R11fG11fB10f => MF::RG11B10Float,
+            Rgb32f | Rgba32f => M::RGBA32Float,
+            Rgb16f | Rgba16f => M::RGBA16Float,
+            R11fG11fB10f => M::RG11B10Float,
 
-            Rgb9E5 => MF::RGB9E5Float,
-            Rgb32ui | Rgba32ui => MF::RGBA32Uint,
-            Rgb16ui | Rgba16ui => MF::RGBA16Uint,
-            Rgb8ui | Rgba8ui => MF::RGBA8Uint,
+            Rgb9E5 => M::RGB9E5Float,
+            Rgb32ui | Rgba32ui => M::RGBA32Uint,
+            Rgb16ui | Rgba16ui => M::RGBA16Uint,
+            Rgb8ui | Rgba8ui => M::RGBA8Uint,
 
-            Rgb32i | Rgba32i => MF::RGBA32Sint,
-            Rgb16i | Rgba16i => MF::RGBA16Sint,
-            Rgb8i | Rgba8i => MF::RGBA8Sint,
-            StencilIndex1 | StencilIndex4 | StencilIndex | StencilIndex8 => MF::Stencil8,
+            Rgb32i | Rgba32i => M::RGBA32Sint,
+            Rgb16i | Rgba16i => M::RGBA16Sint,
+            Rgb8i | Rgba8i => M::RGBA8Sint,
 
-            R8 | CompressedRed | Red => MF::R8Unorm,
-            R8Snorm => MF::R8Snorm,
-            R8i => MF::R8Sint,
-            R8ui => MF::R8Uint,
+            R8 | CompressedRed | Red => M::R8Unorm,
+            R8Snorm => M::R8Snorm,
+            R8i => M::R8Sint,
+            R8ui => M::R8Uint,
 
-            R16 => MF::R16Unorm,
-            R16Snorm => MF::R16Snorm,
-            R16i => MF::R16Sint,
-            R16ui => MF::R16Uint,
-            R16f => MF::R16Float,
+            R16 => M::R16Unorm,
+            R16Snorm => M::R16Snorm,
+            R16i => M::R16Sint,
+            R16ui => M::R16Uint,
+            R16f => M::R16Float,
 
-            R32i => MF::R32Sint,
-            R32ui => MF::R32Uint,
-            R32f => MF::R32Float,
+            R32i => M::R32Sint,
+            R32ui => M::R32Uint,
+            R32f => M::R32Float,
 
-            CompressedRg | Rg | Rg8 => MF::RG8Unorm,
-            Rg8Snorm => MF::RG8Snorm,
-            Rg8i => MF::RG8Sint,
-            Rg8ui => MF::RG8Uint,
+            CompressedRg | Rg | Rg8 => M::RG8Unorm,
+            Rg8Snorm => M::RG8Snorm,
+            Rg8i => M::RG8Sint,
+            Rg8ui => M::RG8Uint,
 
-            Rg16 => MF::RG16Unorm,
-            Rg16Snorm => MF::RG16Snorm,
-            Rg16ui => MF::RG16Uint,
-            Rg16i => MF::RG16Sint,
-            Rg16f => MF::RG16Float,
+            Rg16 => M::RG16Unorm,
+            Rg16Snorm => M::RG16Snorm,
+            Rg16ui => M::RG16Uint,
+            Rg16i => M::RG16Sint,
+            Rg16f => M::RG16Float,
 
-            Rg32f => MF::RG32Float,
-            Rg32i => MF::RG32Sint,
-            Rg32ui => MF::RG32Uint,
+            Rg32f => M::RG32Float,
+            Rg32i => M::RG32Sint,
+            Rg32ui => M::RG32Uint,
 
-            Rgb10A2ui => MF::RGB10A2Uint,
+            Rgb10A2ui => M::RGB10A2Uint,
 
             // would require emulating stencil test for only this stencil type
             StencilIndex16 => todo!(),
@@ -122,9 +127,10 @@ impl InternalFormat {
             R3G3B2 => todo!(),
             Rgba2 => todo!(),
 
-            // unsupported EAC modes
-            CompressedRgb8PunchthroughAlpha1Etc2 => todo!(),
-            CompressedSrgb8PunchthroughAlpha1Etc2 => todo!(),
+            // unsupported ETC2 compression modes
+            CompressedRgb8PunchthroughAlpha1Etc2 | CompressedSrgb8PunchthroughAlpha1Etc2 => {
+                panic!("OxideGL does not support ETC2 punchthrough format variations")
+            }
         }
     }
     pub(crate) fn is_gl_copyable(self) -> bool {
@@ -144,6 +150,7 @@ impl InternalFormat {
         )
     }
     pub(crate) fn view_class(self) -> Option<TextureViewClass> {
+        // Note: Metal additionally requires that the bit length of a pixel format is one of: 8, 16, 32, 64, or 128
         use InternalFormat::*;
         match self {
             Rgba32f | Rgba32ui | Rgba32i => Some(TextureViewClass::Bits128),
@@ -188,12 +195,21 @@ pub(crate) enum TextureViewClass {
     BptcUnorm,
     BptcFloat,
 }
+
+#[derive(Debug, Copy, Clone)]
+/// A combination of a [`PixelType`] and a [`PixelFormat`], used to specify input and output formats.
+/// When user code requests or supplies textures, they specify the format with this pair, as opposed to using an [`InternalFormat`]
+pub struct GLPixelTypeFormat {
+    ty: PixelType,
+    fmt: PixelFormat,
+}
+
 impl GLPixelTypeFormat {
     pub fn new(ty: PixelType, fmt: PixelFormat) -> Self {
         Self { ty, fmt }
     }
     pub fn to_mtl_format(self) -> MTLPixelFormat {
-        use MTLPixelFormat as MF;
+        use MTLPixelFormat as M;
         use PixelFormat::{
             DepthComponent, DepthStencil, Red, RedInteger, Rg, RgInteger, Rgba, RgbaInteger,
         };
@@ -205,91 +221,91 @@ impl GLPixelTypeFormat {
         );
         match self.ty {
             PixelType::Byte => match self.fmt {
-                Red => MF::R8Snorm,
-                Rg => MF::RG8Snorm,
-                Rgba => MF::RGBA8Snorm,
-                RedInteger => MF::R8Sint,
-                RgInteger => MF::RG8Sint,
-                RgbaInteger => MF::RGBA8Sint,
+                Red => M::R8Snorm,
+                Rg => M::RG8Snorm,
+                Rgba => M::RGBA8Snorm,
+                RedInteger => M::R8Sint,
+                RgInteger => M::RG8Sint,
+                RgbaInteger => M::RGBA8Sint,
 
                 _ => panic!("invalid source pixel format"),
             },
             PixelType::UnsignedByte => match self.fmt {
-                Red => MF::R8Unorm,
-                Rg => MF::RG8Unorm,
-                Rgba => MF::RGBA8Unorm,
-                RedInteger => MF::R8Uint,
-                RgInteger => MF::RG8Uint,
-                RgbaInteger => MF::RGBA8Uint,
+                Red => M::R8Unorm,
+                Rg => M::RG8Unorm,
+                Rgba => M::RGBA8Unorm,
+                RedInteger => M::R8Uint,
+                RgInteger => M::RG8Uint,
+                RgbaInteger => M::RGBA8Uint,
                 _ => panic!("invalid source pixel format"),
             },
             PixelType::Short => match self.fmt {
-                Red => MF::R16Snorm,
-                Rg => MF::RG16Snorm,
-                Rgba => MF::RGBA16Snorm,
-                RedInteger => MF::R16Sint,
-                RgInteger => MF::RG16Sint,
-                RgbaInteger => MF::RGBA16Sint,
+                Red => M::R16Snorm,
+                Rg => M::RG16Snorm,
+                Rgba => M::RGBA16Snorm,
+                RedInteger => M::R16Sint,
+                RgInteger => M::RG16Sint,
+                RgbaInteger => M::RGBA16Sint,
                 _ => panic!("invalid source pixel format"),
             },
             PixelType::UnsignedShort => match self.fmt {
-                Red => MF::R16Unorm,
-                Rg => MF::RG16Unorm,
-                Rgba => MF::RGBA16Unorm,
-                RedInteger => MF::R16Uint,
-                RgInteger => MF::RG16Uint,
-                RgbaInteger => MF::RGBA16Uint,
+                Red => M::R16Unorm,
+                Rg => M::RG16Unorm,
+                Rgba => M::RGBA16Unorm,
+                RedInteger => M::R16Uint,
+                RgInteger => M::RG16Uint,
+                RgbaInteger => M::RGBA16Uint,
                 _ => panic!("invalid source pixel format"),
             },
 
             // TODO: emulate GL normalization behavior for (U)Int,
             // those formats are not supported for now
             PixelType::Int => match self.fmt {
-                // Red => MF::R32Uint,
-                // Rg => MF::RG32Snorm,
-                // Rgba => MF::RGBA32Snorm,
-                RedInteger => MF::R32Sint,
-                RgInteger => MF::RG32Sint,
-                RgbaInteger => MF::RGBA32Sint,
+                // Red => M::R32Uint,
+                // Rg => M::RG32Snorm,
+                // Rgba => M::RGBA32Snorm,
+                RedInteger => M::R32Sint,
+                RgInteger => M::RG32Sint,
+                RgbaInteger => M::RGBA32Sint,
                 _ => panic!("invalid source pixel format"),
             },
             PixelType::UnsignedInt => match self.fmt {
-                // Red => MF::R32Unorm,
-                // Rg => MF::RG32Unorm,
-                // Rgba => MF::RGBA32Unorm,
-                RedInteger => MF::R32Uint,
-                RgInteger => MF::RG32Uint,
-                RgbaInteger => MF::RGBA32Uint,
+                // Red => M::R32Unorm,
+                // Rg => M::RG32Unorm,
+                // Rgba => M::RGBA32Unorm,
+                RedInteger => M::R32Uint,
+                RgInteger => M::RG32Uint,
+                RgbaInteger => M::RGBA32Uint,
                 _ => panic!("invalid source pixel format"),
             },
             PixelType::Float => match self.fmt {
-                Red => MF::R32Float,
-                Rg => MF::RG32Float,
-                Rgba => MF::RGBA32Float,
-                DepthComponent => MF::Depth32Float,
-                DepthStencil => MF::Depth24Unorm_Stencil8,
+                Red => M::R32Float,
+                Rg => M::RG32Float,
+                Rgba => M::RGBA32Float,
+                DepthComponent => M::Depth32Float,
+                DepthStencil => M::Depth24Unorm_Stencil8,
                 _ => panic!("invalid source pixel format"),
             },
             PixelType::HalfFloat => match self.fmt {
-                Red => MF::R16Float,
-                Rg => MF::RG16Float,
-                Rgba => MF::RGBA16Float,
+                Red => M::R16Float,
+                Rg => M::RG16Float,
+                Rgba => M::RGBA16Float,
                 _ => panic!("invalid source pixel format"),
             },
             // special-purpose formats
-            PixelType::UnsignedInt10F11F11FRev => MF::RG11B10Float,
-            PixelType::UnsignedShort565 => MF::B5G6R5Unorm,
-            PixelType::UnsignedInt8888 => MF::RGBA8Unorm,
-            PixelType::UnsignedInt8888Rev => MF::BGRA8Unorm,
-            PixelType::UnsignedInt1010102 => MF::RGB10A2Unorm,
-            PixelType::UnsignedInt2101010Rev => MF::BGR10A2Unorm,
+            PixelType::UnsignedInt10F11F11FRev => M::RG11B10Float,
+            PixelType::UnsignedShort565 => M::B5G6R5Unorm,
+            PixelType::UnsignedInt8888 => M::RGBA8Unorm,
+            PixelType::UnsignedInt8888Rev => M::BGRA8Unorm,
+            PixelType::UnsignedInt1010102 => M::RGB10A2Unorm,
+            PixelType::UnsignedInt2101010Rev => M::BGR10A2Unorm,
+            PixelType::UnsignedShort4444Rev => M::ABGR4Unorm,
+            PixelType::UnsignedShort1555Rev => M::A1BGR5Unorm,
 
             PixelType::UnsignedByte332 => todo!(),
             PixelType::UnsignedShort4444 => todo!(),
             PixelType::UnsignedShort5551 => todo!(),
             PixelType::UnsignedByte233Rev => todo!(),
-            PixelType::UnsignedShort4444Rev => MF::ABGR4Unorm,
-            PixelType::UnsignedShort1555Rev => MF::A1BGR5Unorm,
             PixelType::UnsignedInt5999Rev => todo!(),
             PixelType::Float32UnsignedInt248Rev => todo!(),
             PixelType::UnsignedInt248 => todo!(),

@@ -7,35 +7,39 @@ crate-type = ["cdylib"]
 
 
 [dependencies]
-#MacOS deps
+# MacOS deps
 
 # Objective C Base
 objc2 = "0.5.2"
-# Need to speak Cocoa for interacting with window layers
+# Need to speak Cocoa to interact with windows and layers
 objc2-app-kit = { version = "0.2.2", features = [
     "NSView",
+    "NSScreen",
     "NSWindow",
     "NSResponder",
-    "NSScreen",
     "objc2-quartz-core",
 ] }
 # Need to speak Metal for... well... doing graphics
 objc2-metal = { version = "0.2.2", features = ["all"] }
-# Need to speak CoreAnimation for creating and setting the backing layer of an NSView
+
+# Need to speak CoreAnimation for CAMetalLayer
 objc2-quartz-core = { version = "0.2.2", features = [
     "objc2-metal",
     "CAMetalLayer",
     "CALayer",
 ] }
-# needed for MainThreadMarker/`is_main_thread`
-objc2-foundation = { version = "0.2.2", features = ["NSThread"] }
+# needed for MainThreadMarker/`is_main_thread` and ProcessInfo to get the MacOS version
+objc2-foundation = { version = "0.2.2", features = [
+    "NSThread",
+    "NSProcessInfo",
+] }
 
 # Need access to raw mach vm_allocate for [MTLDevice newBufferWithBytesNoCopy]
 # mach2 = { git = "https://github.com/JohnTitor/mach2/" }
 # TODO: rework buffer alloc
 
 
-#General deps
+# General deps
 # FromRepr used for checked GLenum wrapper creation on debug builds
 strum_macros = "0.26.3"
 
@@ -45,7 +49,7 @@ flexi_logger = "0.29"
 
 # Bitflags for GL Bitmasks
 bitflags = "2.6.0"
-# Fast hashmap
+# Fast hash function
 ahash = "0.8.11"
 # Macro utilities
 concat-idents = "1.1.5"

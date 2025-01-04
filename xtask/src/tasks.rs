@@ -5,7 +5,7 @@ use std::{
     sync::{Arc, OnceLock},
 };
 
-use anyhow::{bail, Result};
+use anyhow::{bail, Context, Result};
 use clap::{Args, Subcommand};
 use dashmap::DashSet;
 use enum_dispatch::enum_dispatch;
@@ -109,7 +109,7 @@ pub struct BuildOxideGL {
     /// rust target triple to build OxideGL for
     #[arg(short, long)]
     target: Option<String>,
-    // Whether to compile with the -Z threads argument set to 8. Requires `rustup` and a nightly toolchain installed on the target platform
+    // Whether to compile with the -Z threads argument set to 8. Requires a nightly toolchain installed on the target platform
     #[arg(short, long)]
     parallel: bool,
 }
@@ -139,7 +139,6 @@ impl TaskTrait for BuildOxideGL {
     }
 
     fn perform(&self) -> Result<()> {
-        //TODO: fix installing universal binary not working
         let debug_release = if self.release { "release" } else { "debug" };
         if self.universal {
             println!("merging universal binary");
@@ -147,20 +146,19 @@ impl TaskTrait for BuildOxideGL {
             let x86_binary = format!("target/x86_64-apple-darwin/{debug_release}/liboxidegl.dylib");
             let aarch_binary =
                 format!("target/aarch64-apple-darwin/{debug_release}/liboxidegl.dylib");
-            create_dir_all(&univ_path)
-                .expect("failed to create output directory for universal OxideGL binary");
+            create_dir_all(&univ_path)?;
+            let bin_path = format!("{univ_path}/liboxidegl.dylib");
             let _c = Command::new("lipo")
-                .args([
-                    "-create",
-                    "-output",
-                    &format!("{univ_path}/liboxidegl.dylib"),
-                    &x86_binary,
-                    &aarch_binary,
-                ])
+                .args(["-create", "-output", &bin_path, &x86_binary, &aarch_binary])
                 .output()
                 .ok()
                 .and_then(|v| if v.status.success() { Some(v) } else { None })
-                .expect("failed to run lipo universal binary utility");
+                .context("running lipo command")?;
+            if self.install {
+                let _ = remove_file("/usr/local/lib/liboxidegl.dylib");
+                copy(bin_path, "/usr/local/lib/liboxidegl.dylib")?;
+                println!("Installed OxideGL to /usr/local/lib/liboxidegl.dylib");
+            }
             return Ok(());
         }
         println!(
@@ -168,6 +166,7 @@ impl TaskTrait for BuildOxideGL {
             self.target.as_deref().unwrap_or("default")
         );
         let mut c = Command::new("cargo");
+        c.current_dir("oxidegl");
         if self.parallel {
             c.arg("+nightly");
         }
@@ -194,27 +193,14 @@ impl TaskTrait for BuildOxideGL {
 
         let mut rustflags = "build.rustflags=[".to_string();
 
-        if self.parallel {
-            println!("parallel build requested, using nightly toolchain");
-
-            rustflags.push_str("\"-Z\", \"threads=8\", ");
-            if !Command::new("rustup")
-                .args(["override", "set", "nightly"])
-                .output()?
-                .status
-                .success()
-            {
-                bail!("failed to override toolchain to nightly");
-            }
-        }
         if self.target_cpu_native {
             rustflags.push_str("\"-C\", \"target-cpu=native\"");
         }
-        if rustflags.len() > 1 {
+        if rustflags.len() > 17 {
             rustflags.push(']');
             c.args(["--config", &rustflags]);
         }
-        c.current_dir("oxidegl");
+
         if !c.spawn()?.wait()?.success() {
             bail!("failed to compile OxideGL!");
         }

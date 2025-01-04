@@ -1289,7 +1289,7 @@ macro_rules! generate_attr_match_branch {
                     4 => concat_idents::concat_idents!(name = $base, 4, $($suffix)* { MTLVertexFormat::name }),
                     #[allow(unused_unsafe)]
                     // Safety: Caller ensures the number of components is in bounds
-                    _ => unsafe { crate::debug_unreachable!("UB: invalid vertex attribute size!") }
+                    _ => unreachable!("UB: invalid vertex attribute size!")
                 }.0 as u32
             },
             normalization_const: $bitlen,
@@ -1301,7 +1301,7 @@ macro_rules! generate_attr_match_branch {
 }
 
 #[inline]
-unsafe fn gl_attribute_to_mtl(
+fn gl_attribute_to_mtl(
     ty: VertexAttribType,
     num_components: u8,
     behavior: IntegralCastBehavior,
@@ -1408,12 +1408,12 @@ pub enum IntegralCastBehavior {
 #[derive(Debug, Clone, Copy)]
 pub struct AttributeFormatWithConversion {
     /// [`MTLVertexFormat`] truncated to 32 bits
-    pub mtl_format: u32,
-    /// Values should be divided or multiplied by ``2^normalization_const`` when normalizing
-    pub normalization_const: u8,
+    pub(crate) mtl_format: u32,
+    /// Values should be divided or multiplied by `2^normalization_const` when normalizing
+    pub(crate) normalization_const: u8,
     /// Type of conversion code that must be added to the vertex shader
-    pub conversion: IntegralCastBehavior,
-    pub bgra_shuffle: bool,
+    pub(crate) conversion: IntegralCastBehavior,
+    pub(crate) bgra_shuffle: bool,
 }
 impl AttributeFormatWithConversion {
     pub(crate) fn to_vertex_format(self) -> MTLVertexFormat {

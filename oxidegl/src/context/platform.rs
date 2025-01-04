@@ -25,6 +25,7 @@ use crate::{
         debug::{gl_debug, gl_trace},
         state::StencilFaceState,
     },
+    device_properties::MetalProperties,
     enums::{DepthFunction, DrawBufferMode, ShaderType, StencilFunction, StencilOp, TriangleFace},
     ProtoObjRef,
 };
@@ -42,11 +43,14 @@ pub struct PlatformState {
     /// dirty components
     pub(crate) dirty_state: Dirty,
 
-    /// the View this state is associated with
+    /// the `NSView` this context is associated with
     view: Option<Retained<NSView>>,
 
     /// Metal device
     pub(crate) device: ProtoObjRef<dyn MTLDevice>,
+
+    /// Device and Metal version properties
+    pub(crate) props: MetalProperties,
 
     /// Metal command queue
     pub(crate) queue: ProtoObjRef<dyn MTLCommandQueue>,
@@ -270,11 +274,13 @@ impl PlatformState {
             .expect("failed to create command queue");
         queue.setLabel(Some(ns_string!("OxideGL command queue")));
 
+        let props = MetalProperties::new(&device);
         Self {
             dirty_state: Dirty::all(),
 
             view: None,
             device,
+            props,
             queue,
             layer,
             drawable: None,
@@ -304,7 +310,7 @@ impl PlatformState {
     ) -> ProtoObjRef<dyn MTLCommandBuffer> {
         let buf;
 
-        //use extra metal debugging/validation when debug assertions are enabled
+        // use extra metal debugging/validation when debug assertions are enabled
         #[cfg(debug_assertions)]
         unsafe {
             let desc = MTLCommandBufferDescriptor::new();
@@ -674,7 +680,7 @@ impl PlatformState {
         gpu_private: bool,
         r: &'a mut Option<InternalDrawable>,
     ) -> &'a InternalDrawable {
-        if !r.as_ref().is_some_and(|v| v.dimensions == dims) {
+        if r.as_ref().is_none_or(|v| v.dimensions != dims) {
             // Need a new internal drawable
             let new_tex = Self::new_drawbuffer_size_format(device, dims, pixel_format, gpu_private);
             let mut replacement = Some(InternalDrawable::new(new_tex, dims));
@@ -747,8 +753,8 @@ impl PlatformState {
     pub(crate) fn linked_stage(
         state: &GLState,
         shader_type: ShaderType,
-    ) -> &Option<LinkedShaderStage> {
-        //TODO: program pipeline handling
+    ) -> Option<&LinkedShaderStage> {
+        //TODO: handle program pipelines
         let program = state
             .program_list
             .get(state.program_binding.expect("No program bound"));
@@ -765,6 +771,7 @@ impl PlatformState {
             ShaderType::TessControlShader => todo!(),
             ShaderType::GeometryShader => todo!(),
         }
+        .as_ref()
     }
 
     /// precondition: has program

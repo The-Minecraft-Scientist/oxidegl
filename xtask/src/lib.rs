@@ -27,7 +27,7 @@ trait NodeExt: Sized {
     fn find_named_child(&self, name: &str) -> Option<Self>;
     fn find_named_attribute<'a>(&'a self, name: &'a str) -> Option<Attribute<'a, 'a>>;
 }
-impl<'a, 'input> NodeExt for Node<'a, 'input> {
+impl NodeExt for Node<'_, '_> {
     fn find_named_child(&self, name: &str) -> Option<Self> {
         self.children()
             .find(|child| child.tag_name().name() == name)

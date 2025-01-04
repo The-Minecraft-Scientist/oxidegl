@@ -152,8 +152,7 @@ impl Shader {
 }
 
 // TODO correctly detect device capabilities
-// (see https://github.com/gfx-rs/wgpu/blob/trunk/wgpu-hal/src/metal/mod.rs#L201)
-// (see https://github.com/gfx-rs/wgpu/blob/trunk/wgpu-hal/src/metal/adapter.rs#L842)
+
 impl ShaderType {
     #[must_use]
     pub fn to_glslang_stage(self) -> ShaderStage {

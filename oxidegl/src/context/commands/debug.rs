@@ -214,9 +214,9 @@ impl Context {
             (false, _, 1..) => {}
 
             // invalid buffer for writing
-            (false, _, 0) => {
+            (false, t, 0) => {
                 gl_warn!("Tried to read an object label into a zero-length buffer");
-                if !length.is_null() {
+                if !t {
                     // Safety: checked for null, otherwise caller ensures that length is a valid pointer to a 32 bit integer
                     unsafe {
                         *length = 0;
@@ -226,7 +226,7 @@ impl Context {
             }
             // overload to write out the total string length, not the number of bytes written
             (true, false, _) => {
-                // Safety: checked for null, otherwise caller ensures that length is a valid pointer to a 32 bit integer
+                // Safety: checked for null, otherwise caller ensures that length is valid for writes
                 unsafe {
                     *length = label_len_with_nul - 1;
                 }
@@ -240,14 +240,15 @@ impl Context {
 
         if label_len_with_nul > buf_size {
             gl_warn!(src: Api, ty: Portability, "Unspecified behavior: buf size for glGetObjectLabel is 
-            smaller than the length of the label. This implementation truncates the label, but this is not guaranteed by the spec");
+                smaller than the length of the label. This implementation truncates the label to fit, but 
+                this is not guaranteed by the spec");
         }
         // see assert above, len and buf_size are both guaranteed to be >= 1 so this cannot underflow
         // subtract 1 since length needs to be the number of character bytes written, not the total number of bytes written
         let bytes_to_copy = buf_size.min(label_len_with_nul) - 1;
 
         if !length.is_null() {
-            // Safety: if length is non-null, caller ensures that it points to a uint, which we are allowed to store to
+            // Safety: if length is non-null, caller ensures that it is valid for stores of u32
             unsafe {
                 *length = bytes_to_copy;
             };
@@ -257,7 +258,7 @@ impl Context {
         let label_bytes =
             // Safety: valid to create an &[MaybeUninit<u8>] from &[u8]
             unsafe { slice::from_raw_parts(bytes.as_ptr().cast::<MaybeUninit<u8>>(), bytes.len()) };
-        // Safety: if label is non-null caller ensures it points to a (possibly uninitialized) byte buffer of size buf_size
+        // Safety: if label is non-null caller ensures it points to a (possibly uninitialized) byte buffer of size buf_size and is valid for writes
         let buf = unsafe {
             slice::from_raw_parts_mut(label.cast::<MaybeUninit<u8>>(), buf_size as usize)
         };
@@ -296,7 +297,6 @@ impl Context {
     ///
     /// ### Associated Gets
     /// [**glGet**](crate::context::Context::oxidegl_get) with argument [`GL_MAX_LABEL_LENGTH`](crate::enums::GL_MAX_LABEL_LENGTH).
-
     pub unsafe fn oxidegl_get_object_ptr_label(
         &mut self,
         ptr: *const GLvoid,
@@ -338,7 +338,6 @@ impl Context {
     /// available in the compatibility profile for all GL versions, and accepts
     /// additional queries. However, these reference pages document only the core
     /// profile.
-
     pub unsafe fn oxidegl_get_pointerv(
         &mut self,
         pname: GetPointervPName,
@@ -389,7 +388,6 @@ impl Context {
     /// in the client's address space. In such cases, the callback function may
     /// not be invoked and the user should retrieve debug messages from the context's
     /// debug message log by calling [**glGetDebugMessageLog**](crate::context::Context::oxidegl_get_debug_message_log).
-
     pub unsafe fn oxidegl_debug_message_callback(
         &mut self,
         callback: GLDEBUGPROC,
@@ -488,7 +486,6 @@ impl Context {
     /// [`GL_DEBUG_TYPE_POP_GROUP`](crate::enums::GL_DEBUG_TYPE_POP_GROUP), and
     /// [`GL_DEBUG_SEVERITY_NOTIFICATION`](crate::enums::GL_DEBUG_SEVERITY_NOTIFICATION)
     /// are available only if the GL version is 4.3 or higher.
-
     pub unsafe fn oxidegl_debug_message_control(
         &mut self,
         source: DebugSource,
@@ -560,7 +557,6 @@ impl Context {
     /// [`GL_DEBUG_TYPE_POP_GROUP`](crate::enums::GL_DEBUG_TYPE_POP_GROUP), and
     /// [`GL_DEBUG_SEVERITY_NOTIFICATION`](crate::enums::GL_DEBUG_SEVERITY_NOTIFICATION)
     /// are available only if the GL version is 4.3 or higher.
-
     pub unsafe fn oxidegl_debug_message_insert(
         &mut self,
         source: DebugSource,
