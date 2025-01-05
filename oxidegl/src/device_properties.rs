@@ -70,7 +70,7 @@ pub(crate) struct MetalProperties {
 impl MetalProperties {
     pub(crate) fn new(device: &ProtoObjRef<dyn MTLDevice>) -> Self {
         let version = NSProcessInfo::processInfo().operatingSystemVersion();
-        // common denominator of Mac `MTLDevice`s
+        // common denominator of all Mac `MTLDevice`s
         #[allow(deprecated)]
         let is_mac = device.supportsFeatureSet(objc2_metal::MTLFeatureSet::_macOS_GPUFamily1_v1);
 
@@ -114,6 +114,8 @@ impl MetalProperties {
         }
     }
     fn get_texture_caps(&self, format: MTLPixelFormat) -> TextureCaps {
+        use MTLPixelFormat as MF;
+
         let device_families = self.families;
         let sparse = if device_families
             .intersects(Families::APPLE6 | Families::APPLE7 | Families::APPLE8 | Families::APPLE9)
@@ -122,7 +124,7 @@ impl MetalProperties {
         } else {
             TextureCaps::NONE
         };
-        use MTLPixelFormat as MF;
+
         match format {
             MF::R8Unorm
             | MF::R8Snorm
@@ -293,7 +295,7 @@ bitflag_bits! {
     }
 }
 impl Families {
-    fn supports_any(&self, other: Families) -> bool {
+    fn supports_any(self, other: Families) -> bool {
         self.intersects(other)
     }
 }

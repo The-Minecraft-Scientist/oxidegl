@@ -1241,8 +1241,7 @@ impl VertexAttrib {
     #[inline]
     pub fn get_mtl_layout(&self) -> AttributeFormatWithConversion {
         self.validate();
-        // Safety: invariants guaranteed to be upheld (or we abort) by validate function
-        unsafe { gl_attribute_to_mtl(self.component_type, self.components, self.integral_cast) }
+        gl_attribute_to_mtl(self.component_type, self.components, self.integral_cast)
     }
 }
 
