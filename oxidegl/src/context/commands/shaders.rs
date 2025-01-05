@@ -118,8 +118,6 @@ impl Context {
     /// with argument `shader`
     ///
     /// [**glIsShader**](crate::context::Context::oxidegl_is_shader)
-    ///
-
     pub unsafe fn oxidegl_shader_source(
         &mut self,
         shader: GLuint,
@@ -193,7 +191,6 @@ impl Context {
     /// `shader` and [`GL_COMPILE_STATUS`](crate::enums::GL_COMPILE_STATUS)
     ///
     /// [**glIsShader**](crate::context::Context::oxidegl_is_shader)
-
     pub fn oxidegl_compile_shader(&mut self, shader: GLuint) {
         self.get_shader_raw_mut(shader).compile();
     }
@@ -260,7 +257,6 @@ impl Context {
     /// with argument `shader`
     ///
     /// [**glIsShader**](crate::context::Context::oxidegl_is_shader)
-
     pub unsafe fn oxidegl_get_shaderiv(
         &mut self,
         shader: GLuint,
@@ -308,7 +304,6 @@ impl Context {
     /// `shader` and [`GL_DELETE_STATUS`](crate::enums::GL_DELETE_STATUS)
     ///
     /// [**glIsShader**](crate::context::Context::oxidegl_is_shader)
-
     pub fn oxidegl_delete_shader(&mut self, shader: GLuint) {
         let name = ObjectName::from_raw(shader);
         gl_debug!(src: ShaderCompiler, "marking {:?} for deletion", name);

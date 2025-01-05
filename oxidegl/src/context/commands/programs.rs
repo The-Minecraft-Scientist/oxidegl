@@ -332,7 +332,6 @@ impl Context {
     /// [**glIsProgram**](crate::context::Context::oxidegl_is_program)
     ///
     /// [**glIsShader**](crate::context::Context::oxidegl_is_shader)
-
     pub fn oxidegl_detach_shader(&mut self, program: GLuint, shader: GLuint) {
         let program = self.gl_state.program_list.get_raw_mut(program);
         let shader = self.gl_state.shader_list.get_raw_mut(shader);
@@ -518,7 +517,6 @@ impl Context {
     /// with argument `program`
     ///
     /// [**glIsProgram**](crate::context::Context::oxidegl_is_program)
-
     pub unsafe fn oxidegl_get_programiv(
         &mut self,
         program: GLuint,
@@ -614,7 +612,6 @@ impl Context {
     /// with argument `program`
     ///
     /// [**glIsProgram**](crate::context::Context::oxidegl_is_program)
-
     //HACK: validation is a no-op because it's Complicated™
     pub fn oxidegl_validate_program(&mut self, program: GLuint) {}
 

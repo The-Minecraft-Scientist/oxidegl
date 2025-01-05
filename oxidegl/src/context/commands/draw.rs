@@ -118,7 +118,6 @@ impl Context {
     /// GL less than 4.2, this parameter is present but is reserved and should
     /// be set to zero. On earlier versions of the GL, behavior is undefined if
     /// it is non-zero.
-
     pub unsafe fn oxidegl_draw_arrays_indirect(
         &mut self,
         mode: PrimitiveType,
@@ -126,6 +125,7 @@ impl Context {
     ) {
         panic!("command oxidegl_draw_arrays_indirect not yet implemented");
     }
+
     /// ### Parameters
     /// `mode`
     ///
@@ -160,7 +160,6 @@ impl Context {
     ///
     /// [**glDrawArraysInstanced**](crate::context::Context::oxidegl_draw_arrays_instanced)
     /// has the same effect as:
-
     pub fn oxidegl_draw_arrays_instanced(
         &mut self,
         mode: PrimitiveType,
@@ -215,7 +214,6 @@ impl Context {
     /// shader. The index of the vertex fetched from the enabled instanced vertex
     /// attribute arrays is calculated as: `[inlineq]` `baseinstance` does not
     /// affect the shader-visible value of [`gl_InstanceID`](crate::enums::gl_InstanceID).
-
     pub fn oxidegl_draw_arrays_instanced_base_instance(
         &mut self,
         mode: PrimitiveType,
@@ -274,7 +272,6 @@ impl Context {
     /// [`GL_TRIANGLE_STRIP_ADJACENCY`](crate::enums::GL_TRIANGLE_STRIP_ADJACENCY)
     /// and [`GL_TRIANGLES_ADJACENCY`](crate::enums::GL_TRIANGLES_ADJACENCY) are
     /// available only if the GL version is 3.2 or greater.
-
     pub unsafe fn oxidegl_draw_elements(
         &mut self,
         mode: PrimitiveType,
@@ -326,7 +323,6 @@ impl Context {
     /// ### Notes
     /// [**glDrawElementsBaseVertex**](crate::context::Context::oxidegl_draw_elements_base_vertex)
     /// is only supported if the GL version is 3.2 or greater, or if the
-
     pub unsafe fn oxidegl_draw_elements_base_vertex(
         &mut self,
         mode: PrimitiveType,
@@ -395,7 +391,6 @@ impl Context {
     /// GL less than 4.2, this parameter is present but is reserved and should
     /// be set to zero. On earlier versions of the GL, behavior is undefined if
     /// it is non-zero.
-
     pub unsafe fn oxidegl_draw_elements_indirect(
         &mut self,
         mode: PrimitiveType,
@@ -453,7 +448,6 @@ impl Context {
     /// [`GL_TRIANGLE_STRIP_ADJACENCY`](crate::enums::GL_TRIANGLE_STRIP_ADJACENCY)
     /// and [`GL_TRIANGLES_ADJACENCY`](crate::enums::GL_TRIANGLES_ADJACENCY) are
     /// available only if the GL version is 3.2 or greater.
-
     pub unsafe fn oxidegl_draw_elements_instanced(
         &mut self,
         mode: PrimitiveType,
@@ -524,7 +518,6 @@ impl Context {
     /// [`GL_TRIANGLE_STRIP_ADJACENCY`](crate::enums::GL_TRIANGLE_STRIP_ADJACENCY)
     /// and [`GL_TRIANGLES_ADJACENCY`](crate::enums::GL_TRIANGLES_ADJACENCY) are
     /// available only if the GL version is 3.2 or greater.
-
     pub unsafe fn oxidegl_draw_elements_instanced_base_instance(
         &mut self,
         mode: PrimitiveType,
@@ -583,7 +576,6 @@ impl Context {
     /// ### Notes
     /// [**glDrawElementsInstancedBaseVertex**](crate::context::Context::oxidegl_draw_elements_instanced_base_vertex)
     /// is only supported if the GL version is 3.2 or greater.
-
     pub unsafe fn oxidegl_draw_elements_instanced_base_vertex(
         &mut self,
         mode: PrimitiveType,
@@ -653,7 +645,6 @@ impl Context {
     /// ### Notes
     /// [**glDrawElementsInstancedBaseVertex**](crate::context::Context::oxidegl_draw_elements_instanced_base_vertex)
     /// is only supported if the GL version is 3.2 or greater.
-
     pub unsafe fn oxidegl_draw_elements_instanced_base_vertex_base_instance(
         &mut self,
         mode: PrimitiveType,
@@ -737,7 +728,6 @@ impl Context {
     /// [**glGet**](crate::context::Context::oxidegl_get) with argument [`GL_MAX_ELEMENTS_VERTICES`](crate::enums::GL_MAX_ELEMENTS_VERTICES)
     ///
     /// [**glGet**](crate::context::Context::oxidegl_get) with argument [`GL_MAX_ELEMENTS_INDICES`](crate::enums::GL_MAX_ELEMENTS_INDICES)
-
     pub unsafe fn oxidegl_draw_range_elements(
         &mut self,
         mode: PrimitiveType,
@@ -800,7 +790,6 @@ impl Context {
     /// `type`, it is as if the calculation were upconverted to 32-bit unsigned
     /// integers (with wrapping on overflow conditions). The operation is undefined
     /// if the sum would be negative.
-
     pub unsafe fn oxidegl_draw_range_elements_base_vertex(
         &mut self,
         mode: PrimitiveType,
@@ -838,7 +827,6 @@ impl Context {
     /// with `mode` as specified, `first` set to zero, and `count` set to the number
     /// of vertices captured on vertex stream zero the last time transform feedback
     /// was active on the transform feedback object named by `id`.
-
     pub fn oxidegl_draw_transform_feedback(&mut self, mode: PrimitiveType, id: GLuint) {
         panic!("command oxidegl_draw_transform_feedback not yet implemented");
     }
@@ -877,7 +865,6 @@ impl Context {
     /// Calling [**glDrawTransformFeedbackInstanced**](crate::context::Context::oxidegl_draw_transform_feedback_instanced)
     /// is equivalent to calling [**glDrawTransformFeedbackStreamInstanced**](crate::context::Context::oxidegl_draw_transform_feedback_stream_instanced)
     /// with `stream` set to zero.
-
     pub fn oxidegl_draw_transform_feedback_instanced(
         &mut self,
         mode: PrimitiveType,
@@ -921,7 +908,6 @@ impl Context {
     /// Calling [**glDrawTransformFeedback**](crate::context::Context::oxidegl_draw_transform_feedback)
     /// is equivalent to calling [**glDrawTransformFeedbackStream**](crate::context::Context::oxidegl_draw_transform_feedback_stream)
     /// with `stream` set to zero.
-
     pub fn oxidegl_draw_transform_feedback_stream(
         &mut self,
         mode: PrimitiveType,
@@ -970,7 +956,6 @@ impl Context {
     /// Calling [**glDrawTransformFeedbackInstanced**](crate::context::Context::oxidegl_draw_transform_feedback_instanced)
     /// is equivalent to calling [**glDrawTransformFeedbackStreamInstanced**](crate::context::Context::oxidegl_draw_transform_feedback_stream_instanced)
     /// with `stream` set to zero.
-
     pub fn oxidegl_draw_transform_feedback_stream_instanced(
         &mut self,
         mode: PrimitiveType,

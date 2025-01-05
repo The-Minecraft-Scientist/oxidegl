@@ -18,7 +18,7 @@ use crate::enums::{
     TextureParameterName, TextureTarget, TextureUnit, TransformFeedbackBufferMode,
     TransformFeedbackPName, TriangleFace, UniformBlockPName, UniformPName, UniformType,
     UseProgramStageMask, VertexArrayPName, VertexAttribEnum, VertexAttribPointerType,
-    VertexAttribProperty, VertexBufferObjectUsage, VertexProvokingMode, GL_NO_ERROR,
+    VertexAttribProperty, VertexBufferObjectUsage, VertexProvokingMode,
 };
 
 /// ### Parameters
@@ -2522,9 +2522,9 @@ impl Context {
 /// It is not necessary that `nearVal` be less than `farVal`. Reverse mappings
 /// such as `[inlineq]` `[inlineq]`
 ///
-/// The type of the `nearVal` and `farVal` parameters was changed from `GLclampf`
-/// to `GLfloat` for [**glDepthRangef**](crate::context::Context::oxidegl_depth_rangef)
-/// and from `GLclampd` to `GLdouble` for [**glDepthRange**](crate::context::Context::oxidegl_depth_range).
+/// The type of the `nearVal` and `farVal` parameters was changed from GLclampf
+/// to GLfloat for [**glDepthRangef**](crate::context::Context::oxidegl_depth_rangef)
+/// and from GLclampd to GLdouble for [**glDepthRange**](crate::context::Context::oxidegl_depth_range).
 /// This change is transparent to user code and is described in detail on
 /// the [**removedTypes**](crate::context::Context::oxideremoved_types) page.
 ///
@@ -2733,7 +2733,6 @@ impl Context {
         panic!("command oxidegl_named_framebuffer_draw_buffers not yet implemented");
     }
 }
-
 /// ### Parameters
 /// `target`
 ///
@@ -3084,7 +3083,7 @@ impl Context {
 ///
 /// If `textarget` is [`GL_TEXTURE_3D`](crate::enums::GL_TEXTURE_3D), then
 /// `level` must be greater than or equal to zero and less than or equal to
-/// $`log_2`$ of the value of [`GL_MAX_3D_TEXTURE_SIZE`](crate::enums::GL_MAX_3D_TEXTURE_SIZE).
+/// $log_2$ of the value of [`GL_MAX_3D_TEXTURE_SIZE`](crate::enums::GL_MAX_3D_TEXTURE_SIZE).
 ///
 /// If `textarget` is one of [`GL_TEXTURE_CUBE_MAP_POSITIVE_X`](crate::enums::GL_TEXTURE_CUBE_MAP_POSITIVE_X),
 /// [`GL_TEXTURE_CUBE_MAP_POSITIVE_Y`](crate::enums::GL_TEXTURE_CUBE_MAP_POSITIVE_Y),
@@ -3093,10 +3092,10 @@ impl Context {
 /// [`GL_TEXTURE_CUBE_MAP_NEGATIVE_Y`](crate::enums::GL_TEXTURE_CUBE_MAP_NEGATIVE_Y),
 /// or [`GL_TEXTURE_CUBE_MAP_NEGATIVE_Z`](crate::enums::GL_TEXTURE_CUBE_MAP_NEGATIVE_Z),
 /// then `level` must be greater than or equal to zero and less than or equal
-/// to $`log_2`$ of the value of [`GL_MAX_CUBE_MAP_TEXTURE_SIZE`](crate::enums::GL_MAX_CUBE_MAP_TEXTURE_SIZE).
+/// to $log_2$ of the value of [`GL_MAX_CUBE_MAP_TEXTURE_SIZE`](crate::enums::GL_MAX_CUBE_MAP_TEXTURE_SIZE).
 ///
 /// For all other values of `textarget`, `level` must be greater than or equal
-/// to zero and less than or equal to $`log_2`$ of the value of [`GL_MAX_TEXTURE_SIZE`](crate::enums::GL_MAX_TEXTURE_SIZE).
+/// to zero and less than or equal to $log_2$ of the value of [`GL_MAX_TEXTURE_SIZE`](crate::enums::GL_MAX_TEXTURE_SIZE).
 ///
 /// `layer` specifies the layer of a 2-dimensional image within a 3-dimensional
 /// texture.
@@ -3227,11 +3226,11 @@ impl Context {
 /// multisample array, one- or two-dimensional array, or cube map array texture.
 ///
 /// If `texture` is a three-dimensional texture, then `level` must be greater
-/// than or equal to zero and less than or equal to $`log_2`$ of the value of
+/// than or equal to zero and less than or equal to $log_2$ of the value of
 /// [`GL_MAX_3D_TEXTURE_SIZE`](crate::enums::GL_MAX_3D_TEXTURE_SIZE).
 ///
 /// If `texture` is a two-dimensional array texture, then `level` must be greater
-/// than or equal to zero and less than or equal to $`log_2`$ of the value of
+/// than or equal to zero and less than or equal to $log_2$ of the value of
 /// [`GL_MAX_TEXTURE_SIZE`](crate::enums::GL_MAX_TEXTURE_SIZE).
 ///
 /// For cube map textures, `layer` is translated into a cube map face according
@@ -4931,12 +4930,12 @@ impl Context {
 ///
 /// | Layer number        | Cube Map Face        |
 /// |---------------------|----------------------|
-/// | 0                   | `GL_TEXTURE_CUBE_MAP_POSITIVE_X` |
-/// | 1                   | `GL_TEXTURE_CUBE_MAP_NEGATIVE_X` |
-/// | 2                   | `GL_TEXTURE_CUBE_MAP_POSITIVE_Y` |
-/// | 3                   | `GL_TEXTURE_CUBE_MAP_NEGATIVE_Y` |
-/// | 4                   | `GL_TEXTURE_CUBE_MAP_POSITIVE_Z` |
-/// | 5                   | `GL_TEXTURE_CUBE_MAP_NEGATIVE_Z` |
+/// | 0                   | GL_TEXTURE_CUBE_MAP_POSITIVE_X |
+/// | 1                   | GL_TEXTURE_CUBE_MAP_NEGATIVE_X |
+/// | 2                   | GL_TEXTURE_CUBE_MAP_POSITIVE_Y |
+/// | 3                   | GL_TEXTURE_CUBE_MAP_NEGATIVE_Y |
+/// | 4                   | GL_TEXTURE_CUBE_MAP_POSITIVE_Z |
+/// | 5                   | GL_TEXTURE_CUBE_MAP_NEGATIVE_Z |
 ///
 /// ### Notes
 /// If an error is generated, no change is made to the contents of `pixels`.
@@ -5539,8 +5538,8 @@ impl Context {
 /// > undergoing;( [`GL_TRANSFORM_FEEDBACK_ACTIVE`](crate::enums::GL_TRANSFORM_FEEDBACK_ACTIVE))
 ///
 ///
-/// The latter class, which includes [**`glGetTransformFeedbacki_v`**](crate::context::Context::oxidegl_get_transform_feedbacki_v)
-/// and [**`glGetTransformFeedbacki64_v`**](crate::context::Context::oxidegl_get_transform_feedbacki64_v)
+/// The latter class, which includes [**glGetTransformFeedbacki_v**](crate::context::Context::oxidegl_get_transform_feedbacki_v)
+/// and [**glGetTransformFeedbacki64_v**](crate::context::Context::oxidegl_get_transform_feedbacki64_v)
 /// functions, can be used to check what the current configuration of each
 /// of the buffer object regions bound to Transform Feedback Buffer binding
 /// points is. This allows you to query for the following information:
@@ -11287,7 +11286,6 @@ impl Context {
     /// the program pipeline object `pipeline`. The active program in the active
     /// program pipeline object is the target of calls to [**glUniform**](crate::context::Context::oxidegl_uniform)
     /// when no program has been made current through a call to [**glUseProgram**](crate::context::Context::oxidegl_use_program).
-
     pub fn oxidegl_active_shader_program(&mut self, pipeline: GLuint, program: GLuint) {
         panic!("command oxidegl_active_shader_program not yet implemented");
     }
@@ -11309,11 +11307,9 @@ impl Context {
     /// ### Associated Gets
     /// [**glGet**](crate::context::Context::oxidegl_get) with argument [`GL_ACTIVE_TEXTURE`](crate::enums::GL_ACTIVE_TEXTURE),
     /// or [`GL_MAX_COMBINED_TEXTURE_IMAGE_UNITS`](crate::enums::GL_MAX_COMBINED_TEXTURE_IMAGE_UNITS).
-
     pub fn oxidegl_active_texture(&mut self, texture: TextureUnit) {
         panic!("command oxidegl_active_texture not yet implemented");
     }
-
     /// ### Parameters
     /// `program`
     ///
@@ -11408,7 +11404,6 @@ impl Context {
     /// with arguments `program` and `name`
     ///
     /// [**glIsProgram**](crate::context::Context::oxidegl_is_program)
-
     pub unsafe fn oxidegl_bind_attrib_location(
         &mut self,
         program: GLuint,
@@ -11417,7 +11412,6 @@ impl Context {
     ) {
         panic!("command oxidegl_bind_attrib_location not yet implemented");
     }
-
     /// ### Parameters
     /// `program`
     ///
@@ -11464,7 +11458,6 @@ impl Context {
     /// [**glGetFragDataLocation**](crate::context::Context::oxidegl_get_frag_data_location)
     /// with a valid program object and the name of a user-defined varying out
     /// variable
-
     pub unsafe fn oxidegl_bind_frag_data_location(
         &mut self,
         program: GLuint,
@@ -11534,7 +11527,6 @@ impl Context {
     /// [**glGetFragDataIndex**](crate::context::Context::oxidegl_get_frag_data_index)
     /// with a valid program object and the name of a user-defined varying out
     /// variable
-
     pub unsafe fn oxidegl_bind_frag_data_location_indexed(
         &mut self,
         program: GLuint,
@@ -11568,7 +11560,6 @@ impl Context {
     /// is the name of a framebuffer object previously returned from a call to
     /// [**glGenFramebuffers**](crate::context::Context::oxidegl_gen_framebuffers),
     /// or zero to break the existing binding of a framebuffer object to `target`.
-
     pub fn oxidegl_bind_framebuffer(&mut self, target: FramebufferTarget, framebuffer: GLuint) {
         panic!("command oxidegl_bind_framebuffer not yet implemented");
     }
@@ -11703,7 +11694,6 @@ impl Context {
     /// [**glGet**](crate::context::Context::oxidegl_get) with argument [`GL_IMAGE_BINDING_ACCESS`](crate::enums::GL_IMAGE_BINDING_ACCESS).
     ///
     /// [**glGet**](crate::context::Context::oxidegl_get) with argument [`GL_IMAGE_BINDING_FORMAT`](crate::enums::GL_IMAGE_BINDING_FORMAT).
-
     pub fn oxidegl_bind_image_texture(
         &mut self,
         unit: GLuint,
@@ -11776,7 +11766,6 @@ impl Context {
     /// [`GL_TEXTURE_BINDING_CUBE_MAP_ARRAY`](crate::enums::GL_TEXTURE_BINDING_CUBE_MAP_ARRAY),
     /// [`GL_TEXTURE_BINDING_2D_MULTISAMPLE`](crate::enums::GL_TEXTURE_BINDING_2D_MULTISAMPLE),
     /// or [`GL_TEXTURE_BINDING_2D_MULTISAMPLE_ARRAY`](crate::enums::GL_TEXTURE_BINDING_2D_MULTISAMPLE_ARRAY).
-
     pub unsafe fn oxidegl_bind_image_textures(
         &mut self,
         first: GLuint,
@@ -11808,7 +11797,6 @@ impl Context {
     /// the bound program pipeline object has no effect on rendering or uniform
     /// updates. When a bound program pipeline object is used for rendering, individual
     /// shader executables are taken from its program objects.
-
     pub fn oxidegl_bind_program_pipeline(&mut self, pipeline: GLuint) {
         panic!("command oxidegl_bind_program_pipeline not yet implemented");
     }
@@ -11829,7 +11817,6 @@ impl Context {
     /// `renderbuffer` is the name of a renderbuffer object previously returned
     /// from a call to [**glGenRenderbuffers**](crate::context::Context::oxidegl_gen_renderbuffers),
     /// or zero to break the existing binding of a renderbuffer object to `target`.
-
     pub fn oxidegl_bind_renderbuffer(&mut self, target: GLenum, renderbuffer: GLuint) {
         panic!("command oxidegl_bind_renderbuffer not yet implemented");
     }
@@ -11860,7 +11847,6 @@ impl Context {
     ///
     /// ### Associated Gets
     /// [**glGet**](crate::context::Context::oxidegl_get) with argument [`GL_SAMPLER_BINDING`](crate::enums::GL_SAMPLER_BINDING)
-
     pub fn oxidegl_bind_sampler(&mut self, unit: GLuint, sampler: GLuint) {
         panic!("command oxidegl_bind_sampler not yet implemented");
     }
@@ -11906,7 +11892,6 @@ impl Context {
     ///
     /// ### Associated Gets
     /// [**glGet**](crate::context::Context::oxidegl_get) with argument [`GL_SAMPLER_BINDING`](crate::enums::GL_SAMPLER_BINDING)
-
     pub unsafe fn oxidegl_bind_samplers(
         &mut self,
         first: GLuint,
@@ -12004,7 +11989,6 @@ impl Context {
     /// [`GL_TEXTURE_BINDING_CUBE_MAP_ARRAY`](crate::enums::GL_TEXTURE_BINDING_CUBE_MAP_ARRAY),
     /// [`GL_TEXTURE_BINDING_2D_MULTISAMPLE`](crate::enums::GL_TEXTURE_BINDING_2D_MULTISAMPLE),
     /// or [`GL_TEXTURE_BINDING_2D_MULTISAMPLE_ARRAY`](crate::enums::GL_TEXTURE_BINDING_2D_MULTISAMPLE_ARRAY).
-
     pub fn oxidegl_bind_texture(&mut self, target: TextureTarget, texture: GLuint) {
         panic!("command oxidegl_bind_texture not yet implemented");
     }
@@ -12067,7 +12051,6 @@ impl Context {
     /// [`GL_TEXTURE_BINDING_CUBE_MAP_ARRAY`](crate::enums::GL_TEXTURE_BINDING_CUBE_MAP_ARRAY),
     /// [`GL_TEXTURE_BINDING_2D_MULTISAMPLE`](crate::enums::GL_TEXTURE_BINDING_2D_MULTISAMPLE),
     /// or [`GL_TEXTURE_BINDING_2D_MULTISAMPLE_ARRAY`](crate::enums::GL_TEXTURE_BINDING_2D_MULTISAMPLE_ARRAY).
-
     pub unsafe fn oxidegl_bind_textures(
         &mut self,
         first: GLuint,
@@ -12108,7 +12091,6 @@ impl Context {
     /// [`GL_TEXTURE_BINDING_CUBE_MAP_ARRAY`](crate::enums::GL_TEXTURE_BINDING_CUBE_MAP_ARRAY),
     /// [`GL_TEXTURE_BINDING_2D_MULTISAMPLE`](crate::enums::GL_TEXTURE_BINDING_2D_MULTISAMPLE)
     /// or [`GL_TEXTURE_BINDING_2D_MULTISAMPLE_ARRAY`](crate::enums::GL_TEXTURE_BINDING_2D_MULTISAMPLE_ARRAY).
-
     pub fn oxidegl_bind_texture_unit(&mut self, unit: GLuint, texture: GLuint) {
         panic!("command oxidegl_bind_texture_unit not yet implemented");
     }
@@ -12145,7 +12127,6 @@ impl Context {
     ///
     /// ### Associated Gets
     /// [**glGet**](crate::context::Context::oxidegl_get) with argument [`GL_TRANSFORM_FEEDBACK_BINDING`](crate::enums::GL_TRANSFORM_FEEDBACK_BINDING)
-
     pub fn oxidegl_bind_transform_feedback(&mut self, target: GLenum, id: GLuint) {
         panic!("command oxidegl_bind_transform_feedback not yet implemented");
     }
@@ -12169,13 +12150,12 @@ impl Context {
     ///
     /// ### Notes
     /// The type of the `red`, `green`, `blue`, and `alpha` parameters was changed
-    /// from `GLclampf` to `GLfloat`. This change is transparent to user code and is
+    /// from GLclampf to GLfloat. This change is transparent to user code and is
     /// described in detail on the [**removedTypes**](crate::context::Context::oxideremoved_types)
     /// page.
     ///
     /// ### Associated Gets
     /// [**glGet**](crate::context::Context::oxidegl_get) with an argument of [`GL_BLEND_COLOR`](crate::enums::GL_BLEND_COLOR)
-
     pub fn oxidegl_blend_color(
         &mut self,
         red: GLfloat,
@@ -12207,7 +12187,6 @@ impl Context {
     ///
     /// ### Associated Gets
     /// [**glGet**](crate::context::Context::oxidegl_get) with argument [`GL_CLAMP_READ_COLOR`](crate::enums::GL_CLAMP_READ_COLOR).
-
     pub fn oxidegl_clamp_color(&mut self, target: GLenum, clamp: ClampColorMode) {
         panic!("command oxidegl_clamp_color not yet implemented");
     }
@@ -12264,7 +12243,6 @@ impl Context {
     ///
     /// ### Associated Gets
     /// [**glGetTexImage**](crate::context::Context::oxidegl_get_tex_image), [**glGetInternalformat**](crate::context::Context::oxidegl_get_internalformat)
-
     pub unsafe fn oxidegl_clear_tex_image(
         &mut self,
         texture: GLuint,
@@ -12381,7 +12359,6 @@ impl Context {
     ///
     /// ### Associated Gets
     /// [**glGetTexImage**](crate::context::Context::oxidegl_get_tex_image), [**glGetInternalformat**](crate::context::Context::oxidegl_get_internalformat)
-
     pub unsafe fn oxidegl_clear_tex_sub_image(
         &mut self,
         texture: GLuint,
@@ -12437,7 +12414,6 @@ impl Context {
     /// ### Notes
     /// [**glClientWaitSync**](crate::context::Context::oxidegl_client_wait_sync)
     /// is available only if the GL version is 3.2 or greater.
-
     pub fn oxidegl_client_wait_sync(
         &mut self,
         sync: GLsync,
@@ -12462,20 +12438,20 @@ impl Context {
     /// the clipping volume behavior and the clip coordinate to window coordinate
     /// transformation behavior.
     ///
-    /// The view volume is defined by $$z_{min} \leq `z_c` \leq `w_c`$$ where $z_{min}
-    ///= -`w_c`$ when `depth` is [`GL_NEGATIVE_ONE_TO_ONE`](crate::enums::GL_NEGATIVE_ONE_TO_ONE),
+    /// The view volume is defined by $$z_{min} \leq z_c \leq w_c$$ where $z_{min}
+    ///= -w_c$ when `depth` is [`GL_NEGATIVE_ONE_TO_ONE`](crate::enums::GL_NEGATIVE_ONE_TO_ONE),
     /// and $z_{min}= 0$ when `depth` is [`GL_ZERO_TO_ONE`](crate::enums::GL_ZERO_TO_ONE).
     ///
-    /// The normalized device coordinate $`y_d`$ is given by $$`y_d`={{ f \times `y_c`
-    ///} \over `w_c` }$$ where $f= 1$ when `origin` is [`GL_LOWER_LEFT`](crate::enums::GL_LOWER_LEFT),
+    /// The normalized device coordinate $y_d$ is given by $$y_d={{ f \times y_c
+    ///} \over w_c }$$ where $f= 1$ when `origin` is [`GL_LOWER_LEFT`](crate::enums::GL_LOWER_LEFT),
     /// and $f= -1$ when `origin` is [`GL_UPPER_LEFT`](crate::enums::GL_UPPER_LEFT).
     ///
-    /// The window coordinate $`z_w`$ is given by $$`z_w`= s \times `z_d`+ b$$ where
+    /// The window coordinate $z_w$ is given by $$z_w= s \times z_d+ b$$ where
     /// $s={{ f- n} \over 2 }$ and $b={ {n+ f} \over 2 }$ when `depth` is [`GL_NEGATIVE_ONE_TO_ONE`](crate::enums::GL_NEGATIVE_ONE_TO_ONE),
     /// and $s= f- n$ and $b= n$ when `depth` is [`GL_ZERO_TO_ONE`](crate::enums::GL_ZERO_TO_ONE).
     /// $n$ and $f$ are the near and far depth range values set with [**glDepthRange**](crate::context::Context::oxidegl_depth_range).
     ///
-    /// Finally, the polygon area computation defined by [**`gl_FrontFacing`**](crate::context::Context::oxidegl__front_facing)
+    /// Finally, the polygon area computation defined by [**gl_FrontFacing**](crate::context::Context::oxidegl__front_facing)
     /// to determine if a polygon is front- or back-facing has its sign negated
     /// when `origin` is [`GL_UPPER_LEFT`](crate::enums::GL_UPPER_LEFT).
     ///
@@ -12484,7 +12460,7 @@ impl Context {
     /// and a `depth` of [`GL_NEGATIVE_ONE_TO_ONE`](crate::enums::GL_NEGATIVE_ONE_TO_ONE).
     ///
     /// An `origin` of [`GL_UPPER_LEFT`](crate::enums::GL_UPPER_LEFT) and a `depth`
-    /// of [`GL_ZERO_TO_ONE`](crate::enums::GL_ZERO_TO_ONE) corresponds to `Direct3D`'s
+    /// of [`GL_ZERO_TO_ONE`](crate::enums::GL_ZERO_TO_ONE) corresponds to Direct3D's
     /// clip volume definition.
     ///
     /// An `origin` of [`GL_UPPER_LEFT`](crate::enums::GL_UPPER_LEFT) and a `depth`
@@ -12494,7 +12470,6 @@ impl Context {
     ///
     /// There is extensive discussion of the uses and further consequences of the
     /// different clip volume settings in the
-
     pub fn oxidegl_clip_control(&mut self, origin: ClipControlOrigin, depth: ClipControlDepth) {
         panic!("command oxidegl_clip_control not yet implemented");
     }
@@ -12603,7 +12578,6 @@ impl Context {
     /// [**glGetTexLevelParameter**](crate::context::Context::oxidegl_get_tex_level_parameter)
     /// with arguments [`GL_TEXTURE_INTERNAL_FORMAT`](crate::enums::GL_TEXTURE_INTERNAL_FORMAT)
     /// and [`GL_TEXTURE_COMPRESSED_IMAGE_SIZE`](crate::enums::GL_TEXTURE_COMPRESSED_IMAGE_SIZE)
-
     pub unsafe fn oxidegl_compressed_tex_image1_d(
         &mut self,
         target: TextureTarget,
@@ -12750,7 +12724,6 @@ impl Context {
     /// [**glGetTexLevelParameter**](crate::context::Context::oxidegl_get_tex_level_parameter)
     /// with arguments [`GL_TEXTURE_INTERNAL_FORMAT`](crate::enums::GL_TEXTURE_INTERNAL_FORMAT)
     /// and [`GL_TEXTURE_COMPRESSED_IMAGE_SIZE`](crate::enums::GL_TEXTURE_COMPRESSED_IMAGE_SIZE)
-
     pub unsafe fn oxidegl_compressed_tex_image2_d(
         &mut self,
         target: TextureTarget,
@@ -12887,7 +12860,6 @@ impl Context {
     /// [**glGetTexLevelParameter**](crate::context::Context::oxidegl_get_tex_level_parameter)
     /// with arguments [`GL_TEXTURE_INTERNAL_FORMAT`](crate::enums::GL_TEXTURE_INTERNAL_FORMAT)
     /// and [`GL_TEXTURE_COMPRESSED_IMAGE_SIZE`](crate::enums::GL_TEXTURE_COMPRESSED_IMAGE_SIZE)
-
     pub unsafe fn oxidegl_compressed_tex_image3_d(
         &mut self,
         target: TextureTarget,
@@ -12965,7 +12937,7 @@ impl Context {
     /// to another. [**glCopyImageSubData**](crate::context::Context::oxidegl_copy_image_sub_data)
     /// does not perform general-purpose conversions such as scaling, resizing,
     /// blending, color-space, or format conversions. It should be considered to
-    /// operate in a manner similar to a CPU memcpy. `CopyImageSubData` can copy
+    /// operate in a manner similar to a CPU memcpy. CopyImageSubData can copy
     /// between images with different internal formats, provided the formats are
     /// compatible.
     ///
@@ -13017,7 +12989,7 @@ impl Context {
     /// of slices to be copied with `srcDepth`. Cubemap textures always have six
     /// faces which are selected by a zero-based face index.
     ///
-    /// For the purposes of `CopyImageSubData`, two internal formats are considered
+    /// For the purposes of CopyImageSubData, two internal formats are considered
     /// compatible if any of the following conditions are met: the formats are
     /// > the same,
     ///
@@ -13037,7 +13009,6 @@ impl Context {
     ///
     /// ### Associated Gets
     /// [**glGet**](crate::context::Context::oxidegl_get) with argument [`GL_MAX_COMPUTE_WORK_GROUP_COUNT`](crate::enums::GL_MAX_COMPUTE_WORK_GROUP_COUNT)
-
     pub fn oxidegl_copy_image_sub_data(
         &mut self,
         src_name: GLuint,
@@ -13140,7 +13111,6 @@ impl Context {
     ///
     /// ### Associated Gets
     /// [**glGetTexImage**](crate::context::Context::oxidegl_get_tex_image)
-
     pub fn oxidegl_copy_tex_image1_d(
         &mut self,
         target: TextureTarget,
@@ -13242,7 +13212,6 @@ impl Context {
     ///
     /// ### Associated Gets
     /// [**glGetTexImage**](crate::context::Context::oxidegl_get_tex_image)
-
     pub fn oxidegl_copy_tex_image2_d(
         &mut self,
         target: TextureTarget,
@@ -13269,11 +13238,9 @@ impl Context {
     /// [**glCreateFramebuffers**](crate::context::Context::oxidegl_create_framebuffers)
     /// returns `n` previously unused framebuffer names in `framebuffers`, each
     /// representing a new framebuffer object initialized to the default state.
-
     pub unsafe fn oxidegl_create_framebuffers(&mut self, n: GLsizei, framebuffers: *mut GLuint) {
         panic!("command oxidegl_create_framebuffers not yet implemented");
     }
-
     /// ### Parameters
     /// `n`
     ///
@@ -13288,7 +13255,6 @@ impl Context {
     /// [**glCreateProgramPipelines**](crate::context::Context::oxidegl_create_program_pipelines)
     /// returns `n` previously unused program pipeline names in `pipelines`, each
     /// representing a new program pipeline object initialized to the default state.
-
     pub unsafe fn oxidegl_create_program_pipelines(&mut self, n: GLsizei, pipelines: *mut GLuint) {
         panic!("command oxidegl_create_program_pipelines not yet implemented");
     }
@@ -13314,7 +13280,6 @@ impl Context {
     /// [`GL_ANY_SAMPLES_PASSED`](crate::enums::GL_ANY_SAMPLES_PASSED), [`GL_ANY_SAMPLES_PASSED_CONSERVATIVE`](crate::enums::GL_ANY_SAMPLES_PASSED_CONSERVATIVE),
     /// [`GL_TIME_ELAPSED`](crate::enums::GL_TIME_ELAPSED), [`GL_TIMESTAMP`](crate::enums::GL_TIMESTAMP),
     /// [`GL_PRIMITIVES_GENERATED`](crate::enums::GL_PRIMITIVES_GENERATED) or [`GL_TRANSFORM_FEEDBACK_PRIMITIVES_WRITTEN`](crate::enums::GL_TRANSFORM_FEEDBACK_PRIMITIVES_WRITTEN).
-
     pub unsafe fn oxidegl_create_queries(
         &mut self,
         target: QueryTarget,
@@ -13337,7 +13302,6 @@ impl Context {
     /// returns `n` previously unused renderbuffer object names in `renderbuffers`,
     /// each representing a new renderbuffer object initialized to the default
     /// state.
-
     pub unsafe fn oxidegl_create_renderbuffers(&mut self, n: GLsizei, renderbuffers: *mut GLuint) {
         panic!("command oxidegl_create_renderbuffers not yet implemented");
     }
@@ -13354,7 +13318,6 @@ impl Context {
     /// [**glCreateSamplers**](crate::context::Context::oxidegl_create_samplers)
     /// returns `n` previously unused sampler names in `samplers`, each representing
     /// a new sampler object initialized to the default state.
-
     pub unsafe fn oxidegl_create_samplers(&mut self, n: GLsizei, samplers: *mut GLuint) {
         panic!("command oxidegl_create_samplers not yet implemented");
     }
@@ -13384,7 +13347,6 @@ impl Context {
     /// The program object created by [**glCreateShaderProgram**](crate::context::Context::oxidegl_create_shader_program)
     /// has its [`GL_PROGRAM_SEPARABLE`](crate::enums::GL_PROGRAM_SEPARABLE) status
     /// set to [`GL_TRUE`](crate::enums::GL_TRUE).
-
     pub unsafe fn oxidegl_create_shader_programv(
         &mut self,
         r#type: ShaderType,
@@ -13419,7 +13381,6 @@ impl Context {
     /// [`GL_TEXTURE_CUBE_MAP_ARRAY`](crate::enums::GL_TEXTURE_CUBE_MAP_ARRAY),
     /// [`GL_TEXTURE_BUFFER`](crate::enums::GL_TEXTURE_BUFFER), [`GL_TEXTURE_2D_MULTISAMPLE`](crate::enums::GL_TEXTURE_2D_MULTISAMPLE)
     /// or [`GL_TEXTURE_2D_MULTISAMPLE_ARRAY`](crate::enums::GL_TEXTURE_2D_MULTISAMPLE_ARRAY).
-
     pub unsafe fn oxidegl_create_textures(
         &mut self,
         target: TextureTarget,
@@ -13443,7 +13404,6 @@ impl Context {
     /// returns `n` previously unused transform feedback object names in `ids`,
     /// each representing a new transform feedback object initialized to the default
     /// state.
-
     pub unsafe fn oxidegl_create_transform_feedbacks(&mut self, n: GLsizei, ids: *mut GLuint) {
         panic!("command oxidegl_create_transform_feedbacks not yet implemented");
     }
@@ -13477,7 +13437,6 @@ impl Context {
     /// [`GL_CULL_FACE`](crate::enums::GL_CULL_FACE)
     ///
     /// [**glGet**](crate::context::Context::oxidegl_get) with argument [`GL_CULL_FACE_MODE`](crate::enums::GL_CULL_FACE_MODE)
-
     pub fn oxidegl_cull_face(&mut self, mode: TriangleFace) {
         panic!("command oxidegl_cull_face not yet implemented");
     }
@@ -13501,7 +13460,6 @@ impl Context {
     /// or [`GL_READ_FRAMEBUFFER`](crate::enums::GL_READ_FRAMEBUFFER) is deleted,
     /// it is as though [**glBindFramebuffer**](crate::context::Context::oxidegl_bind_framebuffer)
     /// had been executed with the corresponding `target` and `framebuffer` zero.
-
     pub unsafe fn oxidegl_delete_framebuffers(&mut self, n: GLsizei, framebuffers: *const GLuint) {
         panic!("command oxidegl_delete_framebuffers not yet implemented");
     }
@@ -13535,7 +13493,6 @@ impl Context {
     /// `program` and [`GL_DELETE_STATUS`](crate::enums::GL_DELETE_STATUS)
     ///
     /// [**glIsProgram**](crate::context::Context::oxidegl_is_program)
-
     pub fn oxidegl_delete_program(&mut self, program: GLuint) {
         panic!("command oxidegl_delete_program not yet implemented");
     }
@@ -13559,7 +13516,6 @@ impl Context {
     ///
     /// ### Associated Gets
     /// [**glGet**](crate::context::Context::oxidegl_get) with argument [`GL_PROGRAM_PIPELINE_BINDING`](crate::enums::GL_PROGRAM_PIPELINE_BINDING)
-
     pub unsafe fn oxidegl_delete_program_pipelines(
         &mut self,
         n: GLsizei,
@@ -13589,7 +13545,6 @@ impl Context {
     ///
     /// ### Associated Gets
     /// [**glIsQuery**](crate::context::Context::oxidegl_is_query)
-
     pub unsafe fn oxidegl_delete_queries(&mut self, n: GLsizei, ids: *const GLuint) {
         panic!("command oxidegl_delete_queries not yet implemented");
     }
@@ -13621,7 +13576,6 @@ impl Context {
     /// other words, this renderbuffer object is first detached from all attachment
     /// ponits in the currently bound framebuffer. Note that the renderbuffer image
     /// is specifically *not* detached from any non-bound framebuffers.
-
     pub unsafe fn oxidegl_delete_renderbuffers(
         &mut self,
         n: GLsizei,
@@ -13653,7 +13607,6 @@ impl Context {
     ///
     /// ### Associated Gets
     /// [**glIsSampler**](crate::context::Context::oxidegl_is_sampler)
-
     pub unsafe fn oxidegl_delete_samplers(&mut self, count: GLsizei, samplers: *const GLuint) {
         panic!("command oxidegl_delete_samplers not yet implemented");
     }
@@ -13681,7 +13634,6 @@ impl Context {
     /// ### Notes
     /// [**glSync**](crate::context::Context::oxidegl_sync) is only supported if
     /// the GL version is 3.2 or greater, or if the
-
     pub fn oxidegl_delete_sync(&mut self, sync: GLsync) {
         panic!("command oxidegl_delete_sync not yet implemented");
     }
@@ -13707,7 +13659,6 @@ impl Context {
     ///
     /// ### Associated Gets
     /// [**glIsTexture**](crate::context::Context::oxidegl_is_texture)
-
     pub unsafe fn oxidegl_delete_textures(&mut self, n: GLsizei, textures: *const GLuint) {
         panic!("command oxidegl_delete_textures not yet implemented");
     }
@@ -13731,7 +13682,6 @@ impl Context {
     ///
     /// ### Associated Gets
     /// [**glGet**](crate::context::Context::oxidegl_get) with argument [`GL_TRANSFORM_FEEDBACK_BINDING`](crate::enums::GL_TRANSFORM_FEEDBACK_BINDING)
-
     pub unsafe fn oxidegl_delete_transform_feedbacks(&mut self, n: GLsizei, ids: *const GLuint) {
         panic!("command oxidegl_delete_transform_feedbacks not yet implemented");
     }
@@ -13805,7 +13755,6 @@ impl Context {
     ///
     /// [**glIsEnabled**](crate::context::Context::oxidegl_is_enabled) with argument
     /// [`GL_DEPTH_TEST`](crate::enums::GL_DEPTH_TEST)
-
     pub fn oxidegl_depth_func(&mut self, func: DepthFunction) {
         panic!("command oxidegl_depth_func not yet implemented");
     }
@@ -13831,7 +13780,6 @@ impl Context {
     /// write to the depth buffer, the depth test should be enabled and set to
     /// [`GL_ALWAYS`](crate::enums::GL_ALWAYS) (see [**glDepthFunc**](crate::context::Context::oxidegl_depth_func)
     /// ).
-
     pub fn oxidegl_depth_mask(&mut self, flag: GLboolean) {
         panic!("command oxidegl_depth_mask not yet implemented");
     }
@@ -13872,13 +13820,12 @@ impl Context {
     /// It is not necessary that the near plane distance be less than the far plane
     /// distance. Reverse mappings such as `[inlineq]` `[inlineq]`
     ///
-    /// The type of the `v` parameter was changed from `GLclampd` to `GLdouble`. This
+    /// The type of the `v` parameter was changed from GLclampd to GLdouble. This
     /// change is transparent to user code and is described in detail on the [**removedTypes**](crate::context::Context::oxideremoved_types)
     /// page.
     ///
     /// ### Associated Gets
     /// [**glGet**](crate::context::Context::oxidegl_get) with argument [`GL_DEPTH_RANGE`](crate::enums::GL_DEPTH_RANGE)
-
     pub unsafe fn oxidegl_depth_range_arrayv(
         &mut self,
         first: GLuint,
@@ -13922,14 +13869,13 @@ impl Context {
     /// It is not necessary that the near plane distance be less than the far plane
     /// distance. Reverse mappings such as `[inlineq]` `[inlineq]`
     ///
-    /// The type of the `nearVal` and `farVal` parameters was changed from `GLclampd`
-    /// to `GLdouble`. This change is transparent to user code and is described in
+    /// The type of the `nearVal` and `farVal` parameters was changed from GLclampd
+    /// to GLdouble. This change is transparent to user code and is described in
     /// detail on the [**removedTypes**](crate::context::Context::oxideremoved_types)
     /// page.
     ///
     /// ### Associated Gets
     /// [**glGet**](crate::context::Context::oxidegl_get) with argument [`GL_DEPTH_RANGE`](crate::enums::GL_DEPTH_RANGE)
-
     pub fn oxidegl_depth_range_indexed(&mut self, index: GLuint, n: GLdouble, f: GLdouble) {
         panic!("command oxidegl_depth_range_indexed not yet implemented");
     }
@@ -13957,7 +13903,6 @@ impl Context {
     ///
     /// ### Associated Gets
     /// [**glGet**](crate::context::Context::oxidegl_get) with argument [`GL_MAX_COMPUTE_WORK_GROUP_COUNT`](crate::enums::GL_MAX_COMPUTE_WORK_GROUP_COUNT)
-
     pub fn oxidegl_dispatch_compute(
         &mut self,
         num_groups_x: GLuint,
@@ -13996,11 +13941,9 @@ impl Context {
     ///
     /// ### Associated Gets
     /// [**glGet**](crate::context::Context::oxidegl_get) with argument [`GL_MAX_COMPUTE_WORK_GROUP_COUNT`](crate::enums::GL_MAX_COMPUTE_WORK_GROUP_COUNT)
-
     pub fn oxidegl_dispatch_compute_indirect(&mut self, indirect: GLintptr) {
         panic!("command oxidegl_dispatch_compute_indirect not yet implemented");
     }
-
     /// ### Parameters
     /// `condition`
     ///
@@ -14040,7 +13983,6 @@ impl Context {
     /// ### Notes
     /// [**glFenceSync**](crate::context::Context::oxidegl_fence_sync) is only
     /// supported if the GL version is 3.2 or greater, or if the
-
     pub fn oxidegl_fence_sync(&mut self, condition: GLenum, flags: GLbitfield) -> GLsync {
         panic!("command oxidegl_fence_sync not yet implemented");
     }
@@ -14053,7 +13995,6 @@ impl Context {
     /// ### Notes
     /// [**glFinish**](crate::context::Context::oxidegl_finish) requires a round
     /// trip to the server.
-
     pub fn oxidegl_finish(&mut self) {
         panic!("command oxidegl_finish not yet implemented");
     }
@@ -14075,7 +14016,6 @@ impl Context {
     /// [**glFlush**](crate::context::Context::oxidegl_flush) can return at any
     /// time. It does not wait until the execution of all previously issued GL
     /// commands is complete.
-
     pub fn oxidegl_flush(&mut self) {
         panic!("command oxidegl_flush not yet implemented");
     }
@@ -14110,7 +14050,6 @@ impl Context {
     ///
     /// ### Associated Gets
     /// [**glGet**](crate::context::Context::oxidegl_get) with argument [`GL_FRONT_FACE`](crate::enums::GL_FRONT_FACE)
-
     pub fn oxidegl_front_face(&mut self, mode: FrontFaceDirection) {
         panic!("command oxidegl_front_face not yet implemented");
     }
@@ -14137,7 +14076,6 @@ impl Context {
     ///
     /// The names returned in `ids` are marked as used, for the purposes of [**glGenFramebuffers**](crate::context::Context::oxidegl_gen_framebuffers)
     /// only, but they acquire state and type only when they are first bound.
-
     pub unsafe fn oxidegl_gen_framebuffers(&mut self, n: GLsizei, framebuffers: *mut GLuint) {
         panic!("command oxidegl_gen_framebuffers not yet implemented");
     }
@@ -14161,7 +14099,6 @@ impl Context {
     /// [**glGet**](crate::context::Context::oxidegl_get) with argument [`GL_PROGRAM_PIPELINE_BINDING`](crate::enums::GL_PROGRAM_PIPELINE_BINDING)
     ///
     /// [**glIsProgramPipeline**](crate::context::Context::oxidegl_is_program_pipeline)
-
     pub unsafe fn oxidegl_gen_program_pipelines(&mut self, n: GLsizei, pipelines: *mut GLuint) {
         panic!("command oxidegl_gen_program_pipelines not yet implemented");
     }
@@ -14189,7 +14126,6 @@ impl Context {
     ///
     /// ### Associated Gets
     /// [**glIsQuery**](crate::context::Context::oxidegl_is_query)
-
     pub unsafe fn oxidegl_gen_queries(&mut self, n: GLsizei, ids: *mut GLuint) {
         panic!("command oxidegl_gen_queries not yet implemented");
     }
@@ -14217,7 +14153,6 @@ impl Context {
     /// The names returned in `renderbuffers` are marked as used, for the purposes
     /// of [**glGenRenderbuffers**](crate::context::Context::oxidegl_gen_renderbuffers)
     /// only, but they acquire state and type only when they are first bound.
-
     pub unsafe fn oxidegl_gen_renderbuffers(&mut self, n: GLsizei, renderbuffers: *mut GLuint) {
         panic!("command oxidegl_gen_renderbuffers not yet implemented");
     }
@@ -14247,7 +14182,6 @@ impl Context {
     /// ### Notes
     /// [**glGenSamplers**](crate::context::Context::oxidegl_gen_samplers) is available
     /// only if the GL version is 3.3 or higher.
-
     pub unsafe fn oxidegl_gen_samplers(&mut self, count: GLsizei, samplers: *mut GLuint) {
         panic!("command oxidegl_gen_samplers not yet implemented");
     }
@@ -14276,7 +14210,6 @@ impl Context {
     ///
     /// ### Associated Gets
     /// [**glIsTexture**](crate::context::Context::oxidegl_is_texture)
-
     pub unsafe fn oxidegl_gen_textures(&mut self, n: GLsizei, textures: *mut GLuint) {
         panic!("command oxidegl_gen_textures not yet implemented");
     }
@@ -14300,7 +14233,6 @@ impl Context {
     /// [**glGet**](crate::context::Context::oxidegl_get) with argument [`GL_TRANSFORM_FEEDBACK_BINDING`](crate::enums::GL_TRANSFORM_FEEDBACK_BINDING)
     ///
     /// [**glIsTransformFeedback**](crate::context::Context::oxidegl_is_transform_feedback)
-
     pub unsafe fn oxidegl_gen_transform_feedbacks(&mut self, n: GLsizei, ids: *mut GLuint) {
         panic!("command oxidegl_gen_transform_feedbacks not yet implemented");
     }
@@ -14376,7 +14308,6 @@ impl Context {
     ///
     /// [`GL_ATOMIC_COUNTER_BUFFER_REFERENCED_BY_COMPUTE_SHADER`](crate::enums::GL_ATOMIC_COUNTER_BUFFER_REFERENCED_BY_COMPUTE_SHADER)
     /// is available only of the GL version is 4.3 or higher.
-
     pub unsafe fn oxidegl_get_active_atomic_counter_bufferiv(
         &mut self,
         program: GLuint,
@@ -14495,7 +14426,6 @@ impl Context {
     /// [`GL_ACTIVE_ATTRIBUTES`](crate::enums::GL_ACTIVE_ATTRIBUTES) or [`GL_ACTIVE_ATTRIBUTE_MAX_LENGTH`](crate::enums::GL_ACTIVE_ATTRIBUTE_MAX_LENGTH).
     ///
     /// [**glIsProgram**](crate::context::Context::oxidegl_is_program)
-
     pub unsafe fn oxidegl_get_active_attrib(
         &mut self,
         program: GLuint,
@@ -14552,7 +14482,6 @@ impl Context {
     /// ### Associated Gets
     /// [**glGetProgramStage**](crate::context::Context::oxidegl_get_program_stage)
     /// with argument [`GL_ACTIVE_SUBROUTINE_UNIFORM_MAX_LENGTH`](crate::enums::GL_ACTIVE_SUBROUTINE_UNIFORM_MAX_LENGTH)
-
     pub unsafe fn oxidegl_get_active_subroutine_name(
         &mut self,
         program: GLuint,
@@ -14622,7 +14551,6 @@ impl Context {
     /// ### Associated Gets
     /// [**glGetProgramStage**](crate::context::Context::oxidegl_get_program_stage)
     /// with argument [`GL_ACTIVE_SUBROUTINE_UNIFORMS`](crate::enums::GL_ACTIVE_SUBROUTINE_UNIFORMS)
-
     pub unsafe fn oxidegl_get_active_subroutine_uniformiv(
         &mut self,
         program: GLuint,
@@ -14683,7 +14611,6 @@ impl Context {
     /// ### Associated Gets
     /// [**glGetProgramStage**](crate::context::Context::oxidegl_get_program_stage)
     /// with argument [`GL_ACTIVE_SUBROUTINE_UNIFORMS`](crate::enums::GL_ACTIVE_SUBROUTINE_UNIFORMS)
-
     pub unsafe fn oxidegl_get_active_subroutine_uniform_name(
         &mut self,
         program: GLuint,
@@ -14782,7 +14709,7 @@ impl Context {
     /// | [`GL_INT_VEC2`](crate::enums::GL_INT_VEC2)                  | [`ivec2`](crate::enums::ivec2)                     |
     /// | [`GL_INT_VEC3`](crate::enums::GL_INT_VEC3)                  | [`ivec3`](crate::enums::ivec3)                     |
     /// | [`GL_INT_VEC4`](crate::enums::GL_INT_VEC4)                  | [`ivec4`](crate::enums::ivec4)                     |
-    /// | [`GL_UNSIGNED_INT`](crate::enums::GL_UNSIGNED_INT)          | [`unsigned int`](`crate::enums::unsigned` int)       |
+    /// | [`GL_UNSIGNED_INT`](crate::enums::GL_UNSIGNED_INT)          | [`unsigned int`](crate::enums::unsigned int)       |
     /// | [`GL_UNSIGNED_INT_VEC2`](crate::enums::GL_UNSIGNED_INT_VEC2) | [`uvec2`](crate::enums::uvec2)                    |
     /// | [`GL_UNSIGNED_INT_VEC3`](crate::enums::GL_UNSIGNED_INT_VEC3) | [`uvec3`](crate::enums::uvec3)                    |
     /// | [`GL_UNSIGNED_INT_VEC4`](crate::enums::GL_UNSIGNED_INT_VEC4) | [`uvec4`](crate::enums::uvec4)                    |
@@ -14953,7 +14880,6 @@ impl Context {
     /// [`GL_ACTIVE_UNIFORMS`](crate::enums::GL_ACTIVE_UNIFORMS) or [`GL_ACTIVE_UNIFORM_MAX_LENGTH`](crate::enums::GL_ACTIVE_UNIFORM_MAX_LENGTH).
     ///
     /// [**glIsProgram**](crate::context::Context::oxidegl_is_program)
-
     pub unsafe fn oxidegl_get_active_uniform(
         &mut self,
         program: GLuint,
@@ -15045,7 +14971,6 @@ impl Context {
     ///
     /// [`GL_UNIFORM_BLOCK_REFERENCED_BY_COMPUTE_SHADER`](crate::enums::GL_UNIFORM_BLOCK_REFERENCED_BY_COMPUTE_SHADER)
     /// is accepted only if the GL version is 4.3 or greater.
-
     pub unsafe fn oxidegl_get_active_uniform_blockiv(
         &mut self,
         program: GLuint,
@@ -15104,7 +15029,6 @@ impl Context {
     /// ### Notes
     /// [**glGetActiveUniformBlockName**](crate::context::Context::oxidegl_get_active_uniform_block_name)
     /// is available only if the GL version is 3.1 or greater.
-
     pub unsafe fn oxidegl_get_active_uniform_block_name(
         &mut self,
         program: GLuint,
@@ -15160,7 +15084,6 @@ impl Context {
     /// in the range zero to the value of [`GL_ACTIVE_UNIFORMS`](crate::enums::GL_ACTIVE_UNIFORMS)
     /// minus one. The value of [`GL_ACTIVE_UNIFORMS`](crate::enums::GL_ACTIVE_UNIFORMS)
     /// can be queried with [**glGetProgram**](crate::context::Context::oxidegl_get_program).
-
     pub unsafe fn oxidegl_get_active_uniform_name(
         &mut self,
         program: GLuint,
@@ -15224,7 +15147,7 @@ impl Context {
     /// | [`GL_INT_VEC2`](crate::enums::GL_INT_VEC2)                  | [`ivec2`](crate::enums::ivec2)                     |
     /// | [`GL_INT_VEC3`](crate::enums::GL_INT_VEC3)                  | [`ivec3`](crate::enums::ivec3)                     |
     /// | [`GL_INT_VEC4`](crate::enums::GL_INT_VEC4)                  | [`ivec4`](crate::enums::ivec4)                     |
-    /// | [`GL_UNSIGNED_INT`](crate::enums::GL_UNSIGNED_INT)          | [`unsigned int`](`crate::enums::unsigned` int)       |
+    /// | [`GL_UNSIGNED_INT`](crate::enums::GL_UNSIGNED_INT)          | [`unsigned int`](crate::enums::unsigned int)       |
     /// | [`GL_UNSIGNED_INT_VEC2`](crate::enums::GL_UNSIGNED_INT_VEC2) | [`uvec2`](crate::enums::uvec2)                    |
     /// | [`GL_UNSIGNED_INT_VEC3`](crate::enums::GL_UNSIGNED_INT_VEC3) | [`uvec3`](crate::enums::uvec3)                    |
     /// | [`GL_UNSIGNED_INT_VEC4`](crate::enums::GL_UNSIGNED_INT_VEC4) | [`uvec4`](crate::enums::uvec4)                    |
@@ -15371,7 +15294,6 @@ impl Context {
     /// [`GL_ACTIVE_UNIFORMS`](crate::enums::GL_ACTIVE_UNIFORMS) or [`GL_ACTIVE_UNIFORM_MAX_LENGTH`](crate::enums::GL_ACTIVE_UNIFORM_MAX_LENGTH).
     ///
     /// [**glIsProgram**](crate::context::Context::oxidegl_is_program)
-
     pub unsafe fn oxidegl_get_active_uniformsiv(
         &mut self,
         program: GLuint,
@@ -15422,7 +15344,6 @@ impl Context {
     /// [`GL_ATTACHED_SHADERS`](crate::enums::GL_ATTACHED_SHADERS)
     ///
     /// [**glIsProgram**](crate::context::Context::oxidegl_is_program)
-
     pub unsafe fn oxidegl_get_attached_shaders(
         &mut self,
         program: GLuint,
@@ -15468,7 +15389,6 @@ impl Context {
     /// with argument `program` and the index of an active attribute
     ///
     /// [**glIsProgram**](crate::context::Context::oxidegl_is_program)
-
     pub unsafe fn oxidegl_get_attrib_location(
         &mut self,
         program: GLuint,
@@ -15576,7 +15496,6 @@ impl Context {
     /// Pixel storage modes are treated as for [**glGetCompressedTexSubImage**](crate::context::Context::oxidegl_get_compressed_tex_sub_image).
     /// The texel at( `xoffset`, `yoffset`, `zoffset`) will be stored at the location
     /// indicated by `pixels` and the current pixel packing parameters.
-
     pub unsafe fn oxidegl_get_compressed_texture_sub_image(
         &mut self,
         texture: GLuint,
@@ -15669,7 +15588,6 @@ impl Context {
     /// [**glGet**](crate::context::Context::oxidegl_get) with argument [`GL_MAX_DEBUG_MESSAGE_LENGTH`](crate::enums::GL_MAX_DEBUG_MESSAGE_LENGTH)
     ///
     /// [**glGet**](crate::context::Context::oxidegl_get) with argument [`GL_MAX_DEBUG_LOGGED_MESSAGES`](crate::enums::GL_MAX_DEBUG_LOGGED_MESSAGES)
-
     pub unsafe fn oxidegl_get_debug_message_log(
         &mut self,
         count: GLuint,
@@ -15754,9 +15672,8 @@ impl Context {
     /// effect on the GL state or frame buffer contents. If the generating command
     /// returns a value, it returns 0. If [**glGetError**](crate::context::Context::oxidegl_get_error)
     /// itself generates an error, it returns 0.
-
     pub fn oxidegl_get_error(&mut self) -> GLenum {
-        GL_NO_ERROR
+        panic!("command oxidegl_get_error not yet implemented");
     }
     /// ### Parameters
     /// `program`
@@ -15778,7 +15695,6 @@ impl Context {
     /// ### Notes
     /// [**glGetFragDataIndex**](crate::context::Context::oxidegl_get_frag_data_index)
     /// is available only if the GL version is 3.3 or greater.
-
     pub unsafe fn oxidegl_get_frag_data_index(
         &mut self,
         program: GLuint,
@@ -15803,7 +15719,6 @@ impl Context {
     /// been linked. `name` must be a null-terminated string. If `name` is not
     /// the name of an active user-defined varying out fragment shader variable
     /// within `program`, -1 will be returned.
-
     pub unsafe fn oxidegl_get_frag_data_location(
         &mut self,
         program: GLuint,
@@ -15844,7 +15759,7 @@ impl Context {
     /// repeatedly returned, the context may be in the process of resetting.
     ///
     /// Reset notification behavior is determined at context creation time, and
-    /// may be queried by calling [**`GetIntegerv`**](crate::context::Context::oxide_get_integerv)
+    /// may be queried by calling [**GetIntegerv**](crate::context::Context::oxide_get_integerv)
     /// with the symbolic constant [`GL_RESET_NOTIFICATION_STRATEGY`](crate::enums::GL_RESET_NOTIFICATION_STRATEGY).
     ///
     /// If the reset notification behavior is [`GL_NO_RESET_NOTIFICATION`](crate::enums::GL_NO_RESET_NOTIFICATION),
@@ -15887,7 +15802,6 @@ impl Context {
     /// >> `params`.
     ///
     ///
-
     pub fn oxidegl_get_graphics_reset_status(&mut self) -> GLenum {
         panic!("command oxidegl_get_graphics_reset_status not yet implemented");
     }
@@ -15917,7 +15831,6 @@ impl Context {
     ///
     /// If the multisample mode does not have fixed sample locations, the returned
     /// values may only reflect the locations of samples within some pixels.
-
     pub unsafe fn oxidegl_get_multisamplefv(
         &mut self,
         pname: GLenum,
@@ -15970,7 +15883,6 @@ impl Context {
     /// ### Associated Gets
     /// [**glGetProgram**](crate::context::Context::oxidegl_get_program) with argument
     /// [`GL_PROGRAM_BINARY_LENGTH`](crate::enums::GL_PROGRAM_BINARY_LENGTH)
-
     pub unsafe fn oxidegl_get_program_binary(
         &mut self,
         program: GLuint,
@@ -16035,7 +15947,6 @@ impl Context {
     /// [`GL_INFO_LOG_LENGTH`](crate::enums::GL_INFO_LOG_LENGTH)
     ///
     /// [**glIsProgram**](crate::context::Context::oxidegl_is_program)
-
     pub unsafe fn oxidegl_get_program_info_log(
         &mut self,
         program: GLuint,
@@ -16190,7 +16101,6 @@ impl Context {
     ///
     /// ### Associated Gets
     /// [**glGet**](crate::context::Context::oxidegl_get) with argument [`GL_MAX_LABEL_LENGTH`](crate::enums::GL_MAX_LABEL_LENGTH).
-
     pub unsafe fn oxidegl_get_program_interfaceiv(
         &mut self,
         program: GLuint,
@@ -16248,7 +16158,6 @@ impl Context {
     /// If `pname` is [`GL_INFO_LOG_LENGTH`](crate::enums::GL_INFO_LOG_LENGTH),
     /// the length of the info log, including the null terminator, is returned
     /// in `params`. If there is no info log, zero is returned.
-
     pub unsafe fn oxidegl_get_program_pipelineiv(
         &mut self,
         pipeline: GLuint,
@@ -16295,7 +16204,6 @@ impl Context {
     /// ### Associated Gets
     /// [**glGetProgramPipeline**](crate::context::Context::oxidegl_get_program_pipeline)
     /// with parameter [`GL_INFO_LOG_LENGTH`](crate::enums::GL_INFO_LOG_LENGTH).
-
     pub unsafe fn oxidegl_get_program_pipeline_info_log(
         &mut self,
         pipeline: GLuint,
@@ -16330,7 +16238,7 @@ impl Context {
     /// |---------------|---------------------------------------------------|
     /// | [`GL_NAME_LENGTH`](crate::enums::GL_NAME_LENGTH) | Any except [`GL_ATOMIC_COUNTER_BUFFER`](crate::enums::GL_ATOMIC_COUNTER_BUFFER) and [`GL_TRANSFORM_FEEDBACK_BUFFER`](crate::enums::GL_TRANSFORM_FEEDBACK_BUFFER) |
     /// | [`GL_TYPE`](crate::enums::GL_TYPE) | [`GL_UNIFORM`](crate::enums::GL_UNIFORM), [`GL_PROGRAM_INPUT`](crate::enums::GL_PROGRAM_INPUT), [`GL_PROGRAM_OUTPUT`](crate::enums::GL_PROGRAM_OUTPUT), [`GL_TRANSFORM_FEEDBACK_VARYING`](crate::enums::GL_TRANSFORM_FEEDBACK_VARYING), [`GL_BUFFER_VARIABLE`](crate::enums::GL_BUFFER_VARIABLE) |
-    /// | [`GL_ARRAY_SIZE`](crate::enums::GL_ARRAY_SIZE) | [`GL_UNIFORM`](crate::enums::GL_UNIFORM), [`GL_BUFFER_VARIABLE`](crate::enums::GL_BUFFER_VARIABLE), [`GL_PROGRAM_INPUT`](crate::enums::GL_PROGRAM_INPUT), [`GL_PROGRAM_OUTPUT, VERTEX_SUBROUTINE_UNIFORM`](`crate::enums::GL_PROGRAM_OUTPUT`, `VERTEX_SUBROUTINE_UNIFORM`), [`GL_TESS_CONTROL_SUBROUTINE_UNIFORM`](crate::enums::GL_TESS_CONTROL_SUBROUTINE_UNIFORM), [`GL_TESS_EVALUATION_SUBROUTINE_UNIFORM`](crate::enums::GL_TESS_EVALUATION_SUBROUTINE_UNIFORM), [`GL_GEOMETRY_SUBROUTINE_UNIFORM`](crate::enums::GL_GEOMETRY_SUBROUTINE_UNIFORM), [`GL_FRAGMENT_SUBROUTINE_UNIFORM`](crate::enums::GL_FRAGMENT_SUBROUTINE_UNIFORM), [`GL_COMPUTE_SUBROUTINE_UNIFORM`](crate::enums::GL_COMPUTE_SUBROUTINE_UNIFORM), [`GL_TRANSFORM_FEEDBACK_VARYING`](crate::enums::GL_TRANSFORM_FEEDBACK_VARYING) |
+    /// | [`GL_ARRAY_SIZE`](crate::enums::GL_ARRAY_SIZE) | [`GL_UNIFORM`](crate::enums::GL_UNIFORM), [`GL_BUFFER_VARIABLE`](crate::enums::GL_BUFFER_VARIABLE), [`GL_PROGRAM_INPUT`](crate::enums::GL_PROGRAM_INPUT), [`GL_PROGRAM_OUTPUT, VERTEX_SUBROUTINE_UNIFORM`](crate::enums::GL_PROGRAM_OUTPUT, VERTEX_SUBROUTINE_UNIFORM), [`GL_TESS_CONTROL_SUBROUTINE_UNIFORM`](crate::enums::GL_TESS_CONTROL_SUBROUTINE_UNIFORM), [`GL_TESS_EVALUATION_SUBROUTINE_UNIFORM`](crate::enums::GL_TESS_EVALUATION_SUBROUTINE_UNIFORM), [`GL_GEOMETRY_SUBROUTINE_UNIFORM`](crate::enums::GL_GEOMETRY_SUBROUTINE_UNIFORM), [`GL_FRAGMENT_SUBROUTINE_UNIFORM`](crate::enums::GL_FRAGMENT_SUBROUTINE_UNIFORM), [`GL_COMPUTE_SUBROUTINE_UNIFORM`](crate::enums::GL_COMPUTE_SUBROUTINE_UNIFORM), [`GL_TRANSFORM_FEEDBACK_VARYING`](crate::enums::GL_TRANSFORM_FEEDBACK_VARYING) |
     /// | [`GL_OFFSET`](crate::enums::GL_OFFSET) | [`GL_UNIFORM`](crate::enums::GL_UNIFORM), [`GL_BUFFER_VARIABLE`](crate::enums::GL_BUFFER_VARIABLE), [`GL_TRANSFORM_FEEDBACK_VARYING`](crate::enums::GL_TRANSFORM_FEEDBACK_VARYING) |
     /// | [`GL_BLOCK_INDEX`](crate::enums::GL_BLOCK_INDEX) | [`GL_UNIFORM`](crate::enums::GL_UNIFORM), [`GL_BUFFER_VARIABLE`](crate::enums::GL_BUFFER_VARIABLE) |
     /// | [`GL_ARRAY_STRIDE`](crate::enums::GL_ARRAY_STRIDE) | [`GL_UNIFORM`](crate::enums::GL_UNIFORM), [`GL_BUFFER_VARIABLE`](crate::enums::GL_BUFFER_VARIABLE) |
@@ -16514,7 +16422,6 @@ impl Context {
     /// a single integer identifying the stride, in basic machine units, between
     /// consecutive vertices written to the transform feedback buffer is written
     /// to `params`.
-
     pub unsafe fn oxidegl_get_program_resourceiv(
         &mut self,
         program: GLuint,
@@ -16635,7 +16542,6 @@ impl Context {
     /// For the interface [`GL_TRANSFORM_FEEDBACK_VARYING`](crate::enums::GL_TRANSFORM_FEEDBACK_VARYING),
     /// the value [`GL_INVALID_INDEX`](crate::enums::GL_INVALID_INDEX) should
     /// be returned when querying the index assigned to the special names
-
     pub unsafe fn oxidegl_get_program_resource_index(
         &mut self,
         program: GLuint,
@@ -16700,7 +16606,6 @@ impl Context {
     /// returns the location assigned to that element. If it specifies the base
     /// name of an array, it identifies the resources associated with the first
     /// element of the array.
-
     pub unsafe fn oxidegl_get_program_resource_location(
         &mut self,
         program: GLuint,
@@ -16758,7 +16663,6 @@ impl Context {
     /// returns the location assigned to that element. If it specifies the base
     /// name of an array, it identifies the resources associated with the first
     /// element of the array.
-
     pub unsafe fn oxidegl_get_program_resource_location_index(
         &mut self,
         program: GLuint,
@@ -16887,7 +16791,6 @@ impl Context {
     /// `name`. The length of the longest name string for `programInterface` >,
     /// including a null terminator, can be queried by calling [**glGetProgramInterface**](crate::context::Context::oxidegl_get_program_interface)
     /// with a `pname` of [`GL_MAX_NAME_LENGTH`](crate::enums::GL_MAX_NAME_LENGTH).
-
     pub unsafe fn oxidegl_get_program_resource_name(
         &mut self,
         program: GLuint,
@@ -16953,7 +16856,6 @@ impl Context {
     /// If there is no shader present of type `shadertype`, the returned value
     /// will be consistent with a shader containing no subroutines or subroutine
     /// uniforms.
-
     pub unsafe fn oxidegl_get_program_stageiv(
         &mut self,
         program: GLuint,
@@ -17006,7 +16908,6 @@ impl Context {
     /// Calling [**glGetQueryiv**](crate::context::Context::oxidegl_get_queryiv)
     /// is equivalent to calling [**glGetQueryIndexediv**](crate::context::Context::oxidegl_get_query_indexediv)
     /// with `index` set to zero.
-
     pub unsafe fn oxidegl_get_query_indexediv(
         &mut self,
         target: QueryTarget,
@@ -17050,7 +16951,6 @@ impl Context {
     /// is available only if the GL version is 4.3 or greater.
     ///
     /// If an error is generated, no change is made to the contents of `params`.
-
     pub unsafe fn oxidegl_get_queryiv(
         &mut self,
         target: QueryTarget,
@@ -17112,7 +17012,6 @@ impl Context {
     /// [`GL_INFO_LOG_LENGTH`](crate::enums::GL_INFO_LOG_LENGTH)
     ///
     /// [**glIsShader**](crate::context::Context::oxidegl_is_shader)
-
     pub unsafe fn oxidegl_get_shader_info_log(
         &mut self,
         shader: GLuint,
@@ -17163,7 +17062,6 @@ impl Context {
     /// the log2 value of the number of bits of precision of the format. If the
     /// smallest representable value greater than 1 is 1+ *eps*, then the integer
     /// addressed by `precision` will contain floor(-log2(eps)).
-
     pub unsafe fn oxidegl_get_shader_precision_format(
         &mut self,
         shadertype: ShaderType,
@@ -17214,7 +17112,6 @@ impl Context {
     /// [`GL_SHADER_SOURCE_LENGTH`](crate::enums::GL_SHADER_SOURCE_LENGTH)
     ///
     /// [**glIsShader**](crate::context::Context::oxidegl_is_shader)
-
     pub unsafe fn oxidegl_get_shader_source(
         &mut self,
         shader: GLuint,
@@ -17255,7 +17152,6 @@ impl Context {
     /// minus one will be returned. Subroutine indices are assigned using consecutive
     /// integers in the range from zero to the value of [`GL_ACTIVE_SUBROUTINES`](crate::enums::GL_ACTIVE_SUBROUTINES)
     /// minus one for the shader stage.
-
     pub unsafe fn oxidegl_get_subroutine_index(
         &mut self,
         program: GLuint,
@@ -17293,7 +17189,6 @@ impl Context {
     /// integers in the range from zero to the value of [`GL_ACTIVE_SUBROUTINE_LOCATIONS`](crate::enums::GL_ACTIVE_SUBROUTINE_LOCATIONS)
     /// minus one for the shader stage. For active subroutine uniforms declared
     /// as arrays, the declared array elements are assigned consecutive locations.
-
     pub unsafe fn oxidegl_get_subroutine_uniform_location(
         &mut self,
         program: GLuint,
@@ -17356,7 +17251,6 @@ impl Context {
     ///
     ///
     /// If an error occurs, nothing will be written to `values` or `length`.
-
     pub unsafe fn oxidegl_get_synciv(
         &mut self,
         sync: GLsync,
@@ -17450,7 +17344,7 @@ impl Context {
     /// `format`, `type` and `pixels` have the same meaning as for [**glGetTexImage**](crate::context::Context::oxidegl_get_tex_image).
     /// `bufSize` is the size of the buffer to receive the retrieved pixel data.
     ///
-    /// For cube map textures, the behavior is as though [**`GetTextureImage`**](crate::context::Context::oxide_get_texture_image)
+    /// For cube map textures, the behavior is as though [**GetTextureImage**](crate::context::Context::oxide_get_texture_image)
     /// were called, but only texels from the requested cube map faces (selected
     /// by `zoffset` and `depth`, as described below) were returned.
     ///
@@ -17473,12 +17367,12 @@ impl Context {
     ///
     /// | Layer number        | Cube Map Face        |
     /// |---------------------|----------------------|
-    /// | 0                   | `GL_TEXTURE_CUBE_MAP_POSITIVE_X` |
-    /// | 1                   | `GL_TEXTURE_CUBE_MAP_NEGATIVE_X` |
-    /// | 2                   | `GL_TEXTURE_CUBE_MAP_POSITIVE_Y` |
-    /// | 3                   | `GL_TEXTURE_CUBE_MAP_NEGATIVE_Y` |
-    /// | 4                   | `GL_TEXTURE_CUBE_MAP_POSITIVE_Z` |
-    /// | 5                   | `GL_TEXTURE_CUBE_MAP_NEGATIVE_Z` |
+    /// | 0                   | GL_TEXTURE_CUBE_MAP_POSITIVE_X |
+    /// | 1                   | GL_TEXTURE_CUBE_MAP_NEGATIVE_X |
+    /// | 2                   | GL_TEXTURE_CUBE_MAP_POSITIVE_Y |
+    /// | 3                   | GL_TEXTURE_CUBE_MAP_NEGATIVE_Y |
+    /// | 4                   | GL_TEXTURE_CUBE_MAP_POSITIVE_Z |
+    /// | 5                   | GL_TEXTURE_CUBE_MAP_NEGATIVE_Z |
     ///
     ///
     /// For cube map array textures, `zoffset` is the first layer-face to access,
@@ -17489,7 +17383,6 @@ impl Context {
     /// Component groups from the specified sub-region are packed and placed into
     /// memory as described for [**glGetTextureImage**](crate::context::Context::oxidegl_get_texture_image),
     /// starting with the texel at( `xoffset`, `yoffset`, `zoffset` ).
-
     pub unsafe fn oxidegl_get_texture_sub_image(
         &mut self,
         texture: GLuint,
@@ -17573,7 +17466,6 @@ impl Context {
     /// ### Associated Gets
     /// [**glGetProgram**](crate::context::Context::oxidegl_get_program) with argument
     /// [`GL_TRANSFORM_FEEDBACK_VARYING_MAX_LENGTH`](crate::enums::GL_TRANSFORM_FEEDBACK_VARYING_MAX_LENGTH).
-
     pub unsafe fn oxidegl_get_transform_feedback_varying(
         &mut self,
         program: GLuint,
@@ -17619,7 +17511,6 @@ impl Context {
     /// ### Notes
     /// [**glGetUniformBlockIndex**](crate::context::Context::oxidegl_get_uniform_block_index)
     /// is available only if the GL version is 3.1 or greater.
-
     pub unsafe fn oxidegl_get_uniform_block_index(
         &mut self,
         program: GLuint,
@@ -17670,7 +17561,6 @@ impl Context {
     /// ### Notes
     /// [**glGetUniformIndices**](crate::context::Context::oxidegl_get_uniform_indices)
     /// is available only if the GL version is 3.1 or greater.
-
     pub unsafe fn oxidegl_get_uniform_indices(
         &mut self,
         program: GLuint,
@@ -17735,7 +17625,6 @@ impl Context {
     /// `program` and the name of a uniform variable
     ///
     /// [**glIsProgram**](crate::context::Context::oxidegl_is_program)
-
     pub unsafe fn oxidegl_get_uniform_location(
         &mut self,
         program: GLuint,
@@ -17767,7 +17656,6 @@ impl Context {
     /// than the value of [`GL_ACTIVE_SUBROUTINE_UNIFORM_LOCATIONS`](crate::enums::GL_ACTIVE_SUBROUTINE_UNIFORM_LOCATIONS)
     /// for the shader currently in use at shader stage `shadertype`. The value
     /// of the subroutine uniform is returned in `values`.
-
     pub unsafe fn oxidegl_get_uniform_subroutineuiv(
         &mut self,
         shadertype: ShaderType,
@@ -17801,7 +17689,6 @@ impl Context {
     /// point whenever the queried vertex array object is bound to the rendering
     /// context. The binding can be changed for an active vertex array object with
     /// a [**glBindBuffer**](crate::context::Context::oxidegl_bind_buffer) call.
-
     pub unsafe fn oxidegl_get_vertex_arrayiv(
         &mut self,
         vaobj: GLuint,
@@ -17843,7 +17730,6 @@ impl Context {
     ///
     /// ### Associated Gets
     /// [**glGet**](crate::context::Context::oxidegl_get) with argument [`GL_MAX_VERTEX_ATTRIBS`](crate::enums::GL_MAX_VERTEX_ATTRIBS)
-
     pub unsafe fn oxidegl_get_vertex_attrib_pointerv(
         &mut self,
         index: GLuint,
@@ -17930,7 +17816,6 @@ impl Context {
     /// ### Notes
     /// The interpretation of hints depends on the implementation. Some implementations
     /// ignore [**glHint**](crate::context::Context::oxidegl_hint) settings.
-
     pub fn oxidegl_hint(&mut self, target: HintTarget, mode: HintMode) {
         panic!("command oxidegl_hint not yet implemented");
     }
@@ -17947,7 +17832,6 @@ impl Context {
     /// ### Associated Gets
     /// [**glGetBufferParameter**](crate::context::Context::oxidegl_get_buffer_parameter)
     /// with argument [`GL_BUFFER_SIZE`](crate::enums::GL_BUFFER_SIZE)
-
     pub fn oxidegl_invalidate_buffer_data(&mut self, buffer: GLuint) {
         panic!("command oxidegl_invalidate_buffer_data not yet implemented");
     }
@@ -17975,7 +17859,6 @@ impl Context {
     /// ### Associated Gets
     /// [**glGetBufferParameter**](crate::context::Context::oxidegl_get_buffer_parameter)
     /// with argument [`GL_BUFFER_SIZE`](crate::enums::GL_BUFFER_SIZE)
-
     pub fn oxidegl_invalidate_buffer_sub_data(
         &mut self,
         buffer: GLuint,
@@ -18009,7 +17892,6 @@ impl Context {
     ///
     /// ### Associated Gets
     /// [**glGet**](crate::context::Context::oxidegl_get) with argument [`GL_MAX_TEXTURE_SIZE`](crate::enums::GL_MAX_TEXTURE_SIZE)
-
     pub fn oxidegl_invalidate_tex_image(&mut self, texture: GLuint, level: GLint) {
         panic!("command oxidegl_invalidate_tex_image not yet implemented");
     }
@@ -18074,7 +17956,6 @@ impl Context {
     ///
     /// ### Associated Gets
     /// [**glGet**](crate::context::Context::oxidegl_get) with argument [`GL_MAX_TEXTURE_SIZE`](crate::enums::GL_MAX_TEXTURE_SIZE)
-
     pub fn oxidegl_invalidate_tex_sub_image(
         &mut self,
         texture: GLuint,
@@ -18103,7 +17984,6 @@ impl Context {
     /// by that has not yet been bound through a call to [**glBindFramebuffer**](crate::context::Context::oxidegl_bind_framebuffer),
     /// then the name is not a framebuffer object and [**glIsFramebuffer**](crate::context::Context::oxidegl_is_framebuffer)
     /// returns [`GL_FALSE`](crate::enums::GL_FALSE).
-
     pub fn oxidegl_is_framebuffer(&mut self, framebuffer: GLuint) -> GLboolean {
         panic!("command oxidegl_is_framebuffer not yet implemented");
     }
@@ -18155,7 +18035,6 @@ impl Context {
     ///
     /// [**glGetUniformLocation**](crate::context::Context::oxidegl_get_uniform_location)
     /// with arguments `program` and the name of a uniform variable
-
     pub fn oxidegl_is_program(&mut self, program: GLuint) -> GLboolean {
         panic!("command oxidegl_is_program not yet implemented");
     }
@@ -18174,7 +18053,6 @@ impl Context {
     /// but that has not yet been bound through a call to [**glBindProgramPipeline**](crate::context::Context::oxidegl_bind_program_pipeline),
     /// then the name is not a program pipeline object and [**glIsProgramPipeline**](crate::context::Context::oxidegl_is_program_pipeline)
     /// returns [`GL_FALSE`](crate::enums::GL_FALSE).
-
     pub fn oxidegl_is_program_pipeline(&mut self, pipeline: GLuint) -> GLboolean {
         panic!("command oxidegl_is_program_pipeline not yet implemented");
     }
@@ -18193,7 +18071,6 @@ impl Context {
     /// A name returned by [**glGenQueries**](crate::context::Context::oxidegl_gen_queries),
     /// but not yet associated with a query object by calling [**glBeginQuery**](crate::context::Context::oxidegl_begin_query),
     /// is not the name of a query object.
-
     pub fn oxidegl_is_query(&mut self, id: GLuint) -> GLboolean {
         panic!("command oxidegl_is_query not yet implemented");
     }
@@ -18213,7 +18090,6 @@ impl Context {
     /// or [**glFramebufferRenderbuffer**](crate::context::Context::oxidegl_framebuffer_renderbuffer),
     /// then the name is not a renderbuffer object and [**glIsRenderbuffer**](crate::context::Context::oxidegl_is_renderbuffer)
     /// returns [`GL_FALSE`](crate::enums::GL_FALSE).
-
     pub fn oxidegl_is_renderbuffer(&mut self, renderbuffer: GLuint) -> GLboolean {
         panic!("command oxidegl_is_renderbuffer not yet implemented");
     }
@@ -18235,7 +18111,6 @@ impl Context {
     /// ### Notes
     /// [**glIsSampler**](crate::context::Context::oxidegl_is_sampler) is available
     /// only if the GL version is 3.3 or higher.
-
     pub fn oxidegl_is_sampler(&mut self, sampler: GLuint) -> GLboolean {
         panic!("command oxidegl_is_sampler not yet implemented");
     }
@@ -18272,7 +18147,6 @@ impl Context {
     ///
     /// [**glGetShaderSource**](crate::context::Context::oxidegl_get_shader_source)
     /// with argument `object`
-
     pub fn oxidegl_is_shader(&mut self, shader: GLuint) -> GLboolean {
         panic!("command oxidegl_is_shader not yet implemented");
     }
@@ -18291,7 +18165,6 @@ impl Context {
     /// ### Notes
     /// [**glIsSync**](crate::context::Context::oxidegl_is_sync) is available only
     /// if the GL version is 3.2 or greater.
-
     pub fn oxidegl_is_sync(&mut self, sync: GLsync) -> GLboolean {
         panic!("command oxidegl_is_sync not yet implemented");
     }
@@ -18310,7 +18183,6 @@ impl Context {
     /// A name returned by [**glGenTextures**](crate::context::Context::oxidegl_gen_textures),
     /// but not yet associated with a texture by calling [**glBindTexture**](crate::context::Context::oxidegl_bind_texture),
     /// is not the name of a texture.
-
     pub fn oxidegl_is_texture(&mut self, texture: GLuint) -> GLboolean {
         panic!("command oxidegl_is_texture not yet implemented");
     }
@@ -18330,7 +18202,6 @@ impl Context {
     /// but that has not yet been bound through a call to [**glBindTransformFeedback**](crate::context::Context::oxidegl_bind_transform_feedback),
     /// then the name is not a transform feedback object and [**glIsTransformFeedback**](crate::context::Context::oxidegl_is_transform_feedback)
     /// returns [`GL_FALSE`](crate::enums::GL_FALSE).
-
     pub fn oxidegl_is_transform_feedback(&mut self, id: GLuint) -> GLboolean {
         panic!("command oxidegl_is_transform_feedback not yet implemented");
     }
@@ -18402,7 +18273,6 @@ impl Context {
     ///
     /// [**glIsEnabled**](crate::context::Context::oxidegl_is_enabled) with argument
     /// [`GL_LINE_SMOOTH`](crate::enums::GL_LINE_SMOOTH)
-
     pub fn oxidegl_line_width(&mut self, width: GLfloat) {
         panic!("command oxidegl_line_width not yet implemented");
     }
@@ -18469,7 +18339,6 @@ impl Context {
     ///
     /// [**glIsEnabled**](crate::context::Context::oxidegl_is_enabled) with argument
     /// [`GL_COLOR_LOGIC_OP`](crate::enums::GL_COLOR_LOGIC_OP).
-
     pub fn oxidegl_logic_op(&mut self, opcode: LogicOp) {
         panic!("command oxidegl_logic_op not yet implemented");
     }
@@ -18498,7 +18367,7 @@ impl Context {
     /// fragment's samples is implementation dependent.
     ///
     /// ### Notes
-    /// The type of the `value` parameter was changed from `GLclampf` to `GLfloat`.
+    /// The type of the `value` parameter was changed from GLclampf to GLfloat.
     /// This change is transparent to user code and is described in detail on the
     /// [**removedTypes**](crate::context::Context::oxideremoved_types) page.
     ///
@@ -18506,7 +18375,6 @@ impl Context {
     /// [**glGet**](crate::context::Context::oxidegl_get) with argument [`GL_MIN_SAMPLE_SHADING`](crate::enums::GL_MIN_SAMPLE_SHADING).
     ///
     /// [**glGet**](crate::context::Context::oxidegl_get) with argument [`GL_SAMPLES`](crate::enums::GL_SAMPLES).
-
     pub fn oxidegl_min_sample_shading(&mut self, value: GLfloat) {
         panic!("command oxidegl_min_sample_shading not yet implemented");
     }
@@ -18561,7 +18429,6 @@ impl Context {
     /// [`GL_TRIANGLE_STRIP_ADJACENCY`](crate::enums::GL_TRIANGLE_STRIP_ADJACENCY)
     /// and [`GL_TRIANGLES_ADJACENCY`](crate::enums::GL_TRIANGLES_ADJACENCY) are
     /// available only if the GL version is 3.2 or greater.
-
     pub unsafe fn oxidegl_multi_draw_arrays(
         &mut self,
         mode: PrimitiveType,
@@ -18634,7 +18501,6 @@ impl Context {
     ///
     /// [**glMultiDrawArraysIndirect**](crate::context::Context::oxidegl_multi_draw_arrays_indirect)
     /// is available only if the GL version is 4.3 or greater.
-
     pub unsafe fn oxidegl_multi_draw_arrays_indirect(
         &mut self,
         mode: PrimitiveType,
@@ -18694,7 +18560,6 @@ impl Context {
     /// [`GL_TRIANGLE_STRIP_ADJACENCY`](crate::enums::GL_TRIANGLE_STRIP_ADJACENCY)
     /// and [`GL_TRIANGLES_ADJACENCY`](crate::enums::GL_TRIANGLES_ADJACENCY) are
     /// available only if the GL version is 3.2 or greater.
-
     pub unsafe fn oxidegl_multi_draw_elements(
         &mut self,
         mode: PrimitiveType,
@@ -18754,7 +18619,6 @@ impl Context {
     /// [`GL_TRIANGLE_STRIP_ADJACENCY`](crate::enums::GL_TRIANGLE_STRIP_ADJACENCY)
     /// and [`GL_TRIANGLES_ADJACENCY`](crate::enums::GL_TRIANGLES_ADJACENCY) are
     /// available only if the GL version is 3.2 or greater.
-
     pub unsafe fn oxidegl_multi_draw_elements_base_vertex(
         &mut self,
         mode: PrimitiveType,
@@ -18834,7 +18698,6 @@ impl Context {
     /// GL less than 4.2, this parameter is present but is reserved and should
     /// be set to zero. On earlier versions of the GL, behavior is undefined if
     /// it is non-zero.
-
     pub unsafe fn oxidegl_multi_draw_elements_indirect(
         &mut self,
         mode: PrimitiveType,
@@ -18852,7 +18715,6 @@ impl Context {
     /// feedback is still considered active and changing most transform feedback
     /// state related to the object results in an error. However, a new transform
     /// feedback object may be bound while transform feedback is paused.
-
     pub fn oxidegl_pause_transform_feedback(&mut self) {
         panic!("command oxidegl_pause_transform_feedback not yet implemented");
     }
@@ -18886,7 +18748,6 @@ impl Context {
     ///
     /// [**glIsEnabled**](crate::context::Context::oxidegl_is_enabled) with argument
     /// [`GL_PROGRAM_POINT_SIZE`](crate::enums::GL_PROGRAM_POINT_SIZE)
-
     pub fn oxidegl_point_size(&mut self, size: GLfloat) {
         panic!("command oxidegl_point_size not yet implemented");
     }
@@ -18940,7 +18801,6 @@ impl Context {
     ///
     /// ### Associated Gets
     /// [**glGet**](crate::context::Context::oxidegl_get) with argument [`GL_POLYGON_MODE`](crate::enums::GL_POLYGON_MODE)
-
     pub fn oxidegl_polygon_mode(&mut self, face: TriangleFace, mode: PolygonMode) {
         panic!("command oxidegl_polygon_mode not yet implemented");
     }
@@ -18973,7 +18833,6 @@ impl Context {
     ///
     /// [**glGet**](crate::context::Context::oxidegl_get) with argument [`GL_POLYGON_OFFSET_FACTOR`](crate::enums::GL_POLYGON_OFFSET_FACTOR)
     /// or [`GL_POLYGON_OFFSET_UNITS`](crate::enums::GL_POLYGON_OFFSET_UNITS).
-
     pub fn oxidegl_polygon_offset(&mut self, factor: GLfloat, units: GLfloat) {
         panic!("command oxidegl_polygon_offset not yet implemented");
     }
@@ -18992,7 +18851,6 @@ impl Context {
     ///
     /// ### Associated Gets
     /// [**glGet**](crate::context::Context::oxidegl_get) with argument [`GL_MAX_DEBUG_MESSAGE_LENGTH`](crate::enums::GL_MAX_DEBUG_MESSAGE_LENGTH).
-
     pub fn oxidegl_pop_debug_group(&mut self) {
         panic!("command oxidegl_pop_debug_group not yet implemented");
     }
@@ -19024,7 +18882,6 @@ impl Context {
     /// ### Notes
     /// [**glPrimitiveRestartIndex**](crate::context::Context::oxidegl_primitive_restart_index)
     /// is available only if the GL version is 3.1 or greater.
-
     pub fn oxidegl_primitive_restart_index(&mut self, index: GLuint) {
         panic!("command oxidegl_primitive_restart_index not yet implemented");
     }
@@ -19087,7 +18944,6 @@ impl Context {
     /// [**glGet**](crate::context::Context::oxidegl_get) with argument [`GL_NUM_PROGRAM_BINARY_FORMATS`](crate::enums::GL_NUM_PROGRAM_BINARY_FORMATS)
     ///
     /// [**glGet**](crate::context::Context::oxidegl_get) with argument [`GL_PROGRAM_BINARY_FORMATS`](crate::enums::GL_PROGRAM_BINARY_FORMATS)
-
     pub unsafe fn oxidegl_program_binary(
         &mut self,
         program: GLuint,
@@ -19137,7 +18993,6 @@ impl Context {
     ///
     /// ### Associated Gets
     /// [**glGetProgram**](crate::context::Context::oxidegl_get_program).
-
     pub fn oxidegl_program_parameteri(
         &mut self,
         program: GLuint,
@@ -19184,7 +19039,6 @@ impl Context {
     /// ### Notes
     /// [**glProvokingVertex**](crate::context::Context::oxidegl_provoking_vertex)
     /// is available only if the GL version is 3.2 or greater.
-
     pub fn oxidegl_provoking_vertex(&mut self, mode: VertexProvokingMode) {
         panic!("command oxidegl_provoking_vertex not yet implemented");
     }
@@ -19222,7 +19076,6 @@ impl Context {
     ///
     /// ### Associated Gets
     /// [**glGet**](crate::context::Context::oxidegl_get) with argument [`GL_MAX_DEBUG_MESSAGE_LENGTH`](crate::enums::GL_MAX_DEBUG_MESSAGE_LENGTH).
-
     pub unsafe fn oxidegl_push_debug_group(
         &mut self,
         source: DebugSource,
@@ -19256,7 +19109,6 @@ impl Context {
     /// ### Notes
     /// [**glQueryCounter**](crate::context::Context::oxidegl_query_counter) is
     /// available only if the GL version is 3.3 or higher.
-
     pub fn oxidegl_query_counter(&mut self, id: GLuint, target: GLenum) {
         panic!("command oxidegl_query_counter not yet implemented");
     }
@@ -19266,7 +19118,6 @@ impl Context {
     /// associated with its shader compiler. [**glCompileShader**](crate::context::Context::oxidegl_compile_shader)
     /// may subsequently be called and the implementation may at that time reallocate
     /// resources previously freed by the call to [**glReleaseShaderCompiler**](crate::context::Context::oxidegl_release_shader_compiler).
-
     pub fn oxidegl_release_shader_compiler(&mut self) {
         panic!("command oxidegl_release_shader_compiler not yet implemented");
     }
@@ -19277,7 +19128,6 @@ impl Context {
     /// feedback is still considered active and changing most transform feedback
     /// state related to the object results in an error. However, a new transform
     /// feedback object may be bound while transform feedback is paused.
-
     pub fn oxidegl_resume_transform_feedback(&mut self) {
         panic!("command oxidegl_resume_transform_feedback not yet implemented");
     }
@@ -19314,7 +19164,7 @@ impl Context {
     /// allowing those operations to be performed on each sample.
     ///
     /// ### Notes
-    /// The type of the `value` parameter was changed from `GLclampf` to `GLfloat`.
+    /// The type of the `value` parameter was changed from GLclampf to GLfloat.
     /// This change is transparent to user code and is described in detail on the
     /// [**removedTypes**](crate::context::Context::oxideremoved_types) page.
     ///
@@ -19334,7 +19184,6 @@ impl Context {
     ///
     /// [**glIsEnabled**](crate::context::Context::oxidegl_is_enabled) with argument
     /// [`GL_SAMPLE_COVERAGE`](crate::enums::GL_SAMPLE_COVERAGE)
-
     pub fn oxidegl_sample_coverage(&mut self, value: GLfloat, invert: GLboolean) {
         panic!("command oxidegl_sample_coverage not yet implemented");
     }
@@ -19359,7 +19208,6 @@ impl Context {
     /// ### Notes
     /// [**glSampleMaski**](crate::context::Context::oxidegl_sample_maski) is available
     /// only if the GL version is 3.2 or greater, or if the
-
     pub fn oxidegl_sample_maski(&mut self, mask_number: GLuint, mask: GLbitfield) {
         panic!("command oxidegl_sample_maski not yet implemented");
     }
@@ -19407,7 +19255,6 @@ impl Context {
     /// [**glGet**](crate::context::Context::oxidegl_get) with parameter [`GL_NUM_SHADER_BINARY_FORMATS`](crate::enums::GL_NUM_SHADER_BINARY_FORMATS).
     ///
     /// [**glGet**](crate::context::Context::oxidegl_get) with parameter [`GL_SHADER_BINARY_FORMATS`](crate::enums::GL_SHADER_BINARY_FORMATS).
-
     pub unsafe fn oxidegl_shader_binary(
         &mut self,
         count: GLsizei,
@@ -19455,7 +19302,6 @@ impl Context {
     /// or [`GL_MAX_COMBINED_SHADER_STORAGE_BLOCKS`](crate::enums::GL_MAX_COMBINED_SHADER_STORAGE_BLOCKS),
     /// [`GL_MAX_SHADER_STORAGE_BUFFER_BINDINGS`](crate::enums::GL_MAX_SHADER_STORAGE_BUFFER_BINDINGS),
     /// or [`GL_MAX_COMBINED_SHADER_OUTPUT_RESOURCES`](crate::enums::GL_MAX_COMBINED_SHADER_OUTPUT_RESOURCES).
-
     pub fn oxidegl_shader_storage_block_binding(
         &mut self,
         program: GLuint,
@@ -19508,8 +19354,8 @@ impl Context {
     /// `func` is a symbolic constant that determines the stencil comparison function.
     /// It accepts one of eight values, shown in the following list. `ref` is an
     /// integer reference value that is used in the stencil comparison. It is clamped
-    /// to the range `[inlineq]` `[inlineq]` `mask` is bitwise `ANDed` with both
-    /// the reference value and the stored stencil value, with the `ANDed` values
+    /// to the range `[inlineq]` `[inlineq]` `mask` is bitwise ANDed with both
+    /// the reference value and the stored stencil value, with the ANDed values
     /// participating in the comparison.
     ///
     /// If *stencil* represents the value stored in the corresponding stencil buffer
@@ -19570,7 +19416,6 @@ impl Context {
     ///
     /// [**glIsEnabled**](crate::context::Context::oxidegl_is_enabled) with argument
     /// [`GL_STENCIL_TEST`](crate::enums::GL_STENCIL_TEST)
-
     pub fn oxidegl_stencil_func(&mut self, func: StencilFunction, r#ref: GLint, mask: GLuint) {
         panic!("command oxidegl_stencil_func not yet implemented");
     }
@@ -19624,8 +19469,8 @@ impl Context {
     /// `func` is a symbolic constant that determines the stencil comparison function.
     /// It accepts one of eight values, shown in the following list. `ref` is an
     /// integer reference value that is used in the stencil comparison. It is clamped
-    /// to the range `[inlineq]` `[inlineq]` `mask` is bitwise `ANDed` with both
-    /// the reference value and the stored stencil value, with the `ANDed` values
+    /// to the range `[inlineq]` `[inlineq]` `mask` is bitwise ANDed with both
+    /// the reference value and the stored stencil value, with the ANDed values
     /// participating in the comparison.
     ///
     /// If *stencil* represents the value stored in the corresponding stencil buffer
@@ -19682,7 +19527,6 @@ impl Context {
     ///
     /// [**glIsEnabled**](crate::context::Context::oxidegl_is_enabled) with argument
     /// [`GL_STENCIL_TEST`](crate::enums::GL_STENCIL_TEST)
-
     pub fn oxidegl_stencil_func_separate(
         &mut self,
         face: TriangleFace,
@@ -19718,7 +19562,6 @@ impl Context {
     /// [**glGet**](crate::context::Context::oxidegl_get) with argument [`GL_STENCIL_WRITEMASK`](crate::enums::GL_STENCIL_WRITEMASK),
     /// [`GL_STENCIL_BACK_WRITEMASK`](crate::enums::GL_STENCIL_BACK_WRITEMASK),
     /// or [`GL_STENCIL_BITS`](crate::enums::GL_STENCIL_BITS)
-
     pub fn oxidegl_stencil_mask(&mut self, mask: GLuint) {
         panic!("command oxidegl_stencil_mask not yet implemented");
     }
@@ -19749,7 +19592,6 @@ impl Context {
     /// [**glGet**](crate::context::Context::oxidegl_get) with argument [`GL_STENCIL_WRITEMASK`](crate::enums::GL_STENCIL_WRITEMASK),
     /// [`GL_STENCIL_BACK_WRITEMASK`](crate::enums::GL_STENCIL_BACK_WRITEMASK),
     /// or [`GL_STENCIL_BITS`](crate::enums::GL_STENCIL_BITS)
-
     pub fn oxidegl_stencil_mask_separate(&mut self, face: TriangleFace, mask: GLuint) {
         panic!("command oxidegl_stencil_mask_separate not yet implemented");
     }
@@ -19869,7 +19711,6 @@ impl Context {
     ///
     /// [**glIsEnabled**](crate::context::Context::oxidegl_is_enabled) with argument
     /// [`GL_STENCIL_TEST`](crate::enums::GL_STENCIL_TEST)
-
     pub fn oxidegl_stencil_op(&mut self, fail: StencilOp, zfail: StencilOp, zpass: StencilOp) {
         panic!("command oxidegl_stencil_op not yet implemented");
     }
@@ -19992,7 +19833,6 @@ impl Context {
     ///
     /// [**glIsEnabled**](crate::context::Context::oxidegl_is_enabled) with argument
     /// [`GL_STENCIL_TEST`](crate::enums::GL_STENCIL_TEST)
-
     pub fn oxidegl_stencil_op_separate(
         &mut self,
         face: TriangleFace,
@@ -20301,7 +20141,6 @@ impl Context {
     /// [**glGetTexImage**](crate::context::Context::oxidegl_get_tex_image)
     ///
     /// [**glGet**](crate::context::Context::oxidegl_get) with argument [`GL_PIXEL_UNPACK_BUFFER_BINDING`](crate::enums::GL_PIXEL_UNPACK_BUFFER_BINDING)
-
     pub unsafe fn oxidegl_tex_image1_d(
         &mut self,
         target: TextureTarget,
@@ -20647,7 +20486,6 @@ impl Context {
     /// [**glGetTexImage**](crate::context::Context::oxidegl_get_tex_image)
     ///
     /// [**glGet**](crate::context::Context::oxidegl_get) with argument [`GL_PIXEL_UNPACK_BUFFER_BINDING`](crate::enums::GL_PIXEL_UNPACK_BUFFER_BINDING)
-
     pub unsafe fn oxidegl_tex_image2_d(
         &mut self,
         target: TextureTarget,
@@ -20722,7 +20560,6 @@ impl Context {
     /// ### Notes
     /// [**glTexImage2DMultisample**](crate::context::Context::oxidegl_tex_image2_d_multisample)
     /// is available only if the GL version is 3.2 or greater.
-
     pub fn oxidegl_tex_image2_d_multisample(
         &mut self,
         target: TextureTarget,
@@ -21039,7 +20876,6 @@ impl Context {
     /// [**glGetTexImage**](crate::context::Context::oxidegl_get_tex_image)
     ///
     /// [**glGet**](crate::context::Context::oxidegl_get) with argument [`GL_PIXEL_UNPACK_BUFFER_BINDING`](crate::enums::GL_PIXEL_UNPACK_BUFFER_BINDING)
-
     pub unsafe fn oxidegl_tex_image3_d(
         &mut self,
         target: TextureTarget,
@@ -21116,7 +20952,6 @@ impl Context {
     /// ### Notes
     /// [**glTexImage2DMultisample**](crate::context::Context::oxidegl_tex_image2_d_multisample)
     /// is available only if the GL version is 3.2 or greater.
-
     pub fn oxidegl_tex_image3_d_multisample(
         &mut self,
         target: TextureTarget,
@@ -21142,7 +20977,6 @@ impl Context {
     /// ### Notes
     /// The situation described above is referred to as a *rendering feedback loop*
     /// and is discussed in more detail in section 9.3 of the OpenGL 4.5 Specification.
-
     pub fn oxidegl_texture_barrier(&mut self) {
         panic!("command oxidegl_texture_barrier not yet implemented");
     }
@@ -21272,7 +21106,6 @@ impl Context {
     /// [`GL_TEXTURE_VIEW_MIN_LAYER`](crate::enums::GL_TEXTURE_VIEW_MIN_LAYER),
     /// [`GL_TEXTURE_VIEW_NUM_LAYERS`](crate::enums::GL_TEXTURE_VIEW_NUM_LAYERS),
     /// or [`GL_TEXTURE_IMMUTABLE_LEVELS`](crate::enums::GL_TEXTURE_IMMUTABLE_LEVELS).
-
     pub fn oxidegl_texture_view(
         &mut self,
         texture: GLuint,
@@ -21308,7 +21141,6 @@ impl Context {
     /// Calling [**glTransformFeedbackBufferBase**](crate::context::Context::oxidegl_transform_feedback_buffer_base)
     /// is equivalent to calling [**glTransformFeedbackBufferRange**](crate::context::Context::oxidegl_transform_feedback_buffer_range)
     /// with `offset` zero and `size` equal to the size of `buffer`.
-
     pub fn oxidegl_transform_feedback_buffer_base(
         &mut self,
         xfb: GLuint,
@@ -21350,7 +21182,6 @@ impl Context {
     /// the buffer object while used as an indexed target.
     ///
     /// ### Notes
-
     pub fn oxidegl_transform_feedback_buffer_range(
         &mut self,
         xfb: GLuint,
@@ -21436,7 +21267,6 @@ impl Context {
     ///
     /// ### Associated Gets
     /// [**glGetTransformFeedbackVarying**](crate::context::Context::oxidegl_get_transform_feedback_varying)
-
     pub unsafe fn oxidegl_transform_feedback_varyings(
         &mut self,
         program: GLuint,
@@ -21485,7 +21315,6 @@ impl Context {
     /// ### Associated Gets
     /// [**glGetActiveUniformBlock**](crate::context::Context::oxidegl_get_active_uniform_block)
     /// with argument [`GL_UNIFORM_BLOCK_BINDING`](crate::enums::GL_UNIFORM_BLOCK_BINDING)
-
     pub fn oxidegl_uniform_block_binding(
         &mut self,
         program: GLuint,
@@ -21527,7 +21356,6 @@ impl Context {
     ///
     /// [**glGetProgramStage**](crate::context::Context::oxidegl_get_program_stage)
     /// with argument [`GL_ACTIVE_SUBROUTINE_UNIFORM_LOCATIONS`](crate::enums::GL_ACTIVE_SUBROUTINE_UNIFORM_LOCATIONS)
-
     pub unsafe fn oxidegl_uniform_subroutinesuiv(
         &mut self,
         shadertype: ShaderType,
@@ -21536,7 +21364,6 @@ impl Context {
     ) {
         panic!("command oxidegl_uniform_subroutinesuiv not yet implemented");
     }
-
     /// ### Parameters
     /// `pipeline`
     ///
@@ -21580,7 +21407,6 @@ impl Context {
     /// ### Notes
     /// The [`GL_COMPUTE_SHADER_BIT`](crate::enums::GL_COMPUTE_SHADER_BIT) bit
     /// is available only if the GL version is 4.3 or greater.
-
     pub fn oxidegl_use_program_stages(
         &mut self,
         pipeline: GLuint,
@@ -21615,7 +21441,6 @@ impl Context {
     /// ### Associated Gets
     /// [**glGetProgramPipeline**](crate::context::Context::oxidegl_get_program_pipeline)
     /// with parameter [`GL_VALIDATE_STATUS`](crate::enums::GL_VALIDATE_STATUS).
-
     pub fn oxidegl_validate_program_pipeline(&mut self, pipeline: GLuint) {
         panic!("command oxidegl_validate_program_pipeline not yet implemented");
     }
@@ -21640,7 +21465,6 @@ impl Context {
     ///
     /// [**glGetVertexArrayiv**](crate::context::Context::oxidegl_get_vertex_arrayiv)
     /// with argument [`GL_ELEMENT_ARRAY_BUFFER_BINDING`](crate::enums::GL_ELEMENT_ARRAY_BUFFER_BINDING).
-
     pub fn oxidegl_vertex_array_element_buffer(&mut self, vaobj: GLuint, buffer: GLuint) {
         panic!("command oxidegl_vertex_array_element_buffer not yet implemented");
     }
@@ -21669,7 +21493,6 @@ impl Context {
     /// ### Notes
     /// [**glVertexAttribDivisor**](crate::context::Context::oxidegl_vertex_attrib_divisor)
     /// is available only if the GL version is 3.3 or higher.
-
     pub fn oxidegl_vertex_attrib_divisor(&mut self, index: GLuint, divisor: GLuint) {
         panic!("command oxidegl_vertex_attrib_divisor not yet implemented");
     }
@@ -21711,7 +21534,6 @@ impl Context {
     /// ### Notes
     /// [**glWaitSync**](crate::context::Context::oxidegl_wait_sync) is available
     /// only if the GL version is 3.2 or higher.
-
     pub fn oxidegl_wait_sync(&mut self, sync: GLsync, flags: GLbitfield, timeout: GLuint64) {
         panic!("command oxidegl_wait_sync not yet implemented");
     }

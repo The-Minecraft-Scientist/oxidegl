@@ -19,6 +19,45 @@ f:glDeleteBuffers
 f:glBufferStorage
 f:glNamedBufferStorage
 f:glBindBuffer
+f:glBindBufferBase
+f:glBindBufferRange
+f:glBindBuffersBase
+f:glBindBuffersRange
+
+// enable and disable
+f:glEnable
+f:glDisable
+f:glEnablei
+f:glDisablei
+
+// debug
+f:glObjectLabel
+f:glObjectPtrLabel
+f:glGetObjectLabel
+f:glGetObjectPtrLabel
+f:glGetPointerv
+f:glDebugMessageCallback
+f:glDebugMessageControl
+f:glDebugMessageInsert
+
+// some draws
+f:glDrawArrays
+f:glDrawArraysIndirect
+f:glDrawArraysInstanced
+f:glDrawArraysInstancedBaseInstance
+f:glDrawElements
+f:glDrawElementsBaseVertex
+f:glDrawElementsIndirect
+f:glDrawElementsInstanced
+f:glDrawElementsInstancedBaseInstance
+f:glDrawElementsInstancedBaseVertex
+f:glDrawElementsInstancedBaseVertexBaseInstance
+f:glDrawRangeElements
+f:glDrawRangeElementsBaseVertex
+f:glDrawTransformFeedback
+f:glDrawTransformFeedbackInstanced
+f:glDrawTransformFeedbackStream
+f:glDrawTransformFeedbackStreamInstanced
 
 
 //glClear and co.
@@ -26,6 +65,11 @@ p:gl_clear
 p:gl_clear_depth
 f:glClearColor
 f:glClearStencil
+
+f:glScissor
+f:glScissorArrayv
+f:glViewport
+f:glViewportArrayv
 
 //VAO manipulation
 p:gl_vertex_attrib_format
@@ -47,8 +91,19 @@ f:glIsVertexArray
 f:glDeleteVertexArrays
 
 //Shaders
-//Shader lifecycle
 f:glCreateShader
+f:glDeleteShader
+f:glGetShaderiv
+
+
+f:glCreateProgram
+f:glLinkProgram
+f:glAttachShader
+f:glDetachShader
+f:glGetProgramiv
+f:glValidateProgram
+f:glUseProgram
+
 
 //Shader manipulation
 f:glShaderSource

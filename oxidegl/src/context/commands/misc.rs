@@ -186,7 +186,6 @@ impl Context {
     /// [**glGet**](crate::context::Context::oxidegl_get) with argument [`GL_VIEWPORT_BOUNDS_RANGE`](crate::enums::GL_VIEWPORT_BOUNDS_RANGE)
     ///
     /// [**glGet**](crate::context::Context::oxidegl_get) with argument [`GL_VIEWPORT_SUBPIXEL_BITS`](crate::enums::GL_VIEWPORT_SUBPIXEL_BITS)
-
     pub unsafe fn oxidegl_viewport_arrayv(
         &mut self,
         first: GLuint,
