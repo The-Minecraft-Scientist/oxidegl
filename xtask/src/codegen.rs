@@ -428,12 +428,16 @@ pub fn get_vals<'a>(
     }
 
     let mut new_map = HashMap::new();
+    let filt = read_to_string("xtask/enum_overrides.txt")?
+        .lines()
+        .map(ToString::to_string)
+        .collect::<HashSet<String>>();
     for (k, val) in groups_map.drain().filter(|(k, val)| {
         (!val.param_group_members.is_empty()
             && !k.contains("SGI")
             && !k.contains("NV")
             && val.enum_members.len() > 1)
-            || matches!(*k, "RenderbufferParameterName")
+            || filt.contains(*k)
     }) {
         if k.is_empty() {
             continue;
@@ -806,7 +810,7 @@ fn print_enum_group_enum<'a>(
             }}
         }}
         impl<Dst: GlDstType> SrcType<Dst> for {name} {{
-            fn cast(self) -> Dst {{
+            fn convert(self) -> Dst {{
                 Dst::from_uint(self as u32)
             }}
         }}",
@@ -855,7 +859,7 @@ fn print_enum_group_bitfield<'a>(
             }}
         }}
         impl<Dst: GlDstType> SrcType<Dst> for {name} {{
-            fn cast(self) -> Dst {{
+            fn convert(self) -> Dst {{
                 Dst::from_uint(self.bits())
             }}
         }}",

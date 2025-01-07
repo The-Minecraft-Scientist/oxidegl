@@ -24,6 +24,8 @@ mod nsgl_shim;
 #[allow(non_upper_case_globals, unused)]
 pub mod enums;
 
+pub type ProtoObjRef<T> = Retained<ProtocolObject<T>>;
+
 #[must_use]
 pub(crate) fn trimmed_type_name<T: ?Sized>() -> &'static str {
     let s = std::any::type_name::<T>();
@@ -46,7 +48,6 @@ pub(crate) fn trimmed_type_name<T: ?Sized>() -> &'static str {
         last_substr
     }
 }
-pub type ProtoObjRef<T> = Retained<ProtocolObject<T>>;
 
 pub struct NoDebug<T> {
     inner: T,

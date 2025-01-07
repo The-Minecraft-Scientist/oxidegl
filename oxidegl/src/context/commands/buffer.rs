@@ -1,6 +1,8 @@
 use core::{ffi::c_void, fmt::Debug, ptr::NonNull};
 
-use objc2_metal::{MTLBuffer, MTLDevice, MTLResourceOptions};
+use objc2::rc::Retained;
+use objc2_foundation::NSString;
+use objc2_metal::{MTLBuffer, MTLDevice, MTLResource, MTLResourceOptions};
 
 use crate::{
     context::{
@@ -900,4 +902,16 @@ pub struct MappingInfo {
 impl NamedObject for Buffer {
     type LateInitType = LateInit<Self>;
     const LATE_INIT_FUNC: fn(ObjectName<Self>) -> Self = Self::new_default;
+    fn set_debug_label(
+        ctx: &mut Context,
+        name: ObjectName<Self>,
+        label: Option<Retained<NSString>>,
+    ) {
+        ctx.gl_state
+            .buffer_list
+            .get(name)
+            .allocation
+            .as_ref()
+            .inspect(|&a| a.mtl.setLabel(label.as_deref()));
+    }
 }

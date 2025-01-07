@@ -1,8 +1,8 @@
-use std::{
-    cell::UnsafeCell, ffi::CStr, fmt::Debug, marker::PhantomData, num::NonZeroU32, ops::Deref, ptr,
-};
+use std::{cell::UnsafeCell, fmt::Debug, marker::PhantomData, num::NonZeroU32, ops::Deref, ptr};
 
 use ahash::HashSet;
+use objc2::rc::Retained;
+use objc2_foundation::NSString;
 use objc2_metal::{MTLBlendFactor, MTLBlendOperation};
 
 use crate::{
@@ -25,6 +25,7 @@ use super::{
     framebuffer::{DrawBuffers, Framebuffer, MAX_COLOR_ATTACHMENTS},
     program::Program,
     shader::Shader,
+    Context,
 };
 
 #[derive(Debug, Default)]
@@ -463,7 +464,12 @@ impl Default for Characteristics {
 
 /// Marker trait that marks a struct as an OpenGL object, providing information on whether it has init-at-bind (`LateInit`) semantics or normal semantics, and (optionally) how to set the underlying debug label
 pub(crate) trait NamedObject: Sized + 'static {
-    fn set_debug_label(&mut self, _label: Option<&CStr>) {}
+    fn set_debug_label(
+        ctx: &mut Context,
+        name: ObjectName<Self>,
+        label: Option<Retained<NSString>>,
+    ) {
+    }
 
     type LateInitType: GetLateInitTypes<Obj = Self> + GetCellType<Obj = Self>;
 

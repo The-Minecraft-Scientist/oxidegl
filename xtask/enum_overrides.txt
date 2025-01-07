@@ -1,0 +1,6 @@
+RenderbufferParameterName
+TextureCompareMode
+TextureWrapMode
+TextureMinFilter
+TextureMagFilter
+TextureWrapMode

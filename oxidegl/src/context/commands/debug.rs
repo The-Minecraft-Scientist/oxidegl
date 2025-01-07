@@ -89,11 +89,13 @@ impl Context {
         };
         let name = ObjectName::<()>::from_raw(name);
         with_debug_state_mut(|mut state| match identifier {
-            ObjectIdentifier::Framebuffer => state.set_label(name.cast::<Framebuffer>(), label),
-            ObjectIdentifier::Buffer => state.set_label(name.cast::<Buffer>(), label),
-            ObjectIdentifier::Shader => state.set_label(name.cast::<Shader>(), label),
-            ObjectIdentifier::Program => state.set_label(name.cast::<Program>(), label),
-            ObjectIdentifier::VertexArray => state.set_label(name.cast::<Vao>(), label),
+            ObjectIdentifier::Framebuffer => {
+                state.set_label(self, name.cast::<Framebuffer>(), label);
+            }
+            ObjectIdentifier::Buffer => state.set_label(self, name.cast::<Buffer>(), label),
+            ObjectIdentifier::Shader => state.set_label(self, name.cast::<Shader>(), label),
+            ObjectIdentifier::Program => state.set_label(self, name.cast::<Program>(), label),
+            ObjectIdentifier::VertexArray => state.set_label(self, name.cast::<Vao>(), label),
             ObjectIdentifier::ProgramPipeline => todo!(),
             ObjectIdentifier::Texture => todo!(),
             ObjectIdentifier::Renderbuffer => todo!(),

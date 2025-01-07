@@ -4,7 +4,7 @@ use log::trace;
 use objc2_metal::{MTLPixelFormat, MTLTexture};
 
 use crate::{
-    enums::{InternalFormat, PixelFormat, PixelType, TextureTarget},
+    enums::{DepthFunction, InternalFormat, PixelFormat, PixelType, TextureCompareMode, TextureMagFilter, TextureMinFilter, TextureTarget, TextureWrapMode},
     ProtoObjRef,
 };
 
@@ -15,12 +15,39 @@ pub struct Texture {
     name: ObjectName<Self>,
     target: TextureTarget,
     mtl_tex: ProtoObjRef<dyn MTLTexture>,
+    sampling_state: SamplerParams,
 
     format: InternalFormat,
     width: u32,
     height: Option<NonZeroU32>,
     depth: Option<NonZeroU32>,
     array_length: Option<NonZeroU32>,
+}
+impl Texture {}
+
+struct TextureLevel {
+    /// Whether this level is considered "complete" (see the spec for a definition)
+    complete: bool,
+}
+#[derive(Debug)]
+pub struct Sampler {
+    name: ObjectName<Self>,
+    params: SamplerParams,
+}
+#[derive(Debug, Clone)]
+pub struct SamplerParams {
+    border_color: [f32; 4],
+    depth_compare_func: DepthFunction,
+    depth_compare_mode: TextureCompareMode,
+    mag_filter: TextureMagFilter,
+    min_filter: TextureMinFilter,
+    lod_bias: f32,
+    max_lod: f32,
+    min_lod: f32,
+    max_anisotropy: f32,
+    wrap_mode_s: TextureWrapMode,
+    wrap_mode_t: TextureWrapMode,
+    wrap_mode_r: TextureWrapMode,
 }
 
 #[allow(clippy::enum_glob_use)]

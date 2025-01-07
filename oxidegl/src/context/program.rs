@@ -1,11 +1,12 @@
-use std::mem;
+use std::{mem, ptr::NonNull};
 
 use ahash::{HashSet, HashSetExt};
 use glslang::Compiler as GlslLangCompiler;
+use objc2::{rc::Retained, ClassType};
 //use naga::back::msl::{Options, PipelineOptions};
 use crate::{
     context::{
-        debug::{gl_debug, gl_trace},
+        debug::{gl_debug, gl_trace, with_debug_state},
         shader::ShaderInternal,
     },
     enums::ShaderType,
@@ -101,7 +102,6 @@ impl ProgramStageBinding {
 pub struct Program {
     pub(crate) name: ObjectName<Self>,
     pub(crate) refcount: u32,
-    //TODO compute shaders
     pub(crate) vertex_shaders: ProgramStageBinding,
     pub(crate) fragment_shaders: ProgramStageBinding,
     pub(crate) compute_shaders: ProgramStageBinding,
@@ -178,6 +178,7 @@ impl Program {
         device: &ProtoObjRef<dyn MTLDevice>,
         b: &mut ProgramStageBinding,
         glslang_compiler: &GlslLangCompiler,
+        label: Option<&Retained<NSString>>,
     ) -> Result<LinkedShaderStage, Box<str>> {
         macro_rules! err_ret {
             ($e:expr) => {
@@ -242,6 +243,9 @@ impl Program {
         let lib = device
             .newLibraryWithSource_options_error(&NSString::from_str(&msl_src), None)
             .map_err(|e| e.to_string())?;
+        if let Some(label) = label {
+            lib.setLabel(Some(label));
+        }
         // TODO: coalesce ungrouped (named) uniforms into a single uniform block with a hashmap for by-identifier uniform lookup
         Ok(LinkedShaderStage {
             function: lib
@@ -262,7 +266,6 @@ impl Program {
     ) {
         self.latest_linkage = None;
         gl_debug!(src: ShaderCompiler, "attempting to link {:?}", self.name);
-        gl_trace!(src: ShaderCompiler, "Current shader program state: {:?}", &self);
         let glslang_compiler =
             GlslLangCompiler::acquire().expect("failed to acquire glslang instance");
         let mut new_linkage = LinkedProgram {
@@ -270,6 +273,18 @@ impl Program {
             vertex: None,
             compute: None,
         };
+        let label = with_debug_state(|state| state.get_label(self.name))
+            .flatten()
+            .as_deref()
+            .map(|c| unsafe {
+                let alloc = NSString::alloc();
+                NSString::initWithCString_encoding(
+                    alloc,
+                    NonNull::new_unchecked(c.as_ptr().cast_mut()),
+                    NSString::defaultCStringEncoding(),
+                )
+                .expect("failed to create NSString")
+            });
         if !self.vertex_shaders.is_empty() {
             gl_trace!(src: ShaderCompiler, "linking vertex shaders");
             match Self::link_stage(
@@ -277,6 +292,7 @@ impl Program {
                 device,
                 &mut self.vertex_shaders,
                 glslang_compiler,
+                label.as_ref(),
             ) {
                 Ok(v) => new_linkage.vertex = Some(v),
                 Err(s) => {
@@ -292,6 +308,7 @@ impl Program {
                 device,
                 &mut self.fragment_shaders,
                 glslang_compiler,
+                label.as_ref(),
             ) {
                 Ok(v) => new_linkage.fragment = Some(v),
                 Err(s) => {
@@ -307,6 +324,7 @@ impl Program {
                 device,
                 &mut self.compute_shaders,
                 glslang_compiler,
+                label.as_ref(),
             ) {
                 Ok(v) => new_linkage.vertex = Some(v),
                 Err(s) => {

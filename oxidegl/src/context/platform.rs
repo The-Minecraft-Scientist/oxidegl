@@ -142,22 +142,26 @@ impl Dirty {
     }
 }
 impl Context {
+    #[inline]
     pub(crate) fn new_encoder(&mut self) {
         // need to update the new encoder after creation
         self.platform_state
             .dirty_state
             .set_bits(Dirty::NEW_RENDER_ENCODER);
     }
+    #[inline]
     pub(crate) fn update_encoder(&mut self) {
         self.platform_state
             .dirty_state
             .set_bits(Dirty::UPDATE_RENDER_ENCODER);
     }
+    #[inline]
     pub(crate) fn remap_buffers(&mut self) {
         self.platform_state
             .dirty_state
             .set_bits(Dirty::REMAP_BUFFERS);
     }
+    #[inline]
     pub(crate) fn new_pipeline(&mut self) {
         self.platform_state
             .dirty_state
@@ -192,6 +196,8 @@ impl<const MAX_ENTRIES: usize, T: NamedObject + 'static> ResourceMap<T, MAX_ENTR
     ) {
         self.inner.clear();
         self.buf.clear();
+        #[cfg(debug_assertions)]
+        self.dbg_check.clear();
         for (name, idx) in pinned_resources.iter().copied() {
             self.inner.insert(name, u32::from(idx));
             self.buf.insert(u32::from(idx));

@@ -1,8 +1,8 @@
-#![allow(unused)] /* FIXME delete when implemented */
 use ahash::{HashMap, HashMapExt, HashSet, HashSetExt};
-use core::str;
-use flexi_logger::{writers::LogWriter, Logger};
-use log::{logger, Level, Log, Record, RecordBuilder};
+use flexi_logger::Logger;
+use log::{logger, Level, Record, RecordBuilder};
+use objc2::ClassType;
+use objc2_foundation::NSString;
 use std::{
     any,
     cell::Cell,
@@ -12,7 +12,8 @@ use std::{
     fmt::Arguments,
     mem::{self, MaybeUninit},
     pin::Pin,
-    ptr, slice,
+    ptr::{self, NonNull},
+    slice,
 };
 
 use crate::{
@@ -20,7 +21,10 @@ use crate::{
     enums::{DebugSeverity, DebugSource, DebugType},
 };
 
-use super::{state::ObjectName, Context};
+use super::{
+    state::{NamedObject, ObjectName},
+    Context,
+};
 
 thread_local! {
     // We store the debug logging infrastructure in a separate thread local to avoid passing it in by-reference every log call (which cannot be avoided/worked around with macros)
@@ -476,8 +480,9 @@ impl DebugState {
             .and_then(|v| v.get(&name.to_raw()))
             .cloned()
     }
-    pub(crate) fn set_label<T: ?Sized + 'static>(
+    pub(crate) fn set_label<T: NamedObject>(
         &mut self,
+        ctx: &mut Context,
         name: ObjectName<T>,
         label: Option<Box<CStr>>,
     ) {
@@ -489,6 +494,21 @@ impl DebugState {
                 vacant_entry.insert(HashMap::new())
             }
         };
+
+        T::set_debug_label(
+            ctx,
+            name,
+            // Safety: null_terminated_c_string points to an initialized, nul-terminated C string (as upheld by the CStr type)
+            label.as_deref().map(|c| unsafe {
+                let alloc = NSString::alloc();
+                NSString::initWithCString_encoding(
+                    alloc,
+                    NonNull::new_unchecked(c.as_ptr().cast_mut()),
+                    NSString::defaultCStringEncoding(),
+                )
+                .expect("failed to create NSString")
+            }),
+        );
         if let Some(label) = label {
             map_for_type.insert(name.to_raw(), label);
         } else {
@@ -549,6 +569,7 @@ pub(crate) fn init_logger() {
         log::trace!("OxideGL stdout logger initialized");
     }
 }
+#[allow(unused)]
 pub(crate) use macros::{gl_debug, gl_err, gl_info, gl_log, gl_trace, gl_warn};
 
 pub(crate) mod macros {
@@ -610,7 +631,6 @@ pub(crate) mod macros {
     ///
     /// gl_log!(level: Info, "this is a message from {}", "the OxideGL logger!");
     /// ```
-    ///
     macro_rules! gl_log {
 
         // gl_log!(id: 2, src: Api, ty: UndefinedBehavior, Level::Warn, target: "asdf", "this is an {} warning", "OxideGL")
@@ -814,6 +834,7 @@ pub(crate) mod macros {
     ) => (
         $(
             $(#[doc = $doc])?
+            #[allow(unused)]
             macro_rules! $name {
                 ( src: $_src:ident, ty: $_ty:ident, $_($_rest:tt)+ ) => (
                     $_ crate::context::debug::__logging_private::gl_log! { src: $_src, ty: $_ty, level: $lvl, $_($_rest)+ }
