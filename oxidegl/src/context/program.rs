@@ -22,8 +22,8 @@ use spirv_cross2::{
 };
 
 use super::{
+    gl_object::{NamedObject, NamedObjectList, NoLateInit, ObjectName},
     shader::Shader,
-    state::{NamedObject, NamedObjectList, NoLateInit, ObjectName},
 };
 #[derive(Debug)]
 pub enum ProgramStageBinding {

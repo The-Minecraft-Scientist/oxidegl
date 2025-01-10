@@ -1,8 +1,8 @@
 use crate::{
     context::{
         debug::{gl_debug, gl_trace},
+        gl_object::ObjectName,
         shader::{GlslShaderInternal, Shader, ShaderInternal},
-        state::ObjectName,
         Context,
     },
     dispatch::gl_types::{GLchar, GLint, GLsizei, GLuint},
@@ -307,7 +307,7 @@ impl Context {
     pub fn oxidegl_delete_shader(&mut self, shader: GLuint) {
         let name = ObjectName::from_raw(shader);
         gl_debug!(src: ShaderCompiler, "marking {:?} for deletion", name);
-        self.gl_state.shaders_to_delete.insert(name);
+        self.gl_state.shader_deletion_queue.insert(name);
     }
 }
 

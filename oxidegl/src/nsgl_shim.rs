@@ -346,7 +346,6 @@ unsafe extern "C" fn CFBundleGetFunctionPointerForNameOverride(
     bundle: CFBundleRef,
     function_name: CFStringRef,
 ) -> *const c_void {
-    trace!("CFBundleLookup called");
     // Safety: eh it probably works
     unsafe {
         let bundle_name = CFBundleGetIdentifier(bundle);
@@ -416,7 +415,7 @@ pub static DYLD_LIBC_DLOPEN_INTERPOSE: DyldInterposeTuple = DyldInterposeTuple {
     replacee: dlopen as unsafe extern "C" fn(_, _) -> _ as *const c_void,
 };
 
-// our crimes break the Rust test runner infra for some reason (probably due to nasal demons) so we need to not commit them if this is a test build
+// our crimes break the Rust test runner infra for some reason (probably due to nasal demon summoning) so we need to not commit them if this is a test build
 #[cfg(not(test))]
 mod ctor {
     use ctor::ctor;
@@ -424,7 +423,7 @@ mod ctor {
     use crate::{entry_point::oxidegl_platform_init, nsgl_shim::OXGLOxideGlCtxShim};
     #[ctor]
     fn ctor() {
-        println!("OxideGL running static constructor. Ensure liboxidegl is loaded BEFORE main is run. Loading liboxidegl after main WILL result in delivery of nasal demons to your front door");
+        println!("OxideGL running static constructor. Ensure liboxidegl is loaded BEFORE main is run. Loading liboxidegl after main may cause nasal demons to spontaneously appear");
         // Safety: we are living the good life (before main), so there are no other threads to race on environment variables with
         unsafe { oxidegl_platform_init() }
         // Safety: running from static ctor (equivalent to objc +load context)

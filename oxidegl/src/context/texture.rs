@@ -1,29 +1,90 @@
-use std::num::NonZeroU32;
+use std::{cell::Cell, fmt::Debug, num::NonZeroU32};
 
 use log::trace;
-use objc2_metal::{MTLPixelFormat, MTLTexture};
+use objc2::rc::Retained;
+use objc2_foundation::NSObjectProtocol;
+use objc2_metal::{
+    MTLPixelFormat, MTLSamplerAddressMode, MTLSamplerBorderColor, MTLSamplerDescriptor,
+    MTLSamplerMinMagFilter, MTLSamplerMipFilter, MTLTexture, MTLTextureSwizzle, MTLTextureType,
+};
 
 use crate::{
-    enums::{DepthFunction, InternalFormat, PixelFormat, PixelType, TextureCompareMode, TextureMagFilter, TextureMinFilter, TextureTarget, TextureWrapMode},
+    enums::{
+        DepthFunction, InternalFormat, PixelFormat, PixelType, TextureMagFilter, TextureMinFilter,
+        TextureSwizzle, TextureTarget, TextureWrapMode,
+    },
     ProtoObjRef,
 };
 
-use super::state::ObjectName;
+use super::gl_object::ObjectName;
 
+/// * named: name is reserved, object is considered uninitialized
+/// * bound: object is initialized to default state, has no storage
+/// * complete:
 #[derive(Debug)]
 pub struct Texture {
     name: ObjectName<Self>,
     target: TextureTarget,
-    mtl_tex: ProtoObjRef<dyn MTLTexture>,
     sampling_state: SamplerParams,
-
+    realized: Option<RealizedTexture>,
+}
+/// Represents a realized texture's storage
+#[derive(Debug)]
+pub struct RealizedTexture {
+    mtl_tex: Option<ProtoObjRef<dyn MTLTexture>>,
     format: InternalFormat,
     width: u32,
     height: Option<NonZeroU32>,
     depth: Option<NonZeroU32>,
     array_length: Option<NonZeroU32>,
 }
-impl Texture {}
+impl Texture {
+    fn new_named(name: ObjectName<Self>, target: TextureTarget) -> Self {
+        Self {
+            name,
+            target,
+            sampling_state: SamplerParams::default(),
+            realized: None,
+        }
+    }
+    fn make_immutable_storage(&mut self, levels: u32) {}
+}
+impl From<TextureTarget> for MTLTextureType {
+    fn from(value: TextureTarget) -> Self {
+        match value {
+            TextureTarget::Texture1D | TextureTarget::ProxyTexture1D => Self::MTLTextureType1D,
+            TextureTarget::Texture1DArray | TextureTarget::ProxyTexture1DArray => {
+                Self::MTLTextureType1DArray
+            }
+            TextureTarget::Renderbuffer
+            | TextureTarget::TextureRectangle
+            | TextureTarget::ProxyTextureRectangle
+            | TextureTarget::Texture2D
+            | TextureTarget::ProxyTexture2D => Self::MTLTextureType2D,
+
+            TextureTarget::Texture2DArray | TextureTarget::ProxyTexture2DArray => {
+                Self::MTLTextureType2DArray
+            }
+            TextureTarget::Texture2DMultisample | TextureTarget::ProxyTexture2DMultisample => {
+                Self::MTLTextureType2DMultisample
+            }
+            TextureTarget::Texture2DMultisampleArray
+            | TextureTarget::ProxyTexture2DMultisampleArray => {
+                Self::MTLTextureType2DMultisampleArray
+            }
+            TextureTarget::TextureCubeMap | TextureTarget::ProxyTextureCubeMap => Self::Cube,
+            TextureTarget::TextureCubeMapArray | TextureTarget::ProxyTextureCubeMapArray => {
+                Self::CubeArray
+            }
+
+            TextureTarget::TextureBuffer => Self::TextureBuffer,
+            TextureTarget::Texture3D | TextureTarget::ProxyTexture3D => Self::MTLTextureType3D,
+            _ => {
+                panic!("invalid texture target")
+            }
+        }
+    }
+}
 
 struct TextureLevel {
     /// Whether this level is considered "complete" (see the spec for a definition)
@@ -34,22 +95,159 @@ pub struct Sampler {
     name: ObjectName<Self>,
     params: SamplerParams,
 }
+#[derive(Debug, Clone, Copy)]
+enum MaxAnisotropy {
+    NoAnisotropic,
+    // INVARIANT field lies within [2, 16]
+    Samples(u8),
+}
+
+impl MaxAnisotropy {
+    fn from_gl_max_anisotropy(val: f64) -> Option<Self> {
+        match val {
+            1.0 => Some(Self::NoAnisotropic),
+            1.000_000_000_000_000_2..16.0 => Some(Self::Samples(val.floor() as u8)),
+            _ => None,
+        }
+    }
+}
+impl From<MaxAnisotropy> for usize {
+    fn from(value: MaxAnisotropy) -> Self {
+        match value {
+            MaxAnisotropy::NoAnisotropic => 1,
+            MaxAnisotropy::Samples(v) => v as usize,
+        }
+    }
+}
 #[derive(Debug, Clone)]
 pub struct SamplerParams {
+    /// Border color for border wrap mode
     border_color: [f32; 4],
-    depth_compare_func: DepthFunction,
-    depth_compare_mode: TextureCompareMode,
+    /// Depth comparison mode if depth comparison is enabled
+    depth_compare: Option<DepthFunction>,
+    /// Magnification filter
     mag_filter: TextureMagFilter,
+    /// Minification filter and mipmap filter for mipmapped sampling
     min_filter: TextureMinFilter,
+    /// Constant that is added to the shader-supplied LOD and then clamped to [`min_lod`, `max_lod`] before sampling
     lod_bias: f32,
     max_lod: f32,
     min_lod: f32,
-    max_anisotropy: f32,
+    max_anisotropy: MaxAnisotropy,
     wrap_mode_s: TextureWrapMode,
     wrap_mode_t: TextureWrapMode,
     wrap_mode_r: TextureWrapMode,
+    swizzle_r: TextureSwizzle,
+    swizzle_g: TextureSwizzle,
+    swizzle_b: TextureSwizzle,
+    swizzle_a: TextureSwizzle,
+    descriptor_cache: CloneOptionCell<Retained<MTLSamplerDescriptor>>,
 }
 
+impl SamplerParams {
+    fn sampler_desc(&self) -> Retained<MTLSamplerDescriptor> {
+        if let Some(d) = self.descriptor_cache.clone_out() {
+            return d;
+        }
+        let desc = MTLSamplerDescriptor::new();
+        if [self.wrap_mode_r, self.wrap_mode_s, self.wrap_mode_t]
+            .contains(&TextureWrapMode::ClampToBorder)
+        {
+            let border_color = match self.border_color {
+                [0.0, 0.0, 0.0, v] => match v {
+                    1.0 => MTLSamplerBorderColor::OpaqueBlack,
+                    _ => MTLSamplerBorderColor::TransparentBlack,
+                },
+                [1.0, 1.0, 1.0, 1.0] => MTLSamplerBorderColor::OpaqueWhite,
+                _ => panic!("tried to use an unsupported sampler border color!"),
+            };
+            desc.setBorderColor(border_color);
+        }
+        if let Some(depth_compare_func) = self.depth_compare {
+            desc.setCompareFunction(depth_compare_func.into());
+        }
+        desc.setMagFilter(self.mag_filter.into());
+        if let MaxAnisotropy::Samples(n) = self.max_anisotropy {
+            desc.setMaxAnisotropy(n as usize);
+        }
+        let (minification, mip) = self.min_filter.into();
+        desc.setMinFilter(minification);
+        desc.setMipFilter(mip);
+        desc.setSAddressMode(self.wrap_mode_s.into());
+        desc.setTAddressMode(self.wrap_mode_t.into());
+        desc.setRAddressMode(self.wrap_mode_r.into());
+        self.descriptor_cache.set(Some(desc.clone()));
+        desc
+    }
+    fn mark_dirty(&self) {
+        self.descriptor_cache.set(None);
+    }
+}
+impl Default for SamplerParams {
+    fn default() -> Self {
+        Self {
+            border_color: [0.0; 4],
+            depth_compare: None,
+            mag_filter: TextureMagFilter::Linear,
+            min_filter: TextureMinFilter::NearestMipmapLinear,
+            lod_bias: 0.0,
+            max_lod: 1000.0,
+            min_lod: -1000.0,
+            max_anisotropy: MaxAnisotropy::NoAnisotropic,
+            wrap_mode_s: TextureWrapMode::Repeat,
+            wrap_mode_t: TextureWrapMode::Repeat,
+            wrap_mode_r: TextureWrapMode::Repeat,
+            swizzle_r: TextureSwizzle::Red,
+            swizzle_g: TextureSwizzle::Green,
+            swizzle_b: TextureSwizzle::Blue,
+            swizzle_a: TextureSwizzle::Alpha,
+            descriptor_cache: CloneOptionCell::new(None),
+        }
+    }
+}
+impl From<TextureSwizzle> for MTLTextureSwizzle {
+    fn from(value: TextureSwizzle) -> Self {
+        match value {
+            TextureSwizzle::Zero => MTLTextureSwizzle::Zero,
+            TextureSwizzle::One => MTLTextureSwizzle::One,
+            TextureSwizzle::Red => MTLTextureSwizzle::Red,
+            TextureSwizzle::Green => MTLTextureSwizzle::Green,
+            TextureSwizzle::Blue => MTLTextureSwizzle::Blue,
+            TextureSwizzle::Alpha => MTLTextureSwizzle::Alpha,
+        }
+    }
+}
+impl From<TextureWrapMode> for MTLSamplerAddressMode {
+    fn from(value: TextureWrapMode) -> Self {
+        match value {
+            TextureWrapMode::Repeat => MTLSamplerAddressMode::Repeat,
+            TextureWrapMode::MirroredRepeat => MTLSamplerAddressMode::MirrorRepeat,
+            TextureWrapMode::ClampToEdge => MTLSamplerAddressMode::ClampToEdge,
+            TextureWrapMode::ClampToBorder => MTLSamplerAddressMode::ClampToBorderColor,
+        }
+    }
+}
+impl From<TextureMagFilter> for MTLSamplerMinMagFilter {
+    fn from(value: TextureMagFilter) -> Self {
+        match value {
+            TextureMagFilter::Nearest => Self::Nearest,
+            TextureMagFilter::Linear => Self::Linear,
+        }
+    }
+}
+impl From<TextureMinFilter> for (MTLSamplerMinMagFilter, MTLSamplerMipFilter) {
+    fn from(value: TextureMinFilter) -> Self {
+        use objc2_metal::{MTLSamplerMinMagFilter as MinMag, MTLSamplerMipFilter as Mip};
+        match value {
+            TextureMinFilter::Nearest => (MinMag::Nearest, Mip::NotMipmapped),
+            TextureMinFilter::Linear => (MinMag::Linear, Mip::NotMipmapped),
+            TextureMinFilter::NearestMipmapNearest => (MinMag::Nearest, Mip::Nearest),
+            TextureMinFilter::LinearMipmapNearest => (MinMag::Linear, Mip::Nearest),
+            TextureMinFilter::NearestMipmapLinear => (MinMag::Nearest, Mip::Linear),
+            TextureMinFilter::LinearMipmapLinear => (MinMag::Linear, Mip::Linear),
+        }
+    }
+}
 #[allow(clippy::enum_glob_use)]
 impl InternalFormat {
     #[allow(clippy::too_many_lines)]
@@ -337,6 +535,43 @@ impl GLPixelTypeFormat {
             PixelType::Float32UnsignedInt248Rev => todo!(),
             PixelType::UnsignedInt248 => todo!(),
             PixelType::UnsignedShort565Rev => todo!(),
+        }
+    }
+}
+struct CloneOptionCell<T> {
+    inner: Cell<Option<T>>,
+}
+impl<T: Clone> Clone for CloneOptionCell<T> {
+    fn clone(&self) -> Self {
+        let v = self.inner.take();
+        self.inner.set(v.clone());
+        Self {
+            inner: Cell::new(v),
+        }
+    }
+}
+impl<T: Clone + Debug> Debug for CloneOptionCell<T> {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.debug_struct("CloneOptionCell")
+            .field("inner", &self.clone_out())
+            .finish()
+    }
+}
+impl<T> CloneOptionCell<T> {
+    fn clone_out(&self) -> Option<T>
+    where
+        T: Clone,
+    {
+        let out = self.inner.take();
+        self.inner.set(out.clone());
+        out
+    }
+    fn set(&self, val: Option<T>) {
+        self.inner.set(val);
+    }
+    fn new(val: Option<T>) -> Self {
+        Self {
+            inner: Cell::new(val),
         }
     }
 }

@@ -7,7 +7,7 @@ use objc2_metal::MTLVertexFormat;
 use crate::{
     context::{
         commands::buffer::Buffer,
-        state::{LateInit, NamedObject, ObjectName},
+        gl_object::{LateInit, NamedObject, ObjectName},
         Context,
     },
     dispatch::{

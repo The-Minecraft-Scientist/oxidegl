@@ -5,7 +5,7 @@ use crate::{
     ProtoObjRef,
 };
 
-use super::state::{LateInit, NamedObject, ObjectName};
+use super::gl_object::{LateInit, NamedObject, ObjectName};
 
 pub const MAX_COLOR_ATTACHMENTS: u32 = 8;
 #[derive(Debug)]

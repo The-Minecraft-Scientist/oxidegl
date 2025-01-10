@@ -1,5 +1,5 @@
 use crate::{
-    context::{debug::gl_debug, program::Program, state::ObjectName, Context},
+    context::{debug::gl_debug, gl_object::ObjectName, program::Program, Context},
     dispatch::gl_types::{GLint, GLuint},
     enums::ProgramProperty,
     run_if_changed,
@@ -336,9 +336,9 @@ impl Context {
         let program = self.gl_state.program_list.get_raw_mut(program);
         let shader = self.gl_state.shader_list.get_raw_mut(shader);
         let name = shader.name;
-        if program.detach_shader(shader) && self.gl_state.shaders_to_delete.contains(&name) {
+        if program.detach_shader(shader) && self.gl_state.shader_deletion_queue.contains(&name) {
             self.gl_state.shader_list.delete(name);
-            self.gl_state.shaders_to_delete.remove(&name);
+            self.gl_state.shader_deletion_queue.remove(&name);
         }
     }
     /// ### Parameters
@@ -529,7 +529,7 @@ impl Context {
         #[expect(clippy::cast_possible_truncation, clippy::cast_possible_wrap)]
         let ret = match pname {
             ProgramProperty::DeleteStatus => {
-                i32::from(self.gl_state.programs_to_delete.contains(&program.name))
+                i32::from(self.gl_state.program_deletion_queue.contains(&program.name))
             }
             ProgramProperty::LinkStatus | ProgramProperty::ValidateStatus => {
                 i32::from(program.latest_linkage.is_some())

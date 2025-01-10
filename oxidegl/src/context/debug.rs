@@ -22,7 +22,7 @@ use crate::{
 };
 
 use super::{
-    state::{NamedObject, ObjectName},
+    gl_object::{NamedObject, ObjectName},
     Context,
 };
 

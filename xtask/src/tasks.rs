@@ -401,6 +401,7 @@ impl TaskTrait for CargoFix {
             .spawn()?
             .try_wait()?;
         std::process::Command::new("cargo")
+            .current_dir("oxidegl")
             .arg("clippy")
             .args(["--fix", "--allow-dirty"])
             .spawn()?

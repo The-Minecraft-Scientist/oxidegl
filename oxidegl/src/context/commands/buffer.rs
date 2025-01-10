@@ -7,7 +7,7 @@ use objc2_metal::{MTLBuffer, MTLDevice, MTLResource, MTLResourceOptions};
 use crate::{
     context::{
         debug::gl_debug,
-        state::{LateInit, NamedObject, ObjectName},
+        gl_object::{LateInit, NamedObject, ObjectName},
         Context,
     },
     debug_unreachable,

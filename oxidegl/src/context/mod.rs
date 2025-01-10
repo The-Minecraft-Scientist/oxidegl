@@ -27,6 +27,7 @@ pub(crate) mod shader;
 pub(crate) mod state;
 pub(crate) mod texture;
 
+pub(crate) mod gl_object;
 pub(crate) mod platform;
 
 thread_local! {

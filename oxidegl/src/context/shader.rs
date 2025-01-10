@@ -14,7 +14,7 @@ use spirv_cross2::Module;
 
 use super::{
     debug::gl_debug,
-    state::{NamedObject, NoLateInit, ObjectName},
+    gl_object::{NamedObject, NoLateInit, ObjectName},
 };
 //TODO: write more debug logging to compiler_log
 #[derive(Debug)]

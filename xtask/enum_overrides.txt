@@ -4,3 +4,4 @@ TextureWrapMode
 TextureMinFilter
 TextureMagFilter
 TextureWrapMode
+TextureSwizzle

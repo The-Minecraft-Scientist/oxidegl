@@ -1,6 +1,6 @@
 use core::ptr;
 
-use crate::context::state::{NamedObject, ObjectName};
+use crate::context::gl_object::{NamedObject, ObjectName};
 
 use super::gl_types::GLenum;
 use core::fmt::Debug;

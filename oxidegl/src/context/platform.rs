@@ -33,8 +33,9 @@ use crate::{
 use super::{
     commands::buffer::Buffer,
     framebuffer::InternalDrawable,
+    gl_object::{NamedObject, ObjectName},
     program::LinkedShaderStage,
-    state::{Capabilities, ColorWriteMask, DrawbufferBlendState, GLState, NamedObject, ObjectName},
+    state::{Capabilities, ColorWriteMask, DrawbufferBlendState, GLState},
     Context,
 };
 
