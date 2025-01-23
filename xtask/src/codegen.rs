@@ -273,7 +273,7 @@ pub fn get_vals<'a>(
 ) -> Result<(
     Vec<FnCollection<'a>>,
     Vec<GLAPIEntry<'a>>,
-    HashMap<&'a str, EnumGroup<'a>>,
+    HashMap<Box<str>, EnumGroup<'a>>,
 )> {
     let mut backing_strs = Vec::with_capacity(1000);
 
@@ -354,6 +354,28 @@ pub fn get_vals<'a>(
         }
     }
 
+    let mut filt = read_to_string("xtask/enum_overrides.txt")?
+        .lines()
+        .map(ToString::to_string)
+        .map(String::into_boxed_str)
+        .collect::<HashSet<Box<str>>>();
+
+    let merges = read_to_string("xtask/enum_merges.txt")?;
+    let mut enum_merge_map: HashMap<Box<str>, Box<str>> = HashMap::new();
+    for line in merges.lines() {
+        let mut it = line.split("=>");
+        let to_merge = it.next().unwrap();
+        let unified_name = it.next().unwrap();
+        filt.insert(unified_name.to_string().into_boxed_str());
+        for name in to_merge.split('|') {
+            enum_merge_map.insert(
+                name.to_string().into_boxed_str(),
+                unified_name.to_string().into_boxed_str(),
+            );
+        }
+    }
+    dbg!(&enum_merge_map);
+
     let mut groups_map = HashMap::with_capacity(100);
 
     for enu in enums.iter() {
@@ -366,35 +388,39 @@ pub fn get_vals<'a>(
             continue;
         };
 
-        groups
-            .split(',')
-            .map(|s| s.trim().trim_end_matches("ARB"))
-            .for_each(|group| {
-                match groups_map.entry(group) {
-                    std::collections::hash_map::Entry::Vacant(v) => {
-                        v.insert(EnumGroup {
-                            enum_members: vec![enu.clone()],
-                            param_group_members: Vec::new(),
-                        });
-                    }
+        for group in groups.split(',').map(|s| s.trim().trim_end_matches("ARB")) {
+            match groups_map.entry(
+                enum_merge_map
+                    .get(group)
+                    .map(|v| &**v)
+                    .unwrap_or(group)
+                    .to_string()
+                    .into_boxed_str(),
+            ) {
+                std::collections::hash_map::Entry::Vacant(v) => {
+                    v.insert(EnumGroup {
+                        enum_members: vec![enu.clone()],
+                        param_group_members: Vec::new(),
+                    });
+                }
 
-                    std::collections::hash_map::Entry::Occupied(mut o) => {
-                        if !o.get().enum_members.iter().any(|v| {
-                            let GLAPIEntry::Enum { name: n, .. } = v else {
-                                return false;
-                            };
-                            n == name
-                        }) && !o.get_mut().enum_members.iter().any(|v| {
-                            let GLAPIEntry::Enum { value: val, .. } = v else {
-                                panic!()
-                            };
-                            val == value
-                        }) {
-                            o.get_mut().enum_members.push(enu.clone());
+                std::collections::hash_map::Entry::Occupied(mut o) => {
+                    if !o.get().enum_members.iter().any(|v| {
+                        let GLAPIEntry::Enum { name: n, .. } = v else {
+                            return false;
                         };
-                    }
-                };
-            });
+                        n == name
+                    }) && !o.get_mut().enum_members.iter().any(|v| {
+                        let GLAPIEntry::Enum { value: val, .. } = v else {
+                            panic!()
+                        };
+                        val == value
+                    }) {
+                        o.get_mut().enum_members.push(enu.clone());
+                    };
+                }
+            };
+        }
     }
     {
         funcs
@@ -410,14 +436,17 @@ pub fn get_vals<'a>(
             })
             .for_each(|(cmd, param_iter)| {
                 for (pidx, param) in param_iter {
-                    for group in param.group.split(',') {
-                        let g2: &str = group;
-                        if groups_map.contains_key(g2) {
+                    for group in param
+                        .group
+                        .split(',')
+                        .map(|g| enum_merge_map.get(g).map(|v| &**v).unwrap_or(g))
+                    {
+                        if groups_map.contains_key(group) {
                             let GLAPIEntry::Command { name, .. } = cmd else {
                                 panic!()
                             };
                             groups_map
-                                .get_mut(g2)
+                                .get_mut(group)
                                 .unwrap()
                                 .param_group_members
                                 .push((name.to_string(), pidx as u32));
@@ -428,16 +457,13 @@ pub fn get_vals<'a>(
     }
 
     let mut new_map = HashMap::new();
-    let filt = read_to_string("xtask/enum_overrides.txt")?
-        .lines()
-        .map(ToString::to_string)
-        .collect::<HashSet<String>>();
+
     for (k, val) in groups_map.drain().filter(|(k, val)| {
         (!val.param_group_members.is_empty()
             && !k.contains("SGI")
             && !k.contains("NV")
             && val.enum_members.len() > 1)
-            || filt.contains(*k)
+            || filt.contains(&**k)
     }) {
         if k.is_empty() {
             continue;
@@ -488,7 +514,7 @@ pub fn write_dispatch_impl<T: Write>(w: &mut T, v: &[FnCollection<'_>]) -> Resul
 pub fn write_enum_impl<T: Write>(
     w: &mut T,
     v: &[GLAPIEntry<'_>],
-    groups: &HashMap<&'_ str, EnumGroup<'_>>,
+    groups: &HashMap<Box<str>, EnumGroup<'_>>,
 ) -> Result<()> {
     writeln!(w, "{TYPES_USE}")?;
     writeln!(w, "{ENUM_UTILS_USE}")?;
