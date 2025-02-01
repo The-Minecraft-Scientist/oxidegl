@@ -700,7 +700,7 @@ impl Context {
     ///
     /// [**glIsProgram**](crate::context::Context::oxidegl_is_program)
     pub fn oxidegl_use_program(&mut self, program: GLuint) {
-        let name = ObjectName::try_from_raw(program);
+        let name = ObjectName::try_from_raw(program).ok();
         debug_assert!(
             name.map(|name| self.gl_state.program_list.is(name))
                 .is_some_and(|b| b),

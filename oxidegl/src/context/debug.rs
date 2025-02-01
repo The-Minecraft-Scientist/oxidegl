@@ -144,7 +144,7 @@ impl DebugState {
         src: DebugSource,
         ty: DebugType,
         sev: DebugSeverity,
-        count: u32,
+        count: GLsizei,
         ids: *const u32,
         enable: bool,
     ) {
@@ -824,7 +824,7 @@ pub(crate) mod macros {
         };
     }
     pub(crate) use gl_log;
-
+    // Thanks to yandros for the pointers with the $_dollar trick
     macro_rules! gen_log_macros {(
         #![dollar = $_:tt]
         $(

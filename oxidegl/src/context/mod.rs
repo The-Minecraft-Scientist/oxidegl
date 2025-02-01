@@ -1,4 +1,6 @@
+use self::error::GetErrorReturnValue;
 use self::state::GLState;
+use crate::enums::ErrorCode;
 use likely_stable::if_likely;
 use objc2::rc::Retained;
 use objc2_app_kit::NSView;
@@ -21,6 +23,7 @@ use std::ptr::NonNull;
 pub(crate) mod commands;
 
 pub(crate) mod debug;
+pub(crate) mod error;
 pub(crate) mod framebuffer;
 pub(crate) mod program;
 pub(crate) mod shader;
@@ -31,7 +34,7 @@ pub(crate) mod gl_object;
 pub(crate) mod platform;
 
 thread_local! {
-    pub(crate) static CTX: Cell<Option<NonNull<Context>>> = const {Cell::new(None)};
+    pub(crate) static CTX: Cell<Option<NonNull<Context>>> = const { Cell::new(None) };
 }
 #[derive(Debug)]
 #[repr(C)]
@@ -48,7 +51,8 @@ impl Context {
             platform_state: PlatformState::new(MTLPixelFormat::BGRA8Unorm_sRGB, None, None),
         }
     }
-    pub fn set_view(&mut self, view: &Retained<NSView>, backing_scale_factor: f64) {
+    pub fn set_view(&mut self, view: &Retained<NSView>) {
+        let backing_scale_factor = view.window().map_or(1.0, |w| w.backingScaleFactor());
         self.platform_state.set_view(view, backing_scale_factor);
         // init scissor box/viewport now that we have an actual view
         let dims = self.platform_state.target_defaultfb_dims();
@@ -69,7 +73,14 @@ impl Default for Context {
 #[expect(clippy::inline_always)]
 #[inline(always)]
 #[expect(unused_mut, unused_variables, reason = "lint bug")]
-pub fn with_ctx_mut<Ret, Func: for<'a> Fn(Pin<&'a mut Context>) -> Ret>(f: Func) -> Ret {
+pub(crate) fn with_ctx_mut<
+    Ret,
+    Err: GetErrorReturnValue<Ret> + Into<ErrorCode>,
+    Res: crate::context::error::GlResult<Ret, Err>,
+    Func: for<'a> Fn(Pin<&'a mut Context>) -> Res,
+>(
+    f: Func,
+) -> Ret {
     // use if_likely to tell LLVM that it should optimize for the Some(ptr) case
     if_likely! {
         // take the current context pointer
@@ -77,13 +88,21 @@ pub fn with_ctx_mut<Ret, Func: for<'a> Fn(Pin<&'a mut Context>) -> Ret>(f: Func)
         // the user doing Weird Stuff and running multiple GL commands simultaneously)
 
         let Some(mut ptr) = CTX.take() => {
-
-        // Safety: we are the exclusive accessor of ptr due to its thread locality and the fact that we called `take` on it previously
-        // wrap the context reference in a pin to ensure it is not moved out of
-        let p = Pin::new(unsafe { ptr.as_mut() });
-        let ret = f(p);
-        CTX.set(Some(ptr));
-        ret
+            // Safety: we are the exclusive accessor of ptr due to its thread locality and the fact that we called `take` on it previously
+            // wrap the context reference in a pin to ensure it is not moved out of
+            let mut p = Pin::new(unsafe { ptr.as_mut() });
+            let ret = match f(p).into_result() {
+                Ok(ret) => ret,
+                Err(e) => {
+                    // Safety: f necessarily consumes p, the only other exclusive reference to this context, prior to the evaluation of this match arm,
+                    // meaning we are free to create another one to write the error out
+                    unsafe { ptr.as_mut() }.gl_state.error = e.into();
+                    // Return the default value for the type
+                    <Err as GetErrorReturnValue<Ret>>::get()
+                }
+            };
+            CTX.set(Some(ptr));
+            ret
         } else {
             panic!("no context set!");
         }

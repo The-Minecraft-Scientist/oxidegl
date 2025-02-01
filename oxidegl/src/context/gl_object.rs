@@ -4,6 +4,7 @@ use objc2::rc::Retained;
 use objc2_foundation::NSString;
 
 use crate::{
+    context::debug::gl_err,
     debug_unreachable,
     dispatch::{
         conversions::{GlDstType, SrcType},
@@ -14,15 +15,18 @@ use crate::{
 
 use super::{
     debug::{gl_debug, with_debug_state},
+    error::{GlError, GlFallible},
     Context,
 };
 
-/// Marker trait that marks a struct as an OpenGL object, providing information on whether it has init-at-bind (`LateInit`) semantics or normal semantics, and (optionally) how to set the underlying debug label
+/// Trait that describes behaviors common to all OpenGL objects.
+/// * opt-in lazy-init semantics using the supplied init function pointer constant
+/// * an opt-in helper method to generically set the underlying API's debug label
 pub(crate) trait NamedObject: Sized + 'static {
     fn set_debug_label(
-        ctx: &mut Context,
-        name: ObjectName<Self>,
-        label: Option<Retained<NSString>>,
+        _ctx: &mut Context,
+        _name: ObjectName<Self>,
+        _label: Option<Retained<NSString>>,
     ) {
     }
 
@@ -206,8 +210,10 @@ impl<T: NamedObject> NameStateInterface<T> for Option<T> {
 }
 
 /// Represents the name of an OpenGL object of type T.
-/// Note that the generic parameter is simply there to prevent accidental misuse of
-/// object names, since an arbitrary `ObjectName` can be created safely (i.e. these are simply identifiers, not true "handles" in the RAII sense)
+/// Note that the generic parameter is simply there to prevent accidental misuse of object names only,
+/// since an arbitrary `ObjectName` can be created safely (i.e. these are simply identifiers, not true "handles" in the RAII sense)
+/// In the future, we may switch to a refcounted scheme where object references are passed around/held directly if the performance of this approach
+/// is inadequate
 #[repr(transparent)]
 pub struct ObjectName<T: ?Sized>(NonZeroU32, PhantomData<for<'a> fn(&'a T) -> &'a T>);
 
@@ -256,8 +262,11 @@ impl<T: ?Sized> ObjectName<T> {
     }
     #[inline]
     /// Try creating a new `ObjectName` from a possibly-zero input value
-    pub fn try_from_raw(name: u32) -> Option<Self> {
-        Some(Self(NonZeroU32::new(name)?, PhantomData))
+    pub fn try_from_raw(name: u32) -> GlFallible<Self> {
+        Ok(Self(
+            NonZeroU32::new(name).ok_or(GlError::InvalidOperation)?,
+            PhantomData,
+        ))
     }
     #[inline]
     /// Create a new `ObjectName` from a possibly-zero input value, panicking on zero
@@ -502,7 +511,9 @@ impl<Obj: NamedObject> NamedObjectList<Obj> {
     #[inline]
     /// Helper wrapping `is` to take a raw, possibly-zero `GLenum`
     pub(crate) fn is_obj(&self, name: GLuint) -> GLboolean {
-        ObjectName::try_from_raw(name).is_some_and(|name| self.is(name))
+        ObjectName::try_from_raw(name)
+            .ok()
+            .is_some_and(|name| self.is(name))
     }
     #[inline]
     /// Helper to ensure that a given object name is fully initialized prior to use
@@ -511,14 +522,15 @@ impl<Obj: NamedObject> NamedObjectList<Obj> {
         &mut self,
         name: ObjectName<Obj>,
         default: impl Fn(ObjectName<Obj>) -> Obj,
-    ) {
+    ) -> GlFallible<()> {
         if let Some(v) = self.objects.get_mut(name.to_idx()) {
-            if v.get().is_some() {
-                return;
+            if v.get().is_none() {
+                *v = <Obj::LateInitType as GetCellType>::Cell::new_init(default(name));
             }
-            *v = <Obj::LateInitType as GetCellType>::Cell::new_init(default(name));
+            Ok(())
         } else {
-            panic!("object name wasnot initialized!");
+            gl_err!(src: Api, ty: Error, "Tried to ensure initialization of an unreserved GL object name!");
+            Err(GlError::InvalidOperation.into())
         }
     }
 }

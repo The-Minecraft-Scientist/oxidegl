@@ -7,6 +7,7 @@ use objc2_metal::{MTLBuffer, MTLDevice, MTLResource, MTLResourceOptions};
 use crate::{
     context::{
         debug::gl_debug,
+        error::{gl_assert, GlError, GlFallible},
         gl_object::{LateInit, NamedObject, ObjectName},
         Context,
     },
@@ -48,7 +49,7 @@ impl Context {
     ///
     /// ### Associated Gets
     /// [**glIsBuffer**](crate::context::Context::oxidegl_is_buffer)
-    pub unsafe fn oxidegl_gen_buffers(&mut self, n: GLsizei, buffers: *mut GLuint) {
+    pub(crate) unsafe fn oxidegl_gen_buffers(&mut self, n: GLsizei, buffers: *mut GLuint) {
         // Safety: Caller ensures validity
         unsafe { self.gl_state.buffer_list.gen_obj(n, buffers) }
     }
@@ -67,7 +68,7 @@ impl Context {
     /// returns `n` previously unused buffer names in `buffers`, each representing
     /// a new buffer object initialized as if it had been bound to an unspecified
     /// target.
-    pub unsafe fn oxidegl_create_buffers(&mut self, n: GLsizei, buffers: *mut GLuint) {
+    pub(crate) unsafe fn oxidegl_create_buffers(&mut self, n: GLsizei, buffers: *mut GLuint) {
         // Safety: Caller ensures validity
         unsafe {
             self.gl_state
@@ -256,8 +257,12 @@ impl Context {
     /// [**glGet**](crate::context::Context::oxidegl_get) with argument [`GL_TRANSFORM_FEEDBACK_BUFFER_BINDING`](crate::enums::GL_TRANSFORM_FEEDBACK_BUFFER_BINDING)
     ///
     /// [**glGet**](crate::context::Context::oxidegl_get) with argument [`GL_UNIFORM_BUFFER_BINDING`](crate::enums::GL_UNIFORM_BUFFER_BINDING)
-    pub fn oxidegl_bind_buffer(&mut self, target: BufferTarget, buffer: GLuint) {
-        self.bind_buffer_internal(ObjectName::try_from_raw(buffer), target, NoIndex);
+    pub(crate) fn oxidegl_bind_buffer(
+        &mut self,
+        target: BufferTarget,
+        buffer: GLuint,
+    ) -> GlFallible<()> {
+        self.bind_buffer_internal(ObjectName::try_from_raw(buffer).ok(), target, NoIndex)
     }
     /// ### Parameters
     /// `target`
@@ -295,12 +300,12 @@ impl Context {
     ///
     /// The [`GL_SHADER_STORAGE_BUFFER`](crate::enums::GL_SHADER_STORAGE_BUFFER)
     /// target is available only if the GL version is 4.3 or greater.
-    pub fn oxidegl_bind_buffer_base(
+    pub(crate) fn oxidegl_bind_buffer_base(
         &mut self,
         target: BufferTarget,
         index: GLuint,
         buffer: GLuint,
-    ) {
+    ) -> GlFallible<()> {
         panic!("command oxidegl_bind_buffer_base not yet implemented");
     }
     /// ### Parameters
@@ -348,14 +353,14 @@ impl Context {
     ///
     /// The [`GL_SHADER_STORAGE_BUFFER`](crate::enums::GL_SHADER_STORAGE_BUFFER)
     /// target is available only if the GL version is 4.3 or greater.
-    pub fn oxidegl_bind_buffer_range(
+    pub(crate) fn oxidegl_bind_buffer_range(
         &mut self,
         target: BufferTarget,
         index: GLuint,
         buffer: GLuint,
         offset: GLintptr,
         size: GLsizeiptr,
-    ) {
+    ) -> GlFallible<()> {
         panic!("command oxidegl_bind_buffer_range not yet implemented");
     }
     /// ### Parameters
@@ -398,13 +403,13 @@ impl Context {
     /// ### Notes
     /// [**glBindBuffersBase**](crate::context::Context::oxidegl_bind_buffers_base)
     /// is available only if the GL version is 4.4 or higher.
-    pub unsafe fn oxidegl_bind_buffers_base(
+    pub(crate) unsafe fn oxidegl_bind_buffers_base(
         &mut self,
         target: BufferTarget,
         first: GLuint,
         count: GLsizei,
         buffers: *const GLuint,
-    ) {
+    ) -> GlFallible<()> {
         panic!("command oxidegl_bind_buffers_base not yet implemented");
     }
     /// ### Parameters
@@ -460,7 +465,7 @@ impl Context {
     /// ### Notes
     /// [**glBindBuffersBase**](crate::context::Context::oxidegl_bind_buffers_base)
     /// is available only if the GL version is 4.4 or higher.
-    pub unsafe fn oxidegl_bind_buffers_range(
+    pub(crate) unsafe fn oxidegl_bind_buffers_range(
         &mut self,
         target: BufferTarget,
         first: GLuint,
@@ -468,7 +473,7 @@ impl Context {
         buffers: *const GLuint,
         offsets: *const GLintptr,
         sizes: *const GLsizeiptr,
-    ) {
+    ) -> GlFallible<()> {
         panic!("command oxidegl_bind_buffers_range not yet implemented");
     }
     /// ### Parameters
@@ -486,7 +491,7 @@ impl Context {
     /// A name returned by [**glGenBuffers**](crate::context::Context::oxidegl_gen_buffers),
     /// but not yet associated with a buffer object by calling [**glBindBuffer**](crate::context::Context::oxidegl_bind_buffer),
     /// is not the name of a buffer object.
-    pub fn oxidegl_is_buffer(&mut self, buffer: GLuint) -> GLboolean {
+    pub(crate) fn oxidegl_is_buffer(&mut self, buffer: GLuint) -> GLboolean {
         self.gl_state.buffer_list.is_obj(buffer)
     }
     /// ### Parameters
@@ -512,7 +517,7 @@ impl Context {
     ///
     /// ### Associated Gets
     /// [**glIsBuffer**](crate::context::Context::oxidegl_is_buffer)
-    pub unsafe fn oxidegl_delete_buffers(&mut self, n: GLsizei, buffers: *const GLuint) {
+    pub(crate) unsafe fn oxidegl_delete_buffers(&mut self, n: GLsizei, buffers: *const GLuint) {
         // Safety: Caller ensures validity
         unsafe {
             self.gl_state.buffer_list.delete_objects(n, buffers);
@@ -670,37 +675,37 @@ impl Context {
 /// [**glGetBufferParameter**](crate::context::Context::oxidegl_get_buffer_parameter)
 /// with argument [`GL_BUFFER_SIZE`](crate::enums::GL_BUFFER_SIZE) or [`GL_BUFFER_USAGE`](crate::enums::GL_BUFFER_USAGE)
 impl Context {
-    pub unsafe fn oxidegl_buffer_storage(
+    pub(crate) unsafe fn oxidegl_buffer_storage(
         &mut self,
         target: BufferStorageTarget,
         size: GLsizeiptr,
         data: *const GLvoid,
         flags: BufferStorageMask,
-    ) {
+    ) -> GlFallible<()> {
         let binding = self
             .get_buffer_binding_mut(
                 // Safety: BufferStorageTarget has the same set of valid values as BufferTarget
                 unsafe { core::mem::transmute::<BufferStorageTarget, BufferTarget>(target) },
                 NoIndex,
             )
-            .expect("UB: tried to allocate storage for an unbound buffer binding");
+            .ok_or(GlError::InvalidOperation)?;
         // Safety: Caller ensures data pointer is correctly initialized
-        unsafe { self.buffer_storage_internal(binding, size, data, flags) };
+        unsafe { self.buffer_storage_internal(binding, size, data, flags) }
     }
-    pub unsafe fn oxidegl_named_buffer_storage(
+    pub(crate) unsafe fn oxidegl_named_buffer_storage(
         &mut self,
         buffer: GLuint,
         size: GLsizeiptr,
         data: *const GLvoid,
         flags: BufferStorageMask,
-    ) {
-        let name = ObjectName::try_from_raw(buffer)
-            .expect("UB: Tried to allocate storage for buffer name 0");
-        gl_debug!("Allocated {size} byte storage for {name:?}, initialized with ptr {data:?}");
+    ) -> GlFallible<()> {
+        let name = ObjectName::try_from_raw(buffer)?;
         // Safety: Caller ensures data pointer is correctly initialized
         unsafe {
-            self.buffer_storage_internal(name, size, data, flags);
+            self.buffer_storage_internal(name, size, data, flags)?;
         }
+        gl_debug!("Allocated {size} byte storage for {name:?}, initialized with ptr {data:?}");
+        Ok(())
     }
 }
 impl Context {
@@ -711,7 +716,7 @@ impl Context {
         size: GLsizeiptr,
         data: *const GLvoid,
         flags: BufferStorageMask,
-    ) {
+    ) -> GlFallible<()> {
         // a bound buffer might have just gained its storage
         self.update_encoder();
 
@@ -719,9 +724,20 @@ impl Context {
             .gl_state
             .buffer_list
             .get_opt_mut(name)
-            .expect("UB: buffer name not present in buffer list!");
+            .ok_or(GlError::InvalidOperation)?;
 
-        assert!(size >= 0, "UB: Tried to create buffer with negative length");
+        gl_assert!(size >= 0, InvalidValue);
+        if flags.intersects(BufferStorageMask::MAP_PERSISTENT_BIT) {
+            gl_assert!(flags.intersects(BufferStorageMask::MAP_READ_BIT | BufferStorageMask::MAP_WRITE_BIT), 
+                InvalidValue,
+                "Buffer storage may not be GL_MAP_PERSISTENT if it cannot be mapped. Please set GL_MAP_READ or GL_MAP_WRITE");
+        } else {
+            gl_assert!(
+                !flags.intersects(BufferStorageMask::MAP_COHERENT_BIT),
+                InvalidValue,
+                "Buffer storage may not be GL_MAP_COHERENT if it is not persistently mapped. Please set GL_MAP_PERSISTENT"
+            )
+        }
         #[allow(clippy::cast_sign_loss)]
         let size = size as usize;
         // TODO: lower-coherence storage modes (StorageModeManaged or single-upload StorageModePrivate).
@@ -744,11 +760,12 @@ impl Context {
                 .device
                 .newBufferWithLength_options(size, options);
         };
-        let buffer = buffer.expect("Metal Buffer allocation failed");
+        let buffer = buffer.expect("Metal Buffer allocation failiure");
         buf.allocation = Some(RealizedBufferInternal {
             mapping: None,
             mtl: buffer,
         });
+        Ok(())
     }
 }
 
@@ -806,20 +823,17 @@ impl Context {
         to_bind: Option<ObjectName<Buffer>>,
         target: BufferTarget,
         idx: I,
-    ) {
+    ) -> GlFallible<()> {
         if let Some(maybe_named) = to_bind {
             self.gl_state
                 .buffer_list
-                .ensure_init(maybe_named, Buffer::new_default);
-            debug_assert!(
-                self.gl_state.buffer_list.is(maybe_named),
-                "UB: Tried to bind an uninitialized buffer name to a VAO"
-            );
+                .ensure_init(maybe_named, Buffer::new_default)?;
         }
         let r = self.get_buffer_binding_mut(target, idx);
 
         *r = to_bind;
         gl_debug!("bound buffer {to_bind:?} to target {target:?} at index {idx:?}");
+        Ok(())
     }
 }
 

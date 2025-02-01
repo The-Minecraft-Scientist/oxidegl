@@ -2,6 +2,7 @@ use crate::{
     context::{
         commands::{buffer::Buffer, vao::Vao},
         debug::{gl_warn, with_debug_state, with_debug_state_mut},
+        error::gl_assert,
         framebuffer::Framebuffer,
         gl_object::ObjectName,
         program::Program,
@@ -189,6 +190,9 @@ impl Context {
         label: *mut GLchar,
     ) {
         const EMPTY: &CStr = c"";
+        gl_assert!(buf_size >= 0, InvalidValue);
+        #[allow(clippy::cast_sign_loss)]
+        let buf_size = buf_size as u32;
         let name = ObjectName::<()>::from_raw(name);
         let to_write = with_debug_state(|state| match identifier {
             ObjectIdentifier::Framebuffer => state.get_label(name.cast::<Framebuffer>()),
@@ -229,8 +233,9 @@ impl Context {
             // overload to write out the total string length, not the number of bytes written
             (true, false, _) => {
                 // Safety: checked for null, otherwise caller ensures that length is valid for writes
+                #[allow(clippy::cast_possible_truncation)]
                 unsafe {
-                    *length = label_len_with_nul - 1;
+                    *length = (label_len_with_nul - 1) as i32;
                 }
                 return;
             }
@@ -251,8 +256,9 @@ impl Context {
 
         if !length.is_null() {
             // Safety: if length is non-null, caller ensures that it is valid for stores of u32
+            #[allow(clippy::cast_possible_truncation)]
             unsafe {
-                *length = bytes_to_copy;
+                *length = (bytes_to_copy) as i32;
             };
         }
         let bytes = to_write_ref.to_bytes();

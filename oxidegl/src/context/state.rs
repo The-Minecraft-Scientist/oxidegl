@@ -7,8 +7,8 @@ use crate::{
     bitflag_bits,
     dispatch::gl_types::GLenum,
     enums::{
-        BlendEquationModeEXT, BlendingFactor, ClearBufferMask, DepthFunction, StencilFunction,
-        StencilOp, TriangleFace, GL_CONTEXT_CORE_PROFILE_BIT,
+        BlendEquationModeEXT, BlendingFactor, ClearBufferMask, DepthFunction, ErrorCode,
+        StencilFunction, StencilOp, TriangleFace, GL_CONTEXT_CORE_PROFILE_BIT,
         GL_CONTEXT_FLAG_FORWARD_COMPATIBLE_BIT, GL_CONTEXT_FLAG_NO_ERROR_BIT,
     },
 };
@@ -74,6 +74,7 @@ pub(crate) struct GLState {
     /// current, you'll need to use [`with_debug_state`](super::debug::with_debug_state) or
     /// [`with_debug_state_mut`](super::debug::with_debug_state_mut) to interact with the current debug state
     pub(crate) debug_state_holder: DebugStateHolder,
+    pub(crate) error: ErrorCode,
 }
 
 #[derive(Debug)]

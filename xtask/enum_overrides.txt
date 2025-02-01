@@ -5,3 +5,4 @@ TextureMinFilter
 TextureMagFilter
 TextureWrapMode
 TextureSwizzle
+ErrorCode

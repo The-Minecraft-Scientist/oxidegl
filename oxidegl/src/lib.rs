@@ -27,6 +27,11 @@ pub mod enums;
 pub type ProtoObjRef<T> = Retained<ProtocolObject<T>>;
 
 #[must_use]
+/// Prints the trimmed type name (e.g. with all paths removed). May not work correctly in all cases
+/// # Stability note
+/// The output of this function is not guaranteed to be stable across rust versions (i.e. we forward the *lack* of stability guarantees inherent to [`std::any::type_name`])
+/// As such, all usages of [`trimmed_type_name`] should be purely for programmer-facing debug output,
+/// and program behavior should not depend on the contents of the output.
 pub(crate) fn trimmed_type_name<T: ?Sized>() -> &'static str {
     let s = std::any::type_name::<T>();
 
@@ -130,6 +135,7 @@ macro_rules! debug_unreachable {
 
 pub(crate) use debug_unreachable;
 
+/// takes in a place expression, a value expression, and an action
 macro_rules! run_if_changed {
     ( $place:expr ;= $new_val:expr => $action:expr ) => {
         if $place != $new_val {

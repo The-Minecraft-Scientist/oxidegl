@@ -11,7 +11,12 @@ pub mod conversions;
     non_snake_case,
     dead_code,
     non_upper_case_globals,
-    clippy::module_name_repetitions
+    clippy::module_name_repetitions,
+    // needed to pull inferred return type down to ()
+    clippy::semicolon_if_nothing_returned, clippy::unit_arg,
+    clippy::wildcard_imports,
+    unused_mut,
+
 )]
 pub mod gl_core;
 #[allow(non_snake_case, non_upper_case_globals, clippy::upper_case_acronyms)]

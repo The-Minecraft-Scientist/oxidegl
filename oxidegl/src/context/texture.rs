@@ -2,16 +2,16 @@ use std::{cell::Cell, fmt::Debug, num::NonZeroU32};
 
 use log::trace;
 use objc2::rc::Retained;
-use objc2_foundation::NSObjectProtocol;
 use objc2_metal::{
     MTLPixelFormat, MTLSamplerAddressMode, MTLSamplerBorderColor, MTLSamplerDescriptor,
     MTLSamplerMinMagFilter, MTLSamplerMipFilter, MTLTexture, MTLTextureSwizzle, MTLTextureType,
 };
 
 use crate::{
+    dispatch::conversions::SrcType,
     enums::{
-        DepthFunction, InternalFormat, PixelFormat, PixelType, TextureMagFilter, TextureMinFilter,
-        TextureSwizzle, TextureTarget, TextureWrapMode,
+        DepthFunction, InternalFormat, PixelFormat, PixelType, SamplerParameter, TextureMagFilter,
+        TextureMinFilter, TextureSwizzle, TextureTarget, TextureWrapMode,
     },
     ProtoObjRef,
 };
@@ -20,7 +20,7 @@ use super::gl_object::ObjectName;
 
 /// * named: name is reserved, object is considered uninitialized
 /// * bound: object is initialized to default state, has no storage
-/// * complete:
+/// * complete: TODO
 #[derive(Debug)]
 pub struct Texture {
     name: ObjectName<Self>,
@@ -96,55 +96,79 @@ pub struct Sampler {
     params: SamplerParams,
 }
 #[derive(Debug, Clone, Copy)]
-enum MaxAnisotropy {
+pub(crate) enum Anisotropy {
     NoAnisotropic,
     // INVARIANT field lies within [2, 16]
     Samples(u8),
 }
 
-impl MaxAnisotropy {
-    fn from_gl_max_anisotropy(val: f64) -> Option<Self> {
+impl Anisotropy {
+    fn from_float(val: f32) -> Option<Self> {
         match val {
             1.0 => Some(Self::NoAnisotropic),
-            1.000_000_000_000_000_2..16.0 => Some(Self::Samples(val.floor() as u8)),
+            // Next floating point value from 1.0
+            #[expect(
+                clippy::cast_possible_truncation,
+                clippy::cast_sign_loss,
+                reason = "cast will not truncate due to range qualifier on match arm"
+            )]
+            //FIXME should be `f64::next(1.0)` or something
+            1.000_000_000_000_000_2..=16.0 => Some(Self::Samples(val.floor() as u8)),
             _ => None,
         }
     }
 }
-impl From<MaxAnisotropy> for usize {
-    fn from(value: MaxAnisotropy) -> Self {
-        match value {
-            MaxAnisotropy::NoAnisotropic => 1,
-            MaxAnisotropy::Samples(v) => v as usize,
-        }
-    }
-}
 #[derive(Debug, Clone)]
+/// Contains the sampling parameters for a texture
+/// Note: must call [`SamplerParams::mark_dirty`] after modifying values in this struct
 pub struct SamplerParams {
     /// Border color for border wrap mode
-    border_color: [f32; 4],
+    pub(crate) border_color: [f32; 4],
     /// Depth comparison mode if depth comparison is enabled
-    depth_compare: Option<DepthFunction>,
+    pub(crate) depth_compare: Option<DepthFunction>,
     /// Magnification filter
-    mag_filter: TextureMagFilter,
+    pub(crate) mag_filter: TextureMagFilter,
     /// Minification filter and mipmap filter for mipmapped sampling
-    min_filter: TextureMinFilter,
-    /// Constant that is added to the shader-supplied LOD and then clamped to [`min_lod`, `max_lod`] before sampling
-    lod_bias: f32,
-    max_lod: f32,
-    min_lod: f32,
-    max_anisotropy: MaxAnisotropy,
-    wrap_mode_s: TextureWrapMode,
-    wrap_mode_t: TextureWrapMode,
-    wrap_mode_r: TextureWrapMode,
-    swizzle_r: TextureSwizzle,
-    swizzle_g: TextureSwizzle,
-    swizzle_b: TextureSwizzle,
-    swizzle_a: TextureSwizzle,
+    pub(crate) min_filter: TextureMinFilter,
+    /// Constant that is added to the shader-supplied LOD before clamping to [`min_lod`, `max_lod`] and sampling
+    pub(crate) lod_bias: f32,
+    pub(crate) max_lod: f32,
+    pub(crate) min_lod: f32,
+    pub(crate) max_anisotropy: Anisotropy,
+    pub(crate) wrap_mode_s: TextureWrapMode,
+    pub(crate) wrap_mode_t: TextureWrapMode,
+    pub(crate) wrap_mode_r: TextureWrapMode,
+    pub(crate) swizzle_r: TextureSwizzle,
+    pub(crate) swizzle_g: TextureSwizzle,
+    pub(crate) swizzle_b: TextureSwizzle,
+    pub(crate) swizzle_a: TextureSwizzle,
     descriptor_cache: CloneOptionCell<Retained<MTLSamplerDescriptor>>,
 }
 
 impl SamplerParams {
+    fn sampler_param(
+        &mut self,
+        pname: SamplerParameter,
+        param: impl SrcType<f32> + SrcType<i32> + SrcType<u32>,
+    ) {
+        match pname {
+            SamplerParameter::TextureMagFilter => todo!(),
+            SamplerParameter::TextureMinFilter => todo!(),
+            SamplerParameter::TextureWrapS => todo!(),
+            SamplerParameter::TextureWrapT => todo!(),
+            SamplerParameter::TextureWrapR => todo!(),
+            SamplerParameter::TextureMinLod => todo!(),
+            SamplerParameter::TextureMaxLod => todo!(),
+            SamplerParameter::TextureLodBias => todo!(),
+            SamplerParameter::TextureCompareMode => todo!(),
+            SamplerParameter::TextureCompareFunc => todo!(),
+            SamplerParameter::TextureMaxAnisotropy => todo!(),
+            _ => {
+                unreachable!()
+            }
+        }
+    }
+
     fn sampler_desc(&self) -> Retained<MTLSamplerDescriptor> {
         if let Some(d) = self.descriptor_cache.clone_out() {
             return d;
@@ -167,7 +191,7 @@ impl SamplerParams {
             desc.setCompareFunction(depth_compare_func.into());
         }
         desc.setMagFilter(self.mag_filter.into());
-        if let MaxAnisotropy::Samples(n) = self.max_anisotropy {
+        if let Anisotropy::Samples(n) = self.max_anisotropy {
             desc.setMaxAnisotropy(n as usize);
         }
         let (minification, mip) = self.min_filter.into();
@@ -193,7 +217,7 @@ impl Default for SamplerParams {
             lod_bias: 0.0,
             max_lod: 1000.0,
             min_lod: -1000.0,
-            max_anisotropy: MaxAnisotropy::NoAnisotropic,
+            max_anisotropy: Anisotropy::NoAnisotropic,
             wrap_mode_s: TextureWrapMode::Repeat,
             wrap_mode_t: TextureWrapMode::Repeat,
             wrap_mode_r: TextureWrapMode::Repeat,
@@ -423,7 +447,7 @@ pub(crate) enum TextureViewClass {
 
 #[derive(Debug, Copy, Clone)]
 /// A combination of a [`PixelType`] and a [`PixelFormat`], used to specify input and output formats.
-/// When user code requests or supplies textures, they specify the format with this pair, as opposed to using an [`InternalFormat`]
+/// When user CPU code requests or supplies textures, they specify the format with this pair, as opposed to using an [`InternalFormat`]
 pub struct GLPixelTypeFormat {
     ty: PixelType,
     fmt: PixelFormat,

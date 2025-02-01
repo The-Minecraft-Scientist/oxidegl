@@ -1,4 +1,5 @@
-// Implemented GL functions. 
+// GL functions to skip generating placeholder code
+// note that 
 // p: - mark all functions documented by an OpenGL Reference Page with the
 // name converted to snake_case (e.g. glGetString becomes gl_get_string) as implemented
 // f: - mark individual GL command (by originalGlCommandName) as implemented.
@@ -60,7 +61,7 @@ f:glDrawTransformFeedbackStream
 f:glDrawTransformFeedbackStreamInstanced
 
 
-//glClear and co.
+// glClear and co.
 p:gl_clear
 p:gl_clear_depth
 f:glClearColor
@@ -71,7 +72,7 @@ f:glScissorArrayv
 f:glViewport
 f:glViewportArrayv
 
-//VAO manipulation
+// VAO manipulation
 p:gl_vertex_attrib_format
 p:gl_bind_vertex_buffer
 p:gl_bind_vertex_buffers
@@ -79,18 +80,18 @@ p:gl_enable_vertex_attrib_array
 p:gl_vertex_attrib_binding
 p:gl_vertex_attrib_pointer
 
-//VAO divisor
+// VAO divisor
 f:glVertexBindingDivisor
 f:glVertexArrayBindingDivisor
 
-//VAO lifecycle
+// VAO lifecycle
 f:glCreateVertexArrays
 f:glGenVertexArrays
 f:glBindVertexArray
 f:glIsVertexArray
 f:glDeleteVertexArrays
 
-//Shaders
+// Shaders
 f:glCreateShader
 f:glDeleteShader
 f:glGetShaderiv

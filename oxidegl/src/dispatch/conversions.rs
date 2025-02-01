@@ -1,25 +1,48 @@
 use core::ptr;
 
-use crate::context::gl_object::{NamedObject, ObjectName};
+use crate::context::{
+    error::{GlError, GlFallible},
+    gl_object::{NamedObject, ObjectName},
+};
 
-use super::gl_types::GLenum;
+use super::gl_types::{GLenum, GLsizei};
 use core::fmt::Debug;
+
+pub(crate) fn check_sizei_inner(val: GLsizei) -> Result<u32, GlError> {
+    u32::try_from(val).map_err(|_| GlError::InvalidValue)
+}
+macro_rules! sizei {
+    ($i:ident) => {
+        let $i = crate::dispatch::conversions::check_sizei_inner($i)?;
+    };
+    ($i:ident, $new:ident) => {
+        let $new = crate::dispatch::conversions::check_sizei_inner($i)?;
+    };
+}
+pub(crate) use sizei;
 /// Trait defined for all custom bitfield and enum types which allows them to be unsafely created
 /// from an underlying `GLenum` (u32) value with checks on debug builds
-pub(crate) trait UnsafeFromGLenum {
-    unsafe fn unsafe_from_gl_enum(val: GLenum) -> Self;
+pub(crate) trait GlEnumGroup: Sized {
+    fn from_enum(val: GLenum) -> Option<Self>;
+    unsafe fn from_enum_noerr(val: GLenum) -> Self;
 }
 /// Helper trait to convert from "raw" [`GLenums`](crate::dispatch::gl_types::GLenum) to wrappers around subsets of those that are valid for certain functions
 pub(crate) trait GLenumExt<T> {
+    fn try_into_enum(self) -> GlFallible<T>;
     unsafe fn into_enum(self) -> T;
 }
 
 impl<T> GLenumExt<T> for GLenum
 where
-    T: UnsafeFromGLenum,
+    T: GlEnumGroup,
 {
+    #[inline]
     unsafe fn into_enum(self) -> T {
-        unsafe { T::unsafe_from_gl_enum(self) }
+        unsafe { T::from_enum_noerr(self) }
+    }
+    #[inline]
+    fn try_into_enum(self) -> GlFallible<T> {
+        T::from_enum(self).ok_or(Into::into(GlError::InvalidEnum))
     }
 }
 
@@ -85,6 +108,7 @@ impl<Dst: GlDstType, T: SrcType<LocalWrap<Dst>>, const N: usize> GlGetItem<Dst> 
     }
 }
 
+//TODO get rid of this, it seemed like a good idea at the time but is now Not™
 // Either an index or a lazily evaluated panic
 pub(crate) trait MaybeIndex: Copy + Sized + Debug {
     fn get(self) -> usize;

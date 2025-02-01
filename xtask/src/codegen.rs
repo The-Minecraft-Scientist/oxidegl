@@ -21,8 +21,7 @@ pub const CONTEXT_STRUCT_PATH: &str = concatcp!(CONTEXT_MOD_PATH, CONTEXT_STRUCT
 pub const CONTEXT_USE: &str = concatcp!("use ", CONTEXT_STRUCT_PATH, ";");
 pub const WITH_CTX_USE: &str = concatcp!("use ", CONTEXT_MOD_PATH, "with_ctx_mut", ";");
 pub const TYPES_USE: &str = "use crate::dispatch::gl_types::*;";
-pub const ENUM_UTILS_USE: &str =
-    "use crate::dispatch::conversions::{GLenumExt, GlDstType, SrcType, UnsafeFromGLenum};";
+pub const ENUM_UTILS_USE: &str = "use crate::dispatch::conversions::GLenumExt;";
 
 pub const ENUMS_PATH: &str = "crate::enums::";
 
@@ -288,6 +287,7 @@ pub fn get_vals<'a>(
         }
     }
 
+    // glorious hack
     backing_strs.iter_mut().for_each(|a| {
         let mut iter = a.1.split('\n');
         let _ = iter.next();
@@ -374,7 +374,6 @@ pub fn get_vals<'a>(
             );
         }
     }
-    dbg!(&enum_merge_map);
 
     let mut groups_map = HashMap::with_capacity(100);
 
@@ -478,7 +477,11 @@ pub fn get_vals<'a>(
                 panic!()
             };
             for param in params {
-                for group in param.group.split(',') {
+                for group in param
+                    .group
+                    .split(',')
+                    .map(|g| enum_merge_map.get(g).map(|v| &**v).unwrap_or(g))
+                {
                     let g2: &str = group;
                     if new_map.contains_key(g2) {
                         param.parameter_type = GLTypes::EnumWrapped(g2.to_string());
@@ -491,7 +494,10 @@ pub fn get_vals<'a>(
 }
 pub fn write_dispatch_impl<T: Write>(w: &mut T, v: &[FnCollection<'_>]) -> Result<()> {
     writeln!(w, "// GL Commands")?;
-    writeln!(w, "{TYPES_USE}\n{WITH_CTX_USE}\n{ENUM_UTILS_USE}\n")?;
+    writeln!(
+        w,
+        "{TYPES_USE}\n{WITH_CTX_USE}\n{ENUM_UTILS_USE}\nuse {CONTEXT_MOD_PATH}error::GlResult;\n"
+    )?;
     for item in v {
         for cmd in item.entries.iter() {
             let GLAPIEntry::Command {
@@ -592,7 +598,7 @@ pub fn write_placeholder_impl<T: Write>(w: &mut T, v: &[FnCollection<'_>]) -> Re
         .join(",");
     writeln!(
         w,
-        "\n{CONTEXT_USE}\n{TYPES_USE}\nuse {ENUMS_PATH}{{{enum_uses}}};\n"
+        "\n{CONTEXT_USE}\n{TYPES_USE}\nuse {ENUMS_PATH}{{{enum_uses}}};\nuse {CONTEXT_MOD_PATH}error::GlFallible;\n"
     )?;
     for item in v {
         match item.entries.len() {
@@ -672,26 +678,22 @@ fn print_placeholder_fn<'a>(name: &'a str, ret_type: GLTypes, params: &[Paramete
     if params.is_empty() {
         // function cannot be unsafe if it has no parameters
         return format!(
-            "pub fn {}(&mut self){} {}",
+            "pub(crate) fn {}(&mut self){} {}",
             name,
-            ret_type.to_rust_ret_type_str(),
+            ret_type.fallible_rust_ret_type(),
             body
         );
     }
     let mut str = "".to_owned();
     for i in 0..(params.len()) {
         let param = params[i].clone();
-        let na = match param.name {
-            "type" => "r#type",
-            "ref" => "r#ref",
-            s => s,
-        };
+        let na = sanitize_ident(param.name);
 
         str = format!(
             "{}{}: {}",
             str,
             snake_case_from_title_case(na),
-            param.parameter_type.to_rust_type_str()
+            param.parameter_type.rust_type()
         );
         if i != (params.len() - 1) {
             str = format!("{}, ", str)
@@ -702,30 +704,28 @@ fn print_placeholder_fn<'a>(name: &'a str, ret_type: GLTypes, params: &[Paramete
         unsafe_marker,
         name,
         str,
-        ret_type.to_rust_ret_type_str(),
+        ret_type.fallible_rust_ret_type(),
         body
     )
 }
 
-fn sanitize_param_name(unsanitized: &str) -> String {
+fn sanitize_ident(unsanitized: &str) -> &str {
     match unsanitized {
-        "type" => "r#type".to_owned(),
-        "ref" => "r#ref".to_owned(),
-        _ => unsanitized.to_owned(),
+        "type" => "r#type",
+        "ref" => "r#ref",
+        _ => unsanitized,
     }
 }
 fn print_dispatch_fn<'a>(name: &'a str, ret_type: GLTypes, params: &[Parameter<'a>]) -> String {
     let is_unsafe = params.iter().any(|p| p.parameter_type.is_pointer());
+    let mut shim_is_fallible: bool = false;
     let paramnl = params
         .iter()
         .map(|p| {
-            let pname = sanitize_param_name(p.name);
+            let pname = sanitize_ident(p.name);
             if let GLTypes::EnumWrapped(_) = p.parameter_type {
-                format!(
-                    "{} {pname}.into_enum() {},",
-                    if !is_unsafe { "unsafe {" } else { "" },
-                    if !is_unsafe { "}" } else { "" }
-                )
+                shim_is_fallible = true;
+                format!("{pname}.try_into_enum()?, ")
             } else {
                 format!("{pname}, ")
             }
@@ -736,31 +736,32 @@ fn print_dispatch_fn<'a>(name: &'a str, ret_type: GLTypes, params: &[Parameter<'
 
     let params_trace = params
         .iter()
-        .map(|p| format!("{}: {{:?}}", sanitize_param_name(p.name)))
+        .map(|p| format!("{}: {{:?}}", sanitize_ident(p.name)))
         .collect::<Vec<_>>()
         .join(", ");
 
     let params_string = params
         .iter()
-        .map(|p| sanitize_param_name(p.name))
+        .map(|p| sanitize_ident(p.name))
         .collect::<Vec<_>>()
         .join(", ");
-    let semi_if_ret_void = if ret_type == GLTypes::GLvoid { ";" } else { "" };
     let body = format!(
         "{{\n
-            ::crate::context::debug::gl_trace!(\"{name} called, parameters: {params_trace} \", {params_string});
-            with_ctx_mut(|mut state|{} state.oxide{}({}){}){semi_if_ret_void}\n}}",
+            crate::context::debug::gl_trace!(\"{name} called, parameters: {params_trace} \", {params_string});
+            with_ctx_mut(|mut state|{}{} state.oxide{}({}){}{})\n}}",
+        if shim_is_fallible {"GlResult::normalize("} else {""},
         if is_unsafe { " unsafe {" } else { "" },
         snake_case_name,
         paramnl,
         if is_unsafe { " }" } else { "" },
+        if shim_is_fallible { ")"} else {""}
     );
 
     if params.is_empty() {
         return format!(
             "#[no_mangle]\nunsafe extern \"C\" fn {}(){} {}",
             name,
-            ret_type.to_rust_ret_type_str(),
+            ret_type.rust_ret_type(),
             body
         );
     }
@@ -776,7 +777,7 @@ fn print_dispatch_fn<'a>(name: &'a str, ret_type: GLTypes, params: &[Parameter<'
             param.parameter_type = GLTypes::GLenum;
         };
 
-        str = format!("{}{}: {}", str, na, param.parameter_type.to_rust_type_str());
+        str = format!("{}{}: {}", str, na, param.parameter_type.rust_type());
         if i != (params.len() - 1) {
             str = format!("{}, ", str)
         }
@@ -786,7 +787,7 @@ fn print_dispatch_fn<'a>(name: &'a str, ret_type: GLTypes, params: &[Parameter<'
         "#[no_mangle]\nunsafe extern \"C\" fn {}({}){} {}",
         name,
         str,
-        ret_type.to_rust_ret_type_str(),
+        ret_type.rust_ret_type(),
         body
     )
 }
@@ -819,15 +820,13 @@ fn print_enum_group_enum<'a>(
 
     writeln!(
         w,
-        "impl UnsafeFromGLenum for {name} {{
-            unsafe fn unsafe_from_gl_enum(val: u32) -> Self {{
-                #[cfg(debug_assertions)]
-                let Some(ret) = {name}::from_repr(val) else {{
-                    panic!(\"Attempt to create a {name} from a GLenum with invalid value {{val:#X}}\");
-                }};
-                #[cfg(not(debug_assertions))]
-                let ret = unsafe {{ std::mem::transmute(val) }};
-                ret
+        "impl GlEnumGroup for {name} {{
+            unsafe fn from_enum_noerr(val: u32) -> Self {{
+                // Safety: Caller ensures val is valid for this group
+                unsafe {{ std::mem::transmute(val) }}
+            }}
+            fn from_enum(val: u32) -> Option<Self> {{
+                Self::from_repr(val)
             }}
         }}
         impl From<{name}> for u32 {{
@@ -864,19 +863,17 @@ fn print_enum_group_bitfield<'a>(
         };
         writeln!(w, "const {} = {};", enum_name.replace("GL_", ""), enum_name)?;
     }
-    writeln!(w, "}}\n}}")?;
+    writeln!(w, "}}}}")?;
 
     writeln!(
         w,
-        "impl UnsafeFromGLenum for {name} {{
-            unsafe fn unsafe_from_gl_enum(val: u32) -> Self {{
-                #[cfg(debug_assertions)]
-                let Some(ret) = {name}::from_bits(val) else {{
-                    panic!(\"Attempt to create a {name} from a GLenum with an invalid bit set! {{val:#X}}\");
-                }};
-                #[cfg(not(debug_assertions))]
-                let ret = unsafe {{ std::mem::transmute(val) }};
-                ret
+        "impl GlEnumGroup for {name} {{
+            unsafe fn from_enum_noerr(val: u32) -> Self {{
+                // Safety: Caller ensures val is valid for this group
+                unsafe {{ std::mem::transmute(val) }}
+            }}
+            fn from_enum(val: u32) -> Option<Self> {{
+                Self::from_bits(val)
             }}
         }}
         impl From<{name}> for u32 {{
@@ -917,20 +914,14 @@ fn constant_to_pascal_case(val: &str) -> String {
 }
 fn print_abi_fn_type<'a>(_name: &'a str, ret_type: GLTypes, params: &[Parameter<'a>]) -> String {
     if params.is_empty() {
-        return format!(
-            "unsafe extern \"C\" fn(){}",
-            ret_type.to_rust_ret_type_str(),
-        );
+        return format!("unsafe extern \"C\" fn(){}", ret_type.rust_ret_type(),);
     }
     let mut str = "".to_owned();
     for i in 0..(params.len()) {
         let param = params[i].clone();
-        let na = match param.name {
-            "type" => "r#type",
-            "ref" => "r#ref",
-            s => s,
-        };
-        str = format!("{}{}: {}", str, na, param.parameter_type.to_rust_type_str());
+
+        let na = sanitize_ident(param.name);
+        str = format!("{}{}: {}", str, na, param.parameter_type.rust_type());
         if i != (params.len() - 1) {
             str = format!("{}, ", str)
         }
@@ -939,7 +930,7 @@ fn print_abi_fn_type<'a>(_name: &'a str, ret_type: GLTypes, params: &[Parameter<
     format!(
         "#[no_mangle]\nunsafe extern \"C\" fn({}){}",
         str,
-        ret_type.to_rust_ret_type_str()
+        ret_type.rust_ret_type()
     )
 }
 
@@ -987,6 +978,7 @@ impl GLTypes {
         Box::new(self)
     }
     fn from_c_type_str(type_str: &str) -> Self {
+        // massive brain c type parser right here
         match type_str {
             "GLint" => Self::GLint,
             "const void *const*" => Self::PtrTo(Self::ConstPtrTo(Self::GLvoid.bo()).bo()),
@@ -1040,13 +1032,13 @@ impl GLTypes {
     fn is_pointer(&self) -> bool {
         matches!(self, Self::ConstPtrTo(_) | Self::PtrTo(_))
     }
-    fn to_rust_type_str(&self) -> String {
+    fn rust_type(&self) -> String {
         match self {
             Self::PtrTo(p) => {
-                format!("*mut {}", p.to_rust_type_str())
+                format!("*mut {}", p.rust_type())
             }
             Self::ConstPtrTo(p) => {
-                format!("*const {}", p.to_rust_type_str())
+                format!("*const {}", p.rust_type())
             }
             Self::EnumWrapped(s) => s.clone(),
             Self::DontCare => {
@@ -1055,11 +1047,19 @@ impl GLTypes {
             s => s.as_ref().to_owned(),
         }
     }
-    fn to_rust_ret_type_str(&self) -> String {
+    fn rust_ret_type(&self) -> String {
         match self {
             Self::GLvoid => "".to_owned(),
             _ => {
-                format!(" -> {}", &self.to_rust_type_str())
+                format!(" -> {}", &self.rust_type())
+            }
+        }
+    }
+    fn fallible_rust_ret_type(&self) -> String {
+        match self {
+            Self::GLvoid => " -> GlFallible<()>".to_owned(),
+            _ => {
+                format!(" -> GlFallible<{}>", &self.rust_type())
             }
         }
     }

@@ -1,5 +1,10 @@
 use crate::{
-    context::{debug::gl_debug, state::PixelAlignedRect, Context},
+    context::{
+        debug::gl_debug,
+        error::{gl_assert, GlFallible},
+        state::PixelAlignedRect,
+        Context,
+    },
     dispatch::gl_types::{GLfloat, GLint, GLsizei, GLuint},
     run_if_changed,
 };
@@ -129,15 +134,24 @@ impl Context {
     ///
     /// [**glGet**](crate::context::Context::oxidegl_get) with argument [`GL_MAX_VIEWPORT_DIMS`](crate::enums::GL_MAX_VIEWPORT_DIMS)
     #[expect(clippy::cast_sign_loss)]
-    pub fn oxidegl_viewport(&mut self, x: GLint, y: GLint, width: GLsizei, height: GLsizei) {
+    pub fn oxidegl_viewport(
+        &mut self,
+        x: GLint,
+        y: GLint,
+        width: GLsizei,
+        height: GLsizei,
+    ) -> GlFallible<()> {
         gl_debug!("glViewport, x {x} y {y} width {width} height {height}");
+        gl_assert!(width >= 0 && height >= 0, InvalidValue);
         debug_assert!(x >= 0 && y >= 0, "negative base coordinate in glViewport");
+
         run_if_changed!(self.gl_state.viewport;= PixelAlignedRect {
             x: x as u32,
             y: y as u32,
-            width,
-            height,
+            width: width as u32,
+            height: height as u32,
         } => self.update_encoder());
+        Ok(())
     }
     /// ### Parameters
     /// `first`

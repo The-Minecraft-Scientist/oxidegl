@@ -9,7 +9,7 @@ pub type GLchar = std::ffi::c_char;
 pub type GLdouble = f64;
 pub type GLsizeiptr = isize;
 pub type GLushort = u16;
-pub type GLsizei = u32;
+pub type GLsizei = i32;
 pub type GLintptr = isize;
 pub type GLenum = u32;
 pub type GLbitfield = u32;
@@ -28,6 +28,7 @@ pub type GLDEBUGPROC = Option<
 >;
 pub type GLbyte = i8;
 pub type GLsync =
-    extern "C" fn(_cl_context: *mut c_void, _cl_event: *mut c_void, flags: GLbitfield);
+    Option<extern "C" fn(_cl_context: *mut c_void, _cl_event: *mut c_void, flags: GLbitfield)>;
+
 pub type GLint64 = i64;
 pub type GLvoid = c_void;

@@ -14,7 +14,6 @@ objc2 = "0.5.2"
 # Need to speak Cocoa to interact with windows and layers
 objc2-app-kit = { version = "0.2.2", features = [
     "NSView",
-    "NSScreen",
     "NSWindow",
     "NSResponder",
     "objc2-quartz-core",
@@ -29,10 +28,7 @@ objc2-quartz-core = { version = "0.2.2", features = [
     "CALayer",
 ] }
 # needed for MainThreadMarker/`is_main_thread` and ProcessInfo to get the MacOS version
-objc2-foundation = { version = "0.2.2", features = [
-    "NSThread",
-    "NSProcessInfo",
-] }
+objc2-foundation = { version = "0.2.2", features = ["NSProcessInfo"] }
 
 # Need access to raw mach vm_allocate for [MTLDevice newBufferWithBytesNoCopy]
 # mach2 = { git = "https://github.com/JohnTitor/mach2/" }
@@ -86,3 +82,4 @@ max_log_error = ["log/max_level_error"]
 max_log_off = ["log/max_level_off"]
 
 nsgl_shim = ["dep:ctor", "dep:core-foundation-sys", "dep:libc"]
+unsound_noerror = []

@@ -2,7 +2,7 @@ use std::{ffi::c_void, ptr::NonNull, sync::Once};
 
 use log::{debug, info};
 use objc2::rc::Retained;
-use objc2_app_kit::{NSView, NSWindow};
+use objc2_app_kit::NSView;
 
 use crate::{
     context::{
@@ -92,7 +92,6 @@ unsafe extern "C" fn oxidegl_destroy_context(ctx: Option<NonNull<Context>>) {
 #[no_mangle]
 unsafe extern "C" fn oxidegl_create_context(
     view: *mut NSView,
-    window: *mut NSWindow,
     format: GLenum,
     typ: GLenum,
     depth_format: GLenum,
@@ -102,14 +101,9 @@ unsafe extern "C" fn oxidegl_create_context(
 ) -> *mut c_void {
     let mut ctx = Context::new();
     // Safety: caller ensures ptr is a pointer to a valid, initialized NSView.
-    // It is retained because we need it to live until we've injected our layer. (which happens in PlatformState::new)
     let view = unsafe { Retained::retain(view).unwrap() };
 
-    // Safety: caller ensures ptr is a pointer to a valid, initialized NSWindow.
-    let window = unsafe { Retained::retain(window).unwrap() };
-
-    let scale_factor = window.backingScaleFactor();
-    ctx.set_view(&view, scale_factor);
+    ctx.set_view(&view);
     debug!("Created context");
     box_ctx(ctx).as_ptr().cast()
 }

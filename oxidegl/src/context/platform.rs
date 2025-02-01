@@ -680,7 +680,7 @@ impl PlatformState {
         enc
     }
     #[inline]
-    fn check_drawable_size<'a>(
+    fn check_and_resize_drawable<'a>(
         device: &ProtoObjRef<dyn MTLDevice>,
         dims: (u32, u32),
         pixel_format: MTLPixelFormat,
@@ -710,11 +710,11 @@ impl PlatformState {
             DrawBufferMode::BackRight => &mut self.internal_drawables.back_right,
             _ => todo!("oxidegl does not support aliased draw buffer modes"),
         };
-        Self::check_drawable_size(&self.device, dims, self.pixel_format, false, r)
+        Self::check_and_resize_drawable(&self.device, dims, self.pixel_format, false, r)
     }
     // precondition: user specifies depth format for defaultfb
     pub(crate) fn get_internal_depthbuffer(&mut self, dims: (u32, u32)) -> &InternalDrawable {
-        Self::check_drawable_size(
+        Self::check_and_resize_drawable(
             &self.device,
             dims,
             self.depth_format.expect("tried to generate a depth buffer for the default framebuffer, but no depth format was specified at context creation!"),
@@ -724,7 +724,7 @@ impl PlatformState {
     }
     // precondition: user specifies stencil format for defaultfb
     pub(crate) fn get_internal_stencilbuffer(&mut self, dims: (u32, u32)) -> &InternalDrawable {
-        Self::check_drawable_size(
+        Self::check_and_resize_drawable(
             &self.device,
             dims,
             self.depth_format.expect("tried to generate a stencil buffer for the default framebuffer, but no stencil format was specified at context creation!"),

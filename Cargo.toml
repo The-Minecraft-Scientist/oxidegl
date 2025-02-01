@@ -5,10 +5,9 @@ members = ["oxidegl", "xtask"]
 [profile.release]
 codegen-units = 1
 lto = "fat"
-panic = "abort"
+# panic = "abort"
 
 [profile.dev]
 codegen-units = 512
-# incremental = true
 lto = "thin"
-panic = "abort"
+# panic = "abort"

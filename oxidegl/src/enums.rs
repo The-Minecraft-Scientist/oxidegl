@@ -1,5 +1,5 @@
-use crate::dispatch::conversions::{GLenumExt, GlDstType, SrcType, UnsafeFromGLenum};
-use crate::dispatch::gl_types::*;
+use crate::dispatch::conversions::{GLenumExt, GlDstType, GlEnumGroup, SrcType};
+use crate::dispatch::gl_types::GLenum;
 use bitflags::bitflags;
 pub const GL_DEPTH_BUFFER_BIT: GLenum = 0x100;
 pub const GL_STENCIL_BUFFER_BIT: GLenum = 0x400;
@@ -1370,28 +1370,100 @@ pub const GL_TRANSFORM_FEEDBACK_STREAM_OVERFLOW: GLenum = 33517;
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 #[cfg_attr(debug_assertions, derive(::strum_macros::FromRepr))]
 #[repr(u32)]
-pub enum ClampColorMode {
-    False = GL_FALSE,
-    True = GL_TRUE,
-    FixedOnly = GL_FIXED_ONLY,
+pub enum UniformType {
+    Int = GL_INT,
+    UnsignedInt = GL_UNSIGNED_INT,
+    Float = GL_FLOAT,
+    Double = GL_DOUBLE,
+    FloatVec2 = GL_FLOAT_VEC2,
+    FloatVec3 = GL_FLOAT_VEC3,
+    FloatVec4 = GL_FLOAT_VEC4,
+    IntVec2 = GL_INT_VEC2,
+    IntVec3 = GL_INT_VEC3,
+    IntVec4 = GL_INT_VEC4,
+    Bool = GL_BOOL,
+    BoolVec2 = GL_BOOL_VEC2,
+    BoolVec3 = GL_BOOL_VEC3,
+    BoolVec4 = GL_BOOL_VEC4,
+    FloatMat2 = GL_FLOAT_MAT2,
+    FloatMat3 = GL_FLOAT_MAT3,
+    FloatMat4 = GL_FLOAT_MAT4,
+    Sampler1D = GL_SAMPLER_1D,
+    Sampler2D = GL_SAMPLER_2D,
+    Sampler3D = GL_SAMPLER_3D,
+    SamplerCube = GL_SAMPLER_CUBE,
+    Sampler1DShadow = GL_SAMPLER_1D_SHADOW,
+    Sampler2DShadow = GL_SAMPLER_2D_SHADOW,
+    FloatMat2x3 = GL_FLOAT_MAT2x3,
+    FloatMat2x4 = GL_FLOAT_MAT2x4,
+    FloatMat3x2 = GL_FLOAT_MAT3x2,
+    FloatMat3x4 = GL_FLOAT_MAT3x4,
+    FloatMat4x2 = GL_FLOAT_MAT4x2,
+    FloatMat4x3 = GL_FLOAT_MAT4x3,
+    Sampler1DArray = GL_SAMPLER_1D_ARRAY,
+    Sampler2DArray = GL_SAMPLER_2D_ARRAY,
+    Sampler1DArrayShadow = GL_SAMPLER_1D_ARRAY_SHADOW,
+    Sampler2DArrayShadow = GL_SAMPLER_2D_ARRAY_SHADOW,
+    SamplerCubeShadow = GL_SAMPLER_CUBE_SHADOW,
+    UnsignedIntVec2 = GL_UNSIGNED_INT_VEC2,
+    UnsignedIntVec3 = GL_UNSIGNED_INT_VEC3,
+    UnsignedIntVec4 = GL_UNSIGNED_INT_VEC4,
+    IntSampler1D = GL_INT_SAMPLER_1D,
+    IntSampler2D = GL_INT_SAMPLER_2D,
+    IntSampler3D = GL_INT_SAMPLER_3D,
+    IntSamplerCube = GL_INT_SAMPLER_CUBE,
+    IntSampler1DArray = GL_INT_SAMPLER_1D_ARRAY,
+    IntSampler2DArray = GL_INT_SAMPLER_2D_ARRAY,
+    UnsignedIntSampler1D = GL_UNSIGNED_INT_SAMPLER_1D,
+    UnsignedIntSampler2D = GL_UNSIGNED_INT_SAMPLER_2D,
+    UnsignedIntSampler3D = GL_UNSIGNED_INT_SAMPLER_3D,
+    UnsignedIntSamplerCube = GL_UNSIGNED_INT_SAMPLER_CUBE,
+    UnsignedIntSampler1DArray = GL_UNSIGNED_INT_SAMPLER_1D_ARRAY,
+    UnsignedIntSampler2DArray = GL_UNSIGNED_INT_SAMPLER_2D_ARRAY,
+    Sampler2DRect = GL_SAMPLER_2D_RECT,
+    Sampler2DRectShadow = GL_SAMPLER_2D_RECT_SHADOW,
+    SamplerBuffer = GL_SAMPLER_BUFFER,
+    IntSampler2DRect = GL_INT_SAMPLER_2D_RECT,
+    IntSamplerBuffer = GL_INT_SAMPLER_BUFFER,
+    UnsignedIntSampler2DRect = GL_UNSIGNED_INT_SAMPLER_2D_RECT,
+    UnsignedIntSamplerBuffer = GL_UNSIGNED_INT_SAMPLER_BUFFER,
+    Sampler2DMultisample = GL_SAMPLER_2D_MULTISAMPLE,
+    IntSampler2DMultisample = GL_INT_SAMPLER_2D_MULTISAMPLE,
+    UnsignedIntSampler2DMultisample = GL_UNSIGNED_INT_SAMPLER_2D_MULTISAMPLE,
+    Sampler2DMultisampleArray = GL_SAMPLER_2D_MULTISAMPLE_ARRAY,
+    IntSampler2DMultisampleArray = GL_INT_SAMPLER_2D_MULTISAMPLE_ARRAY,
+    UnsignedIntSampler2DMultisampleArray = GL_UNSIGNED_INT_SAMPLER_2D_MULTISAMPLE_ARRAY,
+    SamplerCubeMapArray = GL_SAMPLER_CUBE_MAP_ARRAY,
+    SamplerCubeMapArrayShadow = GL_SAMPLER_CUBE_MAP_ARRAY_SHADOW,
+    IntSamplerCubeMapArray = GL_INT_SAMPLER_CUBE_MAP_ARRAY,
+    UnsignedIntSamplerCubeMapArray = GL_UNSIGNED_INT_SAMPLER_CUBE_MAP_ARRAY,
+    DoubleVec2 = GL_DOUBLE_VEC2,
+    DoubleVec3 = GL_DOUBLE_VEC3,
+    DoubleVec4 = GL_DOUBLE_VEC4,
+    DoubleMat2 = GL_DOUBLE_MAT2,
+    DoubleMat3 = GL_DOUBLE_MAT3,
+    DoubleMat4 = GL_DOUBLE_MAT4,
+    DoubleMat2x3 = GL_DOUBLE_MAT2x3,
+    DoubleMat2x4 = GL_DOUBLE_MAT2x4,
+    DoubleMat3x2 = GL_DOUBLE_MAT3x2,
+    DoubleMat3x4 = GL_DOUBLE_MAT3x4,
+    DoubleMat4x2 = GL_DOUBLE_MAT4x2,
+    DoubleMat4x3 = GL_DOUBLE_MAT4x3,
 }
-impl UnsafeFromGLenum for ClampColorMode {
-    unsafe fn unsafe_from_gl_enum(val: u32) -> Self {
-        #[cfg(debug_assertions)]
-        let Some(ret) = ClampColorMode::from_repr(val) else {
-            panic!("Attempt to create a ClampColorMode from a GLenum with invalid value {val:#X}");
-        };
-        #[cfg(not(debug_assertions))]
-        let ret = unsafe { std::mem::transmute(val) };
-        ret
+impl GlEnumGroup for UniformType {
+    unsafe fn from_enum_noerr(val: u32) -> Self {
+        unsafe { std::mem::transmute(val) }
+    }
+    fn from_enum(val: u32) -> Option<Self> {
+        Self::from_repr(val)
     }
 }
-impl From<ClampColorMode> for u32 {
-    fn from(value: ClampColorMode) -> u32 {
+impl From<UniformType> for u32 {
+    fn from(value: UniformType) -> u32 {
         value as u32
     }
 }
-impl<Dst: GlDstType> SrcType<Dst> for ClampColorMode {
+impl<Dst: GlDstType> SrcType<Dst> for UniformType {
     fn convert(self) -> Dst {
         Dst::from_uint(self as u32)
     }
@@ -1399,28 +1471,24 @@ impl<Dst: GlDstType> SrcType<Dst> for ClampColorMode {
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 #[cfg_attr(debug_assertions, derive(::strum_macros::FromRepr))]
 #[repr(u32)]
-pub enum TriangleFace {
-    Front = GL_FRONT,
-    FrontAndBack = GL_FRONT_AND_BACK,
-    Back = GL_BACK,
+pub enum ProgramParameterPName {
+    ProgramBinaryRetrievableHint = GL_PROGRAM_BINARY_RETRIEVABLE_HINT,
+    ProgramSeparable = GL_PROGRAM_SEPARABLE,
 }
-impl UnsafeFromGLenum for TriangleFace {
-    unsafe fn unsafe_from_gl_enum(val: u32) -> Self {
-        #[cfg(debug_assertions)]
-        let Some(ret) = TriangleFace::from_repr(val) else {
-            panic!("Attempt to create a TriangleFace from a GLenum with invalid value {val:#X}");
-        };
-        #[cfg(not(debug_assertions))]
-        let ret = unsafe { std::mem::transmute(val) };
-        ret
+impl GlEnumGroup for ProgramParameterPName {
+    unsafe fn from_enum_noerr(val: u32) -> Self {
+        unsafe { std::mem::transmute(val) }
+    }
+    fn from_enum(val: u32) -> Option<Self> {
+        Self::from_repr(val)
     }
 }
-impl From<TriangleFace> for u32 {
-    fn from(value: TriangleFace) -> u32 {
+impl From<ProgramParameterPName> for u32 {
+    fn from(value: ProgramParameterPName) -> u32 {
         value as u32
     }
 }
-impl<Dst: GlDstType> SrcType<Dst> for TriangleFace {
+impl<Dst: GlDstType> SrcType<Dst> for ProgramParameterPName {
     fn convert(self) -> Dst {
         Dst::from_uint(self as u32)
     }
@@ -1428,30 +1496,27 @@ impl<Dst: GlDstType> SrcType<Dst> for TriangleFace {
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 #[cfg_attr(debug_assertions, derive(::strum_macros::FromRepr))]
 #[repr(u32)]
-pub enum DebugSeverity {
-    DontCare = GL_DONT_CARE,
-    DebugSeverityHigh = GL_DEBUG_SEVERITY_HIGH,
-    DebugSeverityMedium = GL_DEBUG_SEVERITY_MEDIUM,
-    DebugSeverityLow = GL_DEBUG_SEVERITY_LOW,
-    DebugSeverityNotification = GL_DEBUG_SEVERITY_NOTIFICATION,
+pub enum FramebufferParameterName {
+    FramebufferDefaultWidth = GL_FRAMEBUFFER_DEFAULT_WIDTH,
+    FramebufferDefaultHeight = GL_FRAMEBUFFER_DEFAULT_HEIGHT,
+    FramebufferDefaultLayers = GL_FRAMEBUFFER_DEFAULT_LAYERS,
+    FramebufferDefaultSamples = GL_FRAMEBUFFER_DEFAULT_SAMPLES,
+    FramebufferDefaultFixedSampleLocations = GL_FRAMEBUFFER_DEFAULT_FIXED_SAMPLE_LOCATIONS,
 }
-impl UnsafeFromGLenum for DebugSeverity {
-    unsafe fn unsafe_from_gl_enum(val: u32) -> Self {
-        #[cfg(debug_assertions)]
-        let Some(ret) = DebugSeverity::from_repr(val) else {
-            panic!("Attempt to create a DebugSeverity from a GLenum with invalid value {val:#X}");
-        };
-        #[cfg(not(debug_assertions))]
-        let ret = unsafe { std::mem::transmute(val) };
-        ret
+impl GlEnumGroup for FramebufferParameterName {
+    unsafe fn from_enum_noerr(val: u32) -> Self {
+        unsafe { std::mem::transmute(val) }
+    }
+    fn from_enum(val: u32) -> Option<Self> {
+        Self::from_repr(val)
     }
 }
-impl From<DebugSeverity> for u32 {
-    fn from(value: DebugSeverity) -> u32 {
+impl From<FramebufferParameterName> for u32 {
+    fn from(value: FramebufferParameterName) -> u32 {
         value as u32
     }
 }
-impl<Dst: GlDstType> SrcType<Dst> for DebugSeverity {
+impl<Dst: GlDstType> SrcType<Dst> for FramebufferParameterName {
     fn convert(self) -> Dst {
         Dst::from_uint(self as u32)
     }
@@ -1459,35 +1524,24 @@ impl<Dst: GlDstType> SrcType<Dst> for DebugSeverity {
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 #[cfg_attr(debug_assertions, derive(::strum_macros::FromRepr))]
 #[repr(u32)]
-pub enum DebugType {
-    DontCare = GL_DONT_CARE,
-    DebugTypeError = GL_DEBUG_TYPE_ERROR,
-    DebugTypeDeprecatedBehavior = GL_DEBUG_TYPE_DEPRECATED_BEHAVIOR,
-    DebugTypeUndefinedBehavior = GL_DEBUG_TYPE_UNDEFINED_BEHAVIOR,
-    DebugTypePortability = GL_DEBUG_TYPE_PORTABILITY,
-    DebugTypePerformance = GL_DEBUG_TYPE_PERFORMANCE,
-    DebugTypeOther = GL_DEBUG_TYPE_OTHER,
-    DebugTypeMarker = GL_DEBUG_TYPE_MARKER,
-    DebugTypePushGroup = GL_DEBUG_TYPE_PUSH_GROUP,
-    DebugTypePopGroup = GL_DEBUG_TYPE_POP_GROUP,
+pub enum BlitFramebufferFilter {
+    Nearest = GL_NEAREST,
+    Linear = GL_LINEAR,
 }
-impl UnsafeFromGLenum for DebugType {
-    unsafe fn unsafe_from_gl_enum(val: u32) -> Self {
-        #[cfg(debug_assertions)]
-        let Some(ret) = DebugType::from_repr(val) else {
-            panic!("Attempt to create a DebugType from a GLenum with invalid value {val:#X}");
-        };
-        #[cfg(not(debug_assertions))]
-        let ret = unsafe { std::mem::transmute(val) };
-        ret
+impl GlEnumGroup for BlitFramebufferFilter {
+    unsafe fn from_enum_noerr(val: u32) -> Self {
+        unsafe { std::mem::transmute(val) }
+    }
+    fn from_enum(val: u32) -> Option<Self> {
+        Self::from_repr(val)
     }
 }
-impl From<DebugType> for u32 {
-    fn from(value: DebugType) -> u32 {
+impl From<BlitFramebufferFilter> for u32 {
+    fn from(value: BlitFramebufferFilter) -> u32 {
         value as u32
     }
 }
-impl<Dst: GlDstType> SrcType<Dst> for DebugType {
+impl<Dst: GlDstType> SrcType<Dst> for BlitFramebufferFilter {
     fn convert(self) -> Dst {
         Dst::from_uint(self as u32)
     }
@@ -1495,39 +1549,26 @@ impl<Dst: GlDstType> SrcType<Dst> for DebugType {
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 #[cfg_attr(debug_assertions, derive(::strum_macros::FromRepr))]
 #[repr(u32)]
-pub enum UniformBlockPName {
-    UniformBlockBinding = GL_UNIFORM_BLOCK_BINDING,
-    UniformBlockDataSize = GL_UNIFORM_BLOCK_DATA_SIZE,
-    UniformBlockNameLength = GL_UNIFORM_BLOCK_NAME_LENGTH,
-    UniformBlockActiveUniforms = GL_UNIFORM_BLOCK_ACTIVE_UNIFORMS,
-    UniformBlockActiveUniformIndices = GL_UNIFORM_BLOCK_ACTIVE_UNIFORM_INDICES,
-    UniformBlockReferencedByVertexShader = GL_UNIFORM_BLOCK_REFERENCED_BY_VERTEX_SHADER,
-    UniformBlockReferencedByGeometryShader = GL_UNIFORM_BLOCK_REFERENCED_BY_GEOMETRY_SHADER,
-    UniformBlockReferencedByFragmentShader = GL_UNIFORM_BLOCK_REFERENCED_BY_FRAGMENT_SHADER,
-    UniformBlockReferencedByTessControlShader = GL_UNIFORM_BLOCK_REFERENCED_BY_TESS_CONTROL_SHADER,
-    UniformBlockReferencedByTessEvaluationShader =
-        GL_UNIFORM_BLOCK_REFERENCED_BY_TESS_EVALUATION_SHADER,
-    UniformBlockReferencedByComputeShader = GL_UNIFORM_BLOCK_REFERENCED_BY_COMPUTE_SHADER,
+pub enum SubroutineParameterName {
+    UniformSize = GL_UNIFORM_SIZE,
+    UniformNameLength = GL_UNIFORM_NAME_LENGTH,
+    NumCompatibleSubroutines = GL_NUM_COMPATIBLE_SUBROUTINES,
+    CompatibleSubroutines = GL_COMPATIBLE_SUBROUTINES,
 }
-impl UnsafeFromGLenum for UniformBlockPName {
-    unsafe fn unsafe_from_gl_enum(val: u32) -> Self {
-        #[cfg(debug_assertions)]
-        let Some(ret) = UniformBlockPName::from_repr(val) else {
-            panic!(
-                "Attempt to create a UniformBlockPName from a GLenum with invalid value {val:#X}"
-            );
-        };
-        #[cfg(not(debug_assertions))]
-        let ret = unsafe { std::mem::transmute(val) };
-        ret
+impl GlEnumGroup for SubroutineParameterName {
+    unsafe fn from_enum_noerr(val: u32) -> Self {
+        unsafe { std::mem::transmute(val) }
+    }
+    fn from_enum(val: u32) -> Option<Self> {
+        Self::from_repr(val)
     }
 }
-impl From<UniformBlockPName> for u32 {
-    fn from(value: UniformBlockPName) -> u32 {
+impl From<SubroutineParameterName> for u32 {
+    fn from(value: SubroutineParameterName) -> u32 {
         value as u32
     }
 }
-impl<Dst: GlDstType> SrcType<Dst> for UniformBlockPName {
+impl<Dst: GlDstType> SrcType<Dst> for SubroutineParameterName {
     fn convert(self) -> Dst {
         Dst::from_uint(self as u32)
     }
@@ -1535,72 +1576,59 @@ impl<Dst: GlDstType> SrcType<Dst> for UniformBlockPName {
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 #[cfg_attr(debug_assertions, derive(::strum_macros::FromRepr))]
 #[repr(u32)]
-pub enum CopyBufferSubDataTarget {
-    ArrayBuffer = GL_ARRAY_BUFFER,
-    ElementArrayBuffer = GL_ELEMENT_ARRAY_BUFFER,
-    PixelPackBuffer = GL_PIXEL_PACK_BUFFER,
-    PixelUnpackBuffer = GL_PIXEL_UNPACK_BUFFER,
-    TextureBuffer = GL_TEXTURE_BUFFER,
-    CopyReadBuffer = GL_COPY_READ_BUFFER,
-    CopyWriteBuffer = GL_COPY_WRITE_BUFFER,
-    UniformBuffer = GL_UNIFORM_BUFFER,
-    DrawIndirectBuffer = GL_DRAW_INDIRECT_BUFFER,
-    AtomicCounterBuffer = GL_ATOMIC_COUNTER_BUFFER,
-    DispatchIndirectBuffer = GL_DISPATCH_INDIRECT_BUFFER,
-    ShaderStorageBuffer = GL_SHADER_STORAGE_BUFFER,
-    TransformFeedbackBuffer = GL_TRANSFORM_FEEDBACK_BUFFER,
-    QueryBuffer = GL_QUERY_BUFFER,
+pub enum InvalidateFramebufferAttachment {
+    Color = GL_COLOR,
+    Depth = GL_DEPTH,
+    Stencil = GL_STENCIL,
+    DepthStencilAttachment = GL_DEPTH_STENCIL_ATTACHMENT,
+    ColorAttachment0 = GL_COLOR_ATTACHMENT0,
+    ColorAttachment1 = GL_COLOR_ATTACHMENT1,
+    ColorAttachment2 = GL_COLOR_ATTACHMENT2,
+    ColorAttachment3 = GL_COLOR_ATTACHMENT3,
+    ColorAttachment4 = GL_COLOR_ATTACHMENT4,
+    ColorAttachment5 = GL_COLOR_ATTACHMENT5,
+    ColorAttachment6 = GL_COLOR_ATTACHMENT6,
+    ColorAttachment7 = GL_COLOR_ATTACHMENT7,
+    ColorAttachment8 = GL_COLOR_ATTACHMENT8,
+    ColorAttachment9 = GL_COLOR_ATTACHMENT9,
+    ColorAttachment10 = GL_COLOR_ATTACHMENT10,
+    ColorAttachment11 = GL_COLOR_ATTACHMENT11,
+    ColorAttachment12 = GL_COLOR_ATTACHMENT12,
+    ColorAttachment13 = GL_COLOR_ATTACHMENT13,
+    ColorAttachment14 = GL_COLOR_ATTACHMENT14,
+    ColorAttachment15 = GL_COLOR_ATTACHMENT15,
+    ColorAttachment16 = GL_COLOR_ATTACHMENT16,
+    ColorAttachment17 = GL_COLOR_ATTACHMENT17,
+    ColorAttachment18 = GL_COLOR_ATTACHMENT18,
+    ColorAttachment19 = GL_COLOR_ATTACHMENT19,
+    ColorAttachment20 = GL_COLOR_ATTACHMENT20,
+    ColorAttachment21 = GL_COLOR_ATTACHMENT21,
+    ColorAttachment22 = GL_COLOR_ATTACHMENT22,
+    ColorAttachment23 = GL_COLOR_ATTACHMENT23,
+    ColorAttachment24 = GL_COLOR_ATTACHMENT24,
+    ColorAttachment25 = GL_COLOR_ATTACHMENT25,
+    ColorAttachment26 = GL_COLOR_ATTACHMENT26,
+    ColorAttachment27 = GL_COLOR_ATTACHMENT27,
+    ColorAttachment28 = GL_COLOR_ATTACHMENT28,
+    ColorAttachment29 = GL_COLOR_ATTACHMENT29,
+    ColorAttachment30 = GL_COLOR_ATTACHMENT30,
+    ColorAttachment31 = GL_COLOR_ATTACHMENT31,
+    DepthAttachment = GL_DEPTH_ATTACHMENT,
 }
-impl UnsafeFromGLenum for CopyBufferSubDataTarget {
-    unsafe fn unsafe_from_gl_enum(val: u32) -> Self {
-        #[cfg(debug_assertions)]
-        let Some(ret) = CopyBufferSubDataTarget::from_repr(val) else {
-            panic!("Attempt to create a CopyBufferSubDataTarget from a GLenum with invalid value {val:#X}");
-        };
-        #[cfg(not(debug_assertions))]
-        let ret = unsafe { std::mem::transmute(val) };
-        ret
+impl GlEnumGroup for InvalidateFramebufferAttachment {
+    unsafe fn from_enum_noerr(val: u32) -> Self {
+        unsafe { std::mem::transmute(val) }
+    }
+    fn from_enum(val: u32) -> Option<Self> {
+        Self::from_repr(val)
     }
 }
-impl From<CopyBufferSubDataTarget> for u32 {
-    fn from(value: CopyBufferSubDataTarget) -> u32 {
+impl From<InvalidateFramebufferAttachment> for u32 {
+    fn from(value: InvalidateFramebufferAttachment) -> u32 {
         value as u32
     }
 }
-impl<Dst: GlDstType> SrcType<Dst> for CopyBufferSubDataTarget {
-    fn convert(self) -> Dst {
-        Dst::from_uint(self as u32)
-    }
-}
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-#[cfg_attr(debug_assertions, derive(::strum_macros::FromRepr))]
-#[repr(u32)]
-pub enum PipelineParameterName {
-    FragmentShader = GL_FRAGMENT_SHADER,
-    VertexShader = GL_VERTEX_SHADER,
-    InfoLogLength = GL_INFO_LOG_LENGTH,
-    GeometryShader = GL_GEOMETRY_SHADER,
-    TessEvaluationShader = GL_TESS_EVALUATION_SHADER,
-    TessControlShader = GL_TESS_CONTROL_SHADER,
-    ActiveProgram = GL_ACTIVE_PROGRAM,
-}
-impl UnsafeFromGLenum for PipelineParameterName {
-    unsafe fn unsafe_from_gl_enum(val: u32) -> Self {
-        #[cfg(debug_assertions)]
-        let Some(ret) = PipelineParameterName::from_repr(val) else {
-            panic!("Attempt to create a PipelineParameterName from a GLenum with invalid value {val:#X}");
-        };
-        #[cfg(not(debug_assertions))]
-        let ret = unsafe { std::mem::transmute(val) };
-        ret
-    }
-}
-impl From<PipelineParameterName> for u32 {
-    fn from(value: PipelineParameterName) -> u32 {
-        value as u32
-    }
-}
-impl<Dst: GlDstType> SrcType<Dst> for PipelineParameterName {
+impl<Dst: GlDstType> SrcType<Dst> for InvalidateFramebufferAttachment {
     fn convert(self) -> Dst {
         Dst::from_uint(self as u32)
     }
@@ -1629,15 +1657,12 @@ pub enum BlendingFactor {
     OneMinusSrc1Color = GL_ONE_MINUS_SRC1_COLOR,
     OneMinusSrc1Alpha = GL_ONE_MINUS_SRC1_ALPHA,
 }
-impl UnsafeFromGLenum for BlendingFactor {
-    unsafe fn unsafe_from_gl_enum(val: u32) -> Self {
-        #[cfg(debug_assertions)]
-        let Some(ret) = BlendingFactor::from_repr(val) else {
-            panic!("Attempt to create a BlendingFactor from a GLenum with invalid value {val:#X}");
-        };
-        #[cfg(not(debug_assertions))]
-        let ret = unsafe { std::mem::transmute(val) };
-        ret
+impl GlEnumGroup for BlendingFactor {
+    unsafe fn from_enum_noerr(val: u32) -> Self {
+        unsafe { std::mem::transmute(val) }
+    }
+    fn from_enum(val: u32) -> Option<Self> {
+        Self::from_repr(val)
     }
 }
 impl From<BlendingFactor> for u32 {
@@ -1653,22 +1678,280 @@ impl<Dst: GlDstType> SrcType<Dst> for BlendingFactor {
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 #[cfg_attr(debug_assertions, derive(::strum_macros::FromRepr))]
 #[repr(u32)]
+pub enum FramebufferAttachment {
+    DepthStencilAttachment = GL_DEPTH_STENCIL_ATTACHMENT,
+    ColorAttachment0 = GL_COLOR_ATTACHMENT0,
+    ColorAttachment1 = GL_COLOR_ATTACHMENT1,
+    ColorAttachment2 = GL_COLOR_ATTACHMENT2,
+    ColorAttachment3 = GL_COLOR_ATTACHMENT3,
+    ColorAttachment4 = GL_COLOR_ATTACHMENT4,
+    ColorAttachment5 = GL_COLOR_ATTACHMENT5,
+    ColorAttachment6 = GL_COLOR_ATTACHMENT6,
+    ColorAttachment7 = GL_COLOR_ATTACHMENT7,
+    ColorAttachment8 = GL_COLOR_ATTACHMENT8,
+    ColorAttachment9 = GL_COLOR_ATTACHMENT9,
+    ColorAttachment10 = GL_COLOR_ATTACHMENT10,
+    ColorAttachment11 = GL_COLOR_ATTACHMENT11,
+    ColorAttachment12 = GL_COLOR_ATTACHMENT12,
+    ColorAttachment13 = GL_COLOR_ATTACHMENT13,
+    ColorAttachment14 = GL_COLOR_ATTACHMENT14,
+    ColorAttachment15 = GL_COLOR_ATTACHMENT15,
+    ColorAttachment16 = GL_COLOR_ATTACHMENT16,
+    ColorAttachment17 = GL_COLOR_ATTACHMENT17,
+    ColorAttachment18 = GL_COLOR_ATTACHMENT18,
+    ColorAttachment19 = GL_COLOR_ATTACHMENT19,
+    ColorAttachment20 = GL_COLOR_ATTACHMENT20,
+    ColorAttachment21 = GL_COLOR_ATTACHMENT21,
+    ColorAttachment22 = GL_COLOR_ATTACHMENT22,
+    ColorAttachment23 = GL_COLOR_ATTACHMENT23,
+    ColorAttachment24 = GL_COLOR_ATTACHMENT24,
+    ColorAttachment25 = GL_COLOR_ATTACHMENT25,
+    ColorAttachment26 = GL_COLOR_ATTACHMENT26,
+    ColorAttachment27 = GL_COLOR_ATTACHMENT27,
+    ColorAttachment28 = GL_COLOR_ATTACHMENT28,
+    ColorAttachment29 = GL_COLOR_ATTACHMENT29,
+    ColorAttachment30 = GL_COLOR_ATTACHMENT30,
+    ColorAttachment31 = GL_COLOR_ATTACHMENT31,
+    DepthAttachment = GL_DEPTH_ATTACHMENT,
+    StencilAttachment = GL_STENCIL_ATTACHMENT,
+}
+impl GlEnumGroup for FramebufferAttachment {
+    unsafe fn from_enum_noerr(val: u32) -> Self {
+        unsafe { std::mem::transmute(val) }
+    }
+    fn from_enum(val: u32) -> Option<Self> {
+        Self::from_repr(val)
+    }
+}
+impl From<FramebufferAttachment> for u32 {
+    fn from(value: FramebufferAttachment) -> u32 {
+        value as u32
+    }
+}
+impl<Dst: GlDstType> SrcType<Dst> for FramebufferAttachment {
+    fn convert(self) -> Dst {
+        Dst::from_uint(self as u32)
+    }
+}
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[cfg_attr(debug_assertions, derive(::strum_macros::FromRepr))]
+#[repr(u32)]
+pub enum StencilOp {
+    Zero = GL_ZERO,
+    Invert = GL_INVERT,
+    Keep = GL_KEEP,
+    Replace = GL_REPLACE,
+    Incr = GL_INCR,
+    Decr = GL_DECR,
+    IncrWrap = GL_INCR_WRAP,
+    DecrWrap = GL_DECR_WRAP,
+}
+impl GlEnumGroup for StencilOp {
+    unsafe fn from_enum_noerr(val: u32) -> Self {
+        unsafe { std::mem::transmute(val) }
+    }
+    fn from_enum(val: u32) -> Option<Self> {
+        Self::from_repr(val)
+    }
+}
+impl From<StencilOp> for u32 {
+    fn from(value: StencilOp) -> u32 {
+        value as u32
+    }
+}
+impl<Dst: GlDstType> SrcType<Dst> for StencilOp {
+    fn convert(self) -> Dst {
+        Dst::from_uint(self as u32)
+    }
+}
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[cfg_attr(debug_assertions, derive(::strum_macros::FromRepr))]
+#[repr(u32)]
+pub enum ReadBufferMode {
+    FrontLeft = GL_FRONT_LEFT,
+    FrontRight = GL_FRONT_RIGHT,
+    BackLeft = GL_BACK_LEFT,
+    BackRight = GL_BACK_RIGHT,
+    Front = GL_FRONT,
+    Left = GL_LEFT,
+    Right = GL_RIGHT,
+    ColorAttachment0 = GL_COLOR_ATTACHMENT0,
+    ColorAttachment1 = GL_COLOR_ATTACHMENT1,
+    ColorAttachment2 = GL_COLOR_ATTACHMENT2,
+    ColorAttachment3 = GL_COLOR_ATTACHMENT3,
+    ColorAttachment4 = GL_COLOR_ATTACHMENT4,
+    ColorAttachment5 = GL_COLOR_ATTACHMENT5,
+    ColorAttachment6 = GL_COLOR_ATTACHMENT6,
+    ColorAttachment7 = GL_COLOR_ATTACHMENT7,
+    ColorAttachment8 = GL_COLOR_ATTACHMENT8,
+    ColorAttachment9 = GL_COLOR_ATTACHMENT9,
+    ColorAttachment10 = GL_COLOR_ATTACHMENT10,
+    ColorAttachment11 = GL_COLOR_ATTACHMENT11,
+    ColorAttachment12 = GL_COLOR_ATTACHMENT12,
+    ColorAttachment13 = GL_COLOR_ATTACHMENT13,
+    ColorAttachment14 = GL_COLOR_ATTACHMENT14,
+    ColorAttachment15 = GL_COLOR_ATTACHMENT15,
+    Back = GL_BACK,
+    None = GL_NONE,
+}
+impl GlEnumGroup for ReadBufferMode {
+    unsafe fn from_enum_noerr(val: u32) -> Self {
+        unsafe { std::mem::transmute(val) }
+    }
+    fn from_enum(val: u32) -> Option<Self> {
+        Self::from_repr(val)
+    }
+}
+impl From<ReadBufferMode> for u32 {
+    fn from(value: ReadBufferMode) -> u32 {
+        value as u32
+    }
+}
+impl<Dst: GlDstType> SrcType<Dst> for ReadBufferMode {
+    fn convert(self) -> Dst {
+        Dst::from_uint(self as u32)
+    }
+}
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[cfg_attr(debug_assertions, derive(::strum_macros::FromRepr))]
+#[repr(u32)]
+pub enum LogicOp {
+    Clear = GL_CLEAR,
+    And = GL_AND,
+    AndReverse = GL_AND_REVERSE,
+    Copy = GL_COPY,
+    AndInverted = GL_AND_INVERTED,
+    Noop = GL_NOOP,
+    Xor = GL_XOR,
+    Or = GL_OR,
+    Nor = GL_NOR,
+    Equiv = GL_EQUIV,
+    Invert = GL_INVERT,
+    OrReverse = GL_OR_REVERSE,
+    CopyInverted = GL_COPY_INVERTED,
+    OrInverted = GL_OR_INVERTED,
+    Nand = GL_NAND,
+    Set = GL_SET,
+}
+impl GlEnumGroup for LogicOp {
+    unsafe fn from_enum_noerr(val: u32) -> Self {
+        unsafe { std::mem::transmute(val) }
+    }
+    fn from_enum(val: u32) -> Option<Self> {
+        Self::from_repr(val)
+    }
+}
+impl From<LogicOp> for u32 {
+    fn from(value: LogicOp) -> u32 {
+        value as u32
+    }
+}
+impl<Dst: GlDstType> SrcType<Dst> for LogicOp {
+    fn convert(self) -> Dst {
+        Dst::from_uint(self as u32)
+    }
+}
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[cfg_attr(debug_assertions, derive(::strum_macros::FromRepr))]
+#[repr(u32)]
+pub enum BufferPName {
+    BufferSize = GL_BUFFER_SIZE,
+    BufferUsage = GL_BUFFER_USAGE,
+    BufferAccess = GL_BUFFER_ACCESS,
+    BufferMapped = GL_BUFFER_MAPPED,
+    BufferAccessFlags = GL_BUFFER_ACCESS_FLAGS,
+    BufferMapLength = GL_BUFFER_MAP_LENGTH,
+    BufferMapOffset = GL_BUFFER_MAP_OFFSET,
+    BufferImmutableStorage = GL_BUFFER_IMMUTABLE_STORAGE,
+    BufferStorageFlags = GL_BUFFER_STORAGE_FLAGS,
+}
+impl GlEnumGroup for BufferPName {
+    unsafe fn from_enum_noerr(val: u32) -> Self {
+        unsafe { std::mem::transmute(val) }
+    }
+    fn from_enum(val: u32) -> Option<Self> {
+        Self::from_repr(val)
+    }
+}
+impl From<BufferPName> for u32 {
+    fn from(value: BufferPName) -> u32 {
+        value as u32
+    }
+}
+impl<Dst: GlDstType> SrcType<Dst> for BufferPName {
+    fn convert(self) -> Dst {
+        Dst::from_uint(self as u32)
+    }
+}
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[cfg_attr(debug_assertions, derive(::strum_macros::FromRepr))]
+#[repr(u32)]
+pub enum PrecisionType {
+    LowFloat = GL_LOW_FLOAT,
+    MediumFloat = GL_MEDIUM_FLOAT,
+    HighFloat = GL_HIGH_FLOAT,
+    LowInt = GL_LOW_INT,
+    MediumInt = GL_MEDIUM_INT,
+    HighInt = GL_HIGH_INT,
+}
+impl GlEnumGroup for PrecisionType {
+    unsafe fn from_enum_noerr(val: u32) -> Self {
+        unsafe { std::mem::transmute(val) }
+    }
+    fn from_enum(val: u32) -> Option<Self> {
+        Self::from_repr(val)
+    }
+}
+impl From<PrecisionType> for u32 {
+    fn from(value: PrecisionType) -> u32 {
+        value as u32
+    }
+}
+impl<Dst: GlDstType> SrcType<Dst> for PrecisionType {
+    fn convert(self) -> Dst {
+        Dst::from_uint(self as u32)
+    }
+}
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[cfg_attr(debug_assertions, derive(::strum_macros::FromRepr))]
+#[repr(u32)]
+pub enum BufferAccess {
+    ReadOnly = GL_READ_ONLY,
+    WriteOnly = GL_WRITE_ONLY,
+    ReadWrite = GL_READ_WRITE,
+}
+impl GlEnumGroup for BufferAccess {
+    unsafe fn from_enum_noerr(val: u32) -> Self {
+        unsafe { std::mem::transmute(val) }
+    }
+    fn from_enum(val: u32) -> Option<Self> {
+        Self::from_repr(val)
+    }
+}
+impl From<BufferAccess> for u32 {
+    fn from(value: BufferAccess) -> u32 {
+        value as u32
+    }
+}
+impl<Dst: GlDstType> SrcType<Dst> for BufferAccess {
+    fn convert(self) -> Dst {
+        Dst::from_uint(self as u32)
+    }
+}
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[cfg_attr(debug_assertions, derive(::strum_macros::FromRepr))]
+#[repr(u32)]
 pub enum DrawElementsType {
     UnsignedByte = GL_UNSIGNED_BYTE,
     UnsignedShort = GL_UNSIGNED_SHORT,
     UnsignedInt = GL_UNSIGNED_INT,
 }
-impl UnsafeFromGLenum for DrawElementsType {
-    unsafe fn unsafe_from_gl_enum(val: u32) -> Self {
-        #[cfg(debug_assertions)]
-        let Some(ret) = DrawElementsType::from_repr(val) else {
-            panic!(
-                "Attempt to create a DrawElementsType from a GLenum with invalid value {val:#X}"
-            );
-        };
-        #[cfg(not(debug_assertions))]
-        let ret = unsafe { std::mem::transmute(val) };
-        ret
+impl GlEnumGroup for DrawElementsType {
+    unsafe fn from_enum_noerr(val: u32) -> Self {
+        unsafe { std::mem::transmute(val) }
+    }
+    fn from_enum(val: u32) -> Option<Self> {
+        Self::from_repr(val)
     }
 }
 impl From<DrawElementsType> for u32 {
@@ -1677,6 +1960,1033 @@ impl From<DrawElementsType> for u32 {
     }
 }
 impl<Dst: GlDstType> SrcType<Dst> for DrawElementsType {
+    fn convert(self) -> Dst {
+        Dst::from_uint(self as u32)
+    }
+}
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[cfg_attr(debug_assertions, derive(::strum_macros::FromRepr))]
+#[repr(u32)]
+pub enum ErrorCode {
+    InvalidEnum = GL_INVALID_ENUM,
+    InvalidValue = GL_INVALID_VALUE,
+    InvalidOperation = GL_INVALID_OPERATION,
+    OutOfMemory = GL_OUT_OF_MEMORY,
+    InvalidFramebufferOperation = GL_INVALID_FRAMEBUFFER_OPERATION,
+    StackUnderflow = GL_STACK_UNDERFLOW,
+    StackOverflow = GL_STACK_OVERFLOW,
+    NoError = GL_NO_ERROR,
+}
+impl GlEnumGroup for ErrorCode {
+    unsafe fn from_enum_noerr(val: u32) -> Self {
+        unsafe { std::mem::transmute(val) }
+    }
+    fn from_enum(val: u32) -> Option<Self> {
+        Self::from_repr(val)
+    }
+}
+impl From<ErrorCode> for u32 {
+    fn from(value: ErrorCode) -> u32 {
+        value as u32
+    }
+}
+impl<Dst: GlDstType> SrcType<Dst> for ErrorCode {
+    fn convert(self) -> Dst {
+        Dst::from_uint(self as u32)
+    }
+}
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[cfg_attr(debug_assertions, derive(::strum_macros::FromRepr))]
+#[repr(u32)]
+pub enum HintMode {
+    DontCare = GL_DONT_CARE,
+    Fastest = GL_FASTEST,
+    Nicest = GL_NICEST,
+}
+impl GlEnumGroup for HintMode {
+    unsafe fn from_enum_noerr(val: u32) -> Self {
+        unsafe { std::mem::transmute(val) }
+    }
+    fn from_enum(val: u32) -> Option<Self> {
+        Self::from_repr(val)
+    }
+}
+impl From<HintMode> for u32 {
+    fn from(value: HintMode) -> u32 {
+        value as u32
+    }
+}
+impl<Dst: GlDstType> SrcType<Dst> for HintMode {
+    fn convert(self) -> Dst {
+        Dst::from_uint(self as u32)
+    }
+}
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[cfg_attr(debug_assertions, derive(::strum_macros::FromRepr))]
+#[repr(u32)]
+pub enum ProgramResourceProperty {
+    NumCompatibleSubroutines = GL_NUM_COMPATIBLE_SUBROUTINES,
+    CompatibleSubroutines = GL_COMPATIBLE_SUBROUTINES,
+    Uniform = GL_UNIFORM,
+    NameLength = GL_NAME_LENGTH,
+    Type = GL_TYPE,
+    ArraySize = GL_ARRAY_SIZE,
+    Offset = GL_OFFSET,
+    BlockIndex = GL_BLOCK_INDEX,
+    ArrayStride = GL_ARRAY_STRIDE,
+    MatrixStride = GL_MATRIX_STRIDE,
+    IsRowMajor = GL_IS_ROW_MAJOR,
+    AtomicCounterBufferIndex = GL_ATOMIC_COUNTER_BUFFER_INDEX,
+    BufferBinding = GL_BUFFER_BINDING,
+    BufferDataSize = GL_BUFFER_DATA_SIZE,
+    NumActiveVariables = GL_NUM_ACTIVE_VARIABLES,
+    ActiveVariables = GL_ACTIVE_VARIABLES,
+    ReferencedByVertexShader = GL_REFERENCED_BY_VERTEX_SHADER,
+    ReferencedByTessControlShader = GL_REFERENCED_BY_TESS_CONTROL_SHADER,
+    ReferencedByTessEvaluationShader = GL_REFERENCED_BY_TESS_EVALUATION_SHADER,
+    ReferencedByGeometryShader = GL_REFERENCED_BY_GEOMETRY_SHADER,
+    ReferencedByFragmentShader = GL_REFERENCED_BY_FRAGMENT_SHADER,
+    ReferencedByComputeShader = GL_REFERENCED_BY_COMPUTE_SHADER,
+    TopLevelArraySize = GL_TOP_LEVEL_ARRAY_SIZE,
+    TopLevelArrayStride = GL_TOP_LEVEL_ARRAY_STRIDE,
+    Location = GL_LOCATION,
+    LocationIndex = GL_LOCATION_INDEX,
+    IsPerPatch = GL_IS_PER_PATCH,
+    LocationComponent = GL_LOCATION_COMPONENT,
+    TransformFeedbackBufferIndex = GL_TRANSFORM_FEEDBACK_BUFFER_INDEX,
+    TransformFeedbackBufferStride = GL_TRANSFORM_FEEDBACK_BUFFER_STRIDE,
+}
+impl GlEnumGroup for ProgramResourceProperty {
+    unsafe fn from_enum_noerr(val: u32) -> Self {
+        unsafe { std::mem::transmute(val) }
+    }
+    fn from_enum(val: u32) -> Option<Self> {
+        Self::from_repr(val)
+    }
+}
+impl From<ProgramResourceProperty> for u32 {
+    fn from(value: ProgramResourceProperty) -> u32 {
+        value as u32
+    }
+}
+impl<Dst: GlDstType> SrcType<Dst> for ProgramResourceProperty {
+    fn convert(self) -> Dst {
+        Dst::from_uint(self as u32)
+    }
+}
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[cfg_attr(debug_assertions, derive(::strum_macros::FromRepr))]
+#[repr(u32)]
+pub enum BufferTarget {
+    ArrayBuffer = GL_ARRAY_BUFFER,
+    ElementArrayBuffer = GL_ELEMENT_ARRAY_BUFFER,
+    PixelPackBuffer = GL_PIXEL_PACK_BUFFER,
+    PixelUnpackBuffer = GL_PIXEL_UNPACK_BUFFER,
+    TextureBuffer = GL_TEXTURE_BUFFER,
+    CopyReadBuffer = GL_COPY_READ_BUFFER,
+    CopyWriteBuffer = GL_COPY_WRITE_BUFFER,
+    UniformBuffer = GL_UNIFORM_BUFFER,
+    DrawIndirectBuffer = GL_DRAW_INDIRECT_BUFFER,
+    AtomicCounterBuffer = GL_ATOMIC_COUNTER_BUFFER,
+    DispatchIndirectBuffer = GL_DISPATCH_INDIRECT_BUFFER,
+    ShaderStorageBuffer = GL_SHADER_STORAGE_BUFFER,
+    TransformFeedbackBuffer = GL_TRANSFORM_FEEDBACK_BUFFER,
+    QueryBuffer = GL_QUERY_BUFFER,
+    ParameterBuffer = GL_PARAMETER_BUFFER,
+}
+impl GlEnumGroup for BufferTarget {
+    unsafe fn from_enum_noerr(val: u32) -> Self {
+        unsafe { std::mem::transmute(val) }
+    }
+    fn from_enum(val: u32) -> Option<Self> {
+        Self::from_repr(val)
+    }
+}
+impl From<BufferTarget> for u32 {
+    fn from(value: BufferTarget) -> u32 {
+        value as u32
+    }
+}
+impl<Dst: GlDstType> SrcType<Dst> for BufferTarget {
+    fn convert(self) -> Dst {
+        Dst::from_uint(self as u32)
+    }
+}
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[cfg_attr(debug_assertions, derive(::strum_macros::FromRepr))]
+#[repr(u32)]
+pub enum TextureWrapMode {
+    Repeat = GL_REPEAT,
+    ClampToEdge = GL_CLAMP_TO_EDGE,
+    ClampToBorder = GL_CLAMP_TO_BORDER,
+    MirroredRepeat = GL_MIRRORED_REPEAT,
+}
+impl GlEnumGroup for TextureWrapMode {
+    unsafe fn from_enum_noerr(val: u32) -> Self {
+        unsafe { std::mem::transmute(val) }
+    }
+    fn from_enum(val: u32) -> Option<Self> {
+        Self::from_repr(val)
+    }
+}
+impl From<TextureWrapMode> for u32 {
+    fn from(value: TextureWrapMode) -> u32 {
+        value as u32
+    }
+}
+impl<Dst: GlDstType> SrcType<Dst> for TextureWrapMode {
+    fn convert(self) -> Dst {
+        Dst::from_uint(self as u32)
+    }
+}
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[cfg_attr(debug_assertions, derive(::strum_macros::FromRepr))]
+#[repr(u32)]
+pub enum VertexBufferObjectUsage {
+    StreamDraw = GL_STREAM_DRAW,
+    StreamRead = GL_STREAM_READ,
+    StreamCopy = GL_STREAM_COPY,
+    StaticDraw = GL_STATIC_DRAW,
+    StaticRead = GL_STATIC_READ,
+    StaticCopy = GL_STATIC_COPY,
+    DynamicDraw = GL_DYNAMIC_DRAW,
+    DynamicRead = GL_DYNAMIC_READ,
+    DynamicCopy = GL_DYNAMIC_COPY,
+}
+impl GlEnumGroup for VertexBufferObjectUsage {
+    unsafe fn from_enum_noerr(val: u32) -> Self {
+        unsafe { std::mem::transmute(val) }
+    }
+    fn from_enum(val: u32) -> Option<Self> {
+        Self::from_repr(val)
+    }
+}
+impl From<VertexBufferObjectUsage> for u32 {
+    fn from(value: VertexBufferObjectUsage) -> u32 {
+        value as u32
+    }
+}
+impl<Dst: GlDstType> SrcType<Dst> for VertexBufferObjectUsage {
+    fn convert(self) -> Dst {
+        Dst::from_uint(self as u32)
+    }
+}
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[cfg_attr(debug_assertions, derive(::strum_macros::FromRepr))]
+#[repr(u32)]
+pub enum VertexAttribProperty {
+    VertexAttribArrayBufferBinding = GL_VERTEX_ATTRIB_ARRAY_BUFFER_BINDING,
+    VertexAttribArrayEnabled = GL_VERTEX_ATTRIB_ARRAY_ENABLED,
+    VertexAttribArraySize = GL_VERTEX_ATTRIB_ARRAY_SIZE,
+    VertexAttribArrayStride = GL_VERTEX_ATTRIB_ARRAY_STRIDE,
+    VertexAttribArrayType = GL_VERTEX_ATTRIB_ARRAY_TYPE,
+    CurrentVertexAttrib = GL_CURRENT_VERTEX_ATTRIB,
+    VertexAttribArrayNormalized = GL_VERTEX_ATTRIB_ARRAY_NORMALIZED,
+    VertexAttribArrayInteger = GL_VERTEX_ATTRIB_ARRAY_INTEGER,
+    VertexAttribArrayDivisor = GL_VERTEX_ATTRIB_ARRAY_DIVISOR,
+    VertexAttribArrayLong = GL_VERTEX_ATTRIB_ARRAY_LONG,
+    VertexAttribBinding = GL_VERTEX_ATTRIB_BINDING,
+    VertexAttribRelativeOffset = GL_VERTEX_ATTRIB_RELATIVE_OFFSET,
+}
+impl GlEnumGroup for VertexAttribProperty {
+    unsafe fn from_enum_noerr(val: u32) -> Self {
+        unsafe { std::mem::transmute(val) }
+    }
+    fn from_enum(val: u32) -> Option<Self> {
+        Self::from_repr(val)
+    }
+}
+impl From<VertexAttribProperty> for u32 {
+    fn from(value: VertexAttribProperty) -> u32 {
+        value as u32
+    }
+}
+impl<Dst: GlDstType> SrcType<Dst> for VertexAttribProperty {
+    fn convert(self) -> Dst {
+        Dst::from_uint(self as u32)
+    }
+}
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[cfg_attr(debug_assertions, derive(::strum_macros::FromRepr))]
+#[repr(u32)]
+pub enum ClipControlDepth {
+    NegativeOneToOne = GL_NEGATIVE_ONE_TO_ONE,
+    ZeroToOne = GL_ZERO_TO_ONE,
+}
+impl GlEnumGroup for ClipControlDepth {
+    unsafe fn from_enum_noerr(val: u32) -> Self {
+        unsafe { std::mem::transmute(val) }
+    }
+    fn from_enum(val: u32) -> Option<Self> {
+        Self::from_repr(val)
+    }
+}
+impl From<ClipControlDepth> for u32 {
+    fn from(value: ClipControlDepth) -> u32 {
+        value as u32
+    }
+}
+impl<Dst: GlDstType> SrcType<Dst> for ClipControlDepth {
+    fn convert(self) -> Dst {
+        Dst::from_uint(self as u32)
+    }
+}
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[cfg_attr(debug_assertions, derive(::strum_macros::FromRepr))]
+#[repr(u32)]
+pub enum PatchParameterName {
+    PatchVertices = GL_PATCH_VERTICES,
+    PatchDefaultInnerLevel = GL_PATCH_DEFAULT_INNER_LEVEL,
+    PatchDefaultOuterLevel = GL_PATCH_DEFAULT_OUTER_LEVEL,
+}
+impl GlEnumGroup for PatchParameterName {
+    unsafe fn from_enum_noerr(val: u32) -> Self {
+        unsafe { std::mem::transmute(val) }
+    }
+    fn from_enum(val: u32) -> Option<Self> {
+        Self::from_repr(val)
+    }
+}
+impl From<PatchParameterName> for u32 {
+    fn from(value: PatchParameterName) -> u32 {
+        value as u32
+    }
+}
+impl<Dst: GlDstType> SrcType<Dst> for PatchParameterName {
+    fn convert(self) -> Dst {
+        Dst::from_uint(self as u32)
+    }
+}
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[cfg_attr(debug_assertions, derive(::strum_macros::FromRepr))]
+#[repr(u32)]
+pub enum QueryTarget {
+    SamplesPassed = GL_SAMPLES_PASSED,
+    PrimitivesGenerated = GL_PRIMITIVES_GENERATED,
+    TransformFeedbackPrimitivesWritten = GL_TRANSFORM_FEEDBACK_PRIMITIVES_WRITTEN,
+    AnySamplesPassed = GL_ANY_SAMPLES_PASSED,
+    TimeElapsed = GL_TIME_ELAPSED,
+    AnySamplesPassedConservative = GL_ANY_SAMPLES_PASSED_CONSERVATIVE,
+    VerticesSubmitted = GL_VERTICES_SUBMITTED,
+    PrimitivesSubmitted = GL_PRIMITIVES_SUBMITTED,
+    VertexShaderInvocations = GL_VERTEX_SHADER_INVOCATIONS,
+    TransformFeedbackOverflow = GL_TRANSFORM_FEEDBACK_OVERFLOW,
+}
+impl GlEnumGroup for QueryTarget {
+    unsafe fn from_enum_noerr(val: u32) -> Self {
+        unsafe { std::mem::transmute(val) }
+    }
+    fn from_enum(val: u32) -> Option<Self> {
+        Self::from_repr(val)
+    }
+}
+impl From<QueryTarget> for u32 {
+    fn from(value: QueryTarget) -> u32 {
+        value as u32
+    }
+}
+impl<Dst: GlDstType> SrcType<Dst> for QueryTarget {
+    fn convert(self) -> Dst {
+        Dst::from_uint(self as u32)
+    }
+}
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[cfg_attr(debug_assertions, derive(::strum_macros::FromRepr))]
+#[repr(u32)]
+pub enum VertexAttribType {
+    Byte = GL_BYTE,
+    UnsignedByte = GL_UNSIGNED_BYTE,
+    Short = GL_SHORT,
+    UnsignedShort = GL_UNSIGNED_SHORT,
+    Int = GL_INT,
+    UnsignedInt = GL_UNSIGNED_INT,
+    Float = GL_FLOAT,
+    Double = GL_DOUBLE,
+    UnsignedInt2101010Rev = GL_UNSIGNED_INT_2_10_10_10_REV,
+    HalfFloat = GL_HALF_FLOAT,
+    Int2101010Rev = GL_INT_2_10_10_10_REV,
+    Fixed = GL_FIXED,
+    UnsignedInt10F11F11FRev = GL_UNSIGNED_INT_10F_11F_11F_REV,
+}
+impl GlEnumGroup for VertexAttribType {
+    unsafe fn from_enum_noerr(val: u32) -> Self {
+        unsafe { std::mem::transmute(val) }
+    }
+    fn from_enum(val: u32) -> Option<Self> {
+        Self::from_repr(val)
+    }
+}
+impl From<VertexAttribType> for u32 {
+    fn from(value: VertexAttribType) -> u32 {
+        value as u32
+    }
+}
+impl<Dst: GlDstType> SrcType<Dst> for VertexAttribType {
+    fn convert(self) -> Dst {
+        Dst::from_uint(self as u32)
+    }
+}
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[cfg_attr(debug_assertions, derive(::strum_macros::FromRepr))]
+#[repr(u32)]
+pub enum DebugSource {
+    DontCare = GL_DONT_CARE,
+    DebugSourceApi = GL_DEBUG_SOURCE_API,
+    DebugSourceWindowSystem = GL_DEBUG_SOURCE_WINDOW_SYSTEM,
+    DebugSourceShaderCompiler = GL_DEBUG_SOURCE_SHADER_COMPILER,
+    DebugSourceThirdParty = GL_DEBUG_SOURCE_THIRD_PARTY,
+    DebugSourceApplication = GL_DEBUG_SOURCE_APPLICATION,
+    DebugSourceOther = GL_DEBUG_SOURCE_OTHER,
+}
+impl GlEnumGroup for DebugSource {
+    unsafe fn from_enum_noerr(val: u32) -> Self {
+        unsafe { std::mem::transmute(val) }
+    }
+    fn from_enum(val: u32) -> Option<Self> {
+        Self::from_repr(val)
+    }
+}
+impl From<DebugSource> for u32 {
+    fn from(value: DebugSource) -> u32 {
+        value as u32
+    }
+}
+impl<Dst: GlDstType> SrcType<Dst> for DebugSource {
+    fn convert(self) -> Dst {
+        Dst::from_uint(self as u32)
+    }
+}
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[cfg_attr(debug_assertions, derive(::strum_macros::FromRepr))]
+#[repr(u32)]
+pub enum TextureMinFilter {
+    Nearest = GL_NEAREST,
+    Linear = GL_LINEAR,
+    NearestMipmapNearest = GL_NEAREST_MIPMAP_NEAREST,
+    LinearMipmapNearest = GL_LINEAR_MIPMAP_NEAREST,
+    NearestMipmapLinear = GL_NEAREST_MIPMAP_LINEAR,
+    LinearMipmapLinear = GL_LINEAR_MIPMAP_LINEAR,
+}
+impl GlEnumGroup for TextureMinFilter {
+    unsafe fn from_enum_noerr(val: u32) -> Self {
+        unsafe { std::mem::transmute(val) }
+    }
+    fn from_enum(val: u32) -> Option<Self> {
+        Self::from_repr(val)
+    }
+}
+impl From<TextureMinFilter> for u32 {
+    fn from(value: TextureMinFilter) -> u32 {
+        value as u32
+    }
+}
+impl<Dst: GlDstType> SrcType<Dst> for TextureMinFilter {
+    fn convert(self) -> Dst {
+        Dst::from_uint(self as u32)
+    }
+}
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[cfg_attr(debug_assertions, derive(::strum_macros::FromRepr))]
+#[repr(u32)]
+pub enum GetPointervPName {
+    DebugCallbackFunction = GL_DEBUG_CALLBACK_FUNCTION,
+    DebugCallbackUserParam = GL_DEBUG_CALLBACK_USER_PARAM,
+}
+impl GlEnumGroup for GetPointervPName {
+    unsafe fn from_enum_noerr(val: u32) -> Self {
+        unsafe { std::mem::transmute(val) }
+    }
+    fn from_enum(val: u32) -> Option<Self> {
+        Self::from_repr(val)
+    }
+}
+impl From<GetPointervPName> for u32 {
+    fn from(value: GetPointervPName) -> u32 {
+        value as u32
+    }
+}
+impl<Dst: GlDstType> SrcType<Dst> for GetPointervPName {
+    fn convert(self) -> Dst {
+        Dst::from_uint(self as u32)
+    }
+}
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[cfg_attr(debug_assertions, derive(::strum_macros::FromRepr))]
+#[repr(u32)]
+pub enum ProgramProperty {
+    DeleteStatus = GL_DELETE_STATUS,
+    LinkStatus = GL_LINK_STATUS,
+    ValidateStatus = GL_VALIDATE_STATUS,
+    InfoLogLength = GL_INFO_LOG_LENGTH,
+    AttachedShaders = GL_ATTACHED_SHADERS,
+    ActiveUniforms = GL_ACTIVE_UNIFORMS,
+    ActiveUniformMaxLength = GL_ACTIVE_UNIFORM_MAX_LENGTH,
+    ActiveAttributes = GL_ACTIVE_ATTRIBUTES,
+    ActiveAttributeMaxLength = GL_ACTIVE_ATTRIBUTE_MAX_LENGTH,
+    TransformFeedbackVaryingMaxLength = GL_TRANSFORM_FEEDBACK_VARYING_MAX_LENGTH,
+    TransformFeedbackBufferMode = GL_TRANSFORM_FEEDBACK_BUFFER_MODE,
+    TransformFeedbackVaryings = GL_TRANSFORM_FEEDBACK_VARYINGS,
+    ActiveUniformBlockMaxNameLength = GL_ACTIVE_UNIFORM_BLOCK_MAX_NAME_LENGTH,
+    ActiveUniformBlocks = GL_ACTIVE_UNIFORM_BLOCKS,
+    GeometryVerticesOut = GL_GEOMETRY_VERTICES_OUT,
+    GeometryInputType = GL_GEOMETRY_INPUT_TYPE,
+    GeometryOutputType = GL_GEOMETRY_OUTPUT_TYPE,
+    ProgramBinaryLength = GL_PROGRAM_BINARY_LENGTH,
+    ActiveAtomicCounterBuffers = GL_ACTIVE_ATOMIC_COUNTER_BUFFERS,
+    ComputeWorkGroupSize = GL_COMPUTE_WORK_GROUP_SIZE,
+}
+impl GlEnumGroup for ProgramProperty {
+    unsafe fn from_enum_noerr(val: u32) -> Self {
+        unsafe { std::mem::transmute(val) }
+    }
+    fn from_enum(val: u32) -> Option<Self> {
+        Self::from_repr(val)
+    }
+}
+impl From<ProgramProperty> for u32 {
+    fn from(value: ProgramProperty) -> u32 {
+        value as u32
+    }
+}
+impl<Dst: GlDstType> SrcType<Dst> for ProgramProperty {
+    fn convert(self) -> Dst {
+        Dst::from_uint(self as u32)
+    }
+}
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[cfg_attr(debug_assertions, derive(::strum_macros::FromRepr))]
+#[repr(u32)]
+pub enum BufferStorageTarget {
+    ArrayBuffer = GL_ARRAY_BUFFER,
+    ElementArrayBuffer = GL_ELEMENT_ARRAY_BUFFER,
+    PixelPackBuffer = GL_PIXEL_PACK_BUFFER,
+    PixelUnpackBuffer = GL_PIXEL_UNPACK_BUFFER,
+    TextureBuffer = GL_TEXTURE_BUFFER,
+    CopyReadBuffer = GL_COPY_READ_BUFFER,
+    CopyWriteBuffer = GL_COPY_WRITE_BUFFER,
+    UniformBuffer = GL_UNIFORM_BUFFER,
+    DrawIndirectBuffer = GL_DRAW_INDIRECT_BUFFER,
+    AtomicCounterBuffer = GL_ATOMIC_COUNTER_BUFFER,
+    DispatchIndirectBuffer = GL_DISPATCH_INDIRECT_BUFFER,
+    ShaderStorageBuffer = GL_SHADER_STORAGE_BUFFER,
+    TransformFeedbackBuffer = GL_TRANSFORM_FEEDBACK_BUFFER,
+    QueryBuffer = GL_QUERY_BUFFER,
+}
+impl GlEnumGroup for BufferStorageTarget {
+    unsafe fn from_enum_noerr(val: u32) -> Self {
+        unsafe { std::mem::transmute(val) }
+    }
+    fn from_enum(val: u32) -> Option<Self> {
+        Self::from_repr(val)
+    }
+}
+impl From<BufferStorageTarget> for u32 {
+    fn from(value: BufferStorageTarget) -> u32 {
+        value as u32
+    }
+}
+impl<Dst: GlDstType> SrcType<Dst> for BufferStorageTarget {
+    fn convert(self) -> Dst {
+        Dst::from_uint(self as u32)
+    }
+}
+bitflags! {
+#[derive(Debug, Clone, Copy, Default, PartialEq, Eq)]
+#[repr(transparent)]
+pub struct ClearBufferMask: u32 {
+const DEPTH_BUFFER_BIT = GL_DEPTH_BUFFER_BIT;
+const STENCIL_BUFFER_BIT = GL_STENCIL_BUFFER_BIT;
+const COLOR_BUFFER_BIT = GL_COLOR_BUFFER_BIT;
+}}
+impl GlEnumGroup for ClearBufferMask {
+    unsafe fn from_enum_noerr(val: u32) -> Self {
+        unsafe { std::mem::transmute(val) }
+    }
+    fn from_enum(val: u32) -> Option<Self> {
+        Self::from_bits(val)
+    }
+}
+impl From<ClearBufferMask> for u32 {
+    fn from(value: ClearBufferMask) -> u32 {
+        value.bits()
+    }
+}
+impl<Dst: GlDstType> SrcType<Dst> for ClearBufferMask {
+    fn convert(self) -> Dst {
+        Dst::from_uint(self.bits())
+    }
+}
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[cfg_attr(debug_assertions, derive(::strum_macros::FromRepr))]
+#[repr(u32)]
+pub enum ClampColorMode {
+    False = GL_FALSE,
+    True = GL_TRUE,
+    FixedOnly = GL_FIXED_ONLY,
+}
+impl GlEnumGroup for ClampColorMode {
+    unsafe fn from_enum_noerr(val: u32) -> Self {
+        unsafe { std::mem::transmute(val) }
+    }
+    fn from_enum(val: u32) -> Option<Self> {
+        Self::from_repr(val)
+    }
+}
+impl From<ClampColorMode> for u32 {
+    fn from(value: ClampColorMode) -> u32 {
+        value as u32
+    }
+}
+impl<Dst: GlDstType> SrcType<Dst> for ClampColorMode {
+    fn convert(self) -> Dst {
+        Dst::from_uint(self as u32)
+    }
+}
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[cfg_attr(debug_assertions, derive(::strum_macros::FromRepr))]
+#[repr(u32)]
+pub enum TextureSwizzle {
+    Zero = GL_ZERO,
+    One = GL_ONE,
+    Red = GL_RED,
+    Green = GL_GREEN,
+    Blue = GL_BLUE,
+    Alpha = GL_ALPHA,
+}
+impl GlEnumGroup for TextureSwizzle {
+    unsafe fn from_enum_noerr(val: u32) -> Self {
+        unsafe { std::mem::transmute(val) }
+    }
+    fn from_enum(val: u32) -> Option<Self> {
+        Self::from_repr(val)
+    }
+}
+impl From<TextureSwizzle> for u32 {
+    fn from(value: TextureSwizzle) -> u32 {
+        value as u32
+    }
+}
+impl<Dst: GlDstType> SrcType<Dst> for TextureSwizzle {
+    fn convert(self) -> Dst {
+        Dst::from_uint(self as u32)
+    }
+}
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[cfg_attr(debug_assertions, derive(::strum_macros::FromRepr))]
+#[repr(u32)]
+pub enum DebugType {
+    DontCare = GL_DONT_CARE,
+    DebugTypeError = GL_DEBUG_TYPE_ERROR,
+    DebugTypeDeprecatedBehavior = GL_DEBUG_TYPE_DEPRECATED_BEHAVIOR,
+    DebugTypeUndefinedBehavior = GL_DEBUG_TYPE_UNDEFINED_BEHAVIOR,
+    DebugTypePortability = GL_DEBUG_TYPE_PORTABILITY,
+    DebugTypePerformance = GL_DEBUG_TYPE_PERFORMANCE,
+    DebugTypeOther = GL_DEBUG_TYPE_OTHER,
+    DebugTypeMarker = GL_DEBUG_TYPE_MARKER,
+    DebugTypePushGroup = GL_DEBUG_TYPE_PUSH_GROUP,
+    DebugTypePopGroup = GL_DEBUG_TYPE_POP_GROUP,
+}
+impl GlEnumGroup for DebugType {
+    unsafe fn from_enum_noerr(val: u32) -> Self {
+        unsafe { std::mem::transmute(val) }
+    }
+    fn from_enum(val: u32) -> Option<Self> {
+        Self::from_repr(val)
+    }
+}
+impl From<DebugType> for u32 {
+    fn from(value: DebugType) -> u32 {
+        value as u32
+    }
+}
+impl<Dst: GlDstType> SrcType<Dst> for DebugType {
+    fn convert(self) -> Dst {
+        Dst::from_uint(self as u32)
+    }
+}
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[cfg_attr(debug_assertions, derive(::strum_macros::FromRepr))]
+#[repr(u32)]
+pub enum PipelineParameterName {
+    FragmentShader = GL_FRAGMENT_SHADER,
+    VertexShader = GL_VERTEX_SHADER,
+    InfoLogLength = GL_INFO_LOG_LENGTH,
+    GeometryShader = GL_GEOMETRY_SHADER,
+    TessEvaluationShader = GL_TESS_EVALUATION_SHADER,
+    TessControlShader = GL_TESS_CONTROL_SHADER,
+    ActiveProgram = GL_ACTIVE_PROGRAM,
+}
+impl GlEnumGroup for PipelineParameterName {
+    unsafe fn from_enum_noerr(val: u32) -> Self {
+        unsafe { std::mem::transmute(val) }
+    }
+    fn from_enum(val: u32) -> Option<Self> {
+        Self::from_repr(val)
+    }
+}
+impl From<PipelineParameterName> for u32 {
+    fn from(value: PipelineParameterName) -> u32 {
+        value as u32
+    }
+}
+impl<Dst: GlDstType> SrcType<Dst> for PipelineParameterName {
+    fn convert(self) -> Dst {
+        Dst::from_uint(self as u32)
+    }
+}
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[cfg_attr(debug_assertions, derive(::strum_macros::FromRepr))]
+#[repr(u32)]
+pub enum FramebufferAttachmentParameterName {
+    FramebufferAttachmentColorEncoding = GL_FRAMEBUFFER_ATTACHMENT_COLOR_ENCODING,
+    FramebufferAttachmentComponentType = GL_FRAMEBUFFER_ATTACHMENT_COMPONENT_TYPE,
+    FramebufferAttachmentRedSize = GL_FRAMEBUFFER_ATTACHMENT_RED_SIZE,
+    FramebufferAttachmentGreenSize = GL_FRAMEBUFFER_ATTACHMENT_GREEN_SIZE,
+    FramebufferAttachmentBlueSize = GL_FRAMEBUFFER_ATTACHMENT_BLUE_SIZE,
+    FramebufferAttachmentAlphaSize = GL_FRAMEBUFFER_ATTACHMENT_ALPHA_SIZE,
+    FramebufferAttachmentDepthSize = GL_FRAMEBUFFER_ATTACHMENT_DEPTH_SIZE,
+    FramebufferAttachmentStencilSize = GL_FRAMEBUFFER_ATTACHMENT_STENCIL_SIZE,
+    FramebufferAttachmentObjectType = GL_FRAMEBUFFER_ATTACHMENT_OBJECT_TYPE,
+    FramebufferAttachmentObjectName = GL_FRAMEBUFFER_ATTACHMENT_OBJECT_NAME,
+    FramebufferAttachmentTextureLevel = GL_FRAMEBUFFER_ATTACHMENT_TEXTURE_LEVEL,
+    FramebufferAttachmentTextureCubeMapFace = GL_FRAMEBUFFER_ATTACHMENT_TEXTURE_CUBE_MAP_FACE,
+    FramebufferAttachmentTextureLayer = GL_FRAMEBUFFER_ATTACHMENT_TEXTURE_LAYER,
+    FramebufferAttachmentLayered = GL_FRAMEBUFFER_ATTACHMENT_LAYERED,
+}
+impl GlEnumGroup for FramebufferAttachmentParameterName {
+    unsafe fn from_enum_noerr(val: u32) -> Self {
+        unsafe { std::mem::transmute(val) }
+    }
+    fn from_enum(val: u32) -> Option<Self> {
+        Self::from_repr(val)
+    }
+}
+impl From<FramebufferAttachmentParameterName> for u32 {
+    fn from(value: FramebufferAttachmentParameterName) -> u32 {
+        value as u32
+    }
+}
+impl<Dst: GlDstType> SrcType<Dst> for FramebufferAttachmentParameterName {
+    fn convert(self) -> Dst {
+        Dst::from_uint(self as u32)
+    }
+}
+bitflags! {
+#[derive(Debug, Clone, Copy, Default, PartialEq, Eq)]
+#[repr(transparent)]
+pub struct BufferStorageMask: u32 {
+const MAP_READ_BIT = GL_MAP_READ_BIT;
+const MAP_WRITE_BIT = GL_MAP_WRITE_BIT;
+const MAP_PERSISTENT_BIT = GL_MAP_PERSISTENT_BIT;
+const MAP_COHERENT_BIT = GL_MAP_COHERENT_BIT;
+const DYNAMIC_STORAGE_BIT = GL_DYNAMIC_STORAGE_BIT;
+const CLIENT_STORAGE_BIT = GL_CLIENT_STORAGE_BIT;
+}}
+impl GlEnumGroup for BufferStorageMask {
+    unsafe fn from_enum_noerr(val: u32) -> Self {
+        unsafe { std::mem::transmute(val) }
+    }
+    fn from_enum(val: u32) -> Option<Self> {
+        Self::from_bits(val)
+    }
+}
+impl From<BufferStorageMask> for u32 {
+    fn from(value: BufferStorageMask) -> u32 {
+        value.bits()
+    }
+}
+impl<Dst: GlDstType> SrcType<Dst> for BufferStorageMask {
+    fn convert(self) -> Dst {
+        Dst::from_uint(self.bits())
+    }
+}
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[cfg_attr(debug_assertions, derive(::strum_macros::FromRepr))]
+#[repr(u32)]
+pub enum StencilFunction {
+    Never = GL_NEVER,
+    Less = GL_LESS,
+    Equal = GL_EQUAL,
+    Lequal = GL_LEQUAL,
+    Greater = GL_GREATER,
+    Notequal = GL_NOTEQUAL,
+    Gequal = GL_GEQUAL,
+    Always = GL_ALWAYS,
+}
+impl GlEnumGroup for StencilFunction {
+    unsafe fn from_enum_noerr(val: u32) -> Self {
+        unsafe { std::mem::transmute(val) }
+    }
+    fn from_enum(val: u32) -> Option<Self> {
+        Self::from_repr(val)
+    }
+}
+impl From<StencilFunction> for u32 {
+    fn from(value: StencilFunction) -> u32 {
+        value as u32
+    }
+}
+impl<Dst: GlDstType> SrcType<Dst> for StencilFunction {
+    fn convert(self) -> Dst {
+        Dst::from_uint(self as u32)
+    }
+}
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[cfg_attr(debug_assertions, derive(::strum_macros::FromRepr))]
+#[repr(u32)]
+pub enum TextureUnit {
+    Texture0 = GL_TEXTURE0,
+    Texture1 = GL_TEXTURE1,
+    Texture2 = GL_TEXTURE2,
+    Texture3 = GL_TEXTURE3,
+    Texture4 = GL_TEXTURE4,
+    Texture5 = GL_TEXTURE5,
+    Texture6 = GL_TEXTURE6,
+    Texture7 = GL_TEXTURE7,
+    Texture8 = GL_TEXTURE8,
+    Texture9 = GL_TEXTURE9,
+    Texture10 = GL_TEXTURE10,
+    Texture11 = GL_TEXTURE11,
+    Texture12 = GL_TEXTURE12,
+    Texture13 = GL_TEXTURE13,
+    Texture14 = GL_TEXTURE14,
+    Texture15 = GL_TEXTURE15,
+    Texture16 = GL_TEXTURE16,
+    Texture17 = GL_TEXTURE17,
+    Texture18 = GL_TEXTURE18,
+    Texture19 = GL_TEXTURE19,
+    Texture20 = GL_TEXTURE20,
+    Texture21 = GL_TEXTURE21,
+    Texture22 = GL_TEXTURE22,
+    Texture23 = GL_TEXTURE23,
+    Texture24 = GL_TEXTURE24,
+    Texture25 = GL_TEXTURE25,
+    Texture26 = GL_TEXTURE26,
+    Texture27 = GL_TEXTURE27,
+    Texture28 = GL_TEXTURE28,
+    Texture29 = GL_TEXTURE29,
+    Texture30 = GL_TEXTURE30,
+    Texture31 = GL_TEXTURE31,
+}
+impl GlEnumGroup for TextureUnit {
+    unsafe fn from_enum_noerr(val: u32) -> Self {
+        unsafe { std::mem::transmute(val) }
+    }
+    fn from_enum(val: u32) -> Option<Self> {
+        Self::from_repr(val)
+    }
+}
+impl From<TextureUnit> for u32 {
+    fn from(value: TextureUnit) -> u32 {
+        value as u32
+    }
+}
+impl<Dst: GlDstType> SrcType<Dst> for TextureUnit {
+    fn convert(self) -> Dst {
+        Dst::from_uint(self as u32)
+    }
+}
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[cfg_attr(debug_assertions, derive(::strum_macros::FromRepr))]
+#[repr(u32)]
+pub enum TextureTarget {
+    Texture1D = GL_TEXTURE_1D,
+    Texture2D = GL_TEXTURE_2D,
+    ProxyTexture1D = GL_PROXY_TEXTURE_1D,
+    ProxyTexture2D = GL_PROXY_TEXTURE_2D,
+    Texture3D = GL_TEXTURE_3D,
+    ProxyTexture3D = GL_PROXY_TEXTURE_3D,
+    TextureCubeMap = GL_TEXTURE_CUBE_MAP,
+    TextureCubeMapPositiveX = GL_TEXTURE_CUBE_MAP_POSITIVE_X,
+    TextureCubeMapNegativeX = GL_TEXTURE_CUBE_MAP_NEGATIVE_X,
+    TextureCubeMapPositiveY = GL_TEXTURE_CUBE_MAP_POSITIVE_Y,
+    TextureCubeMapNegativeY = GL_TEXTURE_CUBE_MAP_NEGATIVE_Y,
+    TextureCubeMapPositiveZ = GL_TEXTURE_CUBE_MAP_POSITIVE_Z,
+    TextureCubeMapNegativeZ = GL_TEXTURE_CUBE_MAP_NEGATIVE_Z,
+    ProxyTextureCubeMap = GL_PROXY_TEXTURE_CUBE_MAP,
+    Texture1DArray = GL_TEXTURE_1D_ARRAY,
+    ProxyTexture1DArray = GL_PROXY_TEXTURE_1D_ARRAY,
+    Texture2DArray = GL_TEXTURE_2D_ARRAY,
+    ProxyTexture2DArray = GL_PROXY_TEXTURE_2D_ARRAY,
+    Renderbuffer = GL_RENDERBUFFER,
+    TextureBuffer = GL_TEXTURE_BUFFER,
+    TextureRectangle = GL_TEXTURE_RECTANGLE,
+    ProxyTextureRectangle = GL_PROXY_TEXTURE_RECTANGLE,
+    Texture2DMultisample = GL_TEXTURE_2D_MULTISAMPLE,
+    ProxyTexture2DMultisample = GL_PROXY_TEXTURE_2D_MULTISAMPLE,
+    Texture2DMultisampleArray = GL_TEXTURE_2D_MULTISAMPLE_ARRAY,
+    ProxyTexture2DMultisampleArray = GL_PROXY_TEXTURE_2D_MULTISAMPLE_ARRAY,
+    TextureCubeMapArray = GL_TEXTURE_CUBE_MAP_ARRAY,
+    ProxyTextureCubeMapArray = GL_PROXY_TEXTURE_CUBE_MAP_ARRAY,
+}
+impl GlEnumGroup for TextureTarget {
+    unsafe fn from_enum_noerr(val: u32) -> Self {
+        unsafe { std::mem::transmute(val) }
+    }
+    fn from_enum(val: u32) -> Option<Self> {
+        Self::from_repr(val)
+    }
+}
+impl From<TextureTarget> for u32 {
+    fn from(value: TextureTarget) -> u32 {
+        value as u32
+    }
+}
+impl<Dst: GlDstType> SrcType<Dst> for TextureTarget {
+    fn convert(self) -> Dst {
+        Dst::from_uint(self as u32)
+    }
+}
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[cfg_attr(debug_assertions, derive(::strum_macros::FromRepr))]
+#[repr(u32)]
+pub enum ShaderType {
+    FragmentShader = GL_FRAGMENT_SHADER,
+    VertexShader = GL_VERTEX_SHADER,
+    GeometryShader = GL_GEOMETRY_SHADER,
+    TessEvaluationShader = GL_TESS_EVALUATION_SHADER,
+    TessControlShader = GL_TESS_CONTROL_SHADER,
+    ComputeShader = GL_COMPUTE_SHADER,
+}
+impl GlEnumGroup for ShaderType {
+    unsafe fn from_enum_noerr(val: u32) -> Self {
+        unsafe { std::mem::transmute(val) }
+    }
+    fn from_enum(val: u32) -> Option<Self> {
+        Self::from_repr(val)
+    }
+}
+impl From<ShaderType> for u32 {
+    fn from(value: ShaderType) -> u32 {
+        value as u32
+    }
+}
+impl<Dst: GlDstType> SrcType<Dst> for ShaderType {
+    fn convert(self) -> Dst {
+        Dst::from_uint(self as u32)
+    }
+}
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[cfg_attr(debug_assertions, derive(::strum_macros::FromRepr))]
+#[repr(u32)]
+pub enum InternalFormatPName {
+    Samples = GL_SAMPLES,
+    TextureCompressed = GL_TEXTURE_COMPRESSED,
+    NumSampleCounts = GL_NUM_SAMPLE_COUNTS,
+    ImageFormatCompatibilityType = GL_IMAGE_FORMAT_COMPATIBILITY_TYPE,
+    InternalformatSupported = GL_INTERNALFORMAT_SUPPORTED,
+    InternalformatPreferred = GL_INTERNALFORMAT_PREFERRED,
+    InternalformatRedSize = GL_INTERNALFORMAT_RED_SIZE,
+    InternalformatGreenSize = GL_INTERNALFORMAT_GREEN_SIZE,
+    InternalformatBlueSize = GL_INTERNALFORMAT_BLUE_SIZE,
+    InternalformatAlphaSize = GL_INTERNALFORMAT_ALPHA_SIZE,
+    InternalformatDepthSize = GL_INTERNALFORMAT_DEPTH_SIZE,
+    InternalformatStencilSize = GL_INTERNALFORMAT_STENCIL_SIZE,
+    InternalformatSharedSize = GL_INTERNALFORMAT_SHARED_SIZE,
+    InternalformatRedType = GL_INTERNALFORMAT_RED_TYPE,
+    InternalformatGreenType = GL_INTERNALFORMAT_GREEN_TYPE,
+    InternalformatBlueType = GL_INTERNALFORMAT_BLUE_TYPE,
+    InternalformatAlphaType = GL_INTERNALFORMAT_ALPHA_TYPE,
+    InternalformatDepthType = GL_INTERNALFORMAT_DEPTH_TYPE,
+    InternalformatStencilType = GL_INTERNALFORMAT_STENCIL_TYPE,
+    MaxWidth = GL_MAX_WIDTH,
+    MaxHeight = GL_MAX_HEIGHT,
+    MaxDepth = GL_MAX_DEPTH,
+    MaxLayers = GL_MAX_LAYERS,
+    ColorComponents = GL_COLOR_COMPONENTS,
+    ColorRenderable = GL_COLOR_RENDERABLE,
+    DepthRenderable = GL_DEPTH_RENDERABLE,
+    StencilRenderable = GL_STENCIL_RENDERABLE,
+    FramebufferRenderable = GL_FRAMEBUFFER_RENDERABLE,
+    FramebufferRenderableLayered = GL_FRAMEBUFFER_RENDERABLE_LAYERED,
+    FramebufferBlend = GL_FRAMEBUFFER_BLEND,
+    ReadPixels = GL_READ_PIXELS,
+    ReadPixelsFormat = GL_READ_PIXELS_FORMAT,
+    ReadPixelsType = GL_READ_PIXELS_TYPE,
+    TextureImageFormat = GL_TEXTURE_IMAGE_FORMAT,
+    TextureImageType = GL_TEXTURE_IMAGE_TYPE,
+    GetTextureImageFormat = GL_GET_TEXTURE_IMAGE_FORMAT,
+    GetTextureImageType = GL_GET_TEXTURE_IMAGE_TYPE,
+    Mipmap = GL_MIPMAP,
+    AutoGenerateMipmap = GL_AUTO_GENERATE_MIPMAP,
+    ColorEncoding = GL_COLOR_ENCODING,
+    SrgbRead = GL_SRGB_READ,
+    SrgbWrite = GL_SRGB_WRITE,
+    Filter = GL_FILTER,
+    VertexTexture = GL_VERTEX_TEXTURE,
+    TessControlTexture = GL_TESS_CONTROL_TEXTURE,
+    TessEvaluationTexture = GL_TESS_EVALUATION_TEXTURE,
+    GeometryTexture = GL_GEOMETRY_TEXTURE,
+    FragmentTexture = GL_FRAGMENT_TEXTURE,
+    ComputeTexture = GL_COMPUTE_TEXTURE,
+    TextureShadow = GL_TEXTURE_SHADOW,
+    TextureGather = GL_TEXTURE_GATHER,
+    TextureGatherShadow = GL_TEXTURE_GATHER_SHADOW,
+    ShaderImageLoad = GL_SHADER_IMAGE_LOAD,
+    ShaderImageStore = GL_SHADER_IMAGE_STORE,
+    ShaderImageAtomic = GL_SHADER_IMAGE_ATOMIC,
+    ImageTexelSize = GL_IMAGE_TEXEL_SIZE,
+    ImageCompatibilityClass = GL_IMAGE_COMPATIBILITY_CLASS,
+    ImagePixelFormat = GL_IMAGE_PIXEL_FORMAT,
+    ImagePixelType = GL_IMAGE_PIXEL_TYPE,
+    SimultaneousTextureAndDepthTest = GL_SIMULTANEOUS_TEXTURE_AND_DEPTH_TEST,
+    SimultaneousTextureAndStencilTest = GL_SIMULTANEOUS_TEXTURE_AND_STENCIL_TEST,
+    SimultaneousTextureAndDepthWrite = GL_SIMULTANEOUS_TEXTURE_AND_DEPTH_WRITE,
+    SimultaneousTextureAndStencilWrite = GL_SIMULTANEOUS_TEXTURE_AND_STENCIL_WRITE,
+    TextureCompressedBlockWidth = GL_TEXTURE_COMPRESSED_BLOCK_WIDTH,
+    TextureCompressedBlockHeight = GL_TEXTURE_COMPRESSED_BLOCK_HEIGHT,
+    TextureCompressedBlockSize = GL_TEXTURE_COMPRESSED_BLOCK_SIZE,
+    ClearBuffer = GL_CLEAR_BUFFER,
+    TextureView = GL_TEXTURE_VIEW,
+    ViewCompatibilityClass = GL_VIEW_COMPATIBILITY_CLASS,
+    ClearTexture = GL_CLEAR_TEXTURE,
+}
+impl GlEnumGroup for InternalFormatPName {
+    unsafe fn from_enum_noerr(val: u32) -> Self {
+        unsafe { std::mem::transmute(val) }
+    }
+    fn from_enum(val: u32) -> Option<Self> {
+        Self::from_repr(val)
+    }
+}
+impl From<InternalFormatPName> for u32 {
+    fn from(value: InternalFormatPName) -> u32 {
+        value as u32
+    }
+}
+impl<Dst: GlDstType> SrcType<Dst> for InternalFormatPName {
+    fn convert(self) -> Dst {
+        Dst::from_uint(self as u32)
+    }
+}
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[cfg_attr(debug_assertions, derive(::strum_macros::FromRepr))]
+#[repr(u32)]
+pub enum BufferUsage {
+    StreamDraw = GL_STREAM_DRAW,
+    StreamRead = GL_STREAM_READ,
+    StreamCopy = GL_STREAM_COPY,
+    StaticDraw = GL_STATIC_DRAW,
+    StaticRead = GL_STATIC_READ,
+    StaticCopy = GL_STATIC_COPY,
+    DynamicDraw = GL_DYNAMIC_DRAW,
+    DynamicRead = GL_DYNAMIC_READ,
+    DynamicCopy = GL_DYNAMIC_COPY,
+}
+impl GlEnumGroup for BufferUsage {
+    unsafe fn from_enum_noerr(val: u32) -> Self {
+        unsafe { std::mem::transmute(val) }
+    }
+    fn from_enum(val: u32) -> Option<Self> {
+        Self::from_repr(val)
+    }
+}
+impl From<BufferUsage> for u32 {
+    fn from(value: BufferUsage) -> u32 {
+        value as u32
+    }
+}
+impl<Dst: GlDstType> SrcType<Dst> for BufferUsage {
     fn convert(self) -> Dst {
         Dst::from_uint(self as u32)
     }
@@ -1699,15 +3009,12 @@ pub enum VertexAttribPointerType {
     Fixed = GL_FIXED,
     UnsignedInt10F11F11FRev = GL_UNSIGNED_INT_10F_11F_11F_REV,
 }
-impl UnsafeFromGLenum for VertexAttribPointerType {
-    unsafe fn unsafe_from_gl_enum(val: u32) -> Self {
-        #[cfg(debug_assertions)]
-        let Some(ret) = VertexAttribPointerType::from_repr(val) else {
-            panic!("Attempt to create a VertexAttribPointerType from a GLenum with invalid value {val:#X}");
-        };
-        #[cfg(not(debug_assertions))]
-        let ret = unsafe { std::mem::transmute(val) };
-        ret
+impl GlEnumGroup for VertexAttribPointerType {
+    unsafe fn from_enum_noerr(val: u32) -> Self {
+        unsafe { std::mem::transmute(val) }
+    }
+    fn from_enum(val: u32) -> Option<Self> {
+        Self::from_repr(val)
     }
 }
 impl From<VertexAttribPointerType> for u32 {
@@ -1723,33 +3030,33 @@ impl<Dst: GlDstType> SrcType<Dst> for VertexAttribPointerType {
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 #[cfg_attr(debug_assertions, derive(::strum_macros::FromRepr))]
 #[repr(u32)]
-pub enum DepthFunction {
-    Never = GL_NEVER,
-    Less = GL_LESS,
-    Equal = GL_EQUAL,
-    Lequal = GL_LEQUAL,
-    Greater = GL_GREATER,
-    Notequal = GL_NOTEQUAL,
-    Gequal = GL_GEQUAL,
-    Always = GL_ALWAYS,
+pub enum GetFramebufferParameter {
+    Doublebuffer = GL_DOUBLEBUFFER,
+    Stereo = GL_STEREO,
+    SampleBuffers = GL_SAMPLE_BUFFERS,
+    Samples = GL_SAMPLES,
+    ImplementationColorReadType = GL_IMPLEMENTATION_COLOR_READ_TYPE,
+    ImplementationColorReadFormat = GL_IMPLEMENTATION_COLOR_READ_FORMAT,
+    FramebufferDefaultWidth = GL_FRAMEBUFFER_DEFAULT_WIDTH,
+    FramebufferDefaultHeight = GL_FRAMEBUFFER_DEFAULT_HEIGHT,
+    FramebufferDefaultLayers = GL_FRAMEBUFFER_DEFAULT_LAYERS,
+    FramebufferDefaultSamples = GL_FRAMEBUFFER_DEFAULT_SAMPLES,
+    FramebufferDefaultFixedSampleLocations = GL_FRAMEBUFFER_DEFAULT_FIXED_SAMPLE_LOCATIONS,
 }
-impl UnsafeFromGLenum for DepthFunction {
-    unsafe fn unsafe_from_gl_enum(val: u32) -> Self {
-        #[cfg(debug_assertions)]
-        let Some(ret) = DepthFunction::from_repr(val) else {
-            panic!("Attempt to create a DepthFunction from a GLenum with invalid value {val:#X}");
-        };
-        #[cfg(not(debug_assertions))]
-        let ret = unsafe { std::mem::transmute(val) };
-        ret
+impl GlEnumGroup for GetFramebufferParameter {
+    unsafe fn from_enum_noerr(val: u32) -> Self {
+        unsafe { std::mem::transmute(val) }
+    }
+    fn from_enum(val: u32) -> Option<Self> {
+        Self::from_repr(val)
     }
 }
-impl From<DepthFunction> for u32 {
-    fn from(value: DepthFunction) -> u32 {
+impl From<GetFramebufferParameter> for u32 {
+    fn from(value: GetFramebufferParameter) -> u32 {
         value as u32
     }
 }
-impl<Dst: GlDstType> SrcType<Dst> for DepthFunction {
+impl<Dst: GlDstType> SrcType<Dst> for GetFramebufferParameter {
     fn convert(self) -> Dst {
         Dst::from_uint(self as u32)
     }
@@ -1757,28 +3064,32 @@ impl<Dst: GlDstType> SrcType<Dst> for DepthFunction {
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 #[cfg_attr(debug_assertions, derive(::strum_macros::FromRepr))]
 #[repr(u32)]
-pub enum BufferAccess {
-    ReadOnly = GL_READ_ONLY,
-    WriteOnly = GL_WRITE_ONLY,
-    ReadWrite = GL_READ_WRITE,
+pub enum RenderbufferParameterName {
+    RenderbufferSamples = GL_RENDERBUFFER_SAMPLES,
+    RenderbufferWidth = GL_RENDERBUFFER_WIDTH,
+    RenderbufferHeight = GL_RENDERBUFFER_HEIGHT,
+    RenderbufferInternalFormat = GL_RENDERBUFFER_INTERNAL_FORMAT,
+    RenderbufferRedSize = GL_RENDERBUFFER_RED_SIZE,
+    RenderbufferGreenSize = GL_RENDERBUFFER_GREEN_SIZE,
+    RenderbufferBlueSize = GL_RENDERBUFFER_BLUE_SIZE,
+    RenderbufferAlphaSize = GL_RENDERBUFFER_ALPHA_SIZE,
+    RenderbufferDepthSize = GL_RENDERBUFFER_DEPTH_SIZE,
+    RenderbufferStencilSize = GL_RENDERBUFFER_STENCIL_SIZE,
 }
-impl UnsafeFromGLenum for BufferAccess {
-    unsafe fn unsafe_from_gl_enum(val: u32) -> Self {
-        #[cfg(debug_assertions)]
-        let Some(ret) = BufferAccess::from_repr(val) else {
-            panic!("Attempt to create a BufferAccess from a GLenum with invalid value {val:#X}");
-        };
-        #[cfg(not(debug_assertions))]
-        let ret = unsafe { std::mem::transmute(val) };
-        ret
+impl GlEnumGroup for RenderbufferParameterName {
+    unsafe fn from_enum_noerr(val: u32) -> Self {
+        unsafe { std::mem::transmute(val) }
+    }
+    fn from_enum(val: u32) -> Option<Self> {
+        Self::from_repr(val)
     }
 }
-impl From<BufferAccess> for u32 {
-    fn from(value: BufferAccess) -> u32 {
+impl From<RenderbufferParameterName> for u32 {
+    fn from(value: RenderbufferParameterName) -> u32 {
         value as u32
     }
 }
-impl<Dst: GlDstType> SrcType<Dst> for BufferAccess {
+impl<Dst: GlDstType> SrcType<Dst> for RenderbufferParameterName {
     fn convert(self) -> Dst {
         Dst::from_uint(self as u32)
     }
@@ -1786,38 +3097,26 @@ impl<Dst: GlDstType> SrcType<Dst> for BufferAccess {
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 #[cfg_attr(debug_assertions, derive(::strum_macros::FromRepr))]
 #[repr(u32)]
-pub enum PrimitiveType {
-    Points = GL_POINTS,
-    Lines = GL_LINES,
-    LineLoop = GL_LINE_LOOP,
-    LineStrip = GL_LINE_STRIP,
-    Triangles = GL_TRIANGLES,
-    TriangleStrip = GL_TRIANGLE_STRIP,
-    TriangleFan = GL_TRIANGLE_FAN,
-    LinesAdjacency = GL_LINES_ADJACENCY,
-    LineStripAdjacency = GL_LINE_STRIP_ADJACENCY,
-    TrianglesAdjacency = GL_TRIANGLES_ADJACENCY,
-    TriangleStripAdjacency = GL_TRIANGLE_STRIP_ADJACENCY,
-    Patches = GL_PATCHES,
-    Quads = GL_QUADS,
+pub enum SyncParameterName {
+    ObjectType = GL_OBJECT_TYPE,
+    SyncCondition = GL_SYNC_CONDITION,
+    SyncStatus = GL_SYNC_STATUS,
+    SyncFlags = GL_SYNC_FLAGS,
 }
-impl UnsafeFromGLenum for PrimitiveType {
-    unsafe fn unsafe_from_gl_enum(val: u32) -> Self {
-        #[cfg(debug_assertions)]
-        let Some(ret) = PrimitiveType::from_repr(val) else {
-            panic!("Attempt to create a PrimitiveType from a GLenum with invalid value {val:#X}");
-        };
-        #[cfg(not(debug_assertions))]
-        let ret = unsafe { std::mem::transmute(val) };
-        ret
+impl GlEnumGroup for SyncParameterName {
+    unsafe fn from_enum_noerr(val: u32) -> Self {
+        unsafe { std::mem::transmute(val) }
+    }
+    fn from_enum(val: u32) -> Option<Self> {
+        Self::from_repr(val)
     }
 }
-impl From<PrimitiveType> for u32 {
-    fn from(value: PrimitiveType) -> u32 {
+impl From<SyncParameterName> for u32 {
+    fn from(value: SyncParameterName) -> u32 {
         value as u32
     }
 }
-impl<Dst: GlDstType> SrcType<Dst> for PrimitiveType {
+impl<Dst: GlDstType> SrcType<Dst> for SyncParameterName {
     fn convert(self) -> Dst {
         Dst::from_uint(self as u32)
     }
@@ -1825,31 +3124,245 @@ impl<Dst: GlDstType> SrcType<Dst> for PrimitiveType {
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 #[cfg_attr(debug_assertions, derive(::strum_macros::FromRepr))]
 #[repr(u32)]
-pub enum ClipControlOrigin {
-    LowerLeft = GL_LOWER_LEFT,
-    UpperLeft = GL_UPPER_LEFT,
+pub enum PixelType {
+    Byte = GL_BYTE,
+    UnsignedByte = GL_UNSIGNED_BYTE,
+    Short = GL_SHORT,
+    UnsignedShort = GL_UNSIGNED_SHORT,
+    Int = GL_INT,
+    UnsignedInt = GL_UNSIGNED_INT,
+    Float = GL_FLOAT,
+    UnsignedByte332 = GL_UNSIGNED_BYTE_3_3_2,
+    UnsignedShort4444 = GL_UNSIGNED_SHORT_4_4_4_4,
+    UnsignedShort5551 = GL_UNSIGNED_SHORT_5_5_5_1,
+    UnsignedInt8888 = GL_UNSIGNED_INT_8_8_8_8,
+    UnsignedInt1010102 = GL_UNSIGNED_INT_10_10_10_2,
+    UnsignedByte233Rev = GL_UNSIGNED_BYTE_2_3_3_REV,
+    UnsignedShort565 = GL_UNSIGNED_SHORT_5_6_5,
+    UnsignedShort565Rev = GL_UNSIGNED_SHORT_5_6_5_REV,
+    UnsignedShort4444Rev = GL_UNSIGNED_SHORT_4_4_4_4_REV,
+    UnsignedShort1555Rev = GL_UNSIGNED_SHORT_1_5_5_5_REV,
+    UnsignedInt8888Rev = GL_UNSIGNED_INT_8_8_8_8_REV,
+    UnsignedInt2101010Rev = GL_UNSIGNED_INT_2_10_10_10_REV,
+    UnsignedInt5999Rev = GL_UNSIGNED_INT_5_9_9_9_REV,
+    Float32UnsignedInt248Rev = GL_FLOAT_32_UNSIGNED_INT_24_8_REV,
+    UnsignedInt248 = GL_UNSIGNED_INT_24_8,
+    HalfFloat = GL_HALF_FLOAT,
+    UnsignedInt10F11F11FRev = GL_UNSIGNED_INT_10F_11F_11F_REV,
 }
-impl UnsafeFromGLenum for ClipControlOrigin {
-    unsafe fn unsafe_from_gl_enum(val: u32) -> Self {
-        #[cfg(debug_assertions)]
-        let Some(ret) = ClipControlOrigin::from_repr(val) else {
-            panic!(
-                "Attempt to create a ClipControlOrigin from a GLenum with invalid value {val:#X}"
-            );
-        };
-        #[cfg(not(debug_assertions))]
-        let ret = unsafe { std::mem::transmute(val) };
-        ret
+impl GlEnumGroup for PixelType {
+    unsafe fn from_enum_noerr(val: u32) -> Self {
+        unsafe { std::mem::transmute(val) }
+    }
+    fn from_enum(val: u32) -> Option<Self> {
+        Self::from_repr(val)
     }
 }
-impl From<ClipControlOrigin> for u32 {
-    fn from(value: ClipControlOrigin) -> u32 {
+impl From<PixelType> for u32 {
+    fn from(value: PixelType) -> u32 {
         value as u32
     }
 }
-impl<Dst: GlDstType> SrcType<Dst> for ClipControlOrigin {
+impl<Dst: GlDstType> SrcType<Dst> for PixelType {
     fn convert(self) -> Dst {
         Dst::from_uint(self as u32)
+    }
+}
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[cfg_attr(debug_assertions, derive(::strum_macros::FromRepr))]
+#[repr(u32)]
+pub enum SizedInternalFormat {
+    R3G3B2 = GL_R3_G3_B2,
+    Rgb4 = GL_RGB4,
+    Rgb5 = GL_RGB5,
+    Rgb8 = GL_RGB8,
+    Rgb10 = GL_RGB10,
+    Rgb12 = GL_RGB12,
+    Rgb16 = GL_RGB16,
+    Rgba2 = GL_RGBA2,
+    Rgba4 = GL_RGBA4,
+    Rgb5A1 = GL_RGB5_A1,
+    Rgba8 = GL_RGBA8,
+    Rgb10A2 = GL_RGB10_A2,
+    Rgba12 = GL_RGBA12,
+    Rgba16 = GL_RGBA16,
+    DepthComponent16 = GL_DEPTH_COMPONENT16,
+    DepthComponent24 = GL_DEPTH_COMPONENT24,
+    DepthComponent32 = GL_DEPTH_COMPONENT32,
+    Srgb8 = GL_SRGB8,
+    Srgb8Alpha8 = GL_SRGB8_ALPHA8,
+    Rgba32f = GL_RGBA32F,
+    Rgb32f = GL_RGB32F,
+    Rgba16f = GL_RGBA16F,
+    Rgb16f = GL_RGB16F,
+    R11fG11fB10f = GL_R11F_G11F_B10F,
+    Rgb9E5 = GL_RGB9_E5,
+    Rgba32ui = GL_RGBA32UI,
+    Rgb32ui = GL_RGB32UI,
+    Rgba16ui = GL_RGBA16UI,
+    Rgb16ui = GL_RGB16UI,
+    Rgba8ui = GL_RGBA8UI,
+    Rgb8ui = GL_RGB8UI,
+    Rgba32i = GL_RGBA32I,
+    Rgb32i = GL_RGB32I,
+    Rgba16i = GL_RGBA16I,
+    Rgb16i = GL_RGB16I,
+    Rgba8i = GL_RGBA8I,
+    Rgb8i = GL_RGB8I,
+    DepthComponent32f = GL_DEPTH_COMPONENT32F,
+    Depth32fStencil8 = GL_DEPTH32F_STENCIL8,
+    Depth24Stencil8 = GL_DEPTH24_STENCIL8,
+    StencilIndex1 = GL_STENCIL_INDEX1,
+    StencilIndex4 = GL_STENCIL_INDEX4,
+    StencilIndex16 = GL_STENCIL_INDEX16,
+    CompressedRedRgtc1 = GL_COMPRESSED_RED_RGTC1,
+    CompressedSignedRedRgtc1 = GL_COMPRESSED_SIGNED_RED_RGTC1,
+    CompressedRgRgtc2 = GL_COMPRESSED_RG_RGTC2,
+    CompressedSignedRgRgtc2 = GL_COMPRESSED_SIGNED_RG_RGTC2,
+    R8 = GL_R8,
+    R16 = GL_R16,
+    Rg8 = GL_RG8,
+    Rg16 = GL_RG16,
+    R16f = GL_R16F,
+    R32f = GL_R32F,
+    Rg16f = GL_RG16F,
+    Rg32f = GL_RG32F,
+    R8i = GL_R8I,
+    R8ui = GL_R8UI,
+    R16i = GL_R16I,
+    R16ui = GL_R16UI,
+    R32i = GL_R32I,
+    R32ui = GL_R32UI,
+    Rg8i = GL_RG8I,
+    Rg8ui = GL_RG8UI,
+    Rg16i = GL_RG16I,
+    Rg16ui = GL_RG16UI,
+    Rg32i = GL_RG32I,
+    Rg32ui = GL_RG32UI,
+    R8Snorm = GL_R8_SNORM,
+    Rg8Snorm = GL_RG8_SNORM,
+    Rgb8Snorm = GL_RGB8_SNORM,
+    Rgba8Snorm = GL_RGBA8_SNORM,
+    R16Snorm = GL_R16_SNORM,
+    Rg16Snorm = GL_RG16_SNORM,
+    Rgb16Snorm = GL_RGB16_SNORM,
+    Rgba16Snorm = GL_RGBA16_SNORM,
+    Rgb10A2ui = GL_RGB10_A2UI,
+    Rgb565 = GL_RGB565,
+    CompressedRgbaBptcUnorm = GL_COMPRESSED_RGBA_BPTC_UNORM,
+    CompressedSrgbAlphaBptcUnorm = GL_COMPRESSED_SRGB_ALPHA_BPTC_UNORM,
+    CompressedRgbBptcSignedFloat = GL_COMPRESSED_RGB_BPTC_SIGNED_FLOAT,
+    CompressedRgbBptcUnsignedFloat = GL_COMPRESSED_RGB_BPTC_UNSIGNED_FLOAT,
+    CompressedRgb8Etc2 = GL_COMPRESSED_RGB8_ETC2,
+    CompressedSrgb8Etc2 = GL_COMPRESSED_SRGB8_ETC2,
+    CompressedRgb8PunchthroughAlpha1Etc2 = GL_COMPRESSED_RGB8_PUNCHTHROUGH_ALPHA1_ETC2,
+    CompressedSrgb8PunchthroughAlpha1Etc2 = GL_COMPRESSED_SRGB8_PUNCHTHROUGH_ALPHA1_ETC2,
+    CompressedRgba8Etc2Eac = GL_COMPRESSED_RGBA8_ETC2_EAC,
+    CompressedSrgb8Alpha8Etc2Eac = GL_COMPRESSED_SRGB8_ALPHA8_ETC2_EAC,
+    CompressedR11Eac = GL_COMPRESSED_R11_EAC,
+    CompressedSignedR11Eac = GL_COMPRESSED_SIGNED_R11_EAC,
+    CompressedRg11Eac = GL_COMPRESSED_RG11_EAC,
+    CompressedSignedRg11Eac = GL_COMPRESSED_SIGNED_RG11_EAC,
+    StencilIndex8 = GL_STENCIL_INDEX8,
+}
+impl GlEnumGroup for SizedInternalFormat {
+    unsafe fn from_enum_noerr(val: u32) -> Self {
+        unsafe { std::mem::transmute(val) }
+    }
+    fn from_enum(val: u32) -> Option<Self> {
+        Self::from_repr(val)
+    }
+}
+impl From<SizedInternalFormat> for u32 {
+    fn from(value: SizedInternalFormat) -> u32 {
+        value as u32
+    }
+}
+impl<Dst: GlDstType> SrcType<Dst> for SizedInternalFormat {
+    fn convert(self) -> Dst {
+        Dst::from_uint(self as u32)
+    }
+}
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[cfg_attr(debug_assertions, derive(::strum_macros::FromRepr))]
+#[repr(u32)]
+pub enum ProgramInterface {
+    Uniform = GL_UNIFORM,
+    UniformBlock = GL_UNIFORM_BLOCK,
+    ProgramInput = GL_PROGRAM_INPUT,
+    ProgramOutput = GL_PROGRAM_OUTPUT,
+    BufferVariable = GL_BUFFER_VARIABLE,
+    ShaderStorageBlock = GL_SHADER_STORAGE_BLOCK,
+    VertexSubroutine = GL_VERTEX_SUBROUTINE,
+    TessControlSubroutine = GL_TESS_CONTROL_SUBROUTINE,
+    TessEvaluationSubroutine = GL_TESS_EVALUATION_SUBROUTINE,
+    GeometrySubroutine = GL_GEOMETRY_SUBROUTINE,
+    FragmentSubroutine = GL_FRAGMENT_SUBROUTINE,
+    ComputeSubroutine = GL_COMPUTE_SUBROUTINE,
+    VertexSubroutineUniform = GL_VERTEX_SUBROUTINE_UNIFORM,
+    TessControlSubroutineUniform = GL_TESS_CONTROL_SUBROUTINE_UNIFORM,
+    TessEvaluationSubroutineUniform = GL_TESS_EVALUATION_SUBROUTINE_UNIFORM,
+    GeometrySubroutineUniform = GL_GEOMETRY_SUBROUTINE_UNIFORM,
+    FragmentSubroutineUniform = GL_FRAGMENT_SUBROUTINE_UNIFORM,
+    ComputeSubroutineUniform = GL_COMPUTE_SUBROUTINE_UNIFORM,
+    TransformFeedbackVarying = GL_TRANSFORM_FEEDBACK_VARYING,
+    TransformFeedbackBuffer = GL_TRANSFORM_FEEDBACK_BUFFER,
+}
+impl GlEnumGroup for ProgramInterface {
+    unsafe fn from_enum_noerr(val: u32) -> Self {
+        unsafe { std::mem::transmute(val) }
+    }
+    fn from_enum(val: u32) -> Option<Self> {
+        Self::from_repr(val)
+    }
+}
+impl From<ProgramInterface> for u32 {
+    fn from(value: ProgramInterface) -> u32 {
+        value as u32
+    }
+}
+impl<Dst: GlDstType> SrcType<Dst> for ProgramInterface {
+    fn convert(self) -> Dst {
+        Dst::from_uint(self as u32)
+    }
+}
+bitflags! {
+#[derive(Debug, Clone, Copy, Default, PartialEq, Eq)]
+#[repr(transparent)]
+pub struct MemoryBarrierMask: u32 {
+const VERTEX_ATTRIB_ARRAY_BARRIER_BIT = GL_VERTEX_ATTRIB_ARRAY_BARRIER_BIT;
+const ELEMENT_ARRAY_BARRIER_BIT = GL_ELEMENT_ARRAY_BARRIER_BIT;
+const UNIFORM_BARRIER_BIT = GL_UNIFORM_BARRIER_BIT;
+const TEXTURE_FETCH_BARRIER_BIT = GL_TEXTURE_FETCH_BARRIER_BIT;
+const SHADER_IMAGE_ACCESS_BARRIER_BIT = GL_SHADER_IMAGE_ACCESS_BARRIER_BIT;
+const COMMAND_BARRIER_BIT = GL_COMMAND_BARRIER_BIT;
+const PIXEL_BUFFER_BARRIER_BIT = GL_PIXEL_BUFFER_BARRIER_BIT;
+const TEXTURE_UPDATE_BARRIER_BIT = GL_TEXTURE_UPDATE_BARRIER_BIT;
+const BUFFER_UPDATE_BARRIER_BIT = GL_BUFFER_UPDATE_BARRIER_BIT;
+const FRAMEBUFFER_BARRIER_BIT = GL_FRAMEBUFFER_BARRIER_BIT;
+const TRANSFORM_FEEDBACK_BARRIER_BIT = GL_TRANSFORM_FEEDBACK_BARRIER_BIT;
+const ATOMIC_COUNTER_BARRIER_BIT = GL_ATOMIC_COUNTER_BARRIER_BIT;
+const ALL_BARRIER_BITS = GL_ALL_BARRIER_BITS;
+const SHADER_STORAGE_BARRIER_BIT = GL_SHADER_STORAGE_BARRIER_BIT;
+const CLIENT_MAPPED_BUFFER_BARRIER_BIT = GL_CLIENT_MAPPED_BUFFER_BARRIER_BIT;
+const QUERY_BUFFER_BARRIER_BIT = GL_QUERY_BUFFER_BARRIER_BIT;
+}}
+impl GlEnumGroup for MemoryBarrierMask {
+    unsafe fn from_enum_noerr(val: u32) -> Self {
+        unsafe { std::mem::transmute(val) }
+    }
+    fn from_enum(val: u32) -> Option<Self> {
+        Self::from_bits(val)
+    }
+}
+impl From<MemoryBarrierMask> for u32 {
+    fn from(value: MemoryBarrierMask) -> u32 {
+        value.bits()
+    }
+}
+impl<Dst: GlDstType> SrcType<Dst> for MemoryBarrierMask {
+    fn convert(self) -> Dst {
+        Dst::from_uint(self.bits())
     }
 }
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -1897,15 +3410,12 @@ pub enum EnableCap {
     VertexArray = GL_VERTEX_ARRAY,
     DebugOutput = GL_DEBUG_OUTPUT,
 }
-impl UnsafeFromGLenum for EnableCap {
-    unsafe fn unsafe_from_gl_enum(val: u32) -> Self {
-        #[cfg(debug_assertions)]
-        let Some(ret) = EnableCap::from_repr(val) else {
-            panic!("Attempt to create a EnableCap from a GLenum with invalid value {val:#X}");
-        };
-        #[cfg(not(debug_assertions))]
-        let ret = unsafe { std::mem::transmute(val) };
-        ret
+impl GlEnumGroup for EnableCap {
+    unsafe fn from_enum_noerr(val: u32) -> Self {
+        unsafe { std::mem::transmute(val) }
+    }
+    fn from_enum(val: u32) -> Option<Self> {
+        Self::from_repr(val)
     }
 }
 impl From<EnableCap> for u32 {
@@ -1921,35 +3431,479 @@ impl<Dst: GlDstType> SrcType<Dst> for EnableCap {
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 #[cfg_attr(debug_assertions, derive(::strum_macros::FromRepr))]
 #[repr(u32)]
-pub enum RenderbufferParameterName {
-    RenderbufferSamples = GL_RENDERBUFFER_SAMPLES,
-    RenderbufferWidth = GL_RENDERBUFFER_WIDTH,
-    RenderbufferHeight = GL_RENDERBUFFER_HEIGHT,
-    RenderbufferInternalFormat = GL_RENDERBUFFER_INTERNAL_FORMAT,
-    RenderbufferRedSize = GL_RENDERBUFFER_RED_SIZE,
-    RenderbufferGreenSize = GL_RENDERBUFFER_GREEN_SIZE,
-    RenderbufferBlueSize = GL_RENDERBUFFER_BLUE_SIZE,
-    RenderbufferAlphaSize = GL_RENDERBUFFER_ALPHA_SIZE,
-    RenderbufferDepthSize = GL_RENDERBUFFER_DEPTH_SIZE,
-    RenderbufferStencilSize = GL_RENDERBUFFER_STENCIL_SIZE,
+pub enum AttributeType {
+    Int = GL_INT,
+    UnsignedInt = GL_UNSIGNED_INT,
+    Float = GL_FLOAT,
+    Double = GL_DOUBLE,
+    FloatVec2 = GL_FLOAT_VEC2,
+    FloatVec3 = GL_FLOAT_VEC3,
+    FloatVec4 = GL_FLOAT_VEC4,
+    IntVec2 = GL_INT_VEC2,
+    IntVec3 = GL_INT_VEC3,
+    IntVec4 = GL_INT_VEC4,
+    Bool = GL_BOOL,
+    BoolVec2 = GL_BOOL_VEC2,
+    BoolVec3 = GL_BOOL_VEC3,
+    BoolVec4 = GL_BOOL_VEC4,
+    FloatMat2 = GL_FLOAT_MAT2,
+    FloatMat3 = GL_FLOAT_MAT3,
+    FloatMat4 = GL_FLOAT_MAT4,
+    Sampler1D = GL_SAMPLER_1D,
+    Sampler2D = GL_SAMPLER_2D,
+    Sampler3D = GL_SAMPLER_3D,
+    SamplerCube = GL_SAMPLER_CUBE,
+    Sampler1DShadow = GL_SAMPLER_1D_SHADOW,
+    Sampler2DShadow = GL_SAMPLER_2D_SHADOW,
+    FloatMat2x3 = GL_FLOAT_MAT2x3,
+    FloatMat2x4 = GL_FLOAT_MAT2x4,
+    FloatMat3x2 = GL_FLOAT_MAT3x2,
+    FloatMat3x4 = GL_FLOAT_MAT3x4,
+    FloatMat4x2 = GL_FLOAT_MAT4x2,
+    FloatMat4x3 = GL_FLOAT_MAT4x3,
+    Sampler1DArrayShadow = GL_SAMPLER_1D_ARRAY_SHADOW,
+    Sampler2DArrayShadow = GL_SAMPLER_2D_ARRAY_SHADOW,
+    SamplerCubeShadow = GL_SAMPLER_CUBE_SHADOW,
+    UnsignedIntVec2 = GL_UNSIGNED_INT_VEC2,
+    UnsignedIntVec3 = GL_UNSIGNED_INT_VEC3,
+    UnsignedIntVec4 = GL_UNSIGNED_INT_VEC4,
+    IntSampler1D = GL_INT_SAMPLER_1D,
+    IntSampler2D = GL_INT_SAMPLER_2D,
+    IntSampler3D = GL_INT_SAMPLER_3D,
+    IntSamplerCube = GL_INT_SAMPLER_CUBE,
+    IntSampler1DArray = GL_INT_SAMPLER_1D_ARRAY,
+    IntSampler2DArray = GL_INT_SAMPLER_2D_ARRAY,
+    UnsignedIntSampler1D = GL_UNSIGNED_INT_SAMPLER_1D,
+    UnsignedIntSampler2D = GL_UNSIGNED_INT_SAMPLER_2D,
+    UnsignedIntSampler3D = GL_UNSIGNED_INT_SAMPLER_3D,
+    UnsignedIntSamplerCube = GL_UNSIGNED_INT_SAMPLER_CUBE,
+    UnsignedIntSampler1DArray = GL_UNSIGNED_INT_SAMPLER_1D_ARRAY,
+    UnsignedIntSampler2DArray = GL_UNSIGNED_INT_SAMPLER_2D_ARRAY,
+    Sampler2DRect = GL_SAMPLER_2D_RECT,
+    Sampler2DRectShadow = GL_SAMPLER_2D_RECT_SHADOW,
+    SamplerBuffer = GL_SAMPLER_BUFFER,
+    IntSampler2DRect = GL_INT_SAMPLER_2D_RECT,
+    IntSamplerBuffer = GL_INT_SAMPLER_BUFFER,
+    UnsignedIntSampler2DRect = GL_UNSIGNED_INT_SAMPLER_2D_RECT,
+    UnsignedIntSamplerBuffer = GL_UNSIGNED_INT_SAMPLER_BUFFER,
+    Sampler2DMultisample = GL_SAMPLER_2D_MULTISAMPLE,
+    IntSampler2DMultisample = GL_INT_SAMPLER_2D_MULTISAMPLE,
+    UnsignedIntSampler2DMultisample = GL_UNSIGNED_INT_SAMPLER_2D_MULTISAMPLE,
+    Sampler2DMultisampleArray = GL_SAMPLER_2D_MULTISAMPLE_ARRAY,
+    IntSampler2DMultisampleArray = GL_INT_SAMPLER_2D_MULTISAMPLE_ARRAY,
+    UnsignedIntSampler2DMultisampleArray = GL_UNSIGNED_INT_SAMPLER_2D_MULTISAMPLE_ARRAY,
+    SamplerCubeMapArray = GL_SAMPLER_CUBE_MAP_ARRAY,
+    SamplerCubeMapArrayShadow = GL_SAMPLER_CUBE_MAP_ARRAY_SHADOW,
+    IntSamplerCubeMapArray = GL_INT_SAMPLER_CUBE_MAP_ARRAY,
+    UnsignedIntSamplerCubeMapArray = GL_UNSIGNED_INT_SAMPLER_CUBE_MAP_ARRAY,
+    DoubleVec2 = GL_DOUBLE_VEC2,
+    DoubleVec3 = GL_DOUBLE_VEC3,
+    DoubleVec4 = GL_DOUBLE_VEC4,
+    DoubleMat2 = GL_DOUBLE_MAT2,
+    DoubleMat3 = GL_DOUBLE_MAT3,
+    DoubleMat4 = GL_DOUBLE_MAT4,
+    DoubleMat2x3 = GL_DOUBLE_MAT2x3,
+    DoubleMat2x4 = GL_DOUBLE_MAT2x4,
+    DoubleMat3x2 = GL_DOUBLE_MAT3x2,
+    DoubleMat3x4 = GL_DOUBLE_MAT3x4,
+    DoubleMat4x2 = GL_DOUBLE_MAT4x2,
+    DoubleMat4x3 = GL_DOUBLE_MAT4x3,
+    Image1D = GL_IMAGE_1D,
+    Image2D = GL_IMAGE_2D,
+    Image3D = GL_IMAGE_3D,
+    Image2DRect = GL_IMAGE_2D_RECT,
+    ImageCube = GL_IMAGE_CUBE,
+    ImageBuffer = GL_IMAGE_BUFFER,
+    Image1DArray = GL_IMAGE_1D_ARRAY,
+    Image2DArray = GL_IMAGE_2D_ARRAY,
+    ImageCubeMapArray = GL_IMAGE_CUBE_MAP_ARRAY,
+    Image2DMultisample = GL_IMAGE_2D_MULTISAMPLE,
+    Image2DMultisampleArray = GL_IMAGE_2D_MULTISAMPLE_ARRAY,
+    IntImage1D = GL_INT_IMAGE_1D,
+    IntImage2D = GL_INT_IMAGE_2D,
+    IntImage3D = GL_INT_IMAGE_3D,
+    IntImage2DRect = GL_INT_IMAGE_2D_RECT,
+    IntImageCube = GL_INT_IMAGE_CUBE,
+    IntImageBuffer = GL_INT_IMAGE_BUFFER,
+    IntImage1DArray = GL_INT_IMAGE_1D_ARRAY,
+    IntImage2DArray = GL_INT_IMAGE_2D_ARRAY,
+    IntImageCubeMapArray = GL_INT_IMAGE_CUBE_MAP_ARRAY,
+    IntImage2DMultisample = GL_INT_IMAGE_2D_MULTISAMPLE,
+    IntImage2DMultisampleArray = GL_INT_IMAGE_2D_MULTISAMPLE_ARRAY,
+    UnsignedIntImage1D = GL_UNSIGNED_INT_IMAGE_1D,
+    UnsignedIntImage2D = GL_UNSIGNED_INT_IMAGE_2D,
+    UnsignedIntImage3D = GL_UNSIGNED_INT_IMAGE_3D,
+    UnsignedIntImage2DRect = GL_UNSIGNED_INT_IMAGE_2D_RECT,
+    UnsignedIntImageCube = GL_UNSIGNED_INT_IMAGE_CUBE,
+    UnsignedIntImageBuffer = GL_UNSIGNED_INT_IMAGE_BUFFER,
+    UnsignedIntImage1DArray = GL_UNSIGNED_INT_IMAGE_1D_ARRAY,
+    UnsignedIntImage2DArray = GL_UNSIGNED_INT_IMAGE_2D_ARRAY,
+    UnsignedIntImageCubeMapArray = GL_UNSIGNED_INT_IMAGE_CUBE_MAP_ARRAY,
+    UnsignedIntImage2DMultisample = GL_UNSIGNED_INT_IMAGE_2D_MULTISAMPLE,
+    UnsignedIntImage2DMultisampleArray = GL_UNSIGNED_INT_IMAGE_2D_MULTISAMPLE_ARRAY,
 }
-impl UnsafeFromGLenum for RenderbufferParameterName {
-    unsafe fn unsafe_from_gl_enum(val: u32) -> Self {
-        #[cfg(debug_assertions)]
-        let Some(ret) = RenderbufferParameterName::from_repr(val) else {
-            panic!("Attempt to create a RenderbufferParameterName from a GLenum with invalid value {val:#X}");
-        };
-        #[cfg(not(debug_assertions))]
-        let ret = unsafe { std::mem::transmute(val) };
-        ret
+impl GlEnumGroup for AttributeType {
+    unsafe fn from_enum_noerr(val: u32) -> Self {
+        unsafe { std::mem::transmute(val) }
+    }
+    fn from_enum(val: u32) -> Option<Self> {
+        Self::from_repr(val)
     }
 }
-impl From<RenderbufferParameterName> for u32 {
-    fn from(value: RenderbufferParameterName) -> u32 {
+impl From<AttributeType> for u32 {
+    fn from(value: AttributeType) -> u32 {
         value as u32
     }
 }
-impl<Dst: GlDstType> SrcType<Dst> for RenderbufferParameterName {
+impl<Dst: GlDstType> SrcType<Dst> for AttributeType {
+    fn convert(self) -> Dst {
+        Dst::from_uint(self as u32)
+    }
+}
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[cfg_attr(debug_assertions, derive(::strum_macros::FromRepr))]
+#[repr(u32)]
+pub enum UniformPName {
+    UniformType = GL_UNIFORM_TYPE,
+    UniformSize = GL_UNIFORM_SIZE,
+    UniformNameLength = GL_UNIFORM_NAME_LENGTH,
+    UniformBlockIndex = GL_UNIFORM_BLOCK_INDEX,
+    UniformOffset = GL_UNIFORM_OFFSET,
+    UniformArrayStride = GL_UNIFORM_ARRAY_STRIDE,
+    UniformMatrixStride = GL_UNIFORM_MATRIX_STRIDE,
+    UniformIsRowMajor = GL_UNIFORM_IS_ROW_MAJOR,
+    UniformAtomicCounterBufferIndex = GL_UNIFORM_ATOMIC_COUNTER_BUFFER_INDEX,
+}
+impl GlEnumGroup for UniformPName {
+    unsafe fn from_enum_noerr(val: u32) -> Self {
+        unsafe { std::mem::transmute(val) }
+    }
+    fn from_enum(val: u32) -> Option<Self> {
+        Self::from_repr(val)
+    }
+}
+impl From<UniformPName> for u32 {
+    fn from(value: UniformPName) -> u32 {
+        value as u32
+    }
+}
+impl<Dst: GlDstType> SrcType<Dst> for UniformPName {
+    fn convert(self) -> Dst {
+        Dst::from_uint(self as u32)
+    }
+}
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[cfg_attr(debug_assertions, derive(::strum_macros::FromRepr))]
+#[repr(u32)]
+pub enum PixelFormat {
+    UnsignedShort = GL_UNSIGNED_SHORT,
+    UnsignedInt = GL_UNSIGNED_INT,
+    DepthComponent = GL_DEPTH_COMPONENT,
+    Red = GL_RED,
+    Green = GL_GREEN,
+    Blue = GL_BLUE,
+    Alpha = GL_ALPHA,
+    Rgb = GL_RGB,
+    Rgba = GL_RGBA,
+    Bgr = GL_BGR,
+    Bgra = GL_BGRA,
+    RedInteger = GL_RED_INTEGER,
+    GreenInteger = GL_GREEN_INTEGER,
+    BlueInteger = GL_BLUE_INTEGER,
+    RgbInteger = GL_RGB_INTEGER,
+    RgbaInteger = GL_RGBA_INTEGER,
+    BgrInteger = GL_BGR_INTEGER,
+    BgraInteger = GL_BGRA_INTEGER,
+    DepthStencil = GL_DEPTH_STENCIL,
+    Rg = GL_RG,
+    RgInteger = GL_RG_INTEGER,
+    StencilIndex = GL_STENCIL_INDEX,
+}
+impl GlEnumGroup for PixelFormat {
+    unsafe fn from_enum_noerr(val: u32) -> Self {
+        unsafe { std::mem::transmute(val) }
+    }
+    fn from_enum(val: u32) -> Option<Self> {
+        Self::from_repr(val)
+    }
+}
+impl From<PixelFormat> for u32 {
+    fn from(value: PixelFormat) -> u32 {
+        value as u32
+    }
+}
+impl<Dst: GlDstType> SrcType<Dst> for PixelFormat {
+    fn convert(self) -> Dst {
+        Dst::from_uint(self as u32)
+    }
+}
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[cfg_attr(debug_assertions, derive(::strum_macros::FromRepr))]
+#[repr(u32)]
+pub enum PolygonMode {
+    Point = GL_POINT,
+    Line = GL_LINE,
+    Fill = GL_FILL,
+}
+impl GlEnumGroup for PolygonMode {
+    unsafe fn from_enum_noerr(val: u32) -> Self {
+        unsafe { std::mem::transmute(val) }
+    }
+    fn from_enum(val: u32) -> Option<Self> {
+        Self::from_repr(val)
+    }
+}
+impl From<PolygonMode> for u32 {
+    fn from(value: PolygonMode) -> u32 {
+        value as u32
+    }
+}
+impl<Dst: GlDstType> SrcType<Dst> for PolygonMode {
+    fn convert(self) -> Dst {
+        Dst::from_uint(self as u32)
+    }
+}
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[cfg_attr(debug_assertions, derive(::strum_macros::FromRepr))]
+#[repr(u32)]
+pub enum SamplerParameter {
+    TextureBorderColor = GL_TEXTURE_BORDER_COLOR,
+    TextureMagFilter = GL_TEXTURE_MAG_FILTER,
+    TextureMinFilter = GL_TEXTURE_MIN_FILTER,
+    TextureWrapS = GL_TEXTURE_WRAP_S,
+    TextureWrapT = GL_TEXTURE_WRAP_T,
+    TextureWrapR = GL_TEXTURE_WRAP_R,
+    TextureMinLod = GL_TEXTURE_MIN_LOD,
+    TextureMaxLod = GL_TEXTURE_MAX_LOD,
+    TextureLodBias = GL_TEXTURE_LOD_BIAS,
+    TextureCompareMode = GL_TEXTURE_COMPARE_MODE,
+    TextureCompareFunc = GL_TEXTURE_COMPARE_FUNC,
+    TextureMaxAnisotropy = GL_TEXTURE_MAX_ANISOTROPY,
+}
+impl GlEnumGroup for SamplerParameter {
+    unsafe fn from_enum_noerr(val: u32) -> Self {
+        unsafe { std::mem::transmute(val) }
+    }
+    fn from_enum(val: u32) -> Option<Self> {
+        Self::from_repr(val)
+    }
+}
+impl From<SamplerParameter> for u32 {
+    fn from(value: SamplerParameter) -> u32 {
+        value as u32
+    }
+}
+impl<Dst: GlDstType> SrcType<Dst> for SamplerParameter {
+    fn convert(self) -> Dst {
+        Dst::from_uint(self as u32)
+    }
+}
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[cfg_attr(debug_assertions, derive(::strum_macros::FromRepr))]
+#[repr(u32)]
+pub enum FramebufferTarget {
+    ReadFramebuffer = GL_READ_FRAMEBUFFER,
+    DrawFramebuffer = GL_DRAW_FRAMEBUFFER,
+    Framebuffer = GL_FRAMEBUFFER,
+}
+impl GlEnumGroup for FramebufferTarget {
+    unsafe fn from_enum_noerr(val: u32) -> Self {
+        unsafe { std::mem::transmute(val) }
+    }
+    fn from_enum(val: u32) -> Option<Self> {
+        Self::from_repr(val)
+    }
+}
+impl From<FramebufferTarget> for u32 {
+    fn from(value: FramebufferTarget) -> u32 {
+        value as u32
+    }
+}
+impl<Dst: GlDstType> SrcType<Dst> for FramebufferTarget {
+    fn convert(self) -> Dst {
+        Dst::from_uint(self as u32)
+    }
+}
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[cfg_attr(debug_assertions, derive(::strum_macros::FromRepr))]
+#[repr(u32)]
+pub enum ProgramStagePName {
+    ActiveSubroutines = GL_ACTIVE_SUBROUTINES,
+    ActiveSubroutineUniforms = GL_ACTIVE_SUBROUTINE_UNIFORMS,
+    ActiveSubroutineUniformLocations = GL_ACTIVE_SUBROUTINE_UNIFORM_LOCATIONS,
+    ActiveSubroutineMaxLength = GL_ACTIVE_SUBROUTINE_MAX_LENGTH,
+    ActiveSubroutineUniformMaxLength = GL_ACTIVE_SUBROUTINE_UNIFORM_MAX_LENGTH,
+}
+impl GlEnumGroup for ProgramStagePName {
+    unsafe fn from_enum_noerr(val: u32) -> Self {
+        unsafe { std::mem::transmute(val) }
+    }
+    fn from_enum(val: u32) -> Option<Self> {
+        Self::from_repr(val)
+    }
+}
+impl From<ProgramStagePName> for u32 {
+    fn from(value: ProgramStagePName) -> u32 {
+        value as u32
+    }
+}
+impl<Dst: GlDstType> SrcType<Dst> for ProgramStagePName {
+    fn convert(self) -> Dst {
+        Dst::from_uint(self as u32)
+    }
+}
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[cfg_attr(debug_assertions, derive(::strum_macros::FromRepr))]
+#[repr(u32)]
+pub enum TriangleFace {
+    Front = GL_FRONT,
+    FrontAndBack = GL_FRONT_AND_BACK,
+    Back = GL_BACK,
+}
+impl GlEnumGroup for TriangleFace {
+    unsafe fn from_enum_noerr(val: u32) -> Self {
+        unsafe { std::mem::transmute(val) }
+    }
+    fn from_enum(val: u32) -> Option<Self> {
+        Self::from_repr(val)
+    }
+}
+impl From<TriangleFace> for u32 {
+    fn from(value: TriangleFace) -> u32 {
+        value as u32
+    }
+}
+impl<Dst: GlDstType> SrcType<Dst> for TriangleFace {
+    fn convert(self) -> Dst {
+        Dst::from_uint(self as u32)
+    }
+}
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[cfg_attr(debug_assertions, derive(::strum_macros::FromRepr))]
+#[repr(u32)]
+pub enum StringName {
+    Vendor = GL_VENDOR,
+    Renderer = GL_RENDERER,
+    Version = GL_VERSION,
+    Extensions = GL_EXTENSIONS,
+    ShadingLanguageVersion = GL_SHADING_LANGUAGE_VERSION,
+}
+impl GlEnumGroup for StringName {
+    unsafe fn from_enum_noerr(val: u32) -> Self {
+        unsafe { std::mem::transmute(val) }
+    }
+    fn from_enum(val: u32) -> Option<Self> {
+        Self::from_repr(val)
+    }
+}
+impl From<StringName> for u32 {
+    fn from(value: StringName) -> u32 {
+        value as u32
+    }
+}
+impl<Dst: GlDstType> SrcType<Dst> for StringName {
+    fn convert(self) -> Dst {
+        Dst::from_uint(self as u32)
+    }
+}
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[cfg_attr(debug_assertions, derive(::strum_macros::FromRepr))]
+#[repr(u32)]
+pub enum TextureParameterName {
+    TextureWidth = GL_TEXTURE_WIDTH,
+    TextureHeight = GL_TEXTURE_HEIGHT,
+    TextureBorderColor = GL_TEXTURE_BORDER_COLOR,
+    TextureMagFilter = GL_TEXTURE_MAG_FILTER,
+    TextureMinFilter = GL_TEXTURE_MIN_FILTER,
+    TextureWrapS = GL_TEXTURE_WRAP_S,
+    TextureWrapT = GL_TEXTURE_WRAP_T,
+    TextureInternalFormat = GL_TEXTURE_INTERNAL_FORMAT,
+    TextureRedSize = GL_TEXTURE_RED_SIZE,
+    TextureGreenSize = GL_TEXTURE_GREEN_SIZE,
+    TextureBlueSize = GL_TEXTURE_BLUE_SIZE,
+    TextureAlphaSize = GL_TEXTURE_ALPHA_SIZE,
+    TextureWrapR = GL_TEXTURE_WRAP_R,
+    TextureMinLod = GL_TEXTURE_MIN_LOD,
+    TextureMaxLod = GL_TEXTURE_MAX_LOD,
+    TextureBaseLevel = GL_TEXTURE_BASE_LEVEL,
+    TextureMaxLevel = GL_TEXTURE_MAX_LEVEL,
+    TextureLodBias = GL_TEXTURE_LOD_BIAS,
+    TextureCompareMode = GL_TEXTURE_COMPARE_MODE,
+    TextureCompareFunc = GL_TEXTURE_COMPARE_FUNC,
+    TextureSwizzleR = GL_TEXTURE_SWIZZLE_R,
+    TextureSwizzleG = GL_TEXTURE_SWIZZLE_G,
+    TextureSwizzleB = GL_TEXTURE_SWIZZLE_B,
+    TextureSwizzleA = GL_TEXTURE_SWIZZLE_A,
+    TextureSwizzleRgba = GL_TEXTURE_SWIZZLE_RGBA,
+    DepthStencilTextureMode = GL_DEPTH_STENCIL_TEXTURE_MODE,
+    TextureMaxAnisotropy = GL_TEXTURE_MAX_ANISOTROPY,
+}
+impl GlEnumGroup for TextureParameterName {
+    unsafe fn from_enum_noerr(val: u32) -> Self {
+        unsafe { std::mem::transmute(val) }
+    }
+    fn from_enum(val: u32) -> Option<Self> {
+        Self::from_repr(val)
+    }
+}
+impl From<TextureParameterName> for u32 {
+    fn from(value: TextureParameterName) -> u32 {
+        value as u32
+    }
+}
+impl<Dst: GlDstType> SrcType<Dst> for TextureParameterName {
+    fn convert(self) -> Dst {
+        Dst::from_uint(self as u32)
+    }
+}
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[cfg_attr(debug_assertions, derive(::strum_macros::FromRepr))]
+#[repr(u32)]
+pub enum ClipControlOrigin {
+    LowerLeft = GL_LOWER_LEFT,
+    UpperLeft = GL_UPPER_LEFT,
+}
+impl GlEnumGroup for ClipControlOrigin {
+    unsafe fn from_enum_noerr(val: u32) -> Self {
+        unsafe { std::mem::transmute(val) }
+    }
+    fn from_enum(val: u32) -> Option<Self> {
+        Self::from_repr(val)
+    }
+}
+impl From<ClipControlOrigin> for u32 {
+    fn from(value: ClipControlOrigin) -> u32 {
+        value as u32
+    }
+}
+impl<Dst: GlDstType> SrcType<Dst> for ClipControlOrigin {
+    fn convert(self) -> Dst {
+        Dst::from_uint(self as u32)
+    }
+}
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[cfg_attr(debug_assertions, derive(::strum_macros::FromRepr))]
+#[repr(u32)]
+pub enum ProgramInterfacePName {
+    ActiveResources = GL_ACTIVE_RESOURCES,
+    MaxNameLength = GL_MAX_NAME_LENGTH,
+    MaxNumActiveVariables = GL_MAX_NUM_ACTIVE_VARIABLES,
+    MaxNumCompatibleSubroutines = GL_MAX_NUM_COMPATIBLE_SUBROUTINES,
+}
+impl GlEnumGroup for ProgramInterfacePName {
+    unsafe fn from_enum_noerr(val: u32) -> Self {
+        unsafe { std::mem::transmute(val) }
+    }
+    fn from_enum(val: u32) -> Option<Self> {
+        Self::from_repr(val)
+    }
+}
+impl From<ProgramInterfacePName> for u32 {
+    fn from(value: ProgramInterfacePName) -> u32 {
+        value as u32
+    }
+}
+impl<Dst: GlDstType> SrcType<Dst> for ProgramInterfacePName {
     fn convert(self) -> Dst {
         Dst::from_uint(self as u32)
     }
@@ -2209,15 +4163,12 @@ pub enum GetPName {
     TextureBindingRectangle = GL_TEXTURE_BINDING_RECTANGLE,
     ParameterBufferBinding = GL_PARAMETER_BUFFER_BINDING,
 }
-impl UnsafeFromGLenum for GetPName {
-    unsafe fn unsafe_from_gl_enum(val: u32) -> Self {
-        #[cfg(debug_assertions)]
-        let Some(ret) = GetPName::from_repr(val) else {
-            panic!("Attempt to create a GetPName from a GLenum with invalid value {val:#X}");
-        };
-        #[cfg(not(debug_assertions))]
-        let ret = unsafe { std::mem::transmute(val) };
-        ret
+impl GlEnumGroup for GetPName {
+    unsafe fn from_enum_noerr(val: u32) -> Self {
+        unsafe { std::mem::transmute(val) }
+    }
+    fn from_enum(val: u32) -> Option<Self> {
+        Self::from_repr(val)
     }
 }
 impl From<GetPName> for u32 {
@@ -2226,1130 +4177,6 @@ impl From<GetPName> for u32 {
     }
 }
 impl<Dst: GlDstType> SrcType<Dst> for GetPName {
-    fn convert(self) -> Dst {
-        Dst::from_uint(self as u32)
-    }
-}
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-#[cfg_attr(debug_assertions, derive(::strum_macros::FromRepr))]
-#[repr(u32)]
-pub enum SamplerParameter {
-    TextureBorderColor = GL_TEXTURE_BORDER_COLOR,
-    TextureMagFilter = GL_TEXTURE_MAG_FILTER,
-    TextureMinFilter = GL_TEXTURE_MIN_FILTER,
-    TextureWrapS = GL_TEXTURE_WRAP_S,
-    TextureWrapT = GL_TEXTURE_WRAP_T,
-    TextureWrapR = GL_TEXTURE_WRAP_R,
-    TextureMinLod = GL_TEXTURE_MIN_LOD,
-    TextureMaxLod = GL_TEXTURE_MAX_LOD,
-    TextureLodBias = GL_TEXTURE_LOD_BIAS,
-    TextureCompareMode = GL_TEXTURE_COMPARE_MODE,
-    TextureCompareFunc = GL_TEXTURE_COMPARE_FUNC,
-    TextureMaxAnisotropy = GL_TEXTURE_MAX_ANISOTROPY,
-}
-impl UnsafeFromGLenum for SamplerParameter {
-    unsafe fn unsafe_from_gl_enum(val: u32) -> Self {
-        #[cfg(debug_assertions)]
-        let Some(ret) = SamplerParameter::from_repr(val) else {
-            panic!(
-                "Attempt to create a SamplerParameter from a GLenum with invalid value {val:#X}"
-            );
-        };
-        #[cfg(not(debug_assertions))]
-        let ret = unsafe { std::mem::transmute(val) };
-        ret
-    }
-}
-impl From<SamplerParameter> for u32 {
-    fn from(value: SamplerParameter) -> u32 {
-        value as u32
-    }
-}
-impl<Dst: GlDstType> SrcType<Dst> for SamplerParameter {
-    fn convert(self) -> Dst {
-        Dst::from_uint(self as u32)
-    }
-}
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-#[cfg_attr(debug_assertions, derive(::strum_macros::FromRepr))]
-#[repr(u32)]
-pub enum ProgramProperty {
-    DeleteStatus = GL_DELETE_STATUS,
-    LinkStatus = GL_LINK_STATUS,
-    ValidateStatus = GL_VALIDATE_STATUS,
-    InfoLogLength = GL_INFO_LOG_LENGTH,
-    AttachedShaders = GL_ATTACHED_SHADERS,
-    ActiveUniforms = GL_ACTIVE_UNIFORMS,
-    ActiveUniformMaxLength = GL_ACTIVE_UNIFORM_MAX_LENGTH,
-    ActiveAttributes = GL_ACTIVE_ATTRIBUTES,
-    ActiveAttributeMaxLength = GL_ACTIVE_ATTRIBUTE_MAX_LENGTH,
-    TransformFeedbackVaryingMaxLength = GL_TRANSFORM_FEEDBACK_VARYING_MAX_LENGTH,
-    TransformFeedbackBufferMode = GL_TRANSFORM_FEEDBACK_BUFFER_MODE,
-    TransformFeedbackVaryings = GL_TRANSFORM_FEEDBACK_VARYINGS,
-    ActiveUniformBlockMaxNameLength = GL_ACTIVE_UNIFORM_BLOCK_MAX_NAME_LENGTH,
-    ActiveUniformBlocks = GL_ACTIVE_UNIFORM_BLOCKS,
-    GeometryVerticesOut = GL_GEOMETRY_VERTICES_OUT,
-    GeometryInputType = GL_GEOMETRY_INPUT_TYPE,
-    GeometryOutputType = GL_GEOMETRY_OUTPUT_TYPE,
-    ProgramBinaryLength = GL_PROGRAM_BINARY_LENGTH,
-    ActiveAtomicCounterBuffers = GL_ACTIVE_ATOMIC_COUNTER_BUFFERS,
-    ComputeWorkGroupSize = GL_COMPUTE_WORK_GROUP_SIZE,
-}
-impl UnsafeFromGLenum for ProgramProperty {
-    unsafe fn unsafe_from_gl_enum(val: u32) -> Self {
-        #[cfg(debug_assertions)]
-        let Some(ret) = ProgramProperty::from_repr(val) else {
-            panic!("Attempt to create a ProgramProperty from a GLenum with invalid value {val:#X}");
-        };
-        #[cfg(not(debug_assertions))]
-        let ret = unsafe { std::mem::transmute(val) };
-        ret
-    }
-}
-impl From<ProgramProperty> for u32 {
-    fn from(value: ProgramProperty) -> u32 {
-        value as u32
-    }
-}
-impl<Dst: GlDstType> SrcType<Dst> for ProgramProperty {
-    fn convert(self) -> Dst {
-        Dst::from_uint(self as u32)
-    }
-}
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-#[cfg_attr(debug_assertions, derive(::strum_macros::FromRepr))]
-#[repr(u32)]
-pub enum AttributeType {
-    Int = GL_INT,
-    UnsignedInt = GL_UNSIGNED_INT,
-    Float = GL_FLOAT,
-    Double = GL_DOUBLE,
-    FloatVec2 = GL_FLOAT_VEC2,
-    FloatVec3 = GL_FLOAT_VEC3,
-    FloatVec4 = GL_FLOAT_VEC4,
-    IntVec2 = GL_INT_VEC2,
-    IntVec3 = GL_INT_VEC3,
-    IntVec4 = GL_INT_VEC4,
-    Bool = GL_BOOL,
-    BoolVec2 = GL_BOOL_VEC2,
-    BoolVec3 = GL_BOOL_VEC3,
-    BoolVec4 = GL_BOOL_VEC4,
-    FloatMat2 = GL_FLOAT_MAT2,
-    FloatMat3 = GL_FLOAT_MAT3,
-    FloatMat4 = GL_FLOAT_MAT4,
-    Sampler1D = GL_SAMPLER_1D,
-    Sampler2D = GL_SAMPLER_2D,
-    Sampler3D = GL_SAMPLER_3D,
-    SamplerCube = GL_SAMPLER_CUBE,
-    Sampler1DShadow = GL_SAMPLER_1D_SHADOW,
-    Sampler2DShadow = GL_SAMPLER_2D_SHADOW,
-    FloatMat2x3 = GL_FLOAT_MAT2x3,
-    FloatMat2x4 = GL_FLOAT_MAT2x4,
-    FloatMat3x2 = GL_FLOAT_MAT3x2,
-    FloatMat3x4 = GL_FLOAT_MAT3x4,
-    FloatMat4x2 = GL_FLOAT_MAT4x2,
-    FloatMat4x3 = GL_FLOAT_MAT4x3,
-    Sampler1DArrayShadow = GL_SAMPLER_1D_ARRAY_SHADOW,
-    Sampler2DArrayShadow = GL_SAMPLER_2D_ARRAY_SHADOW,
-    SamplerCubeShadow = GL_SAMPLER_CUBE_SHADOW,
-    UnsignedIntVec2 = GL_UNSIGNED_INT_VEC2,
-    UnsignedIntVec3 = GL_UNSIGNED_INT_VEC3,
-    UnsignedIntVec4 = GL_UNSIGNED_INT_VEC4,
-    IntSampler1D = GL_INT_SAMPLER_1D,
-    IntSampler2D = GL_INT_SAMPLER_2D,
-    IntSampler3D = GL_INT_SAMPLER_3D,
-    IntSamplerCube = GL_INT_SAMPLER_CUBE,
-    IntSampler1DArray = GL_INT_SAMPLER_1D_ARRAY,
-    IntSampler2DArray = GL_INT_SAMPLER_2D_ARRAY,
-    UnsignedIntSampler1D = GL_UNSIGNED_INT_SAMPLER_1D,
-    UnsignedIntSampler2D = GL_UNSIGNED_INT_SAMPLER_2D,
-    UnsignedIntSampler3D = GL_UNSIGNED_INT_SAMPLER_3D,
-    UnsignedIntSamplerCube = GL_UNSIGNED_INT_SAMPLER_CUBE,
-    UnsignedIntSampler1DArray = GL_UNSIGNED_INT_SAMPLER_1D_ARRAY,
-    UnsignedIntSampler2DArray = GL_UNSIGNED_INT_SAMPLER_2D_ARRAY,
-    Sampler2DRect = GL_SAMPLER_2D_RECT,
-    Sampler2DRectShadow = GL_SAMPLER_2D_RECT_SHADOW,
-    SamplerBuffer = GL_SAMPLER_BUFFER,
-    IntSampler2DRect = GL_INT_SAMPLER_2D_RECT,
-    IntSamplerBuffer = GL_INT_SAMPLER_BUFFER,
-    UnsignedIntSampler2DRect = GL_UNSIGNED_INT_SAMPLER_2D_RECT,
-    UnsignedIntSamplerBuffer = GL_UNSIGNED_INT_SAMPLER_BUFFER,
-    Sampler2DMultisample = GL_SAMPLER_2D_MULTISAMPLE,
-    IntSampler2DMultisample = GL_INT_SAMPLER_2D_MULTISAMPLE,
-    UnsignedIntSampler2DMultisample = GL_UNSIGNED_INT_SAMPLER_2D_MULTISAMPLE,
-    Sampler2DMultisampleArray = GL_SAMPLER_2D_MULTISAMPLE_ARRAY,
-    IntSampler2DMultisampleArray = GL_INT_SAMPLER_2D_MULTISAMPLE_ARRAY,
-    UnsignedIntSampler2DMultisampleArray = GL_UNSIGNED_INT_SAMPLER_2D_MULTISAMPLE_ARRAY,
-    SamplerCubeMapArray = GL_SAMPLER_CUBE_MAP_ARRAY,
-    SamplerCubeMapArrayShadow = GL_SAMPLER_CUBE_MAP_ARRAY_SHADOW,
-    IntSamplerCubeMapArray = GL_INT_SAMPLER_CUBE_MAP_ARRAY,
-    UnsignedIntSamplerCubeMapArray = GL_UNSIGNED_INT_SAMPLER_CUBE_MAP_ARRAY,
-    DoubleVec2 = GL_DOUBLE_VEC2,
-    DoubleVec3 = GL_DOUBLE_VEC3,
-    DoubleVec4 = GL_DOUBLE_VEC4,
-    DoubleMat2 = GL_DOUBLE_MAT2,
-    DoubleMat3 = GL_DOUBLE_MAT3,
-    DoubleMat4 = GL_DOUBLE_MAT4,
-    DoubleMat2x3 = GL_DOUBLE_MAT2x3,
-    DoubleMat2x4 = GL_DOUBLE_MAT2x4,
-    DoubleMat3x2 = GL_DOUBLE_MAT3x2,
-    DoubleMat3x4 = GL_DOUBLE_MAT3x4,
-    DoubleMat4x2 = GL_DOUBLE_MAT4x2,
-    DoubleMat4x3 = GL_DOUBLE_MAT4x3,
-    Image1D = GL_IMAGE_1D,
-    Image2D = GL_IMAGE_2D,
-    Image3D = GL_IMAGE_3D,
-    Image2DRect = GL_IMAGE_2D_RECT,
-    ImageCube = GL_IMAGE_CUBE,
-    ImageBuffer = GL_IMAGE_BUFFER,
-    Image1DArray = GL_IMAGE_1D_ARRAY,
-    Image2DArray = GL_IMAGE_2D_ARRAY,
-    ImageCubeMapArray = GL_IMAGE_CUBE_MAP_ARRAY,
-    Image2DMultisample = GL_IMAGE_2D_MULTISAMPLE,
-    Image2DMultisampleArray = GL_IMAGE_2D_MULTISAMPLE_ARRAY,
-    IntImage1D = GL_INT_IMAGE_1D,
-    IntImage2D = GL_INT_IMAGE_2D,
-    IntImage3D = GL_INT_IMAGE_3D,
-    IntImage2DRect = GL_INT_IMAGE_2D_RECT,
-    IntImageCube = GL_INT_IMAGE_CUBE,
-    IntImageBuffer = GL_INT_IMAGE_BUFFER,
-    IntImage1DArray = GL_INT_IMAGE_1D_ARRAY,
-    IntImage2DArray = GL_INT_IMAGE_2D_ARRAY,
-    IntImageCubeMapArray = GL_INT_IMAGE_CUBE_MAP_ARRAY,
-    IntImage2DMultisample = GL_INT_IMAGE_2D_MULTISAMPLE,
-    IntImage2DMultisampleArray = GL_INT_IMAGE_2D_MULTISAMPLE_ARRAY,
-    UnsignedIntImage1D = GL_UNSIGNED_INT_IMAGE_1D,
-    UnsignedIntImage2D = GL_UNSIGNED_INT_IMAGE_2D,
-    UnsignedIntImage3D = GL_UNSIGNED_INT_IMAGE_3D,
-    UnsignedIntImage2DRect = GL_UNSIGNED_INT_IMAGE_2D_RECT,
-    UnsignedIntImageCube = GL_UNSIGNED_INT_IMAGE_CUBE,
-    UnsignedIntImageBuffer = GL_UNSIGNED_INT_IMAGE_BUFFER,
-    UnsignedIntImage1DArray = GL_UNSIGNED_INT_IMAGE_1D_ARRAY,
-    UnsignedIntImage2DArray = GL_UNSIGNED_INT_IMAGE_2D_ARRAY,
-    UnsignedIntImageCubeMapArray = GL_UNSIGNED_INT_IMAGE_CUBE_MAP_ARRAY,
-    UnsignedIntImage2DMultisample = GL_UNSIGNED_INT_IMAGE_2D_MULTISAMPLE,
-    UnsignedIntImage2DMultisampleArray = GL_UNSIGNED_INT_IMAGE_2D_MULTISAMPLE_ARRAY,
-}
-impl UnsafeFromGLenum for AttributeType {
-    unsafe fn unsafe_from_gl_enum(val: u32) -> Self {
-        #[cfg(debug_assertions)]
-        let Some(ret) = AttributeType::from_repr(val) else {
-            panic!("Attempt to create a AttributeType from a GLenum with invalid value {val:#X}");
-        };
-        #[cfg(not(debug_assertions))]
-        let ret = unsafe { std::mem::transmute(val) };
-        ret
-    }
-}
-impl From<AttributeType> for u32 {
-    fn from(value: AttributeType) -> u32 {
-        value as u32
-    }
-}
-impl<Dst: GlDstType> SrcType<Dst> for AttributeType {
-    fn convert(self) -> Dst {
-        Dst::from_uint(self as u32)
-    }
-}
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-#[cfg_attr(debug_assertions, derive(::strum_macros::FromRepr))]
-#[repr(u32)]
-pub enum ProgramInterfacePName {
-    ActiveResources = GL_ACTIVE_RESOURCES,
-    MaxNameLength = GL_MAX_NAME_LENGTH,
-    MaxNumActiveVariables = GL_MAX_NUM_ACTIVE_VARIABLES,
-    MaxNumCompatibleSubroutines = GL_MAX_NUM_COMPATIBLE_SUBROUTINES,
-}
-impl UnsafeFromGLenum for ProgramInterfacePName {
-    unsafe fn unsafe_from_gl_enum(val: u32) -> Self {
-        #[cfg(debug_assertions)]
-        let Some(ret) = ProgramInterfacePName::from_repr(val) else {
-            panic!("Attempt to create a ProgramInterfacePName from a GLenum with invalid value {val:#X}");
-        };
-        #[cfg(not(debug_assertions))]
-        let ret = unsafe { std::mem::transmute(val) };
-        ret
-    }
-}
-impl From<ProgramInterfacePName> for u32 {
-    fn from(value: ProgramInterfacePName) -> u32 {
-        value as u32
-    }
-}
-impl<Dst: GlDstType> SrcType<Dst> for ProgramInterfacePName {
-    fn convert(self) -> Dst {
-        Dst::from_uint(self as u32)
-    }
-}
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-#[cfg_attr(debug_assertions, derive(::strum_macros::FromRepr))]
-#[repr(u32)]
-pub enum ShaderType {
-    FragmentShader = GL_FRAGMENT_SHADER,
-    VertexShader = GL_VERTEX_SHADER,
-    GeometryShader = GL_GEOMETRY_SHADER,
-    TessEvaluationShader = GL_TESS_EVALUATION_SHADER,
-    TessControlShader = GL_TESS_CONTROL_SHADER,
-    ComputeShader = GL_COMPUTE_SHADER,
-}
-impl UnsafeFromGLenum for ShaderType {
-    unsafe fn unsafe_from_gl_enum(val: u32) -> Self {
-        #[cfg(debug_assertions)]
-        let Some(ret) = ShaderType::from_repr(val) else {
-            panic!("Attempt to create a ShaderType from a GLenum with invalid value {val:#X}");
-        };
-        #[cfg(not(debug_assertions))]
-        let ret = unsafe { std::mem::transmute(val) };
-        ret
-    }
-}
-impl From<ShaderType> for u32 {
-    fn from(value: ShaderType) -> u32 {
-        value as u32
-    }
-}
-impl<Dst: GlDstType> SrcType<Dst> for ShaderType {
-    fn convert(self) -> Dst {
-        Dst::from_uint(self as u32)
-    }
-}
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-#[cfg_attr(debug_assertions, derive(::strum_macros::FromRepr))]
-#[repr(u32)]
-pub enum LogicOp {
-    Clear = GL_CLEAR,
-    And = GL_AND,
-    AndReverse = GL_AND_REVERSE,
-    Copy = GL_COPY,
-    AndInverted = GL_AND_INVERTED,
-    Noop = GL_NOOP,
-    Xor = GL_XOR,
-    Or = GL_OR,
-    Nor = GL_NOR,
-    Equiv = GL_EQUIV,
-    Invert = GL_INVERT,
-    OrReverse = GL_OR_REVERSE,
-    CopyInverted = GL_COPY_INVERTED,
-    OrInverted = GL_OR_INVERTED,
-    Nand = GL_NAND,
-    Set = GL_SET,
-}
-impl UnsafeFromGLenum for LogicOp {
-    unsafe fn unsafe_from_gl_enum(val: u32) -> Self {
-        #[cfg(debug_assertions)]
-        let Some(ret) = LogicOp::from_repr(val) else {
-            panic!("Attempt to create a LogicOp from a GLenum with invalid value {val:#X}");
-        };
-        #[cfg(not(debug_assertions))]
-        let ret = unsafe { std::mem::transmute(val) };
-        ret
-    }
-}
-impl From<LogicOp> for u32 {
-    fn from(value: LogicOp) -> u32 {
-        value as u32
-    }
-}
-impl<Dst: GlDstType> SrcType<Dst> for LogicOp {
-    fn convert(self) -> Dst {
-        Dst::from_uint(self as u32)
-    }
-}
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-#[cfg_attr(debug_assertions, derive(::strum_macros::FromRepr))]
-#[repr(u32)]
-pub enum QueryObjectParameterName {
-    QueryResult = GL_QUERY_RESULT,
-    QueryResultAvailable = GL_QUERY_RESULT_AVAILABLE,
-    QueryResultNoWait = GL_QUERY_RESULT_NO_WAIT,
-    QueryTarget = GL_QUERY_TARGET,
-}
-impl UnsafeFromGLenum for QueryObjectParameterName {
-    unsafe fn unsafe_from_gl_enum(val: u32) -> Self {
-        #[cfg(debug_assertions)]
-        let Some(ret) = QueryObjectParameterName::from_repr(val) else {
-            panic!("Attempt to create a QueryObjectParameterName from a GLenum with invalid value {val:#X}");
-        };
-        #[cfg(not(debug_assertions))]
-        let ret = unsafe { std::mem::transmute(val) };
-        ret
-    }
-}
-impl From<QueryObjectParameterName> for u32 {
-    fn from(value: QueryObjectParameterName) -> u32 {
-        value as u32
-    }
-}
-impl<Dst: GlDstType> SrcType<Dst> for QueryObjectParameterName {
-    fn convert(self) -> Dst {
-        Dst::from_uint(self as u32)
-    }
-}
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-#[cfg_attr(debug_assertions, derive(::strum_macros::FromRepr))]
-#[repr(u32)]
-pub enum UniformType {
-    Int = GL_INT,
-    UnsignedInt = GL_UNSIGNED_INT,
-    Float = GL_FLOAT,
-    Double = GL_DOUBLE,
-    FloatVec2 = GL_FLOAT_VEC2,
-    FloatVec3 = GL_FLOAT_VEC3,
-    FloatVec4 = GL_FLOAT_VEC4,
-    IntVec2 = GL_INT_VEC2,
-    IntVec3 = GL_INT_VEC3,
-    IntVec4 = GL_INT_VEC4,
-    Bool = GL_BOOL,
-    BoolVec2 = GL_BOOL_VEC2,
-    BoolVec3 = GL_BOOL_VEC3,
-    BoolVec4 = GL_BOOL_VEC4,
-    FloatMat2 = GL_FLOAT_MAT2,
-    FloatMat3 = GL_FLOAT_MAT3,
-    FloatMat4 = GL_FLOAT_MAT4,
-    Sampler1D = GL_SAMPLER_1D,
-    Sampler2D = GL_SAMPLER_2D,
-    Sampler3D = GL_SAMPLER_3D,
-    SamplerCube = GL_SAMPLER_CUBE,
-    Sampler1DShadow = GL_SAMPLER_1D_SHADOW,
-    Sampler2DShadow = GL_SAMPLER_2D_SHADOW,
-    FloatMat2x3 = GL_FLOAT_MAT2x3,
-    FloatMat2x4 = GL_FLOAT_MAT2x4,
-    FloatMat3x2 = GL_FLOAT_MAT3x2,
-    FloatMat3x4 = GL_FLOAT_MAT3x4,
-    FloatMat4x2 = GL_FLOAT_MAT4x2,
-    FloatMat4x3 = GL_FLOAT_MAT4x3,
-    Sampler1DArray = GL_SAMPLER_1D_ARRAY,
-    Sampler2DArray = GL_SAMPLER_2D_ARRAY,
-    Sampler1DArrayShadow = GL_SAMPLER_1D_ARRAY_SHADOW,
-    Sampler2DArrayShadow = GL_SAMPLER_2D_ARRAY_SHADOW,
-    SamplerCubeShadow = GL_SAMPLER_CUBE_SHADOW,
-    UnsignedIntVec2 = GL_UNSIGNED_INT_VEC2,
-    UnsignedIntVec3 = GL_UNSIGNED_INT_VEC3,
-    UnsignedIntVec4 = GL_UNSIGNED_INT_VEC4,
-    IntSampler1D = GL_INT_SAMPLER_1D,
-    IntSampler2D = GL_INT_SAMPLER_2D,
-    IntSampler3D = GL_INT_SAMPLER_3D,
-    IntSamplerCube = GL_INT_SAMPLER_CUBE,
-    IntSampler1DArray = GL_INT_SAMPLER_1D_ARRAY,
-    IntSampler2DArray = GL_INT_SAMPLER_2D_ARRAY,
-    UnsignedIntSampler1D = GL_UNSIGNED_INT_SAMPLER_1D,
-    UnsignedIntSampler2D = GL_UNSIGNED_INT_SAMPLER_2D,
-    UnsignedIntSampler3D = GL_UNSIGNED_INT_SAMPLER_3D,
-    UnsignedIntSamplerCube = GL_UNSIGNED_INT_SAMPLER_CUBE,
-    UnsignedIntSampler1DArray = GL_UNSIGNED_INT_SAMPLER_1D_ARRAY,
-    UnsignedIntSampler2DArray = GL_UNSIGNED_INT_SAMPLER_2D_ARRAY,
-    Sampler2DRect = GL_SAMPLER_2D_RECT,
-    Sampler2DRectShadow = GL_SAMPLER_2D_RECT_SHADOW,
-    SamplerBuffer = GL_SAMPLER_BUFFER,
-    IntSampler2DRect = GL_INT_SAMPLER_2D_RECT,
-    IntSamplerBuffer = GL_INT_SAMPLER_BUFFER,
-    UnsignedIntSampler2DRect = GL_UNSIGNED_INT_SAMPLER_2D_RECT,
-    UnsignedIntSamplerBuffer = GL_UNSIGNED_INT_SAMPLER_BUFFER,
-    Sampler2DMultisample = GL_SAMPLER_2D_MULTISAMPLE,
-    IntSampler2DMultisample = GL_INT_SAMPLER_2D_MULTISAMPLE,
-    UnsignedIntSampler2DMultisample = GL_UNSIGNED_INT_SAMPLER_2D_MULTISAMPLE,
-    Sampler2DMultisampleArray = GL_SAMPLER_2D_MULTISAMPLE_ARRAY,
-    IntSampler2DMultisampleArray = GL_INT_SAMPLER_2D_MULTISAMPLE_ARRAY,
-    UnsignedIntSampler2DMultisampleArray = GL_UNSIGNED_INT_SAMPLER_2D_MULTISAMPLE_ARRAY,
-    SamplerCubeMapArray = GL_SAMPLER_CUBE_MAP_ARRAY,
-    SamplerCubeMapArrayShadow = GL_SAMPLER_CUBE_MAP_ARRAY_SHADOW,
-    IntSamplerCubeMapArray = GL_INT_SAMPLER_CUBE_MAP_ARRAY,
-    UnsignedIntSamplerCubeMapArray = GL_UNSIGNED_INT_SAMPLER_CUBE_MAP_ARRAY,
-    DoubleVec2 = GL_DOUBLE_VEC2,
-    DoubleVec3 = GL_DOUBLE_VEC3,
-    DoubleVec4 = GL_DOUBLE_VEC4,
-    DoubleMat2 = GL_DOUBLE_MAT2,
-    DoubleMat3 = GL_DOUBLE_MAT3,
-    DoubleMat4 = GL_DOUBLE_MAT4,
-    DoubleMat2x3 = GL_DOUBLE_MAT2x3,
-    DoubleMat2x4 = GL_DOUBLE_MAT2x4,
-    DoubleMat3x2 = GL_DOUBLE_MAT3x2,
-    DoubleMat3x4 = GL_DOUBLE_MAT3x4,
-    DoubleMat4x2 = GL_DOUBLE_MAT4x2,
-    DoubleMat4x3 = GL_DOUBLE_MAT4x3,
-}
-impl UnsafeFromGLenum for UniformType {
-    unsafe fn unsafe_from_gl_enum(val: u32) -> Self {
-        #[cfg(debug_assertions)]
-        let Some(ret) = UniformType::from_repr(val) else {
-            panic!("Attempt to create a UniformType from a GLenum with invalid value {val:#X}");
-        };
-        #[cfg(not(debug_assertions))]
-        let ret = unsafe { std::mem::transmute(val) };
-        ret
-    }
-}
-impl From<UniformType> for u32 {
-    fn from(value: UniformType) -> u32 {
-        value as u32
-    }
-}
-impl<Dst: GlDstType> SrcType<Dst> for UniformType {
-    fn convert(self) -> Dst {
-        Dst::from_uint(self as u32)
-    }
-}
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-#[cfg_attr(debug_assertions, derive(::strum_macros::FromRepr))]
-#[repr(u32)]
-pub enum PatchParameterName {
-    PatchVertices = GL_PATCH_VERTICES,
-    PatchDefaultInnerLevel = GL_PATCH_DEFAULT_INNER_LEVEL,
-    PatchDefaultOuterLevel = GL_PATCH_DEFAULT_OUTER_LEVEL,
-}
-impl UnsafeFromGLenum for PatchParameterName {
-    unsafe fn unsafe_from_gl_enum(val: u32) -> Self {
-        #[cfg(debug_assertions)]
-        let Some(ret) = PatchParameterName::from_repr(val) else {
-            panic!(
-                "Attempt to create a PatchParameterName from a GLenum with invalid value {val:#X}"
-            );
-        };
-        #[cfg(not(debug_assertions))]
-        let ret = unsafe { std::mem::transmute(val) };
-        ret
-    }
-}
-impl From<PatchParameterName> for u32 {
-    fn from(value: PatchParameterName) -> u32 {
-        value as u32
-    }
-}
-impl<Dst: GlDstType> SrcType<Dst> for PatchParameterName {
-    fn convert(self) -> Dst {
-        Dst::from_uint(self as u32)
-    }
-}
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-#[cfg_attr(debug_assertions, derive(::strum_macros::FromRepr))]
-#[repr(u32)]
-pub enum PrecisionType {
-    LowFloat = GL_LOW_FLOAT,
-    MediumFloat = GL_MEDIUM_FLOAT,
-    HighFloat = GL_HIGH_FLOAT,
-    LowInt = GL_LOW_INT,
-    MediumInt = GL_MEDIUM_INT,
-    HighInt = GL_HIGH_INT,
-}
-impl UnsafeFromGLenum for PrecisionType {
-    unsafe fn unsafe_from_gl_enum(val: u32) -> Self {
-        #[cfg(debug_assertions)]
-        let Some(ret) = PrecisionType::from_repr(val) else {
-            panic!("Attempt to create a PrecisionType from a GLenum with invalid value {val:#X}");
-        };
-        #[cfg(not(debug_assertions))]
-        let ret = unsafe { std::mem::transmute(val) };
-        ret
-    }
-}
-impl From<PrecisionType> for u32 {
-    fn from(value: PrecisionType) -> u32 {
-        value as u32
-    }
-}
-impl<Dst: GlDstType> SrcType<Dst> for PrecisionType {
-    fn convert(self) -> Dst {
-        Dst::from_uint(self as u32)
-    }
-}
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-#[cfg_attr(debug_assertions, derive(::strum_macros::FromRepr))]
-#[repr(u32)]
-pub enum ErrorCode {
-    InvalidEnum = GL_INVALID_ENUM,
-    InvalidValue = GL_INVALID_VALUE,
-    InvalidOperation = GL_INVALID_OPERATION,
-    OutOfMemory = GL_OUT_OF_MEMORY,
-    InvalidFramebufferOperation = GL_INVALID_FRAMEBUFFER_OPERATION,
-    StackUnderflow = GL_STACK_UNDERFLOW,
-    StackOverflow = GL_STACK_OVERFLOW,
-    NoError = GL_NO_ERROR,
-}
-impl UnsafeFromGLenum for ErrorCode {
-    unsafe fn unsafe_from_gl_enum(val: u32) -> Self {
-        #[cfg(debug_assertions)]
-        let Some(ret) = ErrorCode::from_repr(val) else {
-            panic!("Attempt to create a ErrorCode from a GLenum with invalid value {val:#X}");
-        };
-        #[cfg(not(debug_assertions))]
-        let ret = unsafe { std::mem::transmute(val) };
-        ret
-    }
-}
-impl From<ErrorCode> for u32 {
-    fn from(value: ErrorCode) -> u32 {
-        value as u32
-    }
-}
-impl<Dst: GlDstType> SrcType<Dst> for ErrorCode {
-    fn convert(self) -> Dst {
-        Dst::from_uint(self as u32)
-    }
-}
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-#[cfg_attr(debug_assertions, derive(::strum_macros::FromRepr))]
-#[repr(u32)]
-pub enum StringName {
-    Vendor = GL_VENDOR,
-    Renderer = GL_RENDERER,
-    Version = GL_VERSION,
-    Extensions = GL_EXTENSIONS,
-    ShadingLanguageVersion = GL_SHADING_LANGUAGE_VERSION,
-}
-impl UnsafeFromGLenum for StringName {
-    unsafe fn unsafe_from_gl_enum(val: u32) -> Self {
-        #[cfg(debug_assertions)]
-        let Some(ret) = StringName::from_repr(val) else {
-            panic!("Attempt to create a StringName from a GLenum with invalid value {val:#X}");
-        };
-        #[cfg(not(debug_assertions))]
-        let ret = unsafe { std::mem::transmute(val) };
-        ret
-    }
-}
-impl From<StringName> for u32 {
-    fn from(value: StringName) -> u32 {
-        value as u32
-    }
-}
-impl<Dst: GlDstType> SrcType<Dst> for StringName {
-    fn convert(self) -> Dst {
-        Dst::from_uint(self as u32)
-    }
-}
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-#[cfg_attr(debug_assertions, derive(::strum_macros::FromRepr))]
-#[repr(u32)]
-pub enum Buffer {
-    Color = GL_COLOR,
-    Depth = GL_DEPTH,
-    Stencil = GL_STENCIL,
-}
-impl UnsafeFromGLenum for Buffer {
-    unsafe fn unsafe_from_gl_enum(val: u32) -> Self {
-        #[cfg(debug_assertions)]
-        let Some(ret) = Buffer::from_repr(val) else {
-            panic!("Attempt to create a Buffer from a GLenum with invalid value {val:#X}");
-        };
-        #[cfg(not(debug_assertions))]
-        let ret = unsafe { std::mem::transmute(val) };
-        ret
-    }
-}
-impl From<Buffer> for u32 {
-    fn from(value: Buffer) -> u32 {
-        value as u32
-    }
-}
-impl<Dst: GlDstType> SrcType<Dst> for Buffer {
-    fn convert(self) -> Dst {
-        Dst::from_uint(self as u32)
-    }
-}
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-#[cfg_attr(debug_assertions, derive(::strum_macros::FromRepr))]
-#[repr(u32)]
-pub enum VertexAttribType {
-    Byte = GL_BYTE,
-    UnsignedByte = GL_UNSIGNED_BYTE,
-    Short = GL_SHORT,
-    UnsignedShort = GL_UNSIGNED_SHORT,
-    Int = GL_INT,
-    UnsignedInt = GL_UNSIGNED_INT,
-    Float = GL_FLOAT,
-    Double = GL_DOUBLE,
-    UnsignedInt2101010Rev = GL_UNSIGNED_INT_2_10_10_10_REV,
-    HalfFloat = GL_HALF_FLOAT,
-    Int2101010Rev = GL_INT_2_10_10_10_REV,
-    Fixed = GL_FIXED,
-    UnsignedInt10F11F11FRev = GL_UNSIGNED_INT_10F_11F_11F_REV,
-}
-impl UnsafeFromGLenum for VertexAttribType {
-    unsafe fn unsafe_from_gl_enum(val: u32) -> Self {
-        #[cfg(debug_assertions)]
-        let Some(ret) = VertexAttribType::from_repr(val) else {
-            panic!(
-                "Attempt to create a VertexAttribType from a GLenum with invalid value {val:#X}"
-            );
-        };
-        #[cfg(not(debug_assertions))]
-        let ret = unsafe { std::mem::transmute(val) };
-        ret
-    }
-}
-impl From<VertexAttribType> for u32 {
-    fn from(value: VertexAttribType) -> u32 {
-        value as u32
-    }
-}
-impl<Dst: GlDstType> SrcType<Dst> for VertexAttribType {
-    fn convert(self) -> Dst {
-        Dst::from_uint(self as u32)
-    }
-}
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-#[cfg_attr(debug_assertions, derive(::strum_macros::FromRepr))]
-#[repr(u32)]
-pub enum BufferPName {
-    BufferSize = GL_BUFFER_SIZE,
-    BufferUsage = GL_BUFFER_USAGE,
-    BufferAccess = GL_BUFFER_ACCESS,
-    BufferMapped = GL_BUFFER_MAPPED,
-    BufferAccessFlags = GL_BUFFER_ACCESS_FLAGS,
-    BufferMapLength = GL_BUFFER_MAP_LENGTH,
-    BufferMapOffset = GL_BUFFER_MAP_OFFSET,
-    BufferImmutableStorage = GL_BUFFER_IMMUTABLE_STORAGE,
-    BufferStorageFlags = GL_BUFFER_STORAGE_FLAGS,
-}
-impl UnsafeFromGLenum for BufferPName {
-    unsafe fn unsafe_from_gl_enum(val: u32) -> Self {
-        #[cfg(debug_assertions)]
-        let Some(ret) = BufferPName::from_repr(val) else {
-            panic!("Attempt to create a BufferPName from a GLenum with invalid value {val:#X}");
-        };
-        #[cfg(not(debug_assertions))]
-        let ret = unsafe { std::mem::transmute(val) };
-        ret
-    }
-}
-impl From<BufferPName> for u32 {
-    fn from(value: BufferPName) -> u32 {
-        value as u32
-    }
-}
-impl<Dst: GlDstType> SrcType<Dst> for BufferPName {
-    fn convert(self) -> Dst {
-        Dst::from_uint(self as u32)
-    }
-}
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-#[cfg_attr(debug_assertions, derive(::strum_macros::FromRepr))]
-#[repr(u32)]
-pub enum FramebufferAttachmentParameterName {
-    FramebufferAttachmentColorEncoding = GL_FRAMEBUFFER_ATTACHMENT_COLOR_ENCODING,
-    FramebufferAttachmentComponentType = GL_FRAMEBUFFER_ATTACHMENT_COMPONENT_TYPE,
-    FramebufferAttachmentRedSize = GL_FRAMEBUFFER_ATTACHMENT_RED_SIZE,
-    FramebufferAttachmentGreenSize = GL_FRAMEBUFFER_ATTACHMENT_GREEN_SIZE,
-    FramebufferAttachmentBlueSize = GL_FRAMEBUFFER_ATTACHMENT_BLUE_SIZE,
-    FramebufferAttachmentAlphaSize = GL_FRAMEBUFFER_ATTACHMENT_ALPHA_SIZE,
-    FramebufferAttachmentDepthSize = GL_FRAMEBUFFER_ATTACHMENT_DEPTH_SIZE,
-    FramebufferAttachmentStencilSize = GL_FRAMEBUFFER_ATTACHMENT_STENCIL_SIZE,
-    FramebufferAttachmentObjectType = GL_FRAMEBUFFER_ATTACHMENT_OBJECT_TYPE,
-    FramebufferAttachmentObjectName = GL_FRAMEBUFFER_ATTACHMENT_OBJECT_NAME,
-    FramebufferAttachmentTextureLevel = GL_FRAMEBUFFER_ATTACHMENT_TEXTURE_LEVEL,
-    FramebufferAttachmentTextureCubeMapFace = GL_FRAMEBUFFER_ATTACHMENT_TEXTURE_CUBE_MAP_FACE,
-    FramebufferAttachmentTextureLayer = GL_FRAMEBUFFER_ATTACHMENT_TEXTURE_LAYER,
-    FramebufferAttachmentLayered = GL_FRAMEBUFFER_ATTACHMENT_LAYERED,
-}
-impl UnsafeFromGLenum for FramebufferAttachmentParameterName {
-    unsafe fn unsafe_from_gl_enum(val: u32) -> Self {
-        #[cfg(debug_assertions)]
-        let Some(ret) = FramebufferAttachmentParameterName::from_repr(val) else {
-            panic!("Attempt to create a FramebufferAttachmentParameterName from a GLenum with invalid value {val:#X}");
-        };
-        #[cfg(not(debug_assertions))]
-        let ret = unsafe { std::mem::transmute(val) };
-        ret
-    }
-}
-impl From<FramebufferAttachmentParameterName> for u32 {
-    fn from(value: FramebufferAttachmentParameterName) -> u32 {
-        value as u32
-    }
-}
-impl<Dst: GlDstType> SrcType<Dst> for FramebufferAttachmentParameterName {
-    fn convert(self) -> Dst {
-        Dst::from_uint(self as u32)
-    }
-}
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-#[cfg_attr(debug_assertions, derive(::strum_macros::FromRepr))]
-#[repr(u32)]
-pub enum TextureMagFilter {
-    Nearest = GL_NEAREST,
-    Linear = GL_LINEAR,
-}
-impl UnsafeFromGLenum for TextureMagFilter {
-    unsafe fn unsafe_from_gl_enum(val: u32) -> Self {
-        #[cfg(debug_assertions)]
-        let Some(ret) = TextureMagFilter::from_repr(val) else {
-            panic!(
-                "Attempt to create a TextureMagFilter from a GLenum with invalid value {val:#X}"
-            );
-        };
-        #[cfg(not(debug_assertions))]
-        let ret = unsafe { std::mem::transmute(val) };
-        ret
-    }
-}
-impl From<TextureMagFilter> for u32 {
-    fn from(value: TextureMagFilter) -> u32 {
-        value as u32
-    }
-}
-impl<Dst: GlDstType> SrcType<Dst> for TextureMagFilter {
-    fn convert(self) -> Dst {
-        Dst::from_uint(self as u32)
-    }
-}
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-#[cfg_attr(debug_assertions, derive(::strum_macros::FromRepr))]
-#[repr(u32)]
-pub enum BlendEquationModeEXT {
-    FuncAdd = GL_FUNC_ADD,
-    FuncReverseSubtract = GL_FUNC_REVERSE_SUBTRACT,
-    FuncSubtract = GL_FUNC_SUBTRACT,
-    Min = GL_MIN,
-    Max = GL_MAX,
-}
-impl UnsafeFromGLenum for BlendEquationModeEXT {
-    unsafe fn unsafe_from_gl_enum(val: u32) -> Self {
-        #[cfg(debug_assertions)]
-        let Some(ret) = BlendEquationModeEXT::from_repr(val) else {
-            panic!("Attempt to create a BlendEquationModeEXT from a GLenum with invalid value {val:#X}");
-        };
-        #[cfg(not(debug_assertions))]
-        let ret = unsafe { std::mem::transmute(val) };
-        ret
-    }
-}
-impl From<BlendEquationModeEXT> for u32 {
-    fn from(value: BlendEquationModeEXT) -> u32 {
-        value as u32
-    }
-}
-impl<Dst: GlDstType> SrcType<Dst> for BlendEquationModeEXT {
-    fn convert(self) -> Dst {
-        Dst::from_uint(self as u32)
-    }
-}
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-#[cfg_attr(debug_assertions, derive(::strum_macros::FromRepr))]
-#[repr(u32)]
-pub enum BlitFramebufferFilter {
-    Nearest = GL_NEAREST,
-    Linear = GL_LINEAR,
-}
-impl UnsafeFromGLenum for BlitFramebufferFilter {
-    unsafe fn unsafe_from_gl_enum(val: u32) -> Self {
-        #[cfg(debug_assertions)]
-        let Some(ret) = BlitFramebufferFilter::from_repr(val) else {
-            panic!("Attempt to create a BlitFramebufferFilter from a GLenum with invalid value {val:#X}");
-        };
-        #[cfg(not(debug_assertions))]
-        let ret = unsafe { std::mem::transmute(val) };
-        ret
-    }
-}
-impl From<BlitFramebufferFilter> for u32 {
-    fn from(value: BlitFramebufferFilter) -> u32 {
-        value as u32
-    }
-}
-impl<Dst: GlDstType> SrcType<Dst> for BlitFramebufferFilter {
-    fn convert(self) -> Dst {
-        Dst::from_uint(self as u32)
-    }
-}
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-#[cfg_attr(debug_assertions, derive(::strum_macros::FromRepr))]
-#[repr(u32)]
-pub enum VertexProvokingMode {
-    FirstVertexConvention = GL_FIRST_VERTEX_CONVENTION,
-    LastVertexConvention = GL_LAST_VERTEX_CONVENTION,
-}
-impl UnsafeFromGLenum for VertexProvokingMode {
-    unsafe fn unsafe_from_gl_enum(val: u32) -> Self {
-        #[cfg(debug_assertions)]
-        let Some(ret) = VertexProvokingMode::from_repr(val) else {
-            panic!(
-                "Attempt to create a VertexProvokingMode from a GLenum with invalid value {val:#X}"
-            );
-        };
-        #[cfg(not(debug_assertions))]
-        let ret = unsafe { std::mem::transmute(val) };
-        ret
-    }
-}
-impl From<VertexProvokingMode> for u32 {
-    fn from(value: VertexProvokingMode) -> u32 {
-        value as u32
-    }
-}
-impl<Dst: GlDstType> SrcType<Dst> for VertexProvokingMode {
-    fn convert(self) -> Dst {
-        Dst::from_uint(self as u32)
-    }
-}
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-#[cfg_attr(debug_assertions, derive(::strum_macros::FromRepr))]
-#[repr(u32)]
-pub enum InvalidateFramebufferAttachment {
-    Color = GL_COLOR,
-    Depth = GL_DEPTH,
-    Stencil = GL_STENCIL,
-    DepthStencilAttachment = GL_DEPTH_STENCIL_ATTACHMENT,
-    ColorAttachment0 = GL_COLOR_ATTACHMENT0,
-    ColorAttachment1 = GL_COLOR_ATTACHMENT1,
-    ColorAttachment2 = GL_COLOR_ATTACHMENT2,
-    ColorAttachment3 = GL_COLOR_ATTACHMENT3,
-    ColorAttachment4 = GL_COLOR_ATTACHMENT4,
-    ColorAttachment5 = GL_COLOR_ATTACHMENT5,
-    ColorAttachment6 = GL_COLOR_ATTACHMENT6,
-    ColorAttachment7 = GL_COLOR_ATTACHMENT7,
-    ColorAttachment8 = GL_COLOR_ATTACHMENT8,
-    ColorAttachment9 = GL_COLOR_ATTACHMENT9,
-    ColorAttachment10 = GL_COLOR_ATTACHMENT10,
-    ColorAttachment11 = GL_COLOR_ATTACHMENT11,
-    ColorAttachment12 = GL_COLOR_ATTACHMENT12,
-    ColorAttachment13 = GL_COLOR_ATTACHMENT13,
-    ColorAttachment14 = GL_COLOR_ATTACHMENT14,
-    ColorAttachment15 = GL_COLOR_ATTACHMENT15,
-    ColorAttachment16 = GL_COLOR_ATTACHMENT16,
-    ColorAttachment17 = GL_COLOR_ATTACHMENT17,
-    ColorAttachment18 = GL_COLOR_ATTACHMENT18,
-    ColorAttachment19 = GL_COLOR_ATTACHMENT19,
-    ColorAttachment20 = GL_COLOR_ATTACHMENT20,
-    ColorAttachment21 = GL_COLOR_ATTACHMENT21,
-    ColorAttachment22 = GL_COLOR_ATTACHMENT22,
-    ColorAttachment23 = GL_COLOR_ATTACHMENT23,
-    ColorAttachment24 = GL_COLOR_ATTACHMENT24,
-    ColorAttachment25 = GL_COLOR_ATTACHMENT25,
-    ColorAttachment26 = GL_COLOR_ATTACHMENT26,
-    ColorAttachment27 = GL_COLOR_ATTACHMENT27,
-    ColorAttachment28 = GL_COLOR_ATTACHMENT28,
-    ColorAttachment29 = GL_COLOR_ATTACHMENT29,
-    ColorAttachment30 = GL_COLOR_ATTACHMENT30,
-    ColorAttachment31 = GL_COLOR_ATTACHMENT31,
-    DepthAttachment = GL_DEPTH_ATTACHMENT,
-}
-impl UnsafeFromGLenum for InvalidateFramebufferAttachment {
-    unsafe fn unsafe_from_gl_enum(val: u32) -> Self {
-        #[cfg(debug_assertions)]
-        let Some(ret) = InvalidateFramebufferAttachment::from_repr(val) else {
-            panic!("Attempt to create a InvalidateFramebufferAttachment from a GLenum with invalid value {val:#X}");
-        };
-        #[cfg(not(debug_assertions))]
-        let ret = unsafe { std::mem::transmute(val) };
-        ret
-    }
-}
-impl From<InvalidateFramebufferAttachment> for u32 {
-    fn from(value: InvalidateFramebufferAttachment) -> u32 {
-        value as u32
-    }
-}
-impl<Dst: GlDstType> SrcType<Dst> for InvalidateFramebufferAttachment {
-    fn convert(self) -> Dst {
-        Dst::from_uint(self as u32)
-    }
-}
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-#[cfg_attr(debug_assertions, derive(::strum_macros::FromRepr))]
-#[repr(u32)]
-pub enum TextureParameterName {
-    TextureWidth = GL_TEXTURE_WIDTH,
-    TextureHeight = GL_TEXTURE_HEIGHT,
-    TextureBorderColor = GL_TEXTURE_BORDER_COLOR,
-    TextureMagFilter = GL_TEXTURE_MAG_FILTER,
-    TextureMinFilter = GL_TEXTURE_MIN_FILTER,
-    TextureWrapS = GL_TEXTURE_WRAP_S,
-    TextureWrapT = GL_TEXTURE_WRAP_T,
-    TextureInternalFormat = GL_TEXTURE_INTERNAL_FORMAT,
-    TextureRedSize = GL_TEXTURE_RED_SIZE,
-    TextureGreenSize = GL_TEXTURE_GREEN_SIZE,
-    TextureBlueSize = GL_TEXTURE_BLUE_SIZE,
-    TextureAlphaSize = GL_TEXTURE_ALPHA_SIZE,
-    TextureWrapR = GL_TEXTURE_WRAP_R,
-    TextureMinLod = GL_TEXTURE_MIN_LOD,
-    TextureMaxLod = GL_TEXTURE_MAX_LOD,
-    TextureBaseLevel = GL_TEXTURE_BASE_LEVEL,
-    TextureMaxLevel = GL_TEXTURE_MAX_LEVEL,
-    TextureLodBias = GL_TEXTURE_LOD_BIAS,
-    TextureCompareMode = GL_TEXTURE_COMPARE_MODE,
-    TextureCompareFunc = GL_TEXTURE_COMPARE_FUNC,
-    TextureSwizzleR = GL_TEXTURE_SWIZZLE_R,
-    TextureSwizzleG = GL_TEXTURE_SWIZZLE_G,
-    TextureSwizzleB = GL_TEXTURE_SWIZZLE_B,
-    TextureSwizzleA = GL_TEXTURE_SWIZZLE_A,
-    TextureSwizzleRgba = GL_TEXTURE_SWIZZLE_RGBA,
-    DepthStencilTextureMode = GL_DEPTH_STENCIL_TEXTURE_MODE,
-    TextureMaxAnisotropy = GL_TEXTURE_MAX_ANISOTROPY,
-}
-impl UnsafeFromGLenum for TextureParameterName {
-    unsafe fn unsafe_from_gl_enum(val: u32) -> Self {
-        #[cfg(debug_assertions)]
-        let Some(ret) = TextureParameterName::from_repr(val) else {
-            panic!("Attempt to create a TextureParameterName from a GLenum with invalid value {val:#X}");
-        };
-        #[cfg(not(debug_assertions))]
-        let ret = unsafe { std::mem::transmute(val) };
-        ret
-    }
-}
-impl From<TextureParameterName> for u32 {
-    fn from(value: TextureParameterName) -> u32 {
-        value as u32
-    }
-}
-impl<Dst: GlDstType> SrcType<Dst> for TextureParameterName {
-    fn convert(self) -> Dst {
-        Dst::from_uint(self as u32)
-    }
-}
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-#[cfg_attr(debug_assertions, derive(::strum_macros::FromRepr))]
-#[repr(u32)]
-pub enum AtomicCounterBufferPName {
-    AtomicCounterBufferBinding = GL_ATOMIC_COUNTER_BUFFER_BINDING,
-    AtomicCounterBufferDataSize = GL_ATOMIC_COUNTER_BUFFER_DATA_SIZE,
-    AtomicCounterBufferActiveAtomicCounters = GL_ATOMIC_COUNTER_BUFFER_ACTIVE_ATOMIC_COUNTERS,
-    AtomicCounterBufferActiveAtomicCounterIndices =
-        GL_ATOMIC_COUNTER_BUFFER_ACTIVE_ATOMIC_COUNTER_INDICES,
-    AtomicCounterBufferReferencedByVertexShader =
-        GL_ATOMIC_COUNTER_BUFFER_REFERENCED_BY_VERTEX_SHADER,
-    AtomicCounterBufferReferencedByTessControlShader =
-        GL_ATOMIC_COUNTER_BUFFER_REFERENCED_BY_TESS_CONTROL_SHADER,
-    AtomicCounterBufferReferencedByTessEvaluationShader =
-        GL_ATOMIC_COUNTER_BUFFER_REFERENCED_BY_TESS_EVALUATION_SHADER,
-    AtomicCounterBufferReferencedByGeometryShader =
-        GL_ATOMIC_COUNTER_BUFFER_REFERENCED_BY_GEOMETRY_SHADER,
-    AtomicCounterBufferReferencedByFragmentShader =
-        GL_ATOMIC_COUNTER_BUFFER_REFERENCED_BY_FRAGMENT_SHADER,
-    AtomicCounterBufferReferencedByComputeShader =
-        GL_ATOMIC_COUNTER_BUFFER_REFERENCED_BY_COMPUTE_SHADER,
-}
-impl UnsafeFromGLenum for AtomicCounterBufferPName {
-    unsafe fn unsafe_from_gl_enum(val: u32) -> Self {
-        #[cfg(debug_assertions)]
-        let Some(ret) = AtomicCounterBufferPName::from_repr(val) else {
-            panic!("Attempt to create a AtomicCounterBufferPName from a GLenum with invalid value {val:#X}");
-        };
-        #[cfg(not(debug_assertions))]
-        let ret = unsafe { std::mem::transmute(val) };
-        ret
-    }
-}
-impl From<AtomicCounterBufferPName> for u32 {
-    fn from(value: AtomicCounterBufferPName) -> u32 {
-        value as u32
-    }
-}
-impl<Dst: GlDstType> SrcType<Dst> for AtomicCounterBufferPName {
-    fn convert(self) -> Dst {
-        Dst::from_uint(self as u32)
-    }
-}
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-#[cfg_attr(debug_assertions, derive(::strum_macros::FromRepr))]
-#[repr(u32)]
-pub enum ReadBufferMode {
-    FrontLeft = GL_FRONT_LEFT,
-    FrontRight = GL_FRONT_RIGHT,
-    BackLeft = GL_BACK_LEFT,
-    BackRight = GL_BACK_RIGHT,
-    Front = GL_FRONT,
-    Left = GL_LEFT,
-    Right = GL_RIGHT,
-    ColorAttachment0 = GL_COLOR_ATTACHMENT0,
-    ColorAttachment1 = GL_COLOR_ATTACHMENT1,
-    ColorAttachment2 = GL_COLOR_ATTACHMENT2,
-    ColorAttachment3 = GL_COLOR_ATTACHMENT3,
-    ColorAttachment4 = GL_COLOR_ATTACHMENT4,
-    ColorAttachment5 = GL_COLOR_ATTACHMENT5,
-    ColorAttachment6 = GL_COLOR_ATTACHMENT6,
-    ColorAttachment7 = GL_COLOR_ATTACHMENT7,
-    ColorAttachment8 = GL_COLOR_ATTACHMENT8,
-    ColorAttachment9 = GL_COLOR_ATTACHMENT9,
-    ColorAttachment10 = GL_COLOR_ATTACHMENT10,
-    ColorAttachment11 = GL_COLOR_ATTACHMENT11,
-    ColorAttachment12 = GL_COLOR_ATTACHMENT12,
-    ColorAttachment13 = GL_COLOR_ATTACHMENT13,
-    ColorAttachment14 = GL_COLOR_ATTACHMENT14,
-    ColorAttachment15 = GL_COLOR_ATTACHMENT15,
-    Back = GL_BACK,
-    None = GL_NONE,
-}
-impl UnsafeFromGLenum for ReadBufferMode {
-    unsafe fn unsafe_from_gl_enum(val: u32) -> Self {
-        #[cfg(debug_assertions)]
-        let Some(ret) = ReadBufferMode::from_repr(val) else {
-            panic!("Attempt to create a ReadBufferMode from a GLenum with invalid value {val:#X}");
-        };
-        #[cfg(not(debug_assertions))]
-        let ret = unsafe { std::mem::transmute(val) };
-        ret
-    }
-}
-impl From<ReadBufferMode> for u32 {
-    fn from(value: ReadBufferMode) -> u32 {
-        value as u32
-    }
-}
-impl<Dst: GlDstType> SrcType<Dst> for ReadBufferMode {
-    fn convert(self) -> Dst {
-        Dst::from_uint(self as u32)
-    }
-}
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-#[cfg_attr(debug_assertions, derive(::strum_macros::FromRepr))]
-#[repr(u32)]
-pub enum ProgramStagePName {
-    ActiveSubroutines = GL_ACTIVE_SUBROUTINES,
-    ActiveSubroutineUniforms = GL_ACTIVE_SUBROUTINE_UNIFORMS,
-    ActiveSubroutineUniformLocations = GL_ACTIVE_SUBROUTINE_UNIFORM_LOCATIONS,
-    ActiveSubroutineMaxLength = GL_ACTIVE_SUBROUTINE_MAX_LENGTH,
-    ActiveSubroutineUniformMaxLength = GL_ACTIVE_SUBROUTINE_UNIFORM_MAX_LENGTH,
-}
-impl UnsafeFromGLenum for ProgramStagePName {
-    unsafe fn unsafe_from_gl_enum(val: u32) -> Self {
-        #[cfg(debug_assertions)]
-        let Some(ret) = ProgramStagePName::from_repr(val) else {
-            panic!(
-                "Attempt to create a ProgramStagePName from a GLenum with invalid value {val:#X}"
-            );
-        };
-        #[cfg(not(debug_assertions))]
-        let ret = unsafe { std::mem::transmute(val) };
-        ret
-    }
-}
-impl From<ProgramStagePName> for u32 {
-    fn from(value: ProgramStagePName) -> u32 {
-        value as u32
-    }
-}
-impl<Dst: GlDstType> SrcType<Dst> for ProgramStagePName {
-    fn convert(self) -> Dst {
-        Dst::from_uint(self as u32)
-    }
-}
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-#[cfg_attr(debug_assertions, derive(::strum_macros::FromRepr))]
-#[repr(u32)]
-pub enum GetPointervPName {
-    DebugCallbackFunction = GL_DEBUG_CALLBACK_FUNCTION,
-    DebugCallbackUserParam = GL_DEBUG_CALLBACK_USER_PARAM,
-}
-impl UnsafeFromGLenum for GetPointervPName {
-    unsafe fn unsafe_from_gl_enum(val: u32) -> Self {
-        #[cfg(debug_assertions)]
-        let Some(ret) = GetPointervPName::from_repr(val) else {
-            panic!(
-                "Attempt to create a GetPointervPName from a GLenum with invalid value {val:#X}"
-            );
-        };
-        #[cfg(not(debug_assertions))]
-        let ret = unsafe { std::mem::transmute(val) };
-        ret
-    }
-}
-impl From<GetPointervPName> for u32 {
-    fn from(value: GetPointervPName) -> u32 {
-        value as u32
-    }
-}
-impl<Dst: GlDstType> SrcType<Dst> for GetPointervPName {
     fn convert(self) -> Dst {
         Dst::from_uint(self as u32)
     }
@@ -3371,17 +4198,12 @@ pub enum GetTextureParameter {
     TextureBlueSize = GL_TEXTURE_BLUE_SIZE,
     TextureAlphaSize = GL_TEXTURE_ALPHA_SIZE,
 }
-impl UnsafeFromGLenum for GetTextureParameter {
-    unsafe fn unsafe_from_gl_enum(val: u32) -> Self {
-        #[cfg(debug_assertions)]
-        let Some(ret) = GetTextureParameter::from_repr(val) else {
-            panic!(
-                "Attempt to create a GetTextureParameter from a GLenum with invalid value {val:#X}"
-            );
-        };
-        #[cfg(not(debug_assertions))]
-        let ret = unsafe { std::mem::transmute(val) };
-        ret
+impl GlEnumGroup for GetTextureParameter {
+    unsafe fn from_enum_noerr(val: u32) -> Self {
+        unsafe { std::mem::transmute(val) }
+    }
+    fn from_enum(val: u32) -> Option<Self> {
+        Self::from_repr(val)
     }
 }
 impl From<GetTextureParameter> for u32 {
@@ -3390,6 +4212,67 @@ impl From<GetTextureParameter> for u32 {
     }
 }
 impl<Dst: GlDstType> SrcType<Dst> for GetTextureParameter {
+    fn convert(self) -> Dst {
+        Dst::from_uint(self as u32)
+    }
+}
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[cfg_attr(debug_assertions, derive(::strum_macros::FromRepr))]
+#[repr(u32)]
+pub enum PrimitiveType {
+    Points = GL_POINTS,
+    Lines = GL_LINES,
+    LineLoop = GL_LINE_LOOP,
+    LineStrip = GL_LINE_STRIP,
+    Triangles = GL_TRIANGLES,
+    TriangleStrip = GL_TRIANGLE_STRIP,
+    TriangleFan = GL_TRIANGLE_FAN,
+    LinesAdjacency = GL_LINES_ADJACENCY,
+    LineStripAdjacency = GL_LINE_STRIP_ADJACENCY,
+    TrianglesAdjacency = GL_TRIANGLES_ADJACENCY,
+    TriangleStripAdjacency = GL_TRIANGLE_STRIP_ADJACENCY,
+    Patches = GL_PATCHES,
+    Quads = GL_QUADS,
+}
+impl GlEnumGroup for PrimitiveType {
+    unsafe fn from_enum_noerr(val: u32) -> Self {
+        unsafe { std::mem::transmute(val) }
+    }
+    fn from_enum(val: u32) -> Option<Self> {
+        Self::from_repr(val)
+    }
+}
+impl From<PrimitiveType> for u32 {
+    fn from(value: PrimitiveType) -> u32 {
+        value as u32
+    }
+}
+impl<Dst: GlDstType> SrcType<Dst> for PrimitiveType {
+    fn convert(self) -> Dst {
+        Dst::from_uint(self as u32)
+    }
+}
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[cfg_attr(debug_assertions, derive(::strum_macros::FromRepr))]
+#[repr(u32)]
+pub enum VertexProvokingMode {
+    FirstVertexConvention = GL_FIRST_VERTEX_CONVENTION,
+    LastVertexConvention = GL_LAST_VERTEX_CONVENTION,
+}
+impl GlEnumGroup for VertexProvokingMode {
+    unsafe fn from_enum_noerr(val: u32) -> Self {
+        unsafe { std::mem::transmute(val) }
+    }
+    fn from_enum(val: u32) -> Option<Self> {
+        Self::from_repr(val)
+    }
+}
+impl From<VertexProvokingMode> for u32 {
+    fn from(value: VertexProvokingMode) -> u32 {
+        value as u32
+    }
+}
+impl<Dst: GlDstType> SrcType<Dst> for VertexProvokingMode {
     fn convert(self) -> Dst {
         Dst::from_uint(self as u32)
     }
@@ -3408,17 +4291,12 @@ pub enum VertexArrayPName {
     VertexAttribArrayLong = GL_VERTEX_ATTRIB_ARRAY_LONG,
     VertexAttribRelativeOffset = GL_VERTEX_ATTRIB_RELATIVE_OFFSET,
 }
-impl UnsafeFromGLenum for VertexArrayPName {
-    unsafe fn unsafe_from_gl_enum(val: u32) -> Self {
-        #[cfg(debug_assertions)]
-        let Some(ret) = VertexArrayPName::from_repr(val) else {
-            panic!(
-                "Attempt to create a VertexArrayPName from a GLenum with invalid value {val:#X}"
-            );
-        };
-        #[cfg(not(debug_assertions))]
-        let ret = unsafe { std::mem::transmute(val) };
-        ret
+impl GlEnumGroup for VertexArrayPName {
+    unsafe fn from_enum_noerr(val: u32) -> Self {
+        unsafe { std::mem::transmute(val) }
+    }
+    fn from_enum(val: u32) -> Option<Self> {
+        Self::from_repr(val)
     }
 }
 impl From<VertexArrayPName> for u32 {
@@ -3434,324 +4312,7 @@ impl<Dst: GlDstType> SrcType<Dst> for VertexArrayPName {
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 #[cfg_attr(debug_assertions, derive(::strum_macros::FromRepr))]
 #[repr(u32)]
-pub enum BufferUsage {
-    StreamDraw = GL_STREAM_DRAW,
-    StreamRead = GL_STREAM_READ,
-    StreamCopy = GL_STREAM_COPY,
-    StaticDraw = GL_STATIC_DRAW,
-    StaticRead = GL_STATIC_READ,
-    StaticCopy = GL_STATIC_COPY,
-    DynamicDraw = GL_DYNAMIC_DRAW,
-    DynamicRead = GL_DYNAMIC_READ,
-    DynamicCopy = GL_DYNAMIC_COPY,
-}
-impl UnsafeFromGLenum for BufferUsage {
-    unsafe fn unsafe_from_gl_enum(val: u32) -> Self {
-        #[cfg(debug_assertions)]
-        let Some(ret) = BufferUsage::from_repr(val) else {
-            panic!("Attempt to create a BufferUsage from a GLenum with invalid value {val:#X}");
-        };
-        #[cfg(not(debug_assertions))]
-        let ret = unsafe { std::mem::transmute(val) };
-        ret
-    }
-}
-impl From<BufferUsage> for u32 {
-    fn from(value: BufferUsage) -> u32 {
-        value as u32
-    }
-}
-impl<Dst: GlDstType> SrcType<Dst> for BufferUsage {
-    fn convert(self) -> Dst {
-        Dst::from_uint(self as u32)
-    }
-}
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-#[cfg_attr(debug_assertions, derive(::strum_macros::FromRepr))]
-#[repr(u32)]
-pub enum ProgramResourceProperty {
-    NumCompatibleSubroutines = GL_NUM_COMPATIBLE_SUBROUTINES,
-    CompatibleSubroutines = GL_COMPATIBLE_SUBROUTINES,
-    Uniform = GL_UNIFORM,
-    NameLength = GL_NAME_LENGTH,
-    Type = GL_TYPE,
-    ArraySize = GL_ARRAY_SIZE,
-    Offset = GL_OFFSET,
-    BlockIndex = GL_BLOCK_INDEX,
-    ArrayStride = GL_ARRAY_STRIDE,
-    MatrixStride = GL_MATRIX_STRIDE,
-    IsRowMajor = GL_IS_ROW_MAJOR,
-    AtomicCounterBufferIndex = GL_ATOMIC_COUNTER_BUFFER_INDEX,
-    BufferBinding = GL_BUFFER_BINDING,
-    BufferDataSize = GL_BUFFER_DATA_SIZE,
-    NumActiveVariables = GL_NUM_ACTIVE_VARIABLES,
-    ActiveVariables = GL_ACTIVE_VARIABLES,
-    ReferencedByVertexShader = GL_REFERENCED_BY_VERTEX_SHADER,
-    ReferencedByTessControlShader = GL_REFERENCED_BY_TESS_CONTROL_SHADER,
-    ReferencedByTessEvaluationShader = GL_REFERENCED_BY_TESS_EVALUATION_SHADER,
-    ReferencedByGeometryShader = GL_REFERENCED_BY_GEOMETRY_SHADER,
-    ReferencedByFragmentShader = GL_REFERENCED_BY_FRAGMENT_SHADER,
-    ReferencedByComputeShader = GL_REFERENCED_BY_COMPUTE_SHADER,
-    TopLevelArraySize = GL_TOP_LEVEL_ARRAY_SIZE,
-    TopLevelArrayStride = GL_TOP_LEVEL_ARRAY_STRIDE,
-    Location = GL_LOCATION,
-    LocationIndex = GL_LOCATION_INDEX,
-    IsPerPatch = GL_IS_PER_PATCH,
-    LocationComponent = GL_LOCATION_COMPONENT,
-    TransformFeedbackBufferIndex = GL_TRANSFORM_FEEDBACK_BUFFER_INDEX,
-    TransformFeedbackBufferStride = GL_TRANSFORM_FEEDBACK_BUFFER_STRIDE,
-}
-impl UnsafeFromGLenum for ProgramResourceProperty {
-    unsafe fn unsafe_from_gl_enum(val: u32) -> Self {
-        #[cfg(debug_assertions)]
-        let Some(ret) = ProgramResourceProperty::from_repr(val) else {
-            panic!("Attempt to create a ProgramResourceProperty from a GLenum with invalid value {val:#X}");
-        };
-        #[cfg(not(debug_assertions))]
-        let ret = unsafe { std::mem::transmute(val) };
-        ret
-    }
-}
-impl From<ProgramResourceProperty> for u32 {
-    fn from(value: ProgramResourceProperty) -> u32 {
-        value as u32
-    }
-}
-impl<Dst: GlDstType> SrcType<Dst> for ProgramResourceProperty {
-    fn convert(self) -> Dst {
-        Dst::from_uint(self as u32)
-    }
-}
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-#[cfg_attr(debug_assertions, derive(::strum_macros::FromRepr))]
-#[repr(u32)]
-pub enum SizedInternalFormat {
-    R3G3B2 = GL_R3_G3_B2,
-    Rgb4 = GL_RGB4,
-    Rgb5 = GL_RGB5,
-    Rgb8 = GL_RGB8,
-    Rgb10 = GL_RGB10,
-    Rgb12 = GL_RGB12,
-    Rgb16 = GL_RGB16,
-    Rgba2 = GL_RGBA2,
-    Rgba4 = GL_RGBA4,
-    Rgb5A1 = GL_RGB5_A1,
-    Rgba8 = GL_RGBA8,
-    Rgb10A2 = GL_RGB10_A2,
-    Rgba12 = GL_RGBA12,
-    Rgba16 = GL_RGBA16,
-    DepthComponent16 = GL_DEPTH_COMPONENT16,
-    DepthComponent24 = GL_DEPTH_COMPONENT24,
-    DepthComponent32 = GL_DEPTH_COMPONENT32,
-    Srgb8 = GL_SRGB8,
-    Srgb8Alpha8 = GL_SRGB8_ALPHA8,
-    Rgba32f = GL_RGBA32F,
-    Rgb32f = GL_RGB32F,
-    Rgba16f = GL_RGBA16F,
-    Rgb16f = GL_RGB16F,
-    R11fG11fB10f = GL_R11F_G11F_B10F,
-    Rgb9E5 = GL_RGB9_E5,
-    Rgba32ui = GL_RGBA32UI,
-    Rgb32ui = GL_RGB32UI,
-    Rgba16ui = GL_RGBA16UI,
-    Rgb16ui = GL_RGB16UI,
-    Rgba8ui = GL_RGBA8UI,
-    Rgb8ui = GL_RGB8UI,
-    Rgba32i = GL_RGBA32I,
-    Rgb32i = GL_RGB32I,
-    Rgba16i = GL_RGBA16I,
-    Rgb16i = GL_RGB16I,
-    Rgba8i = GL_RGBA8I,
-    Rgb8i = GL_RGB8I,
-    DepthComponent32f = GL_DEPTH_COMPONENT32F,
-    Depth32fStencil8 = GL_DEPTH32F_STENCIL8,
-    Depth24Stencil8 = GL_DEPTH24_STENCIL8,
-    StencilIndex1 = GL_STENCIL_INDEX1,
-    StencilIndex4 = GL_STENCIL_INDEX4,
-    StencilIndex16 = GL_STENCIL_INDEX16,
-    CompressedRedRgtc1 = GL_COMPRESSED_RED_RGTC1,
-    CompressedSignedRedRgtc1 = GL_COMPRESSED_SIGNED_RED_RGTC1,
-    CompressedRgRgtc2 = GL_COMPRESSED_RG_RGTC2,
-    CompressedSignedRgRgtc2 = GL_COMPRESSED_SIGNED_RG_RGTC2,
-    R8 = GL_R8,
-    R16 = GL_R16,
-    Rg8 = GL_RG8,
-    Rg16 = GL_RG16,
-    R16f = GL_R16F,
-    R32f = GL_R32F,
-    Rg16f = GL_RG16F,
-    Rg32f = GL_RG32F,
-    R8i = GL_R8I,
-    R8ui = GL_R8UI,
-    R16i = GL_R16I,
-    R16ui = GL_R16UI,
-    R32i = GL_R32I,
-    R32ui = GL_R32UI,
-    Rg8i = GL_RG8I,
-    Rg8ui = GL_RG8UI,
-    Rg16i = GL_RG16I,
-    Rg16ui = GL_RG16UI,
-    Rg32i = GL_RG32I,
-    Rg32ui = GL_RG32UI,
-    R8Snorm = GL_R8_SNORM,
-    Rg8Snorm = GL_RG8_SNORM,
-    Rgb8Snorm = GL_RGB8_SNORM,
-    Rgba8Snorm = GL_RGBA8_SNORM,
-    R16Snorm = GL_R16_SNORM,
-    Rg16Snorm = GL_RG16_SNORM,
-    Rgb16Snorm = GL_RGB16_SNORM,
-    Rgba16Snorm = GL_RGBA16_SNORM,
-    Rgb10A2ui = GL_RGB10_A2UI,
-    Rgb565 = GL_RGB565,
-    CompressedRgbaBptcUnorm = GL_COMPRESSED_RGBA_BPTC_UNORM,
-    CompressedSrgbAlphaBptcUnorm = GL_COMPRESSED_SRGB_ALPHA_BPTC_UNORM,
-    CompressedRgbBptcSignedFloat = GL_COMPRESSED_RGB_BPTC_SIGNED_FLOAT,
-    CompressedRgbBptcUnsignedFloat = GL_COMPRESSED_RGB_BPTC_UNSIGNED_FLOAT,
-    CompressedRgb8Etc2 = GL_COMPRESSED_RGB8_ETC2,
-    CompressedSrgb8Etc2 = GL_COMPRESSED_SRGB8_ETC2,
-    CompressedRgb8PunchthroughAlpha1Etc2 = GL_COMPRESSED_RGB8_PUNCHTHROUGH_ALPHA1_ETC2,
-    CompressedSrgb8PunchthroughAlpha1Etc2 = GL_COMPRESSED_SRGB8_PUNCHTHROUGH_ALPHA1_ETC2,
-    CompressedRgba8Etc2Eac = GL_COMPRESSED_RGBA8_ETC2_EAC,
-    CompressedSrgb8Alpha8Etc2Eac = GL_COMPRESSED_SRGB8_ALPHA8_ETC2_EAC,
-    CompressedR11Eac = GL_COMPRESSED_R11_EAC,
-    CompressedSignedR11Eac = GL_COMPRESSED_SIGNED_R11_EAC,
-    CompressedRg11Eac = GL_COMPRESSED_RG11_EAC,
-    CompressedSignedRg11Eac = GL_COMPRESSED_SIGNED_RG11_EAC,
-    StencilIndex8 = GL_STENCIL_INDEX8,
-}
-impl UnsafeFromGLenum for SizedInternalFormat {
-    unsafe fn unsafe_from_gl_enum(val: u32) -> Self {
-        #[cfg(debug_assertions)]
-        let Some(ret) = SizedInternalFormat::from_repr(val) else {
-            panic!(
-                "Attempt to create a SizedInternalFormat from a GLenum with invalid value {val:#X}"
-            );
-        };
-        #[cfg(not(debug_assertions))]
-        let ret = unsafe { std::mem::transmute(val) };
-        ret
-    }
-}
-impl From<SizedInternalFormat> for u32 {
-    fn from(value: SizedInternalFormat) -> u32 {
-        value as u32
-    }
-}
-impl<Dst: GlDstType> SrcType<Dst> for SizedInternalFormat {
-    fn convert(self) -> Dst {
-        Dst::from_uint(self as u32)
-    }
-}
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-#[cfg_attr(debug_assertions, derive(::strum_macros::FromRepr))]
-#[repr(u32)]
-pub enum VertexAttribProperty {
-    VertexAttribArrayBufferBinding = GL_VERTEX_ATTRIB_ARRAY_BUFFER_BINDING,
-    VertexAttribArrayEnabled = GL_VERTEX_ATTRIB_ARRAY_ENABLED,
-    VertexAttribArraySize = GL_VERTEX_ATTRIB_ARRAY_SIZE,
-    VertexAttribArrayStride = GL_VERTEX_ATTRIB_ARRAY_STRIDE,
-    VertexAttribArrayType = GL_VERTEX_ATTRIB_ARRAY_TYPE,
-    CurrentVertexAttrib = GL_CURRENT_VERTEX_ATTRIB,
-    VertexAttribArrayNormalized = GL_VERTEX_ATTRIB_ARRAY_NORMALIZED,
-    VertexAttribArrayInteger = GL_VERTEX_ATTRIB_ARRAY_INTEGER,
-    VertexAttribArrayDivisor = GL_VERTEX_ATTRIB_ARRAY_DIVISOR,
-    VertexAttribArrayLong = GL_VERTEX_ATTRIB_ARRAY_LONG,
-    VertexAttribBinding = GL_VERTEX_ATTRIB_BINDING,
-    VertexAttribRelativeOffset = GL_VERTEX_ATTRIB_RELATIVE_OFFSET,
-}
-impl UnsafeFromGLenum for VertexAttribProperty {
-    unsafe fn unsafe_from_gl_enum(val: u32) -> Self {
-        #[cfg(debug_assertions)]
-        let Some(ret) = VertexAttribProperty::from_repr(val) else {
-            panic!("Attempt to create a VertexAttribProperty from a GLenum with invalid value {val:#X}");
-        };
-        #[cfg(not(debug_assertions))]
-        let ret = unsafe { std::mem::transmute(val) };
-        ret
-    }
-}
-impl From<VertexAttribProperty> for u32 {
-    fn from(value: VertexAttribProperty) -> u32 {
-        value as u32
-    }
-}
-impl<Dst: GlDstType> SrcType<Dst> for VertexAttribProperty {
-    fn convert(self) -> Dst {
-        Dst::from_uint(self as u32)
-    }
-}
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-#[cfg_attr(debug_assertions, derive(::strum_macros::FromRepr))]
-#[repr(u32)]
-pub enum TextureMinFilter {
-    Nearest = GL_NEAREST,
-    Linear = GL_LINEAR,
-    NearestMipmapNearest = GL_NEAREST_MIPMAP_NEAREST,
-    LinearMipmapNearest = GL_LINEAR_MIPMAP_NEAREST,
-    NearestMipmapLinear = GL_NEAREST_MIPMAP_LINEAR,
-    LinearMipmapLinear = GL_LINEAR_MIPMAP_LINEAR,
-}
-impl UnsafeFromGLenum for TextureMinFilter {
-    unsafe fn unsafe_from_gl_enum(val: u32) -> Self {
-        #[cfg(debug_assertions)]
-        let Some(ret) = TextureMinFilter::from_repr(val) else {
-            panic!(
-                "Attempt to create a TextureMinFilter from a GLenum with invalid value {val:#X}"
-            );
-        };
-        #[cfg(not(debug_assertions))]
-        let ret = unsafe { std::mem::transmute(val) };
-        ret
-    }
-}
-impl From<TextureMinFilter> for u32 {
-    fn from(value: TextureMinFilter) -> u32 {
-        value as u32
-    }
-}
-impl<Dst: GlDstType> SrcType<Dst> for TextureMinFilter {
-    fn convert(self) -> Dst {
-        Dst::from_uint(self as u32)
-    }
-}
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-#[cfg_attr(debug_assertions, derive(::strum_macros::FromRepr))]
-#[repr(u32)]
-pub enum StencilOp {
-    Zero = GL_ZERO,
-    Invert = GL_INVERT,
-    Keep = GL_KEEP,
-    Replace = GL_REPLACE,
-    Incr = GL_INCR,
-    Decr = GL_DECR,
-    IncrWrap = GL_INCR_WRAP,
-    DecrWrap = GL_DECR_WRAP,
-}
-impl UnsafeFromGLenum for StencilOp {
-    unsafe fn unsafe_from_gl_enum(val: u32) -> Self {
-        #[cfg(debug_assertions)]
-        let Some(ret) = StencilOp::from_repr(val) else {
-            panic!("Attempt to create a StencilOp from a GLenum with invalid value {val:#X}");
-        };
-        #[cfg(not(debug_assertions))]
-        let ret = unsafe { std::mem::transmute(val) };
-        ret
-    }
-}
-impl From<StencilOp> for u32 {
-    fn from(value: StencilOp) -> u32 {
-        value as u32
-    }
-}
-impl<Dst: GlDstType> SrcType<Dst> for StencilOp {
-    fn convert(self) -> Dst {
-        Dst::from_uint(self as u32)
-    }
-}
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-#[cfg_attr(debug_assertions, derive(::strum_macros::FromRepr))]
-#[repr(u32)]
-pub enum StencilFunction {
+pub enum DepthFunction {
     Never = GL_NEVER,
     Less = GL_LESS,
     Equal = GL_EQUAL,
@@ -3761,23 +4322,20 @@ pub enum StencilFunction {
     Gequal = GL_GEQUAL,
     Always = GL_ALWAYS,
 }
-impl UnsafeFromGLenum for StencilFunction {
-    unsafe fn unsafe_from_gl_enum(val: u32) -> Self {
-        #[cfg(debug_assertions)]
-        let Some(ret) = StencilFunction::from_repr(val) else {
-            panic!("Attempt to create a StencilFunction from a GLenum with invalid value {val:#X}");
-        };
-        #[cfg(not(debug_assertions))]
-        let ret = unsafe { std::mem::transmute(val) };
-        ret
+impl GlEnumGroup for DepthFunction {
+    unsafe fn from_enum_noerr(val: u32) -> Self {
+        unsafe { std::mem::transmute(val) }
+    }
+    fn from_enum(val: u32) -> Option<Self> {
+        Self::from_repr(val)
     }
 }
-impl From<StencilFunction> for u32 {
-    fn from(value: StencilFunction) -> u32 {
+impl From<DepthFunction> for u32 {
+    fn from(value: DepthFunction) -> u32 {
         value as u32
     }
 }
-impl<Dst: GlDstType> SrcType<Dst> for StencilFunction {
+impl<Dst: GlDstType> SrcType<Dst> for DepthFunction {
     fn convert(self) -> Dst {
         Dst::from_uint(self as u32)
     }
@@ -3785,29 +4343,27 @@ impl<Dst: GlDstType> SrcType<Dst> for StencilFunction {
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 #[cfg_attr(debug_assertions, derive(::strum_macros::FromRepr))]
 #[repr(u32)]
-pub enum QueryParameterName {
-    QueryCounterBits = GL_QUERY_COUNTER_BITS,
-    CurrentQuery = GL_CURRENT_QUERY,
+pub enum BlendEquationModeEXT {
+    FuncAdd = GL_FUNC_ADD,
+    FuncReverseSubtract = GL_FUNC_REVERSE_SUBTRACT,
+    FuncSubtract = GL_FUNC_SUBTRACT,
+    Min = GL_MIN,
+    Max = GL_MAX,
 }
-impl UnsafeFromGLenum for QueryParameterName {
-    unsafe fn unsafe_from_gl_enum(val: u32) -> Self {
-        #[cfg(debug_assertions)]
-        let Some(ret) = QueryParameterName::from_repr(val) else {
-            panic!(
-                "Attempt to create a QueryParameterName from a GLenum with invalid value {val:#X}"
-            );
-        };
-        #[cfg(not(debug_assertions))]
-        let ret = unsafe { std::mem::transmute(val) };
-        ret
+impl GlEnumGroup for BlendEquationModeEXT {
+    unsafe fn from_enum_noerr(val: u32) -> Self {
+        unsafe { std::mem::transmute(val) }
+    }
+    fn from_enum(val: u32) -> Option<Self> {
+        Self::from_repr(val)
     }
 }
-impl From<QueryParameterName> for u32 {
-    fn from(value: QueryParameterName) -> u32 {
+impl From<BlendEquationModeEXT> for u32 {
+    fn from(value: BlendEquationModeEXT) -> u32 {
         value as u32
     }
 }
-impl<Dst: GlDstType> SrcType<Dst> for QueryParameterName {
+impl<Dst: GlDstType> SrcType<Dst> for BlendEquationModeEXT {
     fn convert(self) -> Dst {
         Dst::from_uint(self as u32)
     }
@@ -3815,32 +4371,33 @@ impl<Dst: GlDstType> SrcType<Dst> for QueryParameterName {
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 #[cfg_attr(debug_assertions, derive(::strum_macros::FromRepr))]
 #[repr(u32)]
-pub enum DebugSource {
-    DontCare = GL_DONT_CARE,
-    DebugSourceApi = GL_DEBUG_SOURCE_API,
-    DebugSourceWindowSystem = GL_DEBUG_SOURCE_WINDOW_SYSTEM,
-    DebugSourceShaderCompiler = GL_DEBUG_SOURCE_SHADER_COMPILER,
-    DebugSourceThirdParty = GL_DEBUG_SOURCE_THIRD_PARTY,
-    DebugSourceApplication = GL_DEBUG_SOURCE_APPLICATION,
-    DebugSourceOther = GL_DEBUG_SOURCE_OTHER,
+pub enum CopyImageSubDataTarget {
+    Texture1D = GL_TEXTURE_1D,
+    Texture2D = GL_TEXTURE_2D,
+    Texture3D = GL_TEXTURE_3D,
+    TextureCubeMap = GL_TEXTURE_CUBE_MAP,
+    Texture1DArray = GL_TEXTURE_1D_ARRAY,
+    Texture2DArray = GL_TEXTURE_2D_ARRAY,
+    Renderbuffer = GL_RENDERBUFFER,
+    TextureRectangle = GL_TEXTURE_RECTANGLE,
+    Texture2DMultisample = GL_TEXTURE_2D_MULTISAMPLE,
+    Texture2DMultisampleArray = GL_TEXTURE_2D_MULTISAMPLE_ARRAY,
+    TextureCubeMapArray = GL_TEXTURE_CUBE_MAP_ARRAY,
 }
-impl UnsafeFromGLenum for DebugSource {
-    unsafe fn unsafe_from_gl_enum(val: u32) -> Self {
-        #[cfg(debug_assertions)]
-        let Some(ret) = DebugSource::from_repr(val) else {
-            panic!("Attempt to create a DebugSource from a GLenum with invalid value {val:#X}");
-        };
-        #[cfg(not(debug_assertions))]
-        let ret = unsafe { std::mem::transmute(val) };
-        ret
+impl GlEnumGroup for CopyImageSubDataTarget {
+    unsafe fn from_enum_noerr(val: u32) -> Self {
+        unsafe { std::mem::transmute(val) }
+    }
+    fn from_enum(val: u32) -> Option<Self> {
+        Self::from_repr(val)
     }
 }
-impl From<DebugSource> for u32 {
-    fn from(value: DebugSource) -> u32 {
+impl From<CopyImageSubDataTarget> for u32 {
+    fn from(value: CopyImageSubDataTarget) -> u32 {
         value as u32
     }
 }
-impl<Dst: GlDstType> SrcType<Dst> for DebugSource {
+impl<Dst: GlDstType> SrcType<Dst> for CopyImageSubDataTarget {
     fn convert(self) -> Dst {
         Dst::from_uint(self as u32)
     }
@@ -3848,85 +4405,34 @@ impl<Dst: GlDstType> SrcType<Dst> for DebugSource {
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 #[cfg_attr(debug_assertions, derive(::strum_macros::FromRepr))]
 #[repr(u32)]
-pub enum TextureUnit {
-    Texture0 = GL_TEXTURE0,
-    Texture1 = GL_TEXTURE1,
-    Texture2 = GL_TEXTURE2,
-    Texture3 = GL_TEXTURE3,
-    Texture4 = GL_TEXTURE4,
-    Texture5 = GL_TEXTURE5,
-    Texture6 = GL_TEXTURE6,
-    Texture7 = GL_TEXTURE7,
-    Texture8 = GL_TEXTURE8,
-    Texture9 = GL_TEXTURE9,
-    Texture10 = GL_TEXTURE10,
-    Texture11 = GL_TEXTURE11,
-    Texture12 = GL_TEXTURE12,
-    Texture13 = GL_TEXTURE13,
-    Texture14 = GL_TEXTURE14,
-    Texture15 = GL_TEXTURE15,
-    Texture16 = GL_TEXTURE16,
-    Texture17 = GL_TEXTURE17,
-    Texture18 = GL_TEXTURE18,
-    Texture19 = GL_TEXTURE19,
-    Texture20 = GL_TEXTURE20,
-    Texture21 = GL_TEXTURE21,
-    Texture22 = GL_TEXTURE22,
-    Texture23 = GL_TEXTURE23,
-    Texture24 = GL_TEXTURE24,
-    Texture25 = GL_TEXTURE25,
-    Texture26 = GL_TEXTURE26,
-    Texture27 = GL_TEXTURE27,
-    Texture28 = GL_TEXTURE28,
-    Texture29 = GL_TEXTURE29,
-    Texture30 = GL_TEXTURE30,
-    Texture31 = GL_TEXTURE31,
+pub enum UniformBlockPName {
+    UniformBlockBinding = GL_UNIFORM_BLOCK_BINDING,
+    UniformBlockDataSize = GL_UNIFORM_BLOCK_DATA_SIZE,
+    UniformBlockNameLength = GL_UNIFORM_BLOCK_NAME_LENGTH,
+    UniformBlockActiveUniforms = GL_UNIFORM_BLOCK_ACTIVE_UNIFORMS,
+    UniformBlockActiveUniformIndices = GL_UNIFORM_BLOCK_ACTIVE_UNIFORM_INDICES,
+    UniformBlockReferencedByVertexShader = GL_UNIFORM_BLOCK_REFERENCED_BY_VERTEX_SHADER,
+    UniformBlockReferencedByGeometryShader = GL_UNIFORM_BLOCK_REFERENCED_BY_GEOMETRY_SHADER,
+    UniformBlockReferencedByFragmentShader = GL_UNIFORM_BLOCK_REFERENCED_BY_FRAGMENT_SHADER,
+    UniformBlockReferencedByTessControlShader = GL_UNIFORM_BLOCK_REFERENCED_BY_TESS_CONTROL_SHADER,
+    UniformBlockReferencedByTessEvaluationShader =
+        GL_UNIFORM_BLOCK_REFERENCED_BY_TESS_EVALUATION_SHADER,
+    UniformBlockReferencedByComputeShader = GL_UNIFORM_BLOCK_REFERENCED_BY_COMPUTE_SHADER,
 }
-impl UnsafeFromGLenum for TextureUnit {
-    unsafe fn unsafe_from_gl_enum(val: u32) -> Self {
-        #[cfg(debug_assertions)]
-        let Some(ret) = TextureUnit::from_repr(val) else {
-            panic!("Attempt to create a TextureUnit from a GLenum with invalid value {val:#X}");
-        };
-        #[cfg(not(debug_assertions))]
-        let ret = unsafe { std::mem::transmute(val) };
-        ret
+impl GlEnumGroup for UniformBlockPName {
+    unsafe fn from_enum_noerr(val: u32) -> Self {
+        unsafe { std::mem::transmute(val) }
+    }
+    fn from_enum(val: u32) -> Option<Self> {
+        Self::from_repr(val)
     }
 }
-impl From<TextureUnit> for u32 {
-    fn from(value: TextureUnit) -> u32 {
+impl From<UniformBlockPName> for u32 {
+    fn from(value: UniformBlockPName) -> u32 {
         value as u32
     }
 }
-impl<Dst: GlDstType> SrcType<Dst> for TextureUnit {
-    fn convert(self) -> Dst {
-        Dst::from_uint(self as u32)
-    }
-}
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-#[cfg_attr(debug_assertions, derive(::strum_macros::FromRepr))]
-#[repr(u32)]
-pub enum TransformFeedbackBufferMode {
-    InterleavedAttribs = GL_INTERLEAVED_ATTRIBS,
-    SeparateAttribs = GL_SEPARATE_ATTRIBS,
-}
-impl UnsafeFromGLenum for TransformFeedbackBufferMode {
-    unsafe fn unsafe_from_gl_enum(val: u32) -> Self {
-        #[cfg(debug_assertions)]
-        let Some(ret) = TransformFeedbackBufferMode::from_repr(val) else {
-            panic!("Attempt to create a TransformFeedbackBufferMode from a GLenum with invalid value {val:#X}");
-        };
-        #[cfg(not(debug_assertions))]
-        let ret = unsafe { std::mem::transmute(val) };
-        ret
-    }
-}
-impl From<TransformFeedbackBufferMode> for u32 {
-    fn from(value: TransformFeedbackBufferMode) -> u32 {
-        value as u32
-    }
-}
-impl<Dst: GlDstType> SrcType<Dst> for TransformFeedbackBufferMode {
+impl<Dst: GlDstType> SrcType<Dst> for UniformBlockPName {
     fn convert(self) -> Dst {
         Dst::from_uint(self as u32)
     }
@@ -3934,35 +4440,234 @@ impl<Dst: GlDstType> SrcType<Dst> for TransformFeedbackBufferMode {
 bitflags! {
 #[derive(Debug, Clone, Copy, Default, PartialEq, Eq)]
 #[repr(transparent)]
-pub struct UseProgramStageMask: u32 {
-const VERTEX_SHADER_BIT = GL_VERTEX_SHADER_BIT;
-const FRAGMENT_SHADER_BIT = GL_FRAGMENT_SHADER_BIT;
-const GEOMETRY_SHADER_BIT = GL_GEOMETRY_SHADER_BIT;
-const TESS_CONTROL_SHADER_BIT = GL_TESS_CONTROL_SHADER_BIT;
-const TESS_EVALUATION_SHADER_BIT = GL_TESS_EVALUATION_SHADER_BIT;
-const ALL_SHADER_BITS = GL_ALL_SHADER_BITS;
-const COMPUTE_SHADER_BIT = GL_COMPUTE_SHADER_BIT;
-}
-}
-impl UnsafeFromGLenum for UseProgramStageMask {
-    unsafe fn unsafe_from_gl_enum(val: u32) -> Self {
-        #[cfg(debug_assertions)]
-        let Some(ret) = UseProgramStageMask::from_bits(val) else {
-            panic!("Attempt to create a UseProgramStageMask from a GLenum with an invalid bit set! {val:#X}");
-        };
-        #[cfg(not(debug_assertions))]
-        let ret = unsafe { std::mem::transmute(val) };
-        ret
+pub struct MapBufferAccessMask: u32 {
+const MAP_INVALIDATE_RANGE_BIT = GL_MAP_INVALIDATE_RANGE_BIT;
+const MAP_INVALIDATE_BUFFER_BIT = GL_MAP_INVALIDATE_BUFFER_BIT;
+const MAP_FLUSH_EXPLICIT_BIT = GL_MAP_FLUSH_EXPLICIT_BIT;
+const MAP_UNSYNCHRONIZED_BIT = GL_MAP_UNSYNCHRONIZED_BIT;
+const MAP_READ_BIT = GL_MAP_READ_BIT;
+const MAP_WRITE_BIT = GL_MAP_WRITE_BIT;
+const MAP_PERSISTENT_BIT = GL_MAP_PERSISTENT_BIT;
+const MAP_COHERENT_BIT = GL_MAP_COHERENT_BIT;
+}}
+impl GlEnumGroup for MapBufferAccessMask {
+    unsafe fn from_enum_noerr(val: u32) -> Self {
+        unsafe { std::mem::transmute(val) }
+    }
+    fn from_enum(val: u32) -> Option<Self> {
+        Self::from_bits(val)
     }
 }
-impl From<UseProgramStageMask> for u32 {
-    fn from(value: UseProgramStageMask) -> u32 {
+impl From<MapBufferAccessMask> for u32 {
+    fn from(value: MapBufferAccessMask) -> u32 {
         value.bits()
     }
 }
-impl<Dst: GlDstType> SrcType<Dst> for UseProgramStageMask {
+impl<Dst: GlDstType> SrcType<Dst> for MapBufferAccessMask {
     fn convert(self) -> Dst {
         Dst::from_uint(self.bits())
+    }
+}
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[cfg_attr(debug_assertions, derive(::strum_macros::FromRepr))]
+#[repr(u32)]
+pub enum VertexAttribEnum {
+    VertexAttribArrayBufferBinding = GL_VERTEX_ATTRIB_ARRAY_BUFFER_BINDING,
+    VertexAttribArrayEnabled = GL_VERTEX_ATTRIB_ARRAY_ENABLED,
+    VertexAttribArraySize = GL_VERTEX_ATTRIB_ARRAY_SIZE,
+    VertexAttribArrayStride = GL_VERTEX_ATTRIB_ARRAY_STRIDE,
+    VertexAttribArrayType = GL_VERTEX_ATTRIB_ARRAY_TYPE,
+    CurrentVertexAttrib = GL_CURRENT_VERTEX_ATTRIB,
+    VertexAttribArrayNormalized = GL_VERTEX_ATTRIB_ARRAY_NORMALIZED,
+    VertexAttribArrayInteger = GL_VERTEX_ATTRIB_ARRAY_INTEGER,
+    VertexAttribArrayDivisor = GL_VERTEX_ATTRIB_ARRAY_DIVISOR,
+}
+impl GlEnumGroup for VertexAttribEnum {
+    unsafe fn from_enum_noerr(val: u32) -> Self {
+        unsafe { std::mem::transmute(val) }
+    }
+    fn from_enum(val: u32) -> Option<Self> {
+        Self::from_repr(val)
+    }
+}
+impl From<VertexAttribEnum> for u32 {
+    fn from(value: VertexAttribEnum) -> u32 {
+        value as u32
+    }
+}
+impl<Dst: GlDstType> SrcType<Dst> for VertexAttribEnum {
+    fn convert(self) -> Dst {
+        Dst::from_uint(self as u32)
+    }
+}
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[cfg_attr(debug_assertions, derive(::strum_macros::FromRepr))]
+#[repr(u32)]
+pub enum TextureMagFilter {
+    Nearest = GL_NEAREST,
+    Linear = GL_LINEAR,
+}
+impl GlEnumGroup for TextureMagFilter {
+    unsafe fn from_enum_noerr(val: u32) -> Self {
+        unsafe { std::mem::transmute(val) }
+    }
+    fn from_enum(val: u32) -> Option<Self> {
+        Self::from_repr(val)
+    }
+}
+impl From<TextureMagFilter> for u32 {
+    fn from(value: TextureMagFilter) -> u32 {
+        value as u32
+    }
+}
+impl<Dst: GlDstType> SrcType<Dst> for TextureMagFilter {
+    fn convert(self) -> Dst {
+        Dst::from_uint(self as u32)
+    }
+}
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[cfg_attr(debug_assertions, derive(::strum_macros::FromRepr))]
+#[repr(u32)]
+pub enum VertexAttribIType {
+    Byte = GL_BYTE,
+    UnsignedByte = GL_UNSIGNED_BYTE,
+    Short = GL_SHORT,
+    UnsignedShort = GL_UNSIGNED_SHORT,
+    Int = GL_INT,
+    UnsignedInt = GL_UNSIGNED_INT,
+}
+impl GlEnumGroup for VertexAttribIType {
+    unsafe fn from_enum_noerr(val: u32) -> Self {
+        unsafe { std::mem::transmute(val) }
+    }
+    fn from_enum(val: u32) -> Option<Self> {
+        Self::from_repr(val)
+    }
+}
+impl From<VertexAttribIType> for u32 {
+    fn from(value: VertexAttribIType) -> u32 {
+        value as u32
+    }
+}
+impl<Dst: GlDstType> SrcType<Dst> for VertexAttribIType {
+    fn convert(self) -> Dst {
+        Dst::from_uint(self as u32)
+    }
+}
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[cfg_attr(debug_assertions, derive(::strum_macros::FromRepr))]
+#[repr(u32)]
+pub enum ObjectIdentifier {
+    Texture = GL_TEXTURE,
+    Framebuffer = GL_FRAMEBUFFER,
+    Renderbuffer = GL_RENDERBUFFER,
+    TransformFeedback = GL_TRANSFORM_FEEDBACK,
+    Buffer = GL_BUFFER,
+    Shader = GL_SHADER,
+    Program = GL_PROGRAM,
+    VertexArray = GL_VERTEX_ARRAY,
+    Query = GL_QUERY,
+    ProgramPipeline = GL_PROGRAM_PIPELINE,
+    Sampler = GL_SAMPLER,
+}
+impl GlEnumGroup for ObjectIdentifier {
+    unsafe fn from_enum_noerr(val: u32) -> Self {
+        unsafe { std::mem::transmute(val) }
+    }
+    fn from_enum(val: u32) -> Option<Self> {
+        Self::from_repr(val)
+    }
+}
+impl From<ObjectIdentifier> for u32 {
+    fn from(value: ObjectIdentifier) -> u32 {
+        value as u32
+    }
+}
+impl<Dst: GlDstType> SrcType<Dst> for ObjectIdentifier {
+    fn convert(self) -> Dst {
+        Dst::from_uint(self as u32)
+    }
+}
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[cfg_attr(debug_assertions, derive(::strum_macros::FromRepr))]
+#[repr(u32)]
+pub enum Buffer {
+    Color = GL_COLOR,
+    Depth = GL_DEPTH,
+    Stencil = GL_STENCIL,
+}
+impl GlEnumGroup for Buffer {
+    unsafe fn from_enum_noerr(val: u32) -> Self {
+        unsafe { std::mem::transmute(val) }
+    }
+    fn from_enum(val: u32) -> Option<Self> {
+        Self::from_repr(val)
+    }
+}
+impl From<Buffer> for u32 {
+    fn from(value: Buffer) -> u32 {
+        value as u32
+    }
+}
+impl<Dst: GlDstType> SrcType<Dst> for Buffer {
+    fn convert(self) -> Dst {
+        Dst::from_uint(self as u32)
+    }
+}
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[cfg_attr(debug_assertions, derive(::strum_macros::FromRepr))]
+#[repr(u32)]
+pub enum DebugSeverity {
+    DontCare = GL_DONT_CARE,
+    DebugSeverityHigh = GL_DEBUG_SEVERITY_HIGH,
+    DebugSeverityMedium = GL_DEBUG_SEVERITY_MEDIUM,
+    DebugSeverityLow = GL_DEBUG_SEVERITY_LOW,
+    DebugSeverityNotification = GL_DEBUG_SEVERITY_NOTIFICATION,
+}
+impl GlEnumGroup for DebugSeverity {
+    unsafe fn from_enum_noerr(val: u32) -> Self {
+        unsafe { std::mem::transmute(val) }
+    }
+    fn from_enum(val: u32) -> Option<Self> {
+        Self::from_repr(val)
+    }
+}
+impl From<DebugSeverity> for u32 {
+    fn from(value: DebugSeverity) -> u32 {
+        value as u32
+    }
+}
+impl<Dst: GlDstType> SrcType<Dst> for DebugSeverity {
+    fn convert(self) -> Dst {
+        Dst::from_uint(self as u32)
+    }
+}
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[cfg_attr(debug_assertions, derive(::strum_macros::FromRepr))]
+#[repr(u32)]
+pub enum TransformFeedbackPName {
+    TransformFeedbackBufferStart = GL_TRANSFORM_FEEDBACK_BUFFER_START,
+    TransformFeedbackBufferSize = GL_TRANSFORM_FEEDBACK_BUFFER_SIZE,
+    TransformFeedbackBufferBinding = GL_TRANSFORM_FEEDBACK_BUFFER_BINDING,
+    TransformFeedbackActive = GL_TRANSFORM_FEEDBACK_ACTIVE,
+    TransformFeedbackPaused = GL_TRANSFORM_FEEDBACK_PAUSED,
+}
+impl GlEnumGroup for TransformFeedbackPName {
+    unsafe fn from_enum_noerr(val: u32) -> Self {
+        unsafe { std::mem::transmute(val) }
+    }
+    fn from_enum(val: u32) -> Option<Self> {
+        Self::from_repr(val)
+    }
+}
+impl From<TransformFeedbackPName> for u32 {
+    fn from(value: TransformFeedbackPName) -> u32 {
+        value as u32
+    }
+}
+impl<Dst: GlDstType> SrcType<Dst> for TransformFeedbackPName {
+    fn convert(self) -> Dst {
+        Dst::from_uint(self as u32)
     }
 }
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -4012,15 +4717,12 @@ pub enum ColorBuffer {
     Back = GL_BACK,
     None = GL_NONE,
 }
-impl UnsafeFromGLenum for ColorBuffer {
-    unsafe fn unsafe_from_gl_enum(val: u32) -> Self {
-        #[cfg(debug_assertions)]
-        let Some(ret) = ColorBuffer::from_repr(val) else {
-            panic!("Attempt to create a ColorBuffer from a GLenum with invalid value {val:#X}");
-        };
-        #[cfg(not(debug_assertions))]
-        let ret = unsafe { std::mem::transmute(val) };
-        ret
+impl GlEnumGroup for ColorBuffer {
+    unsafe fn from_enum_noerr(val: u32) -> Self {
+        unsafe { std::mem::transmute(val) }
+    }
+    fn from_enum(val: u32) -> Option<Self> {
+        Self::from_repr(val)
     }
 }
 impl From<ColorBuffer> for u32 {
@@ -4036,397 +4738,38 @@ impl<Dst: GlDstType> SrcType<Dst> for ColorBuffer {
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 #[cfg_attr(debug_assertions, derive(::strum_macros::FromRepr))]
 #[repr(u32)]
-pub enum ObjectIdentifier {
-    Texture = GL_TEXTURE,
-    Framebuffer = GL_FRAMEBUFFER,
-    Renderbuffer = GL_RENDERBUFFER,
-    TransformFeedback = GL_TRANSFORM_FEEDBACK,
-    Buffer = GL_BUFFER,
-    Shader = GL_SHADER,
-    Program = GL_PROGRAM,
-    VertexArray = GL_VERTEX_ARRAY,
-    Query = GL_QUERY,
-    ProgramPipeline = GL_PROGRAM_PIPELINE,
-    Sampler = GL_SAMPLER,
+pub enum PixelStoreParameter {
+    UnpackSwapBytes = GL_UNPACK_SWAP_BYTES,
+    UnpackLsbFirst = GL_UNPACK_LSB_FIRST,
+    UnpackRowLength = GL_UNPACK_ROW_LENGTH,
+    UnpackSkipRows = GL_UNPACK_SKIP_ROWS,
+    UnpackSkipPixels = GL_UNPACK_SKIP_PIXELS,
+    UnpackAlignment = GL_UNPACK_ALIGNMENT,
+    PackSwapBytes = GL_PACK_SWAP_BYTES,
+    PackLsbFirst = GL_PACK_LSB_FIRST,
+    PackRowLength = GL_PACK_ROW_LENGTH,
+    PackSkipRows = GL_PACK_SKIP_ROWS,
+    PackSkipPixels = GL_PACK_SKIP_PIXELS,
+    PackAlignment = GL_PACK_ALIGNMENT,
+    PackSkipImages = GL_PACK_SKIP_IMAGES,
+    PackImageHeight = GL_PACK_IMAGE_HEIGHT,
+    UnpackSkipImages = GL_UNPACK_SKIP_IMAGES,
+    UnpackImageHeight = GL_UNPACK_IMAGE_HEIGHT,
 }
-impl UnsafeFromGLenum for ObjectIdentifier {
-    unsafe fn unsafe_from_gl_enum(val: u32) -> Self {
-        #[cfg(debug_assertions)]
-        let Some(ret) = ObjectIdentifier::from_repr(val) else {
-            panic!(
-                "Attempt to create a ObjectIdentifier from a GLenum with invalid value {val:#X}"
-            );
-        };
-        #[cfg(not(debug_assertions))]
-        let ret = unsafe { std::mem::transmute(val) };
-        ret
+impl GlEnumGroup for PixelStoreParameter {
+    unsafe fn from_enum_noerr(val: u32) -> Self {
+        unsafe { std::mem::transmute(val) }
+    }
+    fn from_enum(val: u32) -> Option<Self> {
+        Self::from_repr(val)
     }
 }
-impl From<ObjectIdentifier> for u32 {
-    fn from(value: ObjectIdentifier) -> u32 {
+impl From<PixelStoreParameter> for u32 {
+    fn from(value: PixelStoreParameter) -> u32 {
         value as u32
     }
 }
-impl<Dst: GlDstType> SrcType<Dst> for ObjectIdentifier {
-    fn convert(self) -> Dst {
-        Dst::from_uint(self as u32)
-    }
-}
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-#[cfg_attr(debug_assertions, derive(::strum_macros::FromRepr))]
-#[repr(u32)]
-pub enum BufferStorageTarget {
-    ArrayBuffer = GL_ARRAY_BUFFER,
-    ElementArrayBuffer = GL_ELEMENT_ARRAY_BUFFER,
-    PixelPackBuffer = GL_PIXEL_PACK_BUFFER,
-    PixelUnpackBuffer = GL_PIXEL_UNPACK_BUFFER,
-    TextureBuffer = GL_TEXTURE_BUFFER,
-    CopyReadBuffer = GL_COPY_READ_BUFFER,
-    CopyWriteBuffer = GL_COPY_WRITE_BUFFER,
-    UniformBuffer = GL_UNIFORM_BUFFER,
-    DrawIndirectBuffer = GL_DRAW_INDIRECT_BUFFER,
-    AtomicCounterBuffer = GL_ATOMIC_COUNTER_BUFFER,
-    DispatchIndirectBuffer = GL_DISPATCH_INDIRECT_BUFFER,
-    ShaderStorageBuffer = GL_SHADER_STORAGE_BUFFER,
-    TransformFeedbackBuffer = GL_TRANSFORM_FEEDBACK_BUFFER,
-    QueryBuffer = GL_QUERY_BUFFER,
-}
-impl UnsafeFromGLenum for BufferStorageTarget {
-    unsafe fn unsafe_from_gl_enum(val: u32) -> Self {
-        #[cfg(debug_assertions)]
-        let Some(ret) = BufferStorageTarget::from_repr(val) else {
-            panic!(
-                "Attempt to create a BufferStorageTarget from a GLenum with invalid value {val:#X}"
-            );
-        };
-        #[cfg(not(debug_assertions))]
-        let ret = unsafe { std::mem::transmute(val) };
-        ret
-    }
-}
-impl From<BufferStorageTarget> for u32 {
-    fn from(value: BufferStorageTarget) -> u32 {
-        value as u32
-    }
-}
-impl<Dst: GlDstType> SrcType<Dst> for BufferStorageTarget {
-    fn convert(self) -> Dst {
-        Dst::from_uint(self as u32)
-    }
-}
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-#[cfg_attr(debug_assertions, derive(::strum_macros::FromRepr))]
-#[repr(u32)]
-pub enum FramebufferAttachment {
-    DepthStencilAttachment = GL_DEPTH_STENCIL_ATTACHMENT,
-    ColorAttachment0 = GL_COLOR_ATTACHMENT0,
-    ColorAttachment1 = GL_COLOR_ATTACHMENT1,
-    ColorAttachment2 = GL_COLOR_ATTACHMENT2,
-    ColorAttachment3 = GL_COLOR_ATTACHMENT3,
-    ColorAttachment4 = GL_COLOR_ATTACHMENT4,
-    ColorAttachment5 = GL_COLOR_ATTACHMENT5,
-    ColorAttachment6 = GL_COLOR_ATTACHMENT6,
-    ColorAttachment7 = GL_COLOR_ATTACHMENT7,
-    ColorAttachment8 = GL_COLOR_ATTACHMENT8,
-    ColorAttachment9 = GL_COLOR_ATTACHMENT9,
-    ColorAttachment10 = GL_COLOR_ATTACHMENT10,
-    ColorAttachment11 = GL_COLOR_ATTACHMENT11,
-    ColorAttachment12 = GL_COLOR_ATTACHMENT12,
-    ColorAttachment13 = GL_COLOR_ATTACHMENT13,
-    ColorAttachment14 = GL_COLOR_ATTACHMENT14,
-    ColorAttachment15 = GL_COLOR_ATTACHMENT15,
-    ColorAttachment16 = GL_COLOR_ATTACHMENT16,
-    ColorAttachment17 = GL_COLOR_ATTACHMENT17,
-    ColorAttachment18 = GL_COLOR_ATTACHMENT18,
-    ColorAttachment19 = GL_COLOR_ATTACHMENT19,
-    ColorAttachment20 = GL_COLOR_ATTACHMENT20,
-    ColorAttachment21 = GL_COLOR_ATTACHMENT21,
-    ColorAttachment22 = GL_COLOR_ATTACHMENT22,
-    ColorAttachment23 = GL_COLOR_ATTACHMENT23,
-    ColorAttachment24 = GL_COLOR_ATTACHMENT24,
-    ColorAttachment25 = GL_COLOR_ATTACHMENT25,
-    ColorAttachment26 = GL_COLOR_ATTACHMENT26,
-    ColorAttachment27 = GL_COLOR_ATTACHMENT27,
-    ColorAttachment28 = GL_COLOR_ATTACHMENT28,
-    ColorAttachment29 = GL_COLOR_ATTACHMENT29,
-    ColorAttachment30 = GL_COLOR_ATTACHMENT30,
-    ColorAttachment31 = GL_COLOR_ATTACHMENT31,
-    DepthAttachment = GL_DEPTH_ATTACHMENT,
-    StencilAttachment = GL_STENCIL_ATTACHMENT,
-}
-impl UnsafeFromGLenum for FramebufferAttachment {
-    unsafe fn unsafe_from_gl_enum(val: u32) -> Self {
-        #[cfg(debug_assertions)]
-        let Some(ret) = FramebufferAttachment::from_repr(val) else {
-            panic!("Attempt to create a FramebufferAttachment from a GLenum with invalid value {val:#X}");
-        };
-        #[cfg(not(debug_assertions))]
-        let ret = unsafe { std::mem::transmute(val) };
-        ret
-    }
-}
-impl From<FramebufferAttachment> for u32 {
-    fn from(value: FramebufferAttachment) -> u32 {
-        value as u32
-    }
-}
-impl<Dst: GlDstType> SrcType<Dst> for FramebufferAttachment {
-    fn convert(self) -> Dst {
-        Dst::from_uint(self as u32)
-    }
-}
-bitflags! {
-#[derive(Debug, Clone, Copy, Default, PartialEq, Eq)]
-#[repr(transparent)]
-pub struct MapBufferAccessMask: u32 {
-const MAP_INVALIDATE_RANGE_BIT = GL_MAP_INVALIDATE_RANGE_BIT;
-const MAP_INVALIDATE_BUFFER_BIT = GL_MAP_INVALIDATE_BUFFER_BIT;
-const MAP_FLUSH_EXPLICIT_BIT = GL_MAP_FLUSH_EXPLICIT_BIT;
-const MAP_UNSYNCHRONIZED_BIT = GL_MAP_UNSYNCHRONIZED_BIT;
-const MAP_READ_BIT = GL_MAP_READ_BIT;
-const MAP_WRITE_BIT = GL_MAP_WRITE_BIT;
-const MAP_PERSISTENT_BIT = GL_MAP_PERSISTENT_BIT;
-const MAP_COHERENT_BIT = GL_MAP_COHERENT_BIT;
-}
-}
-impl UnsafeFromGLenum for MapBufferAccessMask {
-    unsafe fn unsafe_from_gl_enum(val: u32) -> Self {
-        #[cfg(debug_assertions)]
-        let Some(ret) = MapBufferAccessMask::from_bits(val) else {
-            panic!("Attempt to create a MapBufferAccessMask from a GLenum with an invalid bit set! {val:#X}");
-        };
-        #[cfg(not(debug_assertions))]
-        let ret = unsafe { std::mem::transmute(val) };
-        ret
-    }
-}
-impl From<MapBufferAccessMask> for u32 {
-    fn from(value: MapBufferAccessMask) -> u32 {
-        value.bits()
-    }
-}
-impl<Dst: GlDstType> SrcType<Dst> for MapBufferAccessMask {
-    fn convert(self) -> Dst {
-        Dst::from_uint(self.bits())
-    }
-}
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-#[cfg_attr(debug_assertions, derive(::strum_macros::FromRepr))]
-#[repr(u32)]
-pub enum CopyImageSubDataTarget {
-    Texture1D = GL_TEXTURE_1D,
-    Texture2D = GL_TEXTURE_2D,
-    Texture3D = GL_TEXTURE_3D,
-    TextureCubeMap = GL_TEXTURE_CUBE_MAP,
-    Texture1DArray = GL_TEXTURE_1D_ARRAY,
-    Texture2DArray = GL_TEXTURE_2D_ARRAY,
-    Renderbuffer = GL_RENDERBUFFER,
-    TextureRectangle = GL_TEXTURE_RECTANGLE,
-    Texture2DMultisample = GL_TEXTURE_2D_MULTISAMPLE,
-    Texture2DMultisampleArray = GL_TEXTURE_2D_MULTISAMPLE_ARRAY,
-    TextureCubeMapArray = GL_TEXTURE_CUBE_MAP_ARRAY,
-}
-impl UnsafeFromGLenum for CopyImageSubDataTarget {
-    unsafe fn unsafe_from_gl_enum(val: u32) -> Self {
-        #[cfg(debug_assertions)]
-        let Some(ret) = CopyImageSubDataTarget::from_repr(val) else {
-            panic!("Attempt to create a CopyImageSubDataTarget from a GLenum with invalid value {val:#X}");
-        };
-        #[cfg(not(debug_assertions))]
-        let ret = unsafe { std::mem::transmute(val) };
-        ret
-    }
-}
-impl From<CopyImageSubDataTarget> for u32 {
-    fn from(value: CopyImageSubDataTarget) -> u32 {
-        value as u32
-    }
-}
-impl<Dst: GlDstType> SrcType<Dst> for CopyImageSubDataTarget {
-    fn convert(self) -> Dst {
-        Dst::from_uint(self as u32)
-    }
-}
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-#[cfg_attr(debug_assertions, derive(::strum_macros::FromRepr))]
-#[repr(u32)]
-pub enum TransformFeedbackPName {
-    TransformFeedbackBufferStart = GL_TRANSFORM_FEEDBACK_BUFFER_START,
-    TransformFeedbackBufferSize = GL_TRANSFORM_FEEDBACK_BUFFER_SIZE,
-    TransformFeedbackBufferBinding = GL_TRANSFORM_FEEDBACK_BUFFER_BINDING,
-    TransformFeedbackActive = GL_TRANSFORM_FEEDBACK_ACTIVE,
-    TransformFeedbackPaused = GL_TRANSFORM_FEEDBACK_PAUSED,
-}
-impl UnsafeFromGLenum for TransformFeedbackPName {
-    unsafe fn unsafe_from_gl_enum(val: u32) -> Self {
-        #[cfg(debug_assertions)]
-        let Some(ret) = TransformFeedbackPName::from_repr(val) else {
-            panic!("Attempt to create a TransformFeedbackPName from a GLenum with invalid value {val:#X}");
-        };
-        #[cfg(not(debug_assertions))]
-        let ret = unsafe { std::mem::transmute(val) };
-        ret
-    }
-}
-impl From<TransformFeedbackPName> for u32 {
-    fn from(value: TransformFeedbackPName) -> u32 {
-        value as u32
-    }
-}
-impl<Dst: GlDstType> SrcType<Dst> for TransformFeedbackPName {
-    fn convert(self) -> Dst {
-        Dst::from_uint(self as u32)
-    }
-}
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-#[cfg_attr(debug_assertions, derive(::strum_macros::FromRepr))]
-#[repr(u32)]
-pub enum FramebufferTarget {
-    ReadFramebuffer = GL_READ_FRAMEBUFFER,
-    DrawFramebuffer = GL_DRAW_FRAMEBUFFER,
-    Framebuffer = GL_FRAMEBUFFER,
-}
-impl UnsafeFromGLenum for FramebufferTarget {
-    unsafe fn unsafe_from_gl_enum(val: u32) -> Self {
-        #[cfg(debug_assertions)]
-        let Some(ret) = FramebufferTarget::from_repr(val) else {
-            panic!(
-                "Attempt to create a FramebufferTarget from a GLenum with invalid value {val:#X}"
-            );
-        };
-        #[cfg(not(debug_assertions))]
-        let ret = unsafe { std::mem::transmute(val) };
-        ret
-    }
-}
-impl From<FramebufferTarget> for u32 {
-    fn from(value: FramebufferTarget) -> u32 {
-        value as u32
-    }
-}
-impl<Dst: GlDstType> SrcType<Dst> for FramebufferTarget {
-    fn convert(self) -> Dst {
-        Dst::from_uint(self as u32)
-    }
-}
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-#[cfg_attr(debug_assertions, derive(::strum_macros::FromRepr))]
-#[repr(u32)]
-pub enum DrawBufferMode {
-    FrontLeft = GL_FRONT_LEFT,
-    FrontRight = GL_FRONT_RIGHT,
-    BackLeft = GL_BACK_LEFT,
-    BackRight = GL_BACK_RIGHT,
-    Front = GL_FRONT,
-    Left = GL_LEFT,
-    Right = GL_RIGHT,
-    FrontAndBack = GL_FRONT_AND_BACK,
-    ColorAttachment0 = GL_COLOR_ATTACHMENT0,
-    ColorAttachment1 = GL_COLOR_ATTACHMENT1,
-    ColorAttachment2 = GL_COLOR_ATTACHMENT2,
-    ColorAttachment3 = GL_COLOR_ATTACHMENT3,
-    ColorAttachment4 = GL_COLOR_ATTACHMENT4,
-    ColorAttachment5 = GL_COLOR_ATTACHMENT5,
-    ColorAttachment6 = GL_COLOR_ATTACHMENT6,
-    ColorAttachment7 = GL_COLOR_ATTACHMENT7,
-    ColorAttachment8 = GL_COLOR_ATTACHMENT8,
-    ColorAttachment9 = GL_COLOR_ATTACHMENT9,
-    ColorAttachment10 = GL_COLOR_ATTACHMENT10,
-    ColorAttachment11 = GL_COLOR_ATTACHMENT11,
-    ColorAttachment12 = GL_COLOR_ATTACHMENT12,
-    ColorAttachment13 = GL_COLOR_ATTACHMENT13,
-    ColorAttachment14 = GL_COLOR_ATTACHMENT14,
-    ColorAttachment15 = GL_COLOR_ATTACHMENT15,
-    ColorAttachment16 = GL_COLOR_ATTACHMENT16,
-    ColorAttachment17 = GL_COLOR_ATTACHMENT17,
-    ColorAttachment18 = GL_COLOR_ATTACHMENT18,
-    ColorAttachment19 = GL_COLOR_ATTACHMENT19,
-    ColorAttachment20 = GL_COLOR_ATTACHMENT20,
-    ColorAttachment21 = GL_COLOR_ATTACHMENT21,
-    ColorAttachment22 = GL_COLOR_ATTACHMENT22,
-    ColorAttachment23 = GL_COLOR_ATTACHMENT23,
-    ColorAttachment24 = GL_COLOR_ATTACHMENT24,
-    ColorAttachment25 = GL_COLOR_ATTACHMENT25,
-    ColorAttachment26 = GL_COLOR_ATTACHMENT26,
-    ColorAttachment27 = GL_COLOR_ATTACHMENT27,
-    ColorAttachment28 = GL_COLOR_ATTACHMENT28,
-    ColorAttachment29 = GL_COLOR_ATTACHMENT29,
-    ColorAttachment30 = GL_COLOR_ATTACHMENT30,
-    ColorAttachment31 = GL_COLOR_ATTACHMENT31,
-    Back = GL_BACK,
-    None = GL_NONE,
-}
-impl UnsafeFromGLenum for DrawBufferMode {
-    unsafe fn unsafe_from_gl_enum(val: u32) -> Self {
-        #[cfg(debug_assertions)]
-        let Some(ret) = DrawBufferMode::from_repr(val) else {
-            panic!("Attempt to create a DrawBufferMode from a GLenum with invalid value {val:#X}");
-        };
-        #[cfg(not(debug_assertions))]
-        let ret = unsafe { std::mem::transmute(val) };
-        ret
-    }
-}
-impl From<DrawBufferMode> for u32 {
-    fn from(value: DrawBufferMode) -> u32 {
-        value as u32
-    }
-}
-impl<Dst: GlDstType> SrcType<Dst> for DrawBufferMode {
-    fn convert(self) -> Dst {
-        Dst::from_uint(self as u32)
-    }
-}
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-#[cfg_attr(debug_assertions, derive(::strum_macros::FromRepr))]
-#[repr(u32)]
-pub enum TextureTarget {
-    Texture1D = GL_TEXTURE_1D,
-    Texture2D = GL_TEXTURE_2D,
-    ProxyTexture1D = GL_PROXY_TEXTURE_1D,
-    ProxyTexture2D = GL_PROXY_TEXTURE_2D,
-    Texture3D = GL_TEXTURE_3D,
-    ProxyTexture3D = GL_PROXY_TEXTURE_3D,
-    TextureCubeMap = GL_TEXTURE_CUBE_MAP,
-    TextureCubeMapPositiveX = GL_TEXTURE_CUBE_MAP_POSITIVE_X,
-    TextureCubeMapNegativeX = GL_TEXTURE_CUBE_MAP_NEGATIVE_X,
-    TextureCubeMapPositiveY = GL_TEXTURE_CUBE_MAP_POSITIVE_Y,
-    TextureCubeMapNegativeY = GL_TEXTURE_CUBE_MAP_NEGATIVE_Y,
-    TextureCubeMapPositiveZ = GL_TEXTURE_CUBE_MAP_POSITIVE_Z,
-    TextureCubeMapNegativeZ = GL_TEXTURE_CUBE_MAP_NEGATIVE_Z,
-    ProxyTextureCubeMap = GL_PROXY_TEXTURE_CUBE_MAP,
-    Texture1DArray = GL_TEXTURE_1D_ARRAY,
-    ProxyTexture1DArray = GL_PROXY_TEXTURE_1D_ARRAY,
-    Texture2DArray = GL_TEXTURE_2D_ARRAY,
-    ProxyTexture2DArray = GL_PROXY_TEXTURE_2D_ARRAY,
-    Renderbuffer = GL_RENDERBUFFER,
-    TextureBuffer = GL_TEXTURE_BUFFER,
-    TextureRectangle = GL_TEXTURE_RECTANGLE,
-    ProxyTextureRectangle = GL_PROXY_TEXTURE_RECTANGLE,
-    Texture2DMultisample = GL_TEXTURE_2D_MULTISAMPLE,
-    ProxyTexture2DMultisample = GL_PROXY_TEXTURE_2D_MULTISAMPLE,
-    Texture2DMultisampleArray = GL_TEXTURE_2D_MULTISAMPLE_ARRAY,
-    ProxyTexture2DMultisampleArray = GL_PROXY_TEXTURE_2D_MULTISAMPLE_ARRAY,
-    TextureCubeMapArray = GL_TEXTURE_CUBE_MAP_ARRAY,
-    ProxyTextureCubeMapArray = GL_PROXY_TEXTURE_CUBE_MAP_ARRAY,
-}
-impl UnsafeFromGLenum for TextureTarget {
-    unsafe fn unsafe_from_gl_enum(val: u32) -> Self {
-        #[cfg(debug_assertions)]
-        let Some(ret) = TextureTarget::from_repr(val) else {
-            panic!("Attempt to create a TextureTarget from a GLenum with invalid value {val:#X}");
-        };
-        #[cfg(not(debug_assertions))]
-        let ret = unsafe { std::mem::transmute(val) };
-        ret
-    }
-}
-impl From<TextureTarget> for u32 {
-    fn from(value: TextureTarget) -> u32 {
-        value as u32
-    }
-}
-impl<Dst: GlDstType> SrcType<Dst> for TextureTarget {
+impl<Dst: GlDstType> SrcType<Dst> for PixelStoreParameter {
     fn convert(self) -> Dst {
         Dst::from_uint(self as u32)
     }
@@ -4444,15 +4787,12 @@ pub enum ConditionalRenderMode {
     QueryByRegionWaitInverted = GL_QUERY_BY_REGION_WAIT_INVERTED,
     QueryByRegionNoWaitInverted = GL_QUERY_BY_REGION_NO_WAIT_INVERTED,
 }
-impl UnsafeFromGLenum for ConditionalRenderMode {
-    unsafe fn unsafe_from_gl_enum(val: u32) -> Self {
-        #[cfg(debug_assertions)]
-        let Some(ret) = ConditionalRenderMode::from_repr(val) else {
-            panic!("Attempt to create a ConditionalRenderMode from a GLenum with invalid value {val:#X}");
-        };
-        #[cfg(not(debug_assertions))]
-        let ret = unsafe { std::mem::transmute(val) };
-        ret
+impl GlEnumGroup for ConditionalRenderMode {
+    unsafe fn from_enum_noerr(val: u32) -> Self {
+        unsafe { std::mem::transmute(val) }
+    }
+    fn from_enum(val: u32) -> Option<Self> {
+        Self::from_repr(val)
     }
 }
 impl From<ConditionalRenderMode> for u32 {
@@ -4461,406 +4801,6 @@ impl From<ConditionalRenderMode> for u32 {
     }
 }
 impl<Dst: GlDstType> SrcType<Dst> for ConditionalRenderMode {
-    fn convert(self) -> Dst {
-        Dst::from_uint(self as u32)
-    }
-}
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-#[cfg_attr(debug_assertions, derive(::strum_macros::FromRepr))]
-#[repr(u32)]
-pub enum ClipControlDepth {
-    NegativeOneToOne = GL_NEGATIVE_ONE_TO_ONE,
-    ZeroToOne = GL_ZERO_TO_ONE,
-}
-impl UnsafeFromGLenum for ClipControlDepth {
-    unsafe fn unsafe_from_gl_enum(val: u32) -> Self {
-        #[cfg(debug_assertions)]
-        let Some(ret) = ClipControlDepth::from_repr(val) else {
-            panic!(
-                "Attempt to create a ClipControlDepth from a GLenum with invalid value {val:#X}"
-            );
-        };
-        #[cfg(not(debug_assertions))]
-        let ret = unsafe { std::mem::transmute(val) };
-        ret
-    }
-}
-impl From<ClipControlDepth> for u32 {
-    fn from(value: ClipControlDepth) -> u32 {
-        value as u32
-    }
-}
-impl<Dst: GlDstType> SrcType<Dst> for ClipControlDepth {
-    fn convert(self) -> Dst {
-        Dst::from_uint(self as u32)
-    }
-}
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-#[cfg_attr(debug_assertions, derive(::strum_macros::FromRepr))]
-#[repr(u32)]
-pub enum QueryTarget {
-    SamplesPassed = GL_SAMPLES_PASSED,
-    PrimitivesGenerated = GL_PRIMITIVES_GENERATED,
-    TransformFeedbackPrimitivesWritten = GL_TRANSFORM_FEEDBACK_PRIMITIVES_WRITTEN,
-    AnySamplesPassed = GL_ANY_SAMPLES_PASSED,
-    TimeElapsed = GL_TIME_ELAPSED,
-    AnySamplesPassedConservative = GL_ANY_SAMPLES_PASSED_CONSERVATIVE,
-    VerticesSubmitted = GL_VERTICES_SUBMITTED,
-    PrimitivesSubmitted = GL_PRIMITIVES_SUBMITTED,
-    VertexShaderInvocations = GL_VERTEX_SHADER_INVOCATIONS,
-    TransformFeedbackOverflow = GL_TRANSFORM_FEEDBACK_OVERFLOW,
-}
-impl UnsafeFromGLenum for QueryTarget {
-    unsafe fn unsafe_from_gl_enum(val: u32) -> Self {
-        #[cfg(debug_assertions)]
-        let Some(ret) = QueryTarget::from_repr(val) else {
-            panic!("Attempt to create a QueryTarget from a GLenum with invalid value {val:#X}");
-        };
-        #[cfg(not(debug_assertions))]
-        let ret = unsafe { std::mem::transmute(val) };
-        ret
-    }
-}
-impl From<QueryTarget> for u32 {
-    fn from(value: QueryTarget) -> u32 {
-        value as u32
-    }
-}
-impl<Dst: GlDstType> SrcType<Dst> for QueryTarget {
-    fn convert(self) -> Dst {
-        Dst::from_uint(self as u32)
-    }
-}
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-#[cfg_attr(debug_assertions, derive(::strum_macros::FromRepr))]
-#[repr(u32)]
-pub enum FrontFaceDirection {
-    Cw = GL_CW,
-    Ccw = GL_CCW,
-}
-impl UnsafeFromGLenum for FrontFaceDirection {
-    unsafe fn unsafe_from_gl_enum(val: u32) -> Self {
-        #[cfg(debug_assertions)]
-        let Some(ret) = FrontFaceDirection::from_repr(val) else {
-            panic!(
-                "Attempt to create a FrontFaceDirection from a GLenum with invalid value {val:#X}"
-            );
-        };
-        #[cfg(not(debug_assertions))]
-        let ret = unsafe { std::mem::transmute(val) };
-        ret
-    }
-}
-impl From<FrontFaceDirection> for u32 {
-    fn from(value: FrontFaceDirection) -> u32 {
-        value as u32
-    }
-}
-impl<Dst: GlDstType> SrcType<Dst> for FrontFaceDirection {
-    fn convert(self) -> Dst {
-        Dst::from_uint(self as u32)
-    }
-}
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-#[cfg_attr(debug_assertions, derive(::strum_macros::FromRepr))]
-#[repr(u32)]
-pub enum TextureWrapMode {
-    Repeat = GL_REPEAT,
-    ClampToEdge = GL_CLAMP_TO_EDGE,
-    ClampToBorder = GL_CLAMP_TO_BORDER,
-    MirroredRepeat = GL_MIRRORED_REPEAT,
-}
-impl UnsafeFromGLenum for TextureWrapMode {
-    unsafe fn unsafe_from_gl_enum(val: u32) -> Self {
-        #[cfg(debug_assertions)]
-        let Some(ret) = TextureWrapMode::from_repr(val) else {
-            panic!("Attempt to create a TextureWrapMode from a GLenum with invalid value {val:#X}");
-        };
-        #[cfg(not(debug_assertions))]
-        let ret = unsafe { std::mem::transmute(val) };
-        ret
-    }
-}
-impl From<TextureWrapMode> for u32 {
-    fn from(value: TextureWrapMode) -> u32 {
-        value as u32
-    }
-}
-impl<Dst: GlDstType> SrcType<Dst> for TextureWrapMode {
-    fn convert(self) -> Dst {
-        Dst::from_uint(self as u32)
-    }
-}
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-#[cfg_attr(debug_assertions, derive(::strum_macros::FromRepr))]
-#[repr(u32)]
-pub enum InternalFormatPName {
-    Samples = GL_SAMPLES,
-    TextureCompressed = GL_TEXTURE_COMPRESSED,
-    NumSampleCounts = GL_NUM_SAMPLE_COUNTS,
-    ImageFormatCompatibilityType = GL_IMAGE_FORMAT_COMPATIBILITY_TYPE,
-    InternalformatSupported = GL_INTERNALFORMAT_SUPPORTED,
-    InternalformatPreferred = GL_INTERNALFORMAT_PREFERRED,
-    InternalformatRedSize = GL_INTERNALFORMAT_RED_SIZE,
-    InternalformatGreenSize = GL_INTERNALFORMAT_GREEN_SIZE,
-    InternalformatBlueSize = GL_INTERNALFORMAT_BLUE_SIZE,
-    InternalformatAlphaSize = GL_INTERNALFORMAT_ALPHA_SIZE,
-    InternalformatDepthSize = GL_INTERNALFORMAT_DEPTH_SIZE,
-    InternalformatStencilSize = GL_INTERNALFORMAT_STENCIL_SIZE,
-    InternalformatSharedSize = GL_INTERNALFORMAT_SHARED_SIZE,
-    InternalformatRedType = GL_INTERNALFORMAT_RED_TYPE,
-    InternalformatGreenType = GL_INTERNALFORMAT_GREEN_TYPE,
-    InternalformatBlueType = GL_INTERNALFORMAT_BLUE_TYPE,
-    InternalformatAlphaType = GL_INTERNALFORMAT_ALPHA_TYPE,
-    InternalformatDepthType = GL_INTERNALFORMAT_DEPTH_TYPE,
-    InternalformatStencilType = GL_INTERNALFORMAT_STENCIL_TYPE,
-    MaxWidth = GL_MAX_WIDTH,
-    MaxHeight = GL_MAX_HEIGHT,
-    MaxDepth = GL_MAX_DEPTH,
-    MaxLayers = GL_MAX_LAYERS,
-    ColorComponents = GL_COLOR_COMPONENTS,
-    ColorRenderable = GL_COLOR_RENDERABLE,
-    DepthRenderable = GL_DEPTH_RENDERABLE,
-    StencilRenderable = GL_STENCIL_RENDERABLE,
-    FramebufferRenderable = GL_FRAMEBUFFER_RENDERABLE,
-    FramebufferRenderableLayered = GL_FRAMEBUFFER_RENDERABLE_LAYERED,
-    FramebufferBlend = GL_FRAMEBUFFER_BLEND,
-    ReadPixels = GL_READ_PIXELS,
-    ReadPixelsFormat = GL_READ_PIXELS_FORMAT,
-    ReadPixelsType = GL_READ_PIXELS_TYPE,
-    TextureImageFormat = GL_TEXTURE_IMAGE_FORMAT,
-    TextureImageType = GL_TEXTURE_IMAGE_TYPE,
-    GetTextureImageFormat = GL_GET_TEXTURE_IMAGE_FORMAT,
-    GetTextureImageType = GL_GET_TEXTURE_IMAGE_TYPE,
-    Mipmap = GL_MIPMAP,
-    AutoGenerateMipmap = GL_AUTO_GENERATE_MIPMAP,
-    ColorEncoding = GL_COLOR_ENCODING,
-    SrgbRead = GL_SRGB_READ,
-    SrgbWrite = GL_SRGB_WRITE,
-    Filter = GL_FILTER,
-    VertexTexture = GL_VERTEX_TEXTURE,
-    TessControlTexture = GL_TESS_CONTROL_TEXTURE,
-    TessEvaluationTexture = GL_TESS_EVALUATION_TEXTURE,
-    GeometryTexture = GL_GEOMETRY_TEXTURE,
-    FragmentTexture = GL_FRAGMENT_TEXTURE,
-    ComputeTexture = GL_COMPUTE_TEXTURE,
-    TextureShadow = GL_TEXTURE_SHADOW,
-    TextureGather = GL_TEXTURE_GATHER,
-    TextureGatherShadow = GL_TEXTURE_GATHER_SHADOW,
-    ShaderImageLoad = GL_SHADER_IMAGE_LOAD,
-    ShaderImageStore = GL_SHADER_IMAGE_STORE,
-    ShaderImageAtomic = GL_SHADER_IMAGE_ATOMIC,
-    ImageTexelSize = GL_IMAGE_TEXEL_SIZE,
-    ImageCompatibilityClass = GL_IMAGE_COMPATIBILITY_CLASS,
-    ImagePixelFormat = GL_IMAGE_PIXEL_FORMAT,
-    ImagePixelType = GL_IMAGE_PIXEL_TYPE,
-    SimultaneousTextureAndDepthTest = GL_SIMULTANEOUS_TEXTURE_AND_DEPTH_TEST,
-    SimultaneousTextureAndStencilTest = GL_SIMULTANEOUS_TEXTURE_AND_STENCIL_TEST,
-    SimultaneousTextureAndDepthWrite = GL_SIMULTANEOUS_TEXTURE_AND_DEPTH_WRITE,
-    SimultaneousTextureAndStencilWrite = GL_SIMULTANEOUS_TEXTURE_AND_STENCIL_WRITE,
-    TextureCompressedBlockWidth = GL_TEXTURE_COMPRESSED_BLOCK_WIDTH,
-    TextureCompressedBlockHeight = GL_TEXTURE_COMPRESSED_BLOCK_HEIGHT,
-    TextureCompressedBlockSize = GL_TEXTURE_COMPRESSED_BLOCK_SIZE,
-    ClearBuffer = GL_CLEAR_BUFFER,
-    TextureView = GL_TEXTURE_VIEW,
-    ViewCompatibilityClass = GL_VIEW_COMPATIBILITY_CLASS,
-    ClearTexture = GL_CLEAR_TEXTURE,
-}
-impl UnsafeFromGLenum for InternalFormatPName {
-    unsafe fn unsafe_from_gl_enum(val: u32) -> Self {
-        #[cfg(debug_assertions)]
-        let Some(ret) = InternalFormatPName::from_repr(val) else {
-            panic!(
-                "Attempt to create a InternalFormatPName from a GLenum with invalid value {val:#X}"
-            );
-        };
-        #[cfg(not(debug_assertions))]
-        let ret = unsafe { std::mem::transmute(val) };
-        ret
-    }
-}
-impl From<InternalFormatPName> for u32 {
-    fn from(value: InternalFormatPName) -> u32 {
-        value as u32
-    }
-}
-impl<Dst: GlDstType> SrcType<Dst> for InternalFormatPName {
-    fn convert(self) -> Dst {
-        Dst::from_uint(self as u32)
-    }
-}
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-#[cfg_attr(debug_assertions, derive(::strum_macros::FromRepr))]
-#[repr(u32)]
-pub enum ShaderParameterName {
-    ShaderType = GL_SHADER_TYPE,
-    DeleteStatus = GL_DELETE_STATUS,
-    CompileStatus = GL_COMPILE_STATUS,
-    InfoLogLength = GL_INFO_LOG_LENGTH,
-    ShaderSourceLength = GL_SHADER_SOURCE_LENGTH,
-}
-impl UnsafeFromGLenum for ShaderParameterName {
-    unsafe fn unsafe_from_gl_enum(val: u32) -> Self {
-        #[cfg(debug_assertions)]
-        let Some(ret) = ShaderParameterName::from_repr(val) else {
-            panic!(
-                "Attempt to create a ShaderParameterName from a GLenum with invalid value {val:#X}"
-            );
-        };
-        #[cfg(not(debug_assertions))]
-        let ret = unsafe { std::mem::transmute(val) };
-        ret
-    }
-}
-impl From<ShaderParameterName> for u32 {
-    fn from(value: ShaderParameterName) -> u32 {
-        value as u32
-    }
-}
-impl<Dst: GlDstType> SrcType<Dst> for ShaderParameterName {
-    fn convert(self) -> Dst {
-        Dst::from_uint(self as u32)
-    }
-}
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-#[cfg_attr(debug_assertions, derive(::strum_macros::FromRepr))]
-#[repr(u32)]
-pub enum UniformPName {
-    UniformType = GL_UNIFORM_TYPE,
-    UniformSize = GL_UNIFORM_SIZE,
-    UniformNameLength = GL_UNIFORM_NAME_LENGTH,
-    UniformBlockIndex = GL_UNIFORM_BLOCK_INDEX,
-    UniformOffset = GL_UNIFORM_OFFSET,
-    UniformArrayStride = GL_UNIFORM_ARRAY_STRIDE,
-    UniformMatrixStride = GL_UNIFORM_MATRIX_STRIDE,
-    UniformIsRowMajor = GL_UNIFORM_IS_ROW_MAJOR,
-    UniformAtomicCounterBufferIndex = GL_UNIFORM_ATOMIC_COUNTER_BUFFER_INDEX,
-}
-impl UnsafeFromGLenum for UniformPName {
-    unsafe fn unsafe_from_gl_enum(val: u32) -> Self {
-        #[cfg(debug_assertions)]
-        let Some(ret) = UniformPName::from_repr(val) else {
-            panic!("Attempt to create a UniformPName from a GLenum with invalid value {val:#X}");
-        };
-        #[cfg(not(debug_assertions))]
-        let ret = unsafe { std::mem::transmute(val) };
-        ret
-    }
-}
-impl From<UniformPName> for u32 {
-    fn from(value: UniformPName) -> u32 {
-        value as u32
-    }
-}
-impl<Dst: GlDstType> SrcType<Dst> for UniformPName {
-    fn convert(self) -> Dst {
-        Dst::from_uint(self as u32)
-    }
-}
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-#[cfg_attr(debug_assertions, derive(::strum_macros::FromRepr))]
-#[repr(u32)]
-pub enum TextureCompareMode {
-    CompareRefToTexture = GL_COMPARE_REF_TO_TEXTURE,
-    None = GL_NONE,
-}
-impl UnsafeFromGLenum for TextureCompareMode {
-    unsafe fn unsafe_from_gl_enum(val: u32) -> Self {
-        #[cfg(debug_assertions)]
-        let Some(ret) = TextureCompareMode::from_repr(val) else {
-            panic!(
-                "Attempt to create a TextureCompareMode from a GLenum with invalid value {val:#X}"
-            );
-        };
-        #[cfg(not(debug_assertions))]
-        let ret = unsafe { std::mem::transmute(val) };
-        ret
-    }
-}
-impl From<TextureCompareMode> for u32 {
-    fn from(value: TextureCompareMode) -> u32 {
-        value as u32
-    }
-}
-impl<Dst: GlDstType> SrcType<Dst> for TextureCompareMode {
-    fn convert(self) -> Dst {
-        Dst::from_uint(self as u32)
-    }
-}
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-#[cfg_attr(debug_assertions, derive(::strum_macros::FromRepr))]
-#[repr(u32)]
-pub enum VertexAttribEnum {
-    VertexAttribArrayBufferBinding = GL_VERTEX_ATTRIB_ARRAY_BUFFER_BINDING,
-    VertexAttribArrayEnabled = GL_VERTEX_ATTRIB_ARRAY_ENABLED,
-    VertexAttribArraySize = GL_VERTEX_ATTRIB_ARRAY_SIZE,
-    VertexAttribArrayStride = GL_VERTEX_ATTRIB_ARRAY_STRIDE,
-    VertexAttribArrayType = GL_VERTEX_ATTRIB_ARRAY_TYPE,
-    CurrentVertexAttrib = GL_CURRENT_VERTEX_ATTRIB,
-    VertexAttribArrayNormalized = GL_VERTEX_ATTRIB_ARRAY_NORMALIZED,
-    VertexAttribArrayInteger = GL_VERTEX_ATTRIB_ARRAY_INTEGER,
-    VertexAttribArrayDivisor = GL_VERTEX_ATTRIB_ARRAY_DIVISOR,
-}
-impl UnsafeFromGLenum for VertexAttribEnum {
-    unsafe fn unsafe_from_gl_enum(val: u32) -> Self {
-        #[cfg(debug_assertions)]
-        let Some(ret) = VertexAttribEnum::from_repr(val) else {
-            panic!(
-                "Attempt to create a VertexAttribEnum from a GLenum with invalid value {val:#X}"
-            );
-        };
-        #[cfg(not(debug_assertions))]
-        let ret = unsafe { std::mem::transmute(val) };
-        ret
-    }
-}
-impl From<VertexAttribEnum> for u32 {
-    fn from(value: VertexAttribEnum) -> u32 {
-        value as u32
-    }
-}
-impl<Dst: GlDstType> SrcType<Dst> for VertexAttribEnum {
-    fn convert(self) -> Dst {
-        Dst::from_uint(self as u32)
-    }
-}
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-#[cfg_attr(debug_assertions, derive(::strum_macros::FromRepr))]
-#[repr(u32)]
-pub enum BufferTarget {
-    ArrayBuffer = GL_ARRAY_BUFFER,
-    ElementArrayBuffer = GL_ELEMENT_ARRAY_BUFFER,
-    PixelPackBuffer = GL_PIXEL_PACK_BUFFER,
-    PixelUnpackBuffer = GL_PIXEL_UNPACK_BUFFER,
-    TextureBuffer = GL_TEXTURE_BUFFER,
-    CopyReadBuffer = GL_COPY_READ_BUFFER,
-    CopyWriteBuffer = GL_COPY_WRITE_BUFFER,
-    UniformBuffer = GL_UNIFORM_BUFFER,
-    DrawIndirectBuffer = GL_DRAW_INDIRECT_BUFFER,
-    AtomicCounterBuffer = GL_ATOMIC_COUNTER_BUFFER,
-    DispatchIndirectBuffer = GL_DISPATCH_INDIRECT_BUFFER,
-    ShaderStorageBuffer = GL_SHADER_STORAGE_BUFFER,
-    TransformFeedbackBuffer = GL_TRANSFORM_FEEDBACK_BUFFER,
-    QueryBuffer = GL_QUERY_BUFFER,
-    ParameterBuffer = GL_PARAMETER_BUFFER,
-}
-impl UnsafeFromGLenum for BufferTarget {
-    unsafe fn unsafe_from_gl_enum(val: u32) -> Self {
-        #[cfg(debug_assertions)]
-        let Some(ret) = BufferTarget::from_repr(val) else {
-            panic!("Attempt to create a BufferTarget from a GLenum with invalid value {val:#X}");
-        };
-        #[cfg(not(debug_assertions))]
-        let ret = unsafe { std::mem::transmute(val) };
-        ret
-    }
-}
-impl From<BufferTarget> for u32 {
-    fn from(value: BufferTarget) -> u32 {
-        value as u32
-    }
-}
-impl<Dst: GlDstType> SrcType<Dst> for BufferTarget {
     fn convert(self) -> Dst {
         Dst::from_uint(self as u32)
     }
@@ -4977,15 +4917,12 @@ pub enum InternalFormat {
     StencilIndex = GL_STENCIL_INDEX,
     StencilIndex8 = GL_STENCIL_INDEX8,
 }
-impl UnsafeFromGLenum for InternalFormat {
-    unsafe fn unsafe_from_gl_enum(val: u32) -> Self {
-        #[cfg(debug_assertions)]
-        let Some(ret) = InternalFormat::from_repr(val) else {
-            panic!("Attempt to create a InternalFormat from a GLenum with invalid value {val:#X}");
-        };
-        #[cfg(not(debug_assertions))]
-        let ret = unsafe { std::mem::transmute(val) };
-        ret
+impl GlEnumGroup for InternalFormat {
+    unsafe fn from_enum_noerr(val: u32) -> Self {
+        unsafe { std::mem::transmute(val) }
+    }
+    fn from_enum(val: u32) -> Option<Self> {
+        Self::from_repr(val)
     }
 }
 impl From<InternalFormat> for u32 {
@@ -4998,74 +4935,67 @@ impl<Dst: GlDstType> SrcType<Dst> for InternalFormat {
         Dst::from_uint(self as u32)
     }
 }
-bitflags! {
-#[derive(Debug, Clone, Copy, Default, PartialEq, Eq)]
-#[repr(transparent)]
-pub struct MemoryBarrierMask: u32 {
-const VERTEX_ATTRIB_ARRAY_BARRIER_BIT = GL_VERTEX_ATTRIB_ARRAY_BARRIER_BIT;
-const ELEMENT_ARRAY_BARRIER_BIT = GL_ELEMENT_ARRAY_BARRIER_BIT;
-const UNIFORM_BARRIER_BIT = GL_UNIFORM_BARRIER_BIT;
-const TEXTURE_FETCH_BARRIER_BIT = GL_TEXTURE_FETCH_BARRIER_BIT;
-const SHADER_IMAGE_ACCESS_BARRIER_BIT = GL_SHADER_IMAGE_ACCESS_BARRIER_BIT;
-const COMMAND_BARRIER_BIT = GL_COMMAND_BARRIER_BIT;
-const PIXEL_BUFFER_BARRIER_BIT = GL_PIXEL_BUFFER_BARRIER_BIT;
-const TEXTURE_UPDATE_BARRIER_BIT = GL_TEXTURE_UPDATE_BARRIER_BIT;
-const BUFFER_UPDATE_BARRIER_BIT = GL_BUFFER_UPDATE_BARRIER_BIT;
-const FRAMEBUFFER_BARRIER_BIT = GL_FRAMEBUFFER_BARRIER_BIT;
-const TRANSFORM_FEEDBACK_BARRIER_BIT = GL_TRANSFORM_FEEDBACK_BARRIER_BIT;
-const ATOMIC_COUNTER_BARRIER_BIT = GL_ATOMIC_COUNTER_BARRIER_BIT;
-const ALL_BARRIER_BITS = GL_ALL_BARRIER_BITS;
-const SHADER_STORAGE_BARRIER_BIT = GL_SHADER_STORAGE_BARRIER_BIT;
-const CLIENT_MAPPED_BUFFER_BARRIER_BIT = GL_CLIENT_MAPPED_BUFFER_BARRIER_BIT;
-const QUERY_BUFFER_BARRIER_BIT = GL_QUERY_BUFFER_BARRIER_BIT;
-}
-}
-impl UnsafeFromGLenum for MemoryBarrierMask {
-    unsafe fn unsafe_from_gl_enum(val: u32) -> Self {
-        #[cfg(debug_assertions)]
-        let Some(ret) = MemoryBarrierMask::from_bits(val) else {
-            panic!("Attempt to create a MemoryBarrierMask from a GLenum with an invalid bit set! {val:#X}");
-        };
-        #[cfg(not(debug_assertions))]
-        let ret = unsafe { std::mem::transmute(val) };
-        ret
-    }
-}
-impl From<MemoryBarrierMask> for u32 {
-    fn from(value: MemoryBarrierMask) -> u32 {
-        value.bits()
-    }
-}
-impl<Dst: GlDstType> SrcType<Dst> for MemoryBarrierMask {
-    fn convert(self) -> Dst {
-        Dst::from_uint(self.bits())
-    }
-}
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 #[cfg_attr(debug_assertions, derive(::strum_macros::FromRepr))]
 #[repr(u32)]
-pub enum HintMode {
-    DontCare = GL_DONT_CARE,
-    Fastest = GL_FASTEST,
-    Nicest = GL_NICEST,
+pub enum DrawBufferMode {
+    FrontLeft = GL_FRONT_LEFT,
+    FrontRight = GL_FRONT_RIGHT,
+    BackLeft = GL_BACK_LEFT,
+    BackRight = GL_BACK_RIGHT,
+    Front = GL_FRONT,
+    Left = GL_LEFT,
+    Right = GL_RIGHT,
+    FrontAndBack = GL_FRONT_AND_BACK,
+    ColorAttachment0 = GL_COLOR_ATTACHMENT0,
+    ColorAttachment1 = GL_COLOR_ATTACHMENT1,
+    ColorAttachment2 = GL_COLOR_ATTACHMENT2,
+    ColorAttachment3 = GL_COLOR_ATTACHMENT3,
+    ColorAttachment4 = GL_COLOR_ATTACHMENT4,
+    ColorAttachment5 = GL_COLOR_ATTACHMENT5,
+    ColorAttachment6 = GL_COLOR_ATTACHMENT6,
+    ColorAttachment7 = GL_COLOR_ATTACHMENT7,
+    ColorAttachment8 = GL_COLOR_ATTACHMENT8,
+    ColorAttachment9 = GL_COLOR_ATTACHMENT9,
+    ColorAttachment10 = GL_COLOR_ATTACHMENT10,
+    ColorAttachment11 = GL_COLOR_ATTACHMENT11,
+    ColorAttachment12 = GL_COLOR_ATTACHMENT12,
+    ColorAttachment13 = GL_COLOR_ATTACHMENT13,
+    ColorAttachment14 = GL_COLOR_ATTACHMENT14,
+    ColorAttachment15 = GL_COLOR_ATTACHMENT15,
+    ColorAttachment16 = GL_COLOR_ATTACHMENT16,
+    ColorAttachment17 = GL_COLOR_ATTACHMENT17,
+    ColorAttachment18 = GL_COLOR_ATTACHMENT18,
+    ColorAttachment19 = GL_COLOR_ATTACHMENT19,
+    ColorAttachment20 = GL_COLOR_ATTACHMENT20,
+    ColorAttachment21 = GL_COLOR_ATTACHMENT21,
+    ColorAttachment22 = GL_COLOR_ATTACHMENT22,
+    ColorAttachment23 = GL_COLOR_ATTACHMENT23,
+    ColorAttachment24 = GL_COLOR_ATTACHMENT24,
+    ColorAttachment25 = GL_COLOR_ATTACHMENT25,
+    ColorAttachment26 = GL_COLOR_ATTACHMENT26,
+    ColorAttachment27 = GL_COLOR_ATTACHMENT27,
+    ColorAttachment28 = GL_COLOR_ATTACHMENT28,
+    ColorAttachment29 = GL_COLOR_ATTACHMENT29,
+    ColorAttachment30 = GL_COLOR_ATTACHMENT30,
+    ColorAttachment31 = GL_COLOR_ATTACHMENT31,
+    Back = GL_BACK,
+    None = GL_NONE,
 }
-impl UnsafeFromGLenum for HintMode {
-    unsafe fn unsafe_from_gl_enum(val: u32) -> Self {
-        #[cfg(debug_assertions)]
-        let Some(ret) = HintMode::from_repr(val) else {
-            panic!("Attempt to create a HintMode from a GLenum with invalid value {val:#X}");
-        };
-        #[cfg(not(debug_assertions))]
-        let ret = unsafe { std::mem::transmute(val) };
-        ret
+impl GlEnumGroup for DrawBufferMode {
+    unsafe fn from_enum_noerr(val: u32) -> Self {
+        unsafe { std::mem::transmute(val) }
+    }
+    fn from_enum(val: u32) -> Option<Self> {
+        Self::from_repr(val)
     }
 }
-impl From<HintMode> for u32 {
-    fn from(value: HintMode) -> u32 {
+impl From<DrawBufferMode> for u32 {
+    fn from(value: DrawBufferMode) -> u32 {
         value as u32
     }
 }
-impl<Dst: GlDstType> SrcType<Dst> for HintMode {
+impl<Dst: GlDstType> SrcType<Dst> for DrawBufferMode {
     fn convert(self) -> Dst {
         Dst::from_uint(self as u32)
     }
@@ -5073,27 +5003,39 @@ impl<Dst: GlDstType> SrcType<Dst> for HintMode {
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 #[cfg_attr(debug_assertions, derive(::strum_macros::FromRepr))]
 #[repr(u32)]
-pub enum ProgramParameterPName {
-    ProgramBinaryRetrievableHint = GL_PROGRAM_BINARY_RETRIEVABLE_HINT,
-    ProgramSeparable = GL_PROGRAM_SEPARABLE,
+pub enum AtomicCounterBufferPName {
+    AtomicCounterBufferBinding = GL_ATOMIC_COUNTER_BUFFER_BINDING,
+    AtomicCounterBufferDataSize = GL_ATOMIC_COUNTER_BUFFER_DATA_SIZE,
+    AtomicCounterBufferActiveAtomicCounters = GL_ATOMIC_COUNTER_BUFFER_ACTIVE_ATOMIC_COUNTERS,
+    AtomicCounterBufferActiveAtomicCounterIndices =
+        GL_ATOMIC_COUNTER_BUFFER_ACTIVE_ATOMIC_COUNTER_INDICES,
+    AtomicCounterBufferReferencedByVertexShader =
+        GL_ATOMIC_COUNTER_BUFFER_REFERENCED_BY_VERTEX_SHADER,
+    AtomicCounterBufferReferencedByTessControlShader =
+        GL_ATOMIC_COUNTER_BUFFER_REFERENCED_BY_TESS_CONTROL_SHADER,
+    AtomicCounterBufferReferencedByTessEvaluationShader =
+        GL_ATOMIC_COUNTER_BUFFER_REFERENCED_BY_TESS_EVALUATION_SHADER,
+    AtomicCounterBufferReferencedByGeometryShader =
+        GL_ATOMIC_COUNTER_BUFFER_REFERENCED_BY_GEOMETRY_SHADER,
+    AtomicCounterBufferReferencedByFragmentShader =
+        GL_ATOMIC_COUNTER_BUFFER_REFERENCED_BY_FRAGMENT_SHADER,
+    AtomicCounterBufferReferencedByComputeShader =
+        GL_ATOMIC_COUNTER_BUFFER_REFERENCED_BY_COMPUTE_SHADER,
 }
-impl UnsafeFromGLenum for ProgramParameterPName {
-    unsafe fn unsafe_from_gl_enum(val: u32) -> Self {
-        #[cfg(debug_assertions)]
-        let Some(ret) = ProgramParameterPName::from_repr(val) else {
-            panic!("Attempt to create a ProgramParameterPName from a GLenum with invalid value {val:#X}");
-        };
-        #[cfg(not(debug_assertions))]
-        let ret = unsafe { std::mem::transmute(val) };
-        ret
+impl GlEnumGroup for AtomicCounterBufferPName {
+    unsafe fn from_enum_noerr(val: u32) -> Self {
+        unsafe { std::mem::transmute(val) }
+    }
+    fn from_enum(val: u32) -> Option<Self> {
+        Self::from_repr(val)
     }
 }
-impl From<ProgramParameterPName> for u32 {
-    fn from(value: ProgramParameterPName) -> u32 {
+impl From<AtomicCounterBufferPName> for u32 {
+    fn from(value: AtomicCounterBufferPName) -> u32 {
         value as u32
     }
 }
-impl<Dst: GlDstType> SrcType<Dst> for ProgramParameterPName {
+impl<Dst: GlDstType> SrcType<Dst> for AtomicCounterBufferPName {
     fn convert(self) -> Dst {
         Dst::from_uint(self as u32)
     }
@@ -5101,47 +5043,24 @@ impl<Dst: GlDstType> SrcType<Dst> for ProgramParameterPName {
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 #[cfg_attr(debug_assertions, derive(::strum_macros::FromRepr))]
 #[repr(u32)]
-pub enum PixelFormat {
-    UnsignedShort = GL_UNSIGNED_SHORT,
-    UnsignedInt = GL_UNSIGNED_INT,
-    DepthComponent = GL_DEPTH_COMPONENT,
-    Red = GL_RED,
-    Green = GL_GREEN,
-    Blue = GL_BLUE,
-    Alpha = GL_ALPHA,
-    Rgb = GL_RGB,
-    Rgba = GL_RGBA,
-    Bgr = GL_BGR,
-    Bgra = GL_BGRA,
-    RedInteger = GL_RED_INTEGER,
-    GreenInteger = GL_GREEN_INTEGER,
-    BlueInteger = GL_BLUE_INTEGER,
-    RgbInteger = GL_RGB_INTEGER,
-    RgbaInteger = GL_RGBA_INTEGER,
-    BgrInteger = GL_BGR_INTEGER,
-    BgraInteger = GL_BGRA_INTEGER,
-    DepthStencil = GL_DEPTH_STENCIL,
-    Rg = GL_RG,
-    RgInteger = GL_RG_INTEGER,
-    StencilIndex = GL_STENCIL_INDEX,
+pub enum TextureCompareMode {
+    CompareRefToTexture = GL_COMPARE_REF_TO_TEXTURE,
+    None = GL_NONE,
 }
-impl UnsafeFromGLenum for PixelFormat {
-    unsafe fn unsafe_from_gl_enum(val: u32) -> Self {
-        #[cfg(debug_assertions)]
-        let Some(ret) = PixelFormat::from_repr(val) else {
-            panic!("Attempt to create a PixelFormat from a GLenum with invalid value {val:#X}");
-        };
-        #[cfg(not(debug_assertions))]
-        let ret = unsafe { std::mem::transmute(val) };
-        ret
+impl GlEnumGroup for TextureCompareMode {
+    unsafe fn from_enum_noerr(val: u32) -> Self {
+        unsafe { std::mem::transmute(val) }
+    }
+    fn from_enum(val: u32) -> Option<Self> {
+        Self::from_repr(val)
     }
 }
-impl From<PixelFormat> for u32 {
-    fn from(value: PixelFormat) -> u32 {
+impl From<TextureCompareMode> for u32 {
+    fn from(value: TextureCompareMode) -> u32 {
         value as u32
     }
 }
-impl<Dst: GlDstType> SrcType<Dst> for PixelFormat {
+impl<Dst: GlDstType> SrcType<Dst> for TextureCompareMode {
     fn convert(self) -> Dst {
         Dst::from_uint(self as u32)
     }
@@ -5149,97 +5068,24 @@ impl<Dst: GlDstType> SrcType<Dst> for PixelFormat {
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 #[cfg_attr(debug_assertions, derive(::strum_macros::FromRepr))]
 #[repr(u32)]
-pub enum FramebufferParameterName {
-    FramebufferDefaultWidth = GL_FRAMEBUFFER_DEFAULT_WIDTH,
-    FramebufferDefaultHeight = GL_FRAMEBUFFER_DEFAULT_HEIGHT,
-    FramebufferDefaultLayers = GL_FRAMEBUFFER_DEFAULT_LAYERS,
-    FramebufferDefaultSamples = GL_FRAMEBUFFER_DEFAULT_SAMPLES,
-    FramebufferDefaultFixedSampleLocations = GL_FRAMEBUFFER_DEFAULT_FIXED_SAMPLE_LOCATIONS,
+pub enum FrontFaceDirection {
+    Cw = GL_CW,
+    Ccw = GL_CCW,
 }
-impl UnsafeFromGLenum for FramebufferParameterName {
-    unsafe fn unsafe_from_gl_enum(val: u32) -> Self {
-        #[cfg(debug_assertions)]
-        let Some(ret) = FramebufferParameterName::from_repr(val) else {
-            panic!("Attempt to create a FramebufferParameterName from a GLenum with invalid value {val:#X}");
-        };
-        #[cfg(not(debug_assertions))]
-        let ret = unsafe { std::mem::transmute(val) };
-        ret
+impl GlEnumGroup for FrontFaceDirection {
+    unsafe fn from_enum_noerr(val: u32) -> Self {
+        unsafe { std::mem::transmute(val) }
+    }
+    fn from_enum(val: u32) -> Option<Self> {
+        Self::from_repr(val)
     }
 }
-impl From<FramebufferParameterName> for u32 {
-    fn from(value: FramebufferParameterName) -> u32 {
+impl From<FrontFaceDirection> for u32 {
+    fn from(value: FrontFaceDirection) -> u32 {
         value as u32
     }
 }
-impl<Dst: GlDstType> SrcType<Dst> for FramebufferParameterName {
-    fn convert(self) -> Dst {
-        Dst::from_uint(self as u32)
-    }
-}
-bitflags! {
-#[derive(Debug, Clone, Copy, Default, PartialEq, Eq)]
-#[repr(transparent)]
-pub struct ClearBufferMask: u32 {
-const DEPTH_BUFFER_BIT = GL_DEPTH_BUFFER_BIT;
-const STENCIL_BUFFER_BIT = GL_STENCIL_BUFFER_BIT;
-const COLOR_BUFFER_BIT = GL_COLOR_BUFFER_BIT;
-}
-}
-impl UnsafeFromGLenum for ClearBufferMask {
-    unsafe fn unsafe_from_gl_enum(val: u32) -> Self {
-        #[cfg(debug_assertions)]
-        let Some(ret) = ClearBufferMask::from_bits(val) else {
-            panic!("Attempt to create a ClearBufferMask from a GLenum with an invalid bit set! {val:#X}");
-        };
-        #[cfg(not(debug_assertions))]
-        let ret = unsafe { std::mem::transmute(val) };
-        ret
-    }
-}
-impl From<ClearBufferMask> for u32 {
-    fn from(value: ClearBufferMask) -> u32 {
-        value.bits()
-    }
-}
-impl<Dst: GlDstType> SrcType<Dst> for ClearBufferMask {
-    fn convert(self) -> Dst {
-        Dst::from_uint(self.bits())
-    }
-}
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-#[cfg_attr(debug_assertions, derive(::strum_macros::FromRepr))]
-#[repr(u32)]
-pub enum GetFramebufferParameter {
-    Doublebuffer = GL_DOUBLEBUFFER,
-    Stereo = GL_STEREO,
-    SampleBuffers = GL_SAMPLE_BUFFERS,
-    Samples = GL_SAMPLES,
-    ImplementationColorReadType = GL_IMPLEMENTATION_COLOR_READ_TYPE,
-    ImplementationColorReadFormat = GL_IMPLEMENTATION_COLOR_READ_FORMAT,
-    FramebufferDefaultWidth = GL_FRAMEBUFFER_DEFAULT_WIDTH,
-    FramebufferDefaultHeight = GL_FRAMEBUFFER_DEFAULT_HEIGHT,
-    FramebufferDefaultLayers = GL_FRAMEBUFFER_DEFAULT_LAYERS,
-    FramebufferDefaultSamples = GL_FRAMEBUFFER_DEFAULT_SAMPLES,
-    FramebufferDefaultFixedSampleLocations = GL_FRAMEBUFFER_DEFAULT_FIXED_SAMPLE_LOCATIONS,
-}
-impl UnsafeFromGLenum for GetFramebufferParameter {
-    unsafe fn unsafe_from_gl_enum(val: u32) -> Self {
-        #[cfg(debug_assertions)]
-        let Some(ret) = GetFramebufferParameter::from_repr(val) else {
-            panic!("Attempt to create a GetFramebufferParameter from a GLenum with invalid value {val:#X}");
-        };
-        #[cfg(not(debug_assertions))]
-        let ret = unsafe { std::mem::transmute(val) };
-        ret
-    }
-}
-impl From<GetFramebufferParameter> for u32 {
-    fn from(value: GetFramebufferParameter) -> u32 {
-        value as u32
-    }
-}
-impl<Dst: GlDstType> SrcType<Dst> for GetFramebufferParameter {
+impl<Dst: GlDstType> SrcType<Dst> for FrontFaceDirection {
     fn convert(self) -> Dst {
         Dst::from_uint(self as u32)
     }
@@ -5247,47 +5093,26 @@ impl<Dst: GlDstType> SrcType<Dst> for GetFramebufferParameter {
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 #[cfg_attr(debug_assertions, derive(::strum_macros::FromRepr))]
 #[repr(u32)]
-pub enum ProgramInterface {
-    Uniform = GL_UNIFORM,
-    UniformBlock = GL_UNIFORM_BLOCK,
-    ProgramInput = GL_PROGRAM_INPUT,
-    ProgramOutput = GL_PROGRAM_OUTPUT,
-    BufferVariable = GL_BUFFER_VARIABLE,
-    ShaderStorageBlock = GL_SHADER_STORAGE_BLOCK,
-    VertexSubroutine = GL_VERTEX_SUBROUTINE,
-    TessControlSubroutine = GL_TESS_CONTROL_SUBROUTINE,
-    TessEvaluationSubroutine = GL_TESS_EVALUATION_SUBROUTINE,
-    GeometrySubroutine = GL_GEOMETRY_SUBROUTINE,
-    FragmentSubroutine = GL_FRAGMENT_SUBROUTINE,
-    ComputeSubroutine = GL_COMPUTE_SUBROUTINE,
-    VertexSubroutineUniform = GL_VERTEX_SUBROUTINE_UNIFORM,
-    TessControlSubroutineUniform = GL_TESS_CONTROL_SUBROUTINE_UNIFORM,
-    TessEvaluationSubroutineUniform = GL_TESS_EVALUATION_SUBROUTINE_UNIFORM,
-    GeometrySubroutineUniform = GL_GEOMETRY_SUBROUTINE_UNIFORM,
-    FragmentSubroutineUniform = GL_FRAGMENT_SUBROUTINE_UNIFORM,
-    ComputeSubroutineUniform = GL_COMPUTE_SUBROUTINE_UNIFORM,
-    TransformFeedbackVarying = GL_TRANSFORM_FEEDBACK_VARYING,
-    TransformFeedbackBuffer = GL_TRANSFORM_FEEDBACK_BUFFER,
+pub enum QueryObjectParameterName {
+    QueryResult = GL_QUERY_RESULT,
+    QueryResultAvailable = GL_QUERY_RESULT_AVAILABLE,
+    QueryResultNoWait = GL_QUERY_RESULT_NO_WAIT,
+    QueryTarget = GL_QUERY_TARGET,
 }
-impl UnsafeFromGLenum for ProgramInterface {
-    unsafe fn unsafe_from_gl_enum(val: u32) -> Self {
-        #[cfg(debug_assertions)]
-        let Some(ret) = ProgramInterface::from_repr(val) else {
-            panic!(
-                "Attempt to create a ProgramInterface from a GLenum with invalid value {val:#X}"
-            );
-        };
-        #[cfg(not(debug_assertions))]
-        let ret = unsafe { std::mem::transmute(val) };
-        ret
+impl GlEnumGroup for QueryObjectParameterName {
+    unsafe fn from_enum_noerr(val: u32) -> Self {
+        unsafe { std::mem::transmute(val) }
+    }
+    fn from_enum(val: u32) -> Option<Self> {
+        Self::from_repr(val)
     }
 }
-impl From<ProgramInterface> for u32 {
-    fn from(value: ProgramInterface) -> u32 {
+impl From<QueryObjectParameterName> for u32 {
+    fn from(value: QueryObjectParameterName) -> u32 {
         value as u32
     }
 }
-impl<Dst: GlDstType> SrcType<Dst> for ProgramInterface {
+impl<Dst: GlDstType> SrcType<Dst> for QueryObjectParameterName {
     fn convert(self) -> Dst {
         Dst::from_uint(self as u32)
     }
@@ -5295,31 +5120,24 @@ impl<Dst: GlDstType> SrcType<Dst> for ProgramInterface {
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 #[cfg_attr(debug_assertions, derive(::strum_macros::FromRepr))]
 #[repr(u32)]
-pub enum TextureSwizzle {
-    Zero = GL_ZERO,
-    One = GL_ONE,
-    Red = GL_RED,
-    Green = GL_GREEN,
-    Blue = GL_BLUE,
-    Alpha = GL_ALPHA,
+pub enum QueryParameterName {
+    QueryCounterBits = GL_QUERY_COUNTER_BITS,
+    CurrentQuery = GL_CURRENT_QUERY,
 }
-impl UnsafeFromGLenum for TextureSwizzle {
-    unsafe fn unsafe_from_gl_enum(val: u32) -> Self {
-        #[cfg(debug_assertions)]
-        let Some(ret) = TextureSwizzle::from_repr(val) else {
-            panic!("Attempt to create a TextureSwizzle from a GLenum with invalid value {val:#X}");
-        };
-        #[cfg(not(debug_assertions))]
-        let ret = unsafe { std::mem::transmute(val) };
-        ret
+impl GlEnumGroup for QueryParameterName {
+    unsafe fn from_enum_noerr(val: u32) -> Self {
+        unsafe { std::mem::transmute(val) }
+    }
+    fn from_enum(val: u32) -> Option<Self> {
+        Self::from_repr(val)
     }
 }
-impl From<TextureSwizzle> for u32 {
-    fn from(value: TextureSwizzle) -> u32 {
+impl From<QueryParameterName> for u32 {
+    fn from(value: QueryParameterName) -> u32 {
         value as u32
     }
 }
-impl<Dst: GlDstType> SrcType<Dst> for TextureSwizzle {
+impl<Dst: GlDstType> SrcType<Dst> for QueryParameterName {
     fn convert(self) -> Dst {
         Dst::from_uint(self as u32)
     }
@@ -5334,15 +5152,12 @@ pub enum HintTarget {
     FragmentShaderDerivativeHint = GL_FRAGMENT_SHADER_DERIVATIVE_HINT,
     ProgramBinaryRetrievableHint = GL_PROGRAM_BINARY_RETRIEVABLE_HINT,
 }
-impl UnsafeFromGLenum for HintTarget {
-    unsafe fn unsafe_from_gl_enum(val: u32) -> Self {
-        #[cfg(debug_assertions)]
-        let Some(ret) = HintTarget::from_repr(val) else {
-            panic!("Attempt to create a HintTarget from a GLenum with invalid value {val:#X}");
-        };
-        #[cfg(not(debug_assertions))]
-        let ret = unsafe { std::mem::transmute(val) };
-        ret
+impl GlEnumGroup for HintTarget {
+    unsafe fn from_enum_noerr(val: u32) -> Self {
+        unsafe { std::mem::transmute(val) }
+    }
+    fn from_enum(val: u32) -> Option<Self> {
+        Self::from_repr(val)
     }
 }
 impl From<HintTarget> for u32 {
@@ -5358,253 +5173,27 @@ impl<Dst: GlDstType> SrcType<Dst> for HintTarget {
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 #[cfg_attr(debug_assertions, derive(::strum_macros::FromRepr))]
 #[repr(u32)]
-pub enum PolygonMode {
-    Point = GL_POINT,
-    Line = GL_LINE,
-    Fill = GL_FILL,
+pub enum ShaderParameterName {
+    ShaderType = GL_SHADER_TYPE,
+    DeleteStatus = GL_DELETE_STATUS,
+    CompileStatus = GL_COMPILE_STATUS,
+    InfoLogLength = GL_INFO_LOG_LENGTH,
+    ShaderSourceLength = GL_SHADER_SOURCE_LENGTH,
 }
-impl UnsafeFromGLenum for PolygonMode {
-    unsafe fn unsafe_from_gl_enum(val: u32) -> Self {
-        #[cfg(debug_assertions)]
-        let Some(ret) = PolygonMode::from_repr(val) else {
-            panic!("Attempt to create a PolygonMode from a GLenum with invalid value {val:#X}");
-        };
-        #[cfg(not(debug_assertions))]
-        let ret = unsafe { std::mem::transmute(val) };
-        ret
+impl GlEnumGroup for ShaderParameterName {
+    unsafe fn from_enum_noerr(val: u32) -> Self {
+        unsafe { std::mem::transmute(val) }
+    }
+    fn from_enum(val: u32) -> Option<Self> {
+        Self::from_repr(val)
     }
 }
-impl From<PolygonMode> for u32 {
-    fn from(value: PolygonMode) -> u32 {
+impl From<ShaderParameterName> for u32 {
+    fn from(value: ShaderParameterName) -> u32 {
         value as u32
     }
 }
-impl<Dst: GlDstType> SrcType<Dst> for PolygonMode {
-    fn convert(self) -> Dst {
-        Dst::from_uint(self as u32)
-    }
-}
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-#[cfg_attr(debug_assertions, derive(::strum_macros::FromRepr))]
-#[repr(u32)]
-pub enum SubroutineParameterName {
-    UniformSize = GL_UNIFORM_SIZE,
-    UniformNameLength = GL_UNIFORM_NAME_LENGTH,
-    NumCompatibleSubroutines = GL_NUM_COMPATIBLE_SUBROUTINES,
-    CompatibleSubroutines = GL_COMPATIBLE_SUBROUTINES,
-}
-impl UnsafeFromGLenum for SubroutineParameterName {
-    unsafe fn unsafe_from_gl_enum(val: u32) -> Self {
-        #[cfg(debug_assertions)]
-        let Some(ret) = SubroutineParameterName::from_repr(val) else {
-            panic!("Attempt to create a SubroutineParameterName from a GLenum with invalid value {val:#X}");
-        };
-        #[cfg(not(debug_assertions))]
-        let ret = unsafe { std::mem::transmute(val) };
-        ret
-    }
-}
-impl From<SubroutineParameterName> for u32 {
-    fn from(value: SubroutineParameterName) -> u32 {
-        value as u32
-    }
-}
-impl<Dst: GlDstType> SrcType<Dst> for SubroutineParameterName {
-    fn convert(self) -> Dst {
-        Dst::from_uint(self as u32)
-    }
-}
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-#[cfg_attr(debug_assertions, derive(::strum_macros::FromRepr))]
-#[repr(u32)]
-pub enum PixelStoreParameter {
-    UnpackSwapBytes = GL_UNPACK_SWAP_BYTES,
-    UnpackLsbFirst = GL_UNPACK_LSB_FIRST,
-    UnpackRowLength = GL_UNPACK_ROW_LENGTH,
-    UnpackSkipRows = GL_UNPACK_SKIP_ROWS,
-    UnpackSkipPixels = GL_UNPACK_SKIP_PIXELS,
-    UnpackAlignment = GL_UNPACK_ALIGNMENT,
-    PackSwapBytes = GL_PACK_SWAP_BYTES,
-    PackLsbFirst = GL_PACK_LSB_FIRST,
-    PackRowLength = GL_PACK_ROW_LENGTH,
-    PackSkipRows = GL_PACK_SKIP_ROWS,
-    PackSkipPixels = GL_PACK_SKIP_PIXELS,
-    PackAlignment = GL_PACK_ALIGNMENT,
-    PackSkipImages = GL_PACK_SKIP_IMAGES,
-    PackImageHeight = GL_PACK_IMAGE_HEIGHT,
-    UnpackSkipImages = GL_UNPACK_SKIP_IMAGES,
-    UnpackImageHeight = GL_UNPACK_IMAGE_HEIGHT,
-}
-impl UnsafeFromGLenum for PixelStoreParameter {
-    unsafe fn unsafe_from_gl_enum(val: u32) -> Self {
-        #[cfg(debug_assertions)]
-        let Some(ret) = PixelStoreParameter::from_repr(val) else {
-            panic!(
-                "Attempt to create a PixelStoreParameter from a GLenum with invalid value {val:#X}"
-            );
-        };
-        #[cfg(not(debug_assertions))]
-        let ret = unsafe { std::mem::transmute(val) };
-        ret
-    }
-}
-impl From<PixelStoreParameter> for u32 {
-    fn from(value: PixelStoreParameter) -> u32 {
-        value as u32
-    }
-}
-impl<Dst: GlDstType> SrcType<Dst> for PixelStoreParameter {
-    fn convert(self) -> Dst {
-        Dst::from_uint(self as u32)
-    }
-}
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-#[cfg_attr(debug_assertions, derive(::strum_macros::FromRepr))]
-#[repr(u32)]
-pub enum VertexAttribIType {
-    Byte = GL_BYTE,
-    UnsignedByte = GL_UNSIGNED_BYTE,
-    Short = GL_SHORT,
-    UnsignedShort = GL_UNSIGNED_SHORT,
-    Int = GL_INT,
-    UnsignedInt = GL_UNSIGNED_INT,
-}
-impl UnsafeFromGLenum for VertexAttribIType {
-    unsafe fn unsafe_from_gl_enum(val: u32) -> Self {
-        #[cfg(debug_assertions)]
-        let Some(ret) = VertexAttribIType::from_repr(val) else {
-            panic!(
-                "Attempt to create a VertexAttribIType from a GLenum with invalid value {val:#X}"
-            );
-        };
-        #[cfg(not(debug_assertions))]
-        let ret = unsafe { std::mem::transmute(val) };
-        ret
-    }
-}
-impl From<VertexAttribIType> for u32 {
-    fn from(value: VertexAttribIType) -> u32 {
-        value as u32
-    }
-}
-impl<Dst: GlDstType> SrcType<Dst> for VertexAttribIType {
-    fn convert(self) -> Dst {
-        Dst::from_uint(self as u32)
-    }
-}
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-#[cfg_attr(debug_assertions, derive(::strum_macros::FromRepr))]
-#[repr(u32)]
-pub enum PixelType {
-    Byte = GL_BYTE,
-    UnsignedByte = GL_UNSIGNED_BYTE,
-    Short = GL_SHORT,
-    UnsignedShort = GL_UNSIGNED_SHORT,
-    Int = GL_INT,
-    UnsignedInt = GL_UNSIGNED_INT,
-    Float = GL_FLOAT,
-    UnsignedByte332 = GL_UNSIGNED_BYTE_3_3_2,
-    UnsignedShort4444 = GL_UNSIGNED_SHORT_4_4_4_4,
-    UnsignedShort5551 = GL_UNSIGNED_SHORT_5_5_5_1,
-    UnsignedInt8888 = GL_UNSIGNED_INT_8_8_8_8,
-    UnsignedInt1010102 = GL_UNSIGNED_INT_10_10_10_2,
-    UnsignedByte233Rev = GL_UNSIGNED_BYTE_2_3_3_REV,
-    UnsignedShort565 = GL_UNSIGNED_SHORT_5_6_5,
-    UnsignedShort565Rev = GL_UNSIGNED_SHORT_5_6_5_REV,
-    UnsignedShort4444Rev = GL_UNSIGNED_SHORT_4_4_4_4_REV,
-    UnsignedShort1555Rev = GL_UNSIGNED_SHORT_1_5_5_5_REV,
-    UnsignedInt8888Rev = GL_UNSIGNED_INT_8_8_8_8_REV,
-    UnsignedInt2101010Rev = GL_UNSIGNED_INT_2_10_10_10_REV,
-    UnsignedInt5999Rev = GL_UNSIGNED_INT_5_9_9_9_REV,
-    Float32UnsignedInt248Rev = GL_FLOAT_32_UNSIGNED_INT_24_8_REV,
-    UnsignedInt248 = GL_UNSIGNED_INT_24_8,
-    HalfFloat = GL_HALF_FLOAT,
-    UnsignedInt10F11F11FRev = GL_UNSIGNED_INT_10F_11F_11F_REV,
-}
-impl UnsafeFromGLenum for PixelType {
-    unsafe fn unsafe_from_gl_enum(val: u32) -> Self {
-        #[cfg(debug_assertions)]
-        let Some(ret) = PixelType::from_repr(val) else {
-            panic!("Attempt to create a PixelType from a GLenum with invalid value {val:#X}");
-        };
-        #[cfg(not(debug_assertions))]
-        let ret = unsafe { std::mem::transmute(val) };
-        ret
-    }
-}
-impl From<PixelType> for u32 {
-    fn from(value: PixelType) -> u32 {
-        value as u32
-    }
-}
-impl<Dst: GlDstType> SrcType<Dst> for PixelType {
-    fn convert(self) -> Dst {
-        Dst::from_uint(self as u32)
-    }
-}
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-#[cfg_attr(debug_assertions, derive(::strum_macros::FromRepr))]
-#[repr(u32)]
-pub enum SyncParameterName {
-    ObjectType = GL_OBJECT_TYPE,
-    SyncCondition = GL_SYNC_CONDITION,
-    SyncStatus = GL_SYNC_STATUS,
-    SyncFlags = GL_SYNC_FLAGS,
-}
-impl UnsafeFromGLenum for SyncParameterName {
-    unsafe fn unsafe_from_gl_enum(val: u32) -> Self {
-        #[cfg(debug_assertions)]
-        let Some(ret) = SyncParameterName::from_repr(val) else {
-            panic!(
-                "Attempt to create a SyncParameterName from a GLenum with invalid value {val:#X}"
-            );
-        };
-        #[cfg(not(debug_assertions))]
-        let ret = unsafe { std::mem::transmute(val) };
-        ret
-    }
-}
-impl From<SyncParameterName> for u32 {
-    fn from(value: SyncParameterName) -> u32 {
-        value as u32
-    }
-}
-impl<Dst: GlDstType> SrcType<Dst> for SyncParameterName {
-    fn convert(self) -> Dst {
-        Dst::from_uint(self as u32)
-    }
-}
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-#[cfg_attr(debug_assertions, derive(::strum_macros::FromRepr))]
-#[repr(u32)]
-pub enum VertexBufferObjectUsage {
-    StreamDraw = GL_STREAM_DRAW,
-    StreamRead = GL_STREAM_READ,
-    StreamCopy = GL_STREAM_COPY,
-    StaticDraw = GL_STATIC_DRAW,
-    StaticRead = GL_STATIC_READ,
-    StaticCopy = GL_STATIC_COPY,
-    DynamicDraw = GL_DYNAMIC_DRAW,
-    DynamicRead = GL_DYNAMIC_READ,
-    DynamicCopy = GL_DYNAMIC_COPY,
-}
-impl UnsafeFromGLenum for VertexBufferObjectUsage {
-    unsafe fn unsafe_from_gl_enum(val: u32) -> Self {
-        #[cfg(debug_assertions)]
-        let Some(ret) = VertexBufferObjectUsage::from_repr(val) else {
-            panic!("Attempt to create a VertexBufferObjectUsage from a GLenum with invalid value {val:#X}");
-        };
-        #[cfg(not(debug_assertions))]
-        let ret = unsafe { std::mem::transmute(val) };
-        ret
-    }
-}
-impl From<VertexBufferObjectUsage> for u32 {
-    fn from(value: VertexBufferObjectUsage) -> u32 {
-        value as u32
-    }
-}
-impl<Dst: GlDstType> SrcType<Dst> for VertexBufferObjectUsage {
+impl<Dst: GlDstType> SrcType<Dst> for ShaderParameterName {
     fn convert(self) -> Dst {
         Dst::from_uint(self as u32)
     }
@@ -5612,33 +5201,92 @@ impl<Dst: GlDstType> SrcType<Dst> for VertexBufferObjectUsage {
 bitflags! {
 #[derive(Debug, Clone, Copy, Default, PartialEq, Eq)]
 #[repr(transparent)]
-pub struct BufferStorageMask: u32 {
-const MAP_READ_BIT = GL_MAP_READ_BIT;
-const MAP_WRITE_BIT = GL_MAP_WRITE_BIT;
-const MAP_PERSISTENT_BIT = GL_MAP_PERSISTENT_BIT;
-const MAP_COHERENT_BIT = GL_MAP_COHERENT_BIT;
-const DYNAMIC_STORAGE_BIT = GL_DYNAMIC_STORAGE_BIT;
-const CLIENT_STORAGE_BIT = GL_CLIENT_STORAGE_BIT;
-}
-}
-impl UnsafeFromGLenum for BufferStorageMask {
-    unsafe fn unsafe_from_gl_enum(val: u32) -> Self {
-        #[cfg(debug_assertions)]
-        let Some(ret) = BufferStorageMask::from_bits(val) else {
-            panic!("Attempt to create a BufferStorageMask from a GLenum with an invalid bit set! {val:#X}");
-        };
-        #[cfg(not(debug_assertions))]
-        let ret = unsafe { std::mem::transmute(val) };
-        ret
+pub struct UseProgramStageMask: u32 {
+const VERTEX_SHADER_BIT = GL_VERTEX_SHADER_BIT;
+const FRAGMENT_SHADER_BIT = GL_FRAGMENT_SHADER_BIT;
+const GEOMETRY_SHADER_BIT = GL_GEOMETRY_SHADER_BIT;
+const TESS_CONTROL_SHADER_BIT = GL_TESS_CONTROL_SHADER_BIT;
+const TESS_EVALUATION_SHADER_BIT = GL_TESS_EVALUATION_SHADER_BIT;
+const ALL_SHADER_BITS = GL_ALL_SHADER_BITS;
+const COMPUTE_SHADER_BIT = GL_COMPUTE_SHADER_BIT;
+}}
+impl GlEnumGroup for UseProgramStageMask {
+    unsafe fn from_enum_noerr(val: u32) -> Self {
+        unsafe { std::mem::transmute(val) }
+    }
+    fn from_enum(val: u32) -> Option<Self> {
+        Self::from_bits(val)
     }
 }
-impl From<BufferStorageMask> for u32 {
-    fn from(value: BufferStorageMask) -> u32 {
+impl From<UseProgramStageMask> for u32 {
+    fn from(value: UseProgramStageMask) -> u32 {
         value.bits()
     }
 }
-impl<Dst: GlDstType> SrcType<Dst> for BufferStorageMask {
+impl<Dst: GlDstType> SrcType<Dst> for UseProgramStageMask {
     fn convert(self) -> Dst {
         Dst::from_uint(self.bits())
+    }
+}
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[cfg_attr(debug_assertions, derive(::strum_macros::FromRepr))]
+#[repr(u32)]
+pub enum CopyBufferSubDataTarget {
+    ArrayBuffer = GL_ARRAY_BUFFER,
+    ElementArrayBuffer = GL_ELEMENT_ARRAY_BUFFER,
+    PixelPackBuffer = GL_PIXEL_PACK_BUFFER,
+    PixelUnpackBuffer = GL_PIXEL_UNPACK_BUFFER,
+    TextureBuffer = GL_TEXTURE_BUFFER,
+    CopyReadBuffer = GL_COPY_READ_BUFFER,
+    CopyWriteBuffer = GL_COPY_WRITE_BUFFER,
+    UniformBuffer = GL_UNIFORM_BUFFER,
+    DrawIndirectBuffer = GL_DRAW_INDIRECT_BUFFER,
+    AtomicCounterBuffer = GL_ATOMIC_COUNTER_BUFFER,
+    DispatchIndirectBuffer = GL_DISPATCH_INDIRECT_BUFFER,
+    ShaderStorageBuffer = GL_SHADER_STORAGE_BUFFER,
+    TransformFeedbackBuffer = GL_TRANSFORM_FEEDBACK_BUFFER,
+    QueryBuffer = GL_QUERY_BUFFER,
+}
+impl GlEnumGroup for CopyBufferSubDataTarget {
+    unsafe fn from_enum_noerr(val: u32) -> Self {
+        unsafe { std::mem::transmute(val) }
+    }
+    fn from_enum(val: u32) -> Option<Self> {
+        Self::from_repr(val)
+    }
+}
+impl From<CopyBufferSubDataTarget> for u32 {
+    fn from(value: CopyBufferSubDataTarget) -> u32 {
+        value as u32
+    }
+}
+impl<Dst: GlDstType> SrcType<Dst> for CopyBufferSubDataTarget {
+    fn convert(self) -> Dst {
+        Dst::from_uint(self as u32)
+    }
+}
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[cfg_attr(debug_assertions, derive(::strum_macros::FromRepr))]
+#[repr(u32)]
+pub enum TransformFeedbackBufferMode {
+    InterleavedAttribs = GL_INTERLEAVED_ATTRIBS,
+    SeparateAttribs = GL_SEPARATE_ATTRIBS,
+}
+impl GlEnumGroup for TransformFeedbackBufferMode {
+    unsafe fn from_enum_noerr(val: u32) -> Self {
+        unsafe { std::mem::transmute(val) }
+    }
+    fn from_enum(val: u32) -> Option<Self> {
+        Self::from_repr(val)
+    }
+}
+impl From<TransformFeedbackBufferMode> for u32 {
+    fn from(value: TransformFeedbackBufferMode) -> u32 {
+        value as u32
+    }
+}
+impl<Dst: GlDstType> SrcType<Dst> for TransformFeedbackBufferMode {
+    fn convert(self) -> Dst {
+        Dst::from_uint(self as u32)
     }
 }
