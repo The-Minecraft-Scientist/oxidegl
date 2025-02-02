@@ -1,5 +1,5 @@
 use core::slice;
-use std::{iter, num::NonZeroU32};
+use std::{array, iter, num::NonZeroU32};
 
 use log::{debug, trace};
 use objc2_metal::MTLVertexFormat;
@@ -232,11 +232,7 @@ impl Context {
         maybe_name: impl MaybeObjectName<Vao>,
     ) -> GlFallible<()> {
         let vao = self.get_vao(maybe_name)?;
-        let mut attrib = if let Some(a) = vao.attribs[attrib_index as usize] {
-            a
-        } else {
-            VertexAttrib::new_default(attrib_index as u8)
-        };
+        let attrib = vao.get_attrib_mut(attrib_index)?;
         gl_assert!(
             relative_offset <= MAX_VERTEX_ATTRIBUTE_STRIDE as u32,
             InvalidValue
@@ -246,9 +242,8 @@ impl Context {
         attrib.component_type = r#type;
 
         attrib.relative_offset = relative_offset as u16;
-        vao.attribs[attrib_index as usize] = Some(attrib);
-        gl_debug!("updated vertex attribute format at index {attrib_index} of {:#?} to {:?}*{num_components} with relative offset {relative_offset} and integer behavior {integer_behavior:?}", vao.name, r#type);
         attrib.validate()?;
+        gl_debug!("updated vertex attribute format at index {attrib_index} of {:#?} to {:?}*{num_components} with relative offset {relative_offset} and integer behavior {integer_behavior:?}", vao.name, r#type);
         Ok(())
     }
     #[inline]
@@ -368,7 +363,7 @@ impl Context {
         offsets: impl Iterator<Item = GLintptr> + ExactSizeIterator,
         strides: impl Iterator<Item = GLsizei> + ExactSizeIterator,
     ) -> GlFallible<()> {
-        buffers.clone().try_for_each(|v| -> Result<(), GlError> {
+        buffers.clone().try_for_each(|v| -> GlFallible<()> {
             gl_assert!(
                 v.is_none_or(|n| self.gl_state.buffer_list.is(n)),
                 InvalidOperation,
@@ -378,7 +373,6 @@ impl Context {
         })?;
         let vao = self.get_vao(vao)?;
         let vao_name = vao.name;
-        // mark dirty state if this vao is current
 
         let mut bindingindex = idx;
         for (name, (offset, stride)) in buffers.zip(offsets.zip(strides)) {
@@ -387,9 +381,9 @@ impl Context {
             gl_assert!(
                 stride <= MAX_VERTEX_ATTRIBUTE_STRIDE as u32,
                 InvalidValue,
-                "Vertex attribute binding stridew larger than MAX_VERTEX_ATTRIBUTE_STRIDE"
+                "Vertex attribute binding stride larger than MAX_VERTEX_ATTRIBUTE_STRIDE"
             );
-            let r = vao.get_binding_mut(bindingindex);
+            let r = vao.get_binding_mut(bindingindex)?;
             debug!("bound {name:?} to {:?} at binding index {bindingindex} with offset {offset} and stride {stride}", vao_name);
             r.buf = name;
             r.offset = offset as usize;
@@ -397,6 +391,7 @@ impl Context {
 
             bindingindex += 1;
         }
+        // mark dirty state if this vao is current
         if self.gl_state.vao_binding == Some(vao_name) {
             self.remap_buffers();
             self.update_encoder();
@@ -727,12 +722,7 @@ impl Context {
             "enabling vertex attribute at index {index} of {:?}",
             vao.name
         );
-        gl_assert!(
-            (index as usize) < MAX_VERTEX_ATTRIBUTES,
-            InvalidValue,
-            "tried to enable vertex attribute #{index}, which is larger than the maximum number of vertex attributes"
-        );
-        vao.attribs[index as usize] = Some(VertexAttrib::new_default(index as u8));
+        vao.get_attrib_mut(index)?.enabled = true;
         Ok(())
     }
     #[allow(clippy::cast_possible_truncation)]
@@ -744,15 +734,10 @@ impl Context {
     ) -> GlFallible<()> {
         let vao = self.get_vao(vao)?;
         gl_debug!(
-            "enabling vertex attribute at index {index} of {:?}",
+            "disabling vertex attribute at index {index} of {:?}",
             vao.name
         );
-        gl_assert!(
-            (index as usize) < MAX_VERTEX_ATTRIBUTES,
-            InvalidValue,
-            "tried to disable vertex attribute #{index}, which is larger than the maximum number of vertex attributes"
-        );
-        vao.attribs[index as usize] = None;
+        vao.get_attrib_mut(index)?.enabled = false;
         Ok(())
     }
 }
@@ -812,23 +797,16 @@ impl Context {
         binding_index: u32,
     ) -> GlFallible<()> {
         gl_assert!(
-            (attrib_index as usize) < MAX_VERTEX_ATTRIBUTES,
-            InvalidValue,
-            "out of bounds attribute index"
-        );
-        gl_assert!(
             (binding_index as usize) < MAX_VERTEX_ATTRIB_BUFFER_BINDINGS,
             InvalidValue,
-            "UB: out of bounds attribute buffer binding index"
+            "out of bounds attribute buffer binding index"
         );
         let vao = self.get_vao(vao)?;
         gl_debug!(
             "binding vertex attribute index {attrib_index} to {:?} buffer binding {binding_index}",
             vao.name
         );
-        if let Some(a) = vao.attribs[attrib_index as usize].as_mut() {
-            a.buffer_idx = binding_index as u8;
-        }
+        vao.get_attrib_mut(attrib_index)?.buffer_idx = binding_index as u8;
         Ok(())
     }
 }
@@ -885,10 +863,11 @@ impl Context {
         vao: impl MaybeObjectName<Vao>,
         binding_index: u32,
         divisor: u32,
-    ) {
+    ) -> GlFallible<()> {
         let vao = self.get_vao(vao)?;
         debug!("setting vertex attribute binding divisor at buffer binding index {binding_index} to {divisor}");
-        vao.get_binding_mut(binding_index).divisor = NonZeroU32::new(divisor);
+        vao.get_binding_mut(binding_index)?.divisor = NonZeroU32::new(divisor);
+        Ok(())
     }
 }
 
@@ -1098,42 +1077,59 @@ impl Context {
         pointer: *const GLvoid,
         integer_behavior: IntegralCastBehavior,
     ) -> GlFallible<()> {
+        //FIXME highly suboptimal implementation, the logic of all of the commands should be moved onto methods on `Vao`
         sizei!(stride);
-        'revert: {
-            self.oxidegl_vertex_attrib_format_internal(
-                index,
-                size,
-                ty,
-                0,
-                integer_behavior,
-                CurrentBinding,
-            );
-            self.vertex_attrib_binding_internal(CurrentBinding, index, index);
-            let stride = if stride > 0 {
-                stride
-            } else {
-                let vao = self
-                    .get_vao(CurrentBinding)
-                    .expect("no VAO bound in VertexAttrib*Pointer");
-                let attrib = vao
-                    .get_attrib_mut(index)?
-                    .expect("vertex attrib not present after initialization in Vertex*Pointer");
-                u32::from(attrib.compute_stride())
-            };
-            #[allow(clippy::cast_possible_wrap, clippy::cast_possible_truncation)]
-            self.oxidegl_bind_vertex_buffer(
-                index,
-                self.gl_state
-                    .buffer_bindings
-                    .array
-                    .expect("UB: No buffer bound to ARRAY_BUFFER_BINDING in VertexAttrib*Pointer")
-                    .to_raw(),
-                pointer as usize as isize,
-                stride as i32,
-            )?;
-            return Ok(());
-        }
-        Ok(())
+        let vao = self.get_vao(CurrentBinding)?;
+        let saved_binding = *vao.get_binding_mut(index)?;
+        let saved_attr = *vao.get_attrib_mut(index)?;
+        let e = {
+            'bail: {
+                if let Err(e) = self.oxidegl_vertex_attrib_format_internal(
+                    index,
+                    size,
+                    ty,
+                    0,
+                    integer_behavior,
+                    CurrentBinding,
+                ) {
+                    break 'bail e;
+                }
+                if let Err(e) = self.vertex_attrib_binding_internal(CurrentBinding, index, index) {
+                    break 'bail e;
+                }
+                if let Err(e) = {
+                    let stride = if stride > 0 {
+                        stride
+                    } else {
+                        let vao = self.get_vao(CurrentBinding)?;
+                        let attrib = vao.get_attrib_mut(index)?;
+                        u32::from(attrib.compute_stride())
+                    };
+                    let buf = self
+                        .gl_state
+                        .buffer_bindings
+                        .array
+                        .ok_or(GlError::InvalidOperation)?
+                        .to_raw();
+                    #[allow(clippy::cast_possible_wrap, clippy::cast_possible_truncation)]
+                    self.oxidegl_bind_vertex_buffer(
+                        index,
+                        buf,
+                        pointer as usize as isize,
+                        stride as i32,
+                    )
+                } {
+                    break 'bail e;
+                }
+                // return if we didn't hit an error
+                return Ok(());
+            }
+        };
+        let vao = self.get_vao(CurrentBinding)?;
+        // Need to revert any side effects if we error halfway through
+        *vao.get_binding_mut(index)? = saved_binding;
+        *vao.get_attrib_mut(index)? = saved_attr;
+        Err(e)
     }
 }
 pub const MAX_VERTEX_ATTRIBUTES: usize = 32;
@@ -1143,14 +1139,15 @@ pub const MAX_VERTEX_ATTRIBUTE_STRIDE: u16 = 2048;
 #[derive(Debug)]
 pub struct Vao {
     pub(crate) name: ObjectName<Self>,
-    pub(crate) attribs: [Option<VertexAttrib>; MAX_VERTEX_ATTRIBUTES],
+    pub(crate) attribs: [VertexAttrib; MAX_VERTEX_ATTRIBUTES],
     pub(crate) buffer_bindings: [AttributeBufferBinding; MAX_VERTEX_ATTRIB_BUFFER_BINDINGS],
 }
 impl Vao {
     fn new_default(name: ObjectName<Self>) -> Self {
+        #[allow(clippy::cast_possible_truncation)]
         Self {
             name,
-            attribs: [None; MAX_VERTEX_ATTRIBUTES],
+            attribs: array::from_fn(|i| VertexAttrib::new_default(i as u8)),
             buffer_bindings: [AttributeBufferBinding::new_default();
                 MAX_VERTEX_ATTRIB_BUFFER_BINDINGS],
         }
@@ -1160,10 +1157,9 @@ impl Vao {
             .get_mut(idx as usize)
             .ok_or(GlError::InvalidValue.e())
     }
-    fn get_attrib_mut(&mut self, idx: u32) -> GlFallible<Option<&mut VertexAttrib>> {
+    fn get_attrib_mut(&mut self, idx: u32) -> GlFallible<&mut VertexAttrib> {
         self.attribs
             .get_mut(idx as usize)
-            .map(Option::as_mut)
             .ok_or(GlError::InvalidValue.e())
     }
 }
@@ -1179,25 +1175,10 @@ pub(crate) struct VertexAttrib {
     pub(crate) relative_offset: u16,
     pub(crate) integral_cast: IntegralCastBehavior,
     pub(crate) component_type: VertexAttribType,
+    pub(crate) enabled: bool,
 }
 
 impl VertexAttrib {
-    #[inline]
-    pub(crate) fn new(
-        components: u8,
-        buffer_idx: u8,
-        relative_offset: u16,
-        integral_cast: IntegralCastBehavior,
-        component_type: VertexAttribType,
-    ) -> Self {
-        Self {
-            components,
-            buffer_idx,
-            relative_offset,
-            integral_cast,
-            component_type,
-        }
-    }
     #[inline]
     pub(crate) fn validate(&self) -> GlFallible<()> {
         let components = self.components;
@@ -1239,14 +1220,15 @@ impl VertexAttrib {
         assert!(!normalize);
         Ok(())
     }
-    pub(crate) fn new_default(idx: u8) -> Self {
-        Self::new(
-            4,
-            idx,
-            0,
-            IntegralCastBehavior::Native,
-            VertexAttribType::Float,
-        )
+    pub(crate) const fn new_default(idx: u8) -> Self {
+        Self {
+            components: 4,
+            buffer_idx: idx,
+            relative_offset: 0,
+            integral_cast: IntegralCastBehavior::Native,
+            component_type: VertexAttribType::Float,
+            enabled: false,
+        }
     }
     #[inline]
     pub(crate) fn component_byte_size(&self) -> usize {
@@ -1296,7 +1278,7 @@ pub struct AttributeBufferBinding {
     pub(crate) divisor: Option<NonZeroU32>,
 }
 impl AttributeBufferBinding {
-    pub(crate) fn new_default() -> Self {
+    pub(crate) const fn new_default() -> Self {
         Self {
             buf: None,
             offset: 0,
