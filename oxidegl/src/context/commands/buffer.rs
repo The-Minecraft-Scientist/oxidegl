@@ -736,7 +736,7 @@ impl Context {
                 !flags.intersects(BufferStorageMask::MAP_COHERENT_BIT),
                 InvalidValue,
                 "Buffer storage may not be GL_MAP_COHERENT if it is not persistently mapped. Please set GL_MAP_PERSISTENT"
-            )
+            );
         }
         #[allow(clippy::cast_sign_loss)]
         let size = size as usize;

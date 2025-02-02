@@ -719,7 +719,7 @@ pub const GL_UNIFORM_BLOCK_ACTIVE_UNIFORM_INDICES: GLenum = 35395;
 pub const GL_UNIFORM_BLOCK_REFERENCED_BY_VERTEX_SHADER: GLenum = 35396;
 pub const GL_UNIFORM_BLOCK_REFERENCED_BY_GEOMETRY_SHADER: GLenum = 35397;
 pub const GL_UNIFORM_BLOCK_REFERENCED_BY_FRAGMENT_SHADER: GLenum = 35398;
-pub const GL_INVALID_INDEX: GLenum = 4294967295;
+pub const GL_INVALID_INDEX: GLenum = 4_294_967_295;
 pub const GL_CONTEXT_CORE_PROFILE_BIT: GLenum = 0x1;
 pub const GL_CONTEXT_COMPATIBILITY_PROFILE_BIT: GLenum = 0x2;
 pub const GL_LINES_ADJACENCY: GLenum = 10;
@@ -898,7 +898,7 @@ pub const GL_FRAGMENT_SHADER_BIT: GLenum = 0x2;
 pub const GL_GEOMETRY_SHADER_BIT: GLenum = 0x4;
 pub const GL_TESS_CONTROL_SHADER_BIT: GLenum = 0x8;
 pub const GL_TESS_EVALUATION_SHADER_BIT: GLenum = 0x10;
-pub const GL_ALL_SHADER_BITS: GLenum = 0xFFFFFFFF;
+pub const GL_ALL_SHADER_BITS: GLenum = 0xFFFF_FFFF;
 pub const GL_PROGRAM_SEPARABLE: GLenum = 33368;
 pub const GL_ACTIVE_PROGRAM: GLenum = 33369;
 pub const GL_PROGRAM_PIPELINE_BINDING: GLenum = 33370;
@@ -963,7 +963,7 @@ pub const GL_BUFFER_UPDATE_BARRIER_BIT: GLenum = 0x200;
 pub const GL_FRAMEBUFFER_BARRIER_BIT: GLenum = 0x400;
 pub const GL_TRANSFORM_FEEDBACK_BARRIER_BIT: GLenum = 0x800;
 pub const GL_ATOMIC_COUNTER_BARRIER_BIT: GLenum = 0x1000;
-pub const GL_ALL_BARRIER_BITS: GLenum = 0xFFFFFFFF;
+pub const GL_ALL_BARRIER_BITS: GLenum = 0xFFFF_FFFF;
 pub const GL_MAX_IMAGE_UNITS: GLenum = 36664;
 pub const GL_MAX_COMBINED_IMAGE_UNITS_AND_FRAGMENT_OUTPUTS: GLenum = 36665;
 pub const GL_IMAGE_BINDING_NAME: GLenum = 36666;
@@ -1452,6 +1452,7 @@ pub enum UniformType {
 }
 impl GlEnumGroup for UniformType {
     unsafe fn from_enum_noerr(val: u32) -> Self {
+        // Safety: Caller ensures value is correct
         unsafe { std::mem::transmute(val) }
     }
     fn from_enum(val: u32) -> Option<Self> {
@@ -1477,6 +1478,7 @@ pub enum ProgramParameterPName {
 }
 impl GlEnumGroup for ProgramParameterPName {
     unsafe fn from_enum_noerr(val: u32) -> Self {
+        // Safety: Caller ensures value is correct
         unsafe { std::mem::transmute(val) }
     }
     fn from_enum(val: u32) -> Option<Self> {
@@ -1505,6 +1507,7 @@ pub enum FramebufferParameterName {
 }
 impl GlEnumGroup for FramebufferParameterName {
     unsafe fn from_enum_noerr(val: u32) -> Self {
+        // Safety: Caller ensures value is correct
         unsafe { std::mem::transmute(val) }
     }
     fn from_enum(val: u32) -> Option<Self> {
@@ -1530,6 +1533,7 @@ pub enum BlitFramebufferFilter {
 }
 impl GlEnumGroup for BlitFramebufferFilter {
     unsafe fn from_enum_noerr(val: u32) -> Self {
+        // Safety: Caller ensures value is correct
         unsafe { std::mem::transmute(val) }
     }
     fn from_enum(val: u32) -> Option<Self> {
@@ -1557,6 +1561,7 @@ pub enum SubroutineParameterName {
 }
 impl GlEnumGroup for SubroutineParameterName {
     unsafe fn from_enum_noerr(val: u32) -> Self {
+        // Safety: Caller ensures value is correct
         unsafe { std::mem::transmute(val) }
     }
     fn from_enum(val: u32) -> Option<Self> {
@@ -1617,6 +1622,7 @@ pub enum InvalidateFramebufferAttachment {
 }
 impl GlEnumGroup for InvalidateFramebufferAttachment {
     unsafe fn from_enum_noerr(val: u32) -> Self {
+        // Safety: Caller ensures value is correct
         unsafe { std::mem::transmute(val) }
     }
     fn from_enum(val: u32) -> Option<Self> {
@@ -1659,6 +1665,7 @@ pub enum BlendingFactor {
 }
 impl GlEnumGroup for BlendingFactor {
     unsafe fn from_enum_noerr(val: u32) -> Self {
+        // Safety: Caller ensures value is correct
         unsafe { std::mem::transmute(val) }
     }
     fn from_enum(val: u32) -> Option<Self> {
@@ -1717,6 +1724,7 @@ pub enum FramebufferAttachment {
 }
 impl GlEnumGroup for FramebufferAttachment {
     unsafe fn from_enum_noerr(val: u32) -> Self {
+        // Safety: Caller ensures value is correct
         unsafe { std::mem::transmute(val) }
     }
     fn from_enum(val: u32) -> Option<Self> {
@@ -1748,6 +1756,7 @@ pub enum StencilOp {
 }
 impl GlEnumGroup for StencilOp {
     unsafe fn from_enum_noerr(val: u32) -> Self {
+        // Safety: Caller ensures value is correct
         unsafe { std::mem::transmute(val) }
     }
     fn from_enum(val: u32) -> Option<Self> {
@@ -1796,6 +1805,7 @@ pub enum ReadBufferMode {
 }
 impl GlEnumGroup for ReadBufferMode {
     unsafe fn from_enum_noerr(val: u32) -> Self {
+        // Safety: Caller ensures value is correct
         unsafe { std::mem::transmute(val) }
     }
     fn from_enum(val: u32) -> Option<Self> {
@@ -1835,6 +1845,7 @@ pub enum LogicOp {
 }
 impl GlEnumGroup for LogicOp {
     unsafe fn from_enum_noerr(val: u32) -> Self {
+        // Safety: Caller ensures value is correct
         unsafe { std::mem::transmute(val) }
     }
     fn from_enum(val: u32) -> Option<Self> {
@@ -1867,6 +1878,7 @@ pub enum BufferPName {
 }
 impl GlEnumGroup for BufferPName {
     unsafe fn from_enum_noerr(val: u32) -> Self {
+        // Safety: Caller ensures value is correct
         unsafe { std::mem::transmute(val) }
     }
     fn from_enum(val: u32) -> Option<Self> {
@@ -1896,6 +1908,7 @@ pub enum PrecisionType {
 }
 impl GlEnumGroup for PrecisionType {
     unsafe fn from_enum_noerr(val: u32) -> Self {
+        // Safety: Caller ensures value is correct
         unsafe { std::mem::transmute(val) }
     }
     fn from_enum(val: u32) -> Option<Self> {
@@ -1922,6 +1935,7 @@ pub enum BufferAccess {
 }
 impl GlEnumGroup for BufferAccess {
     unsafe fn from_enum_noerr(val: u32) -> Self {
+        // Safety: Caller ensures value is correct
         unsafe { std::mem::transmute(val) }
     }
     fn from_enum(val: u32) -> Option<Self> {
@@ -1948,6 +1962,7 @@ pub enum DrawElementsType {
 }
 impl GlEnumGroup for DrawElementsType {
     unsafe fn from_enum_noerr(val: u32) -> Self {
+        // Safety: Caller ensures value is correct
         unsafe { std::mem::transmute(val) }
     }
     fn from_enum(val: u32) -> Option<Self> {
@@ -1979,6 +1994,7 @@ pub enum ErrorCode {
 }
 impl GlEnumGroup for ErrorCode {
     unsafe fn from_enum_noerr(val: u32) -> Self {
+        // Safety: Caller ensures value is correct
         unsafe { std::mem::transmute(val) }
     }
     fn from_enum(val: u32) -> Option<Self> {
@@ -2005,6 +2021,7 @@ pub enum HintMode {
 }
 impl GlEnumGroup for HintMode {
     unsafe fn from_enum_noerr(val: u32) -> Self {
+        // Safety: Caller ensures value is correct
         unsafe { std::mem::transmute(val) }
     }
     fn from_enum(val: u32) -> Option<Self> {
@@ -2058,6 +2075,7 @@ pub enum ProgramResourceProperty {
 }
 impl GlEnumGroup for ProgramResourceProperty {
     unsafe fn from_enum_noerr(val: u32) -> Self {
+        // Safety: Caller ensures value is correct
         unsafe { std::mem::transmute(val) }
     }
     fn from_enum(val: u32) -> Option<Self> {
@@ -2096,6 +2114,7 @@ pub enum BufferTarget {
 }
 impl GlEnumGroup for BufferTarget {
     unsafe fn from_enum_noerr(val: u32) -> Self {
+        // Safety: Caller ensures value is correct
         unsafe { std::mem::transmute(val) }
     }
     fn from_enum(val: u32) -> Option<Self> {
@@ -2123,6 +2142,7 @@ pub enum TextureWrapMode {
 }
 impl GlEnumGroup for TextureWrapMode {
     unsafe fn from_enum_noerr(val: u32) -> Self {
+        // Safety: Caller ensures value is correct
         unsafe { std::mem::transmute(val) }
     }
     fn from_enum(val: u32) -> Option<Self> {
@@ -2155,6 +2175,7 @@ pub enum VertexBufferObjectUsage {
 }
 impl GlEnumGroup for VertexBufferObjectUsage {
     unsafe fn from_enum_noerr(val: u32) -> Self {
+        // Safety: Caller ensures value is correct
         unsafe { std::mem::transmute(val) }
     }
     fn from_enum(val: u32) -> Option<Self> {
@@ -2190,6 +2211,7 @@ pub enum VertexAttribProperty {
 }
 impl GlEnumGroup for VertexAttribProperty {
     unsafe fn from_enum_noerr(val: u32) -> Self {
+        // Safety: Caller ensures value is correct
         unsafe { std::mem::transmute(val) }
     }
     fn from_enum(val: u32) -> Option<Self> {
@@ -2215,6 +2237,7 @@ pub enum ClipControlDepth {
 }
 impl GlEnumGroup for ClipControlDepth {
     unsafe fn from_enum_noerr(val: u32) -> Self {
+        // Safety: Caller ensures value is correct
         unsafe { std::mem::transmute(val) }
     }
     fn from_enum(val: u32) -> Option<Self> {
@@ -2241,6 +2264,7 @@ pub enum PatchParameterName {
 }
 impl GlEnumGroup for PatchParameterName {
     unsafe fn from_enum_noerr(val: u32) -> Self {
+        // Safety: Caller ensures value is correct
         unsafe { std::mem::transmute(val) }
     }
     fn from_enum(val: u32) -> Option<Self> {
@@ -2274,6 +2298,7 @@ pub enum QueryTarget {
 }
 impl GlEnumGroup for QueryTarget {
     unsafe fn from_enum_noerr(val: u32) -> Self {
+        // Safety: Caller ensures value is correct
         unsafe { std::mem::transmute(val) }
     }
     fn from_enum(val: u32) -> Option<Self> {
@@ -2310,6 +2335,7 @@ pub enum VertexAttribType {
 }
 impl GlEnumGroup for VertexAttribType {
     unsafe fn from_enum_noerr(val: u32) -> Self {
+        // Safety: Caller ensures value is correct
         unsafe { std::mem::transmute(val) }
     }
     fn from_enum(val: u32) -> Option<Self> {
@@ -2340,6 +2366,7 @@ pub enum DebugSource {
 }
 impl GlEnumGroup for DebugSource {
     unsafe fn from_enum_noerr(val: u32) -> Self {
+        // Safety: Caller ensures value is correct
         unsafe { std::mem::transmute(val) }
     }
     fn from_enum(val: u32) -> Option<Self> {
@@ -2369,6 +2396,7 @@ pub enum TextureMinFilter {
 }
 impl GlEnumGroup for TextureMinFilter {
     unsafe fn from_enum_noerr(val: u32) -> Self {
+        // Safety: Caller ensures value is correct
         unsafe { std::mem::transmute(val) }
     }
     fn from_enum(val: u32) -> Option<Self> {
@@ -2394,6 +2422,7 @@ pub enum GetPointervPName {
 }
 impl GlEnumGroup for GetPointervPName {
     unsafe fn from_enum_noerr(val: u32) -> Self {
+        // Safety: Caller ensures value is correct
         unsafe { std::mem::transmute(val) }
     }
     fn from_enum(val: u32) -> Option<Self> {
@@ -2437,6 +2466,7 @@ pub enum ProgramProperty {
 }
 impl GlEnumGroup for ProgramProperty {
     unsafe fn from_enum_noerr(val: u32) -> Self {
+        // Safety: Caller ensures value is correct
         unsafe { std::mem::transmute(val) }
     }
     fn from_enum(val: u32) -> Option<Self> {
@@ -2474,6 +2504,7 @@ pub enum BufferStorageTarget {
 }
 impl GlEnumGroup for BufferStorageTarget {
     unsafe fn from_enum_noerr(val: u32) -> Self {
+        // Safety: Caller ensures value is correct
         unsafe { std::mem::transmute(val) }
     }
     fn from_enum(val: u32) -> Option<Self> {
@@ -2500,6 +2531,7 @@ const COLOR_BUFFER_BIT = GL_COLOR_BUFFER_BIT;
 }}
 impl GlEnumGroup for ClearBufferMask {
     unsafe fn from_enum_noerr(val: u32) -> Self {
+        // Safety: Caller ensures value is correct
         unsafe { std::mem::transmute(val) }
     }
     fn from_enum(val: u32) -> Option<Self> {
@@ -2526,6 +2558,7 @@ pub enum ClampColorMode {
 }
 impl GlEnumGroup for ClampColorMode {
     unsafe fn from_enum_noerr(val: u32) -> Self {
+        // Safety: Caller ensures value is correct
         unsafe { std::mem::transmute(val) }
     }
     fn from_enum(val: u32) -> Option<Self> {
@@ -2555,6 +2588,7 @@ pub enum TextureSwizzle {
 }
 impl GlEnumGroup for TextureSwizzle {
     unsafe fn from_enum_noerr(val: u32) -> Self {
+        // Safety: Caller ensures value is correct
         unsafe { std::mem::transmute(val) }
     }
     fn from_enum(val: u32) -> Option<Self> {
@@ -2588,6 +2622,7 @@ pub enum DebugType {
 }
 impl GlEnumGroup for DebugType {
     unsafe fn from_enum_noerr(val: u32) -> Self {
+        // Safety: Caller ensures value is correct
         unsafe { std::mem::transmute(val) }
     }
     fn from_enum(val: u32) -> Option<Self> {
@@ -2618,6 +2653,7 @@ pub enum PipelineParameterName {
 }
 impl GlEnumGroup for PipelineParameterName {
     unsafe fn from_enum_noerr(val: u32) -> Self {
+        // Safety: Caller ensures value is correct
         unsafe { std::mem::transmute(val) }
     }
     fn from_enum(val: u32) -> Option<Self> {
@@ -2655,6 +2691,7 @@ pub enum FramebufferAttachmentParameterName {
 }
 impl GlEnumGroup for FramebufferAttachmentParameterName {
     unsafe fn from_enum_noerr(val: u32) -> Self {
+        // Safety: Caller ensures value is correct
         unsafe { std::mem::transmute(val) }
     }
     fn from_enum(val: u32) -> Option<Self> {
@@ -2684,6 +2721,7 @@ const CLIENT_STORAGE_BIT = GL_CLIENT_STORAGE_BIT;
 }}
 impl GlEnumGroup for BufferStorageMask {
     unsafe fn from_enum_noerr(val: u32) -> Self {
+        // Safety: Caller ensures value is correct
         unsafe { std::mem::transmute(val) }
     }
     fn from_enum(val: u32) -> Option<Self> {
@@ -2715,6 +2753,7 @@ pub enum StencilFunction {
 }
 impl GlEnumGroup for StencilFunction {
     unsafe fn from_enum_noerr(val: u32) -> Self {
+        // Safety: Caller ensures value is correct
         unsafe { std::mem::transmute(val) }
     }
     fn from_enum(val: u32) -> Option<Self> {
@@ -2770,6 +2809,7 @@ pub enum TextureUnit {
 }
 impl GlEnumGroup for TextureUnit {
     unsafe fn from_enum_noerr(val: u32) -> Self {
+        // Safety: Caller ensures value is correct
         unsafe { std::mem::transmute(val) }
     }
     fn from_enum(val: u32) -> Option<Self> {
@@ -2821,6 +2861,7 @@ pub enum TextureTarget {
 }
 impl GlEnumGroup for TextureTarget {
     unsafe fn from_enum_noerr(val: u32) -> Self {
+        // Safety: Caller ensures value is correct
         unsafe { std::mem::transmute(val) }
     }
     fn from_enum(val: u32) -> Option<Self> {
@@ -2850,6 +2891,7 @@ pub enum ShaderType {
 }
 impl GlEnumGroup for ShaderType {
     unsafe fn from_enum_noerr(val: u32) -> Self {
+        // Safety: Caller ensures value is correct
         unsafe { std::mem::transmute(val) }
     }
     fn from_enum(val: u32) -> Option<Self> {
@@ -2943,6 +2985,7 @@ pub enum InternalFormatPName {
 }
 impl GlEnumGroup for InternalFormatPName {
     unsafe fn from_enum_noerr(val: u32) -> Self {
+        // Safety: Caller ensures value is correct
         unsafe { std::mem::transmute(val) }
     }
     fn from_enum(val: u32) -> Option<Self> {
@@ -2975,6 +3018,7 @@ pub enum BufferUsage {
 }
 impl GlEnumGroup for BufferUsage {
     unsafe fn from_enum_noerr(val: u32) -> Self {
+        // Safety: Caller ensures value is correct
         unsafe { std::mem::transmute(val) }
     }
     fn from_enum(val: u32) -> Option<Self> {
@@ -3011,6 +3055,7 @@ pub enum VertexAttribPointerType {
 }
 impl GlEnumGroup for VertexAttribPointerType {
     unsafe fn from_enum_noerr(val: u32) -> Self {
+        // Safety: Caller ensures value is correct
         unsafe { std::mem::transmute(val) }
     }
     fn from_enum(val: u32) -> Option<Self> {
@@ -3045,6 +3090,7 @@ pub enum GetFramebufferParameter {
 }
 impl GlEnumGroup for GetFramebufferParameter {
     unsafe fn from_enum_noerr(val: u32) -> Self {
+        // Safety: Caller ensures value is correct
         unsafe { std::mem::transmute(val) }
     }
     fn from_enum(val: u32) -> Option<Self> {
@@ -3078,6 +3124,7 @@ pub enum RenderbufferParameterName {
 }
 impl GlEnumGroup for RenderbufferParameterName {
     unsafe fn from_enum_noerr(val: u32) -> Self {
+        // Safety: Caller ensures value is correct
         unsafe { std::mem::transmute(val) }
     }
     fn from_enum(val: u32) -> Option<Self> {
@@ -3105,6 +3152,7 @@ pub enum SyncParameterName {
 }
 impl GlEnumGroup for SyncParameterName {
     unsafe fn from_enum_noerr(val: u32) -> Self {
+        // Safety: Caller ensures value is correct
         unsafe { std::mem::transmute(val) }
     }
     fn from_enum(val: u32) -> Option<Self> {
@@ -3152,6 +3200,7 @@ pub enum PixelType {
 }
 impl GlEnumGroup for PixelType {
     unsafe fn from_enum_noerr(val: u32) -> Self {
+        // Safety: Caller ensures value is correct
         unsafe { std::mem::transmute(val) }
     }
     fn from_enum(val: u32) -> Option<Self> {
@@ -3267,6 +3316,7 @@ pub enum SizedInternalFormat {
 }
 impl GlEnumGroup for SizedInternalFormat {
     unsafe fn from_enum_noerr(val: u32) -> Self {
+        // Safety: Caller ensures value is correct
         unsafe { std::mem::transmute(val) }
     }
     fn from_enum(val: u32) -> Option<Self> {
@@ -3310,6 +3360,7 @@ pub enum ProgramInterface {
 }
 impl GlEnumGroup for ProgramInterface {
     unsafe fn from_enum_noerr(val: u32) -> Self {
+        // Safety: Caller ensures value is correct
         unsafe { std::mem::transmute(val) }
     }
     fn from_enum(val: u32) -> Option<Self> {
@@ -3349,6 +3400,7 @@ const QUERY_BUFFER_BARRIER_BIT = GL_QUERY_BUFFER_BARRIER_BIT;
 }}
 impl GlEnumGroup for MemoryBarrierMask {
     unsafe fn from_enum_noerr(val: u32) -> Self {
+        // Safety: Caller ensures value is correct
         unsafe { std::mem::transmute(val) }
     }
     fn from_enum(val: u32) -> Option<Self> {
@@ -3412,6 +3464,7 @@ pub enum EnableCap {
 }
 impl GlEnumGroup for EnableCap {
     unsafe fn from_enum_noerr(val: u32) -> Self {
+        // Safety: Caller ensures value is correct
         unsafe { std::mem::transmute(val) }
     }
     fn from_enum(val: u32) -> Option<Self> {
@@ -3544,6 +3597,7 @@ pub enum AttributeType {
 }
 impl GlEnumGroup for AttributeType {
     unsafe fn from_enum_noerr(val: u32) -> Self {
+        // Safety: Caller ensures value is correct
         unsafe { std::mem::transmute(val) }
     }
     fn from_enum(val: u32) -> Option<Self> {
@@ -3576,6 +3630,7 @@ pub enum UniformPName {
 }
 impl GlEnumGroup for UniformPName {
     unsafe fn from_enum_noerr(val: u32) -> Self {
+        // Safety: Caller ensures value is correct
         unsafe { std::mem::transmute(val) }
     }
     fn from_enum(val: u32) -> Option<Self> {
@@ -3621,6 +3676,7 @@ pub enum PixelFormat {
 }
 impl GlEnumGroup for PixelFormat {
     unsafe fn from_enum_noerr(val: u32) -> Self {
+        // Safety: Caller ensures value is correct
         unsafe { std::mem::transmute(val) }
     }
     fn from_enum(val: u32) -> Option<Self> {
@@ -3647,6 +3703,7 @@ pub enum PolygonMode {
 }
 impl GlEnumGroup for PolygonMode {
     unsafe fn from_enum_noerr(val: u32) -> Self {
+        // Safety: Caller ensures value is correct
         unsafe { std::mem::transmute(val) }
     }
     fn from_enum(val: u32) -> Option<Self> {
@@ -3682,6 +3739,7 @@ pub enum SamplerParameter {
 }
 impl GlEnumGroup for SamplerParameter {
     unsafe fn from_enum_noerr(val: u32) -> Self {
+        // Safety: Caller ensures value is correct
         unsafe { std::mem::transmute(val) }
     }
     fn from_enum(val: u32) -> Option<Self> {
@@ -3708,6 +3766,7 @@ pub enum FramebufferTarget {
 }
 impl GlEnumGroup for FramebufferTarget {
     unsafe fn from_enum_noerr(val: u32) -> Self {
+        // Safety: Caller ensures value is correct
         unsafe { std::mem::transmute(val) }
     }
     fn from_enum(val: u32) -> Option<Self> {
@@ -3736,6 +3795,7 @@ pub enum ProgramStagePName {
 }
 impl GlEnumGroup for ProgramStagePName {
     unsafe fn from_enum_noerr(val: u32) -> Self {
+        // Safety: Caller ensures value is correct
         unsafe { std::mem::transmute(val) }
     }
     fn from_enum(val: u32) -> Option<Self> {
@@ -3762,6 +3822,7 @@ pub enum TriangleFace {
 }
 impl GlEnumGroup for TriangleFace {
     unsafe fn from_enum_noerr(val: u32) -> Self {
+        // Safety: Caller ensures value is correct
         unsafe { std::mem::transmute(val) }
     }
     fn from_enum(val: u32) -> Option<Self> {
@@ -3790,6 +3851,7 @@ pub enum StringName {
 }
 impl GlEnumGroup for StringName {
     unsafe fn from_enum_noerr(val: u32) -> Self {
+        // Safety: Caller ensures value is correct
         unsafe { std::mem::transmute(val) }
     }
     fn from_enum(val: u32) -> Option<Self> {
@@ -3840,6 +3902,7 @@ pub enum TextureParameterName {
 }
 impl GlEnumGroup for TextureParameterName {
     unsafe fn from_enum_noerr(val: u32) -> Self {
+        // Safety: Caller ensures value is correct
         unsafe { std::mem::transmute(val) }
     }
     fn from_enum(val: u32) -> Option<Self> {
@@ -3865,6 +3928,7 @@ pub enum ClipControlOrigin {
 }
 impl GlEnumGroup for ClipControlOrigin {
     unsafe fn from_enum_noerr(val: u32) -> Self {
+        // Safety: Caller ensures value is correct
         unsafe { std::mem::transmute(val) }
     }
     fn from_enum(val: u32) -> Option<Self> {
@@ -3892,6 +3956,7 @@ pub enum ProgramInterfacePName {
 }
 impl GlEnumGroup for ProgramInterfacePName {
     unsafe fn from_enum_noerr(val: u32) -> Self {
+        // Safety: Caller ensures value is correct
         unsafe { std::mem::transmute(val) }
     }
     fn from_enum(val: u32) -> Option<Self> {
@@ -4165,6 +4230,7 @@ pub enum GetPName {
 }
 impl GlEnumGroup for GetPName {
     unsafe fn from_enum_noerr(val: u32) -> Self {
+        // Safety: Caller ensures value is correct
         unsafe { std::mem::transmute(val) }
     }
     fn from_enum(val: u32) -> Option<Self> {
@@ -4200,6 +4266,7 @@ pub enum GetTextureParameter {
 }
 impl GlEnumGroup for GetTextureParameter {
     unsafe fn from_enum_noerr(val: u32) -> Self {
+        // Safety: Caller ensures value is correct
         unsafe { std::mem::transmute(val) }
     }
     fn from_enum(val: u32) -> Option<Self> {
@@ -4236,6 +4303,7 @@ pub enum PrimitiveType {
 }
 impl GlEnumGroup for PrimitiveType {
     unsafe fn from_enum_noerr(val: u32) -> Self {
+        // Safety: Caller ensures value is correct
         unsafe { std::mem::transmute(val) }
     }
     fn from_enum(val: u32) -> Option<Self> {
@@ -4261,6 +4329,7 @@ pub enum VertexProvokingMode {
 }
 impl GlEnumGroup for VertexProvokingMode {
     unsafe fn from_enum_noerr(val: u32) -> Self {
+        // Safety: Caller ensures value is correct
         unsafe { std::mem::transmute(val) }
     }
     fn from_enum(val: u32) -> Option<Self> {
@@ -4293,6 +4362,7 @@ pub enum VertexArrayPName {
 }
 impl GlEnumGroup for VertexArrayPName {
     unsafe fn from_enum_noerr(val: u32) -> Self {
+        // Safety: Caller ensures value is correct
         unsafe { std::mem::transmute(val) }
     }
     fn from_enum(val: u32) -> Option<Self> {
@@ -4324,6 +4394,7 @@ pub enum DepthFunction {
 }
 impl GlEnumGroup for DepthFunction {
     unsafe fn from_enum_noerr(val: u32) -> Self {
+        // Safety: Caller ensures value is correct
         unsafe { std::mem::transmute(val) }
     }
     fn from_enum(val: u32) -> Option<Self> {
@@ -4352,6 +4423,7 @@ pub enum BlendEquationModeEXT {
 }
 impl GlEnumGroup for BlendEquationModeEXT {
     unsafe fn from_enum_noerr(val: u32) -> Self {
+        // Safety: Caller ensures value is correct
         unsafe { std::mem::transmute(val) }
     }
     fn from_enum(val: u32) -> Option<Self> {
@@ -4386,6 +4458,7 @@ pub enum CopyImageSubDataTarget {
 }
 impl GlEnumGroup for CopyImageSubDataTarget {
     unsafe fn from_enum_noerr(val: u32) -> Self {
+        // Safety: Caller ensures value is correct
         unsafe { std::mem::transmute(val) }
     }
     fn from_enum(val: u32) -> Option<Self> {
@@ -4421,6 +4494,7 @@ pub enum UniformBlockPName {
 }
 impl GlEnumGroup for UniformBlockPName {
     unsafe fn from_enum_noerr(val: u32) -> Self {
+        // Safety: Caller ensures value is correct
         unsafe { std::mem::transmute(val) }
     }
     fn from_enum(val: u32) -> Option<Self> {
@@ -4452,6 +4526,7 @@ const MAP_COHERENT_BIT = GL_MAP_COHERENT_BIT;
 }}
 impl GlEnumGroup for MapBufferAccessMask {
     unsafe fn from_enum_noerr(val: u32) -> Self {
+        // Safety: Caller ensures value is correct
         unsafe { std::mem::transmute(val) }
     }
     fn from_enum(val: u32) -> Option<Self> {
@@ -4484,6 +4559,7 @@ pub enum VertexAttribEnum {
 }
 impl GlEnumGroup for VertexAttribEnum {
     unsafe fn from_enum_noerr(val: u32) -> Self {
+        // Safety: Caller ensures value is correct
         unsafe { std::mem::transmute(val) }
     }
     fn from_enum(val: u32) -> Option<Self> {
@@ -4509,6 +4585,7 @@ pub enum TextureMagFilter {
 }
 impl GlEnumGroup for TextureMagFilter {
     unsafe fn from_enum_noerr(val: u32) -> Self {
+        // Safety: Caller ensures value is correct
         unsafe { std::mem::transmute(val) }
     }
     fn from_enum(val: u32) -> Option<Self> {
@@ -4538,6 +4615,7 @@ pub enum VertexAttribIType {
 }
 impl GlEnumGroup for VertexAttribIType {
     unsafe fn from_enum_noerr(val: u32) -> Self {
+        // Safety: Caller ensures value is correct
         unsafe { std::mem::transmute(val) }
     }
     fn from_enum(val: u32) -> Option<Self> {
@@ -4572,6 +4650,7 @@ pub enum ObjectIdentifier {
 }
 impl GlEnumGroup for ObjectIdentifier {
     unsafe fn from_enum_noerr(val: u32) -> Self {
+        // Safety: Caller ensures value is correct
         unsafe { std::mem::transmute(val) }
     }
     fn from_enum(val: u32) -> Option<Self> {
@@ -4598,6 +4677,7 @@ pub enum Buffer {
 }
 impl GlEnumGroup for Buffer {
     unsafe fn from_enum_noerr(val: u32) -> Self {
+        // Safety: Caller ensures value is correct
         unsafe { std::mem::transmute(val) }
     }
     fn from_enum(val: u32) -> Option<Self> {
@@ -4626,6 +4706,7 @@ pub enum DebugSeverity {
 }
 impl GlEnumGroup for DebugSeverity {
     unsafe fn from_enum_noerr(val: u32) -> Self {
+        // Safety: Caller ensures value is correct
         unsafe { std::mem::transmute(val) }
     }
     fn from_enum(val: u32) -> Option<Self> {
@@ -4654,6 +4735,7 @@ pub enum TransformFeedbackPName {
 }
 impl GlEnumGroup for TransformFeedbackPName {
     unsafe fn from_enum_noerr(val: u32) -> Self {
+        // Safety: Caller ensures value is correct
         unsafe { std::mem::transmute(val) }
     }
     fn from_enum(val: u32) -> Option<Self> {
@@ -4719,6 +4801,7 @@ pub enum ColorBuffer {
 }
 impl GlEnumGroup for ColorBuffer {
     unsafe fn from_enum_noerr(val: u32) -> Self {
+        // Safety: Caller ensures value is correct
         unsafe { std::mem::transmute(val) }
     }
     fn from_enum(val: u32) -> Option<Self> {
@@ -4758,6 +4841,7 @@ pub enum PixelStoreParameter {
 }
 impl GlEnumGroup for PixelStoreParameter {
     unsafe fn from_enum_noerr(val: u32) -> Self {
+        // Safety: Caller ensures value is correct
         unsafe { std::mem::transmute(val) }
     }
     fn from_enum(val: u32) -> Option<Self> {
@@ -4789,6 +4873,7 @@ pub enum ConditionalRenderMode {
 }
 impl GlEnumGroup for ConditionalRenderMode {
     unsafe fn from_enum_noerr(val: u32) -> Self {
+        // Safety: Caller ensures value is correct
         unsafe { std::mem::transmute(val) }
     }
     fn from_enum(val: u32) -> Option<Self> {
@@ -4919,6 +5004,7 @@ pub enum InternalFormat {
 }
 impl GlEnumGroup for InternalFormat {
     unsafe fn from_enum_noerr(val: u32) -> Self {
+        // Safety: Caller ensures value is correct
         unsafe { std::mem::transmute(val) }
     }
     fn from_enum(val: u32) -> Option<Self> {
@@ -4984,6 +5070,7 @@ pub enum DrawBufferMode {
 }
 impl GlEnumGroup for DrawBufferMode {
     unsafe fn from_enum_noerr(val: u32) -> Self {
+        // Safety: Caller ensures value is correct
         unsafe { std::mem::transmute(val) }
     }
     fn from_enum(val: u32) -> Option<Self> {
@@ -5024,6 +5111,7 @@ pub enum AtomicCounterBufferPName {
 }
 impl GlEnumGroup for AtomicCounterBufferPName {
     unsafe fn from_enum_noerr(val: u32) -> Self {
+        // Safety: Caller ensures value is correct
         unsafe { std::mem::transmute(val) }
     }
     fn from_enum(val: u32) -> Option<Self> {
@@ -5049,6 +5137,7 @@ pub enum TextureCompareMode {
 }
 impl GlEnumGroup for TextureCompareMode {
     unsafe fn from_enum_noerr(val: u32) -> Self {
+        // Safety: Caller ensures value is correct
         unsafe { std::mem::transmute(val) }
     }
     fn from_enum(val: u32) -> Option<Self> {
@@ -5074,6 +5163,7 @@ pub enum FrontFaceDirection {
 }
 impl GlEnumGroup for FrontFaceDirection {
     unsafe fn from_enum_noerr(val: u32) -> Self {
+        // Safety: Caller ensures value is correct
         unsafe { std::mem::transmute(val) }
     }
     fn from_enum(val: u32) -> Option<Self> {
@@ -5101,6 +5191,7 @@ pub enum QueryObjectParameterName {
 }
 impl GlEnumGroup for QueryObjectParameterName {
     unsafe fn from_enum_noerr(val: u32) -> Self {
+        // Safety: Caller ensures value is correct
         unsafe { std::mem::transmute(val) }
     }
     fn from_enum(val: u32) -> Option<Self> {
@@ -5126,6 +5217,7 @@ pub enum QueryParameterName {
 }
 impl GlEnumGroup for QueryParameterName {
     unsafe fn from_enum_noerr(val: u32) -> Self {
+        // Safety: Caller ensures value is correct
         unsafe { std::mem::transmute(val) }
     }
     fn from_enum(val: u32) -> Option<Self> {
@@ -5154,6 +5246,7 @@ pub enum HintTarget {
 }
 impl GlEnumGroup for HintTarget {
     unsafe fn from_enum_noerr(val: u32) -> Self {
+        // Safety: Caller ensures value is correct
         unsafe { std::mem::transmute(val) }
     }
     fn from_enum(val: u32) -> Option<Self> {
@@ -5182,6 +5275,7 @@ pub enum ShaderParameterName {
 }
 impl GlEnumGroup for ShaderParameterName {
     unsafe fn from_enum_noerr(val: u32) -> Self {
+        // Safety: Caller ensures value is correct
         unsafe { std::mem::transmute(val) }
     }
     fn from_enum(val: u32) -> Option<Self> {
@@ -5212,6 +5306,7 @@ const COMPUTE_SHADER_BIT = GL_COMPUTE_SHADER_BIT;
 }}
 impl GlEnumGroup for UseProgramStageMask {
     unsafe fn from_enum_noerr(val: u32) -> Self {
+        // Safety: Caller ensures value is correct
         unsafe { std::mem::transmute(val) }
     }
     fn from_enum(val: u32) -> Option<Self> {
@@ -5249,6 +5344,7 @@ pub enum CopyBufferSubDataTarget {
 }
 impl GlEnumGroup for CopyBufferSubDataTarget {
     unsafe fn from_enum_noerr(val: u32) -> Self {
+        // Safety: Caller ensures value is correct
         unsafe { std::mem::transmute(val) }
     }
     fn from_enum(val: u32) -> Option<Self> {
@@ -5274,6 +5370,7 @@ pub enum TransformFeedbackBufferMode {
 }
 impl GlEnumGroup for TransformFeedbackBufferMode {
     unsafe fn from_enum_noerr(val: u32) -> Self {
+        // Safety: Caller ensures value is correct
         unsafe { std::mem::transmute(val) }
     }
     fn from_enum(val: u32) -> Option<Self> {

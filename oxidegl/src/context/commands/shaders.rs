@@ -1,11 +1,15 @@
 use crate::{
     context::{
         debug::{gl_debug, gl_trace},
+        error::GlFallible,
         gl_object::ObjectName,
         shader::{GlslShaderInternal, Shader, ShaderInternal},
         Context,
     },
-    dispatch::gl_types::{GLchar, GLint, GLsizei, GLuint},
+    dispatch::{
+        conversions::sizei,
+        gl_types::{GLchar, GLint, GLsizei, GLuint},
+    },
     enums::{ShaderParameterName, ShaderType},
 };
 
@@ -124,7 +128,8 @@ impl Context {
         count: GLsizei,
         string: *const *const GLchar,
         length: *const GLint,
-    ) {
+    ) -> GlFallible<()> {
+        sizei!(count);
         // Safety: Caller ensures array length is correct and shader strings are valid
         let sources = unsafe { core::slice::from_raw_parts(string, count as usize) };
 
@@ -161,6 +166,7 @@ impl Context {
             s.push_str(str);
         }
         gl_trace!(src: ShaderCompiler, "set source of {:?} to:\n{}", shader.name, s);
+        Ok(())
     }
     /// ### Parameters
     /// `shader`

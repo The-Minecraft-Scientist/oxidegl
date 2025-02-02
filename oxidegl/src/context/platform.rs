@@ -870,9 +870,9 @@ impl PlatformState {
             }
         }
         for (idx, attr) in vao.attribs.iter().enumerate() {
-            let Some(attr) = attr else {
+            if !attr.enabled {
                 continue;
-            };
+            }
             let attr_binding = vao.buffer_bindings[attr.buffer_idx as usize];
 
             let mtl_attrib_desc = MTLVertexAttributeDescriptor::new();

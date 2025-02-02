@@ -1,8 +1,12 @@
 use core::ptr;
 
-use crate::context::{
-    error::{GlError, GlFallible},
-    gl_object::{NamedObject, ObjectName},
+use crate::{
+    context::{
+        debug::gl_err,
+        error::{GlError, GlFallible},
+        gl_object::{NamedObject, ObjectName},
+    },
+    trimmed_type_name,
 };
 
 use super::gl_types::{GLenum, GLsizei};
@@ -42,7 +46,13 @@ where
     }
     #[inline]
     fn try_into_enum(self) -> GlFallible<T> {
-        T::from_enum(self).ok_or(Into::into(GlError::InvalidEnum))
+        T::from_enum(self).ok_or_else(
+            #[inline]
+            || {
+                gl_err!(ty: Error, "invalid value {self} for GLenum {}", trimmed_type_name::<T>());
+                GlError::InvalidEnum.e()
+            },
+        )
     }
 }
 

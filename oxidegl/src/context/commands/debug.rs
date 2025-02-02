@@ -2,14 +2,17 @@ use crate::{
     context::{
         commands::{buffer::Buffer, vao::Vao},
         debug::{gl_warn, with_debug_state, with_debug_state_mut},
-        error::gl_assert,
+        error::{gl_assert, GlFallible},
         framebuffer::Framebuffer,
         gl_object::ObjectName,
         program::Program,
         shader::Shader,
         Context,
     },
-    dispatch::gl_types::{GLboolean, GLchar, GLsizei, GLuint, GLvoid, GLDEBUGPROC},
+    dispatch::{
+        conversions::sizei,
+        gl_types::{GLboolean, GLchar, GLsizei, GLuint, GLvoid, GLDEBUGPROC},
+    },
     enums::{DebugSeverity, DebugSource, DebugType, GetPointervPName, ObjectIdentifier},
 };
 use core::slice;
@@ -57,18 +60,15 @@ impl Context {
     ///
     /// ### Associated Gets
     /// [**glGet**](crate::context::Context::oxidegl_get) with argument [`GL_MAX_LABEL_LENGTH`](crate::enums::GL_MAX_LABEL_LENGTH).
-    pub unsafe fn oxidegl_object_label(
+    pub(crate) unsafe fn oxidegl_object_label(
         &mut self,
         identifier: ObjectIdentifier,
         name: GLuint,
         length: GLsizei,
         label: *const GLchar,
-    ) {
-        #[expect(
-            clippy::cast_possible_wrap,
-            reason = "bitcast is the desired behavior here"
-        )]
-        let lengthi = length as i32;
+    ) -> GlFallible<()> {
+        let lengthi = length;
+        sizei!(length);
         let label = match (label.is_null(), lengthi) {
             (false, 0..) => {
                 // safety: caller ensures that if length is positive, label points to a byte array of length
@@ -104,6 +104,7 @@ impl Context {
             ObjectIdentifier::Query => todo!(),
             ObjectIdentifier::Sampler => todo!(),
         });
+        Ok(())
     }
     /// ### Parameters
     /// `ptr`
@@ -129,7 +130,7 @@ impl Context {
     ///
     /// ### Associated Gets
     /// [**glGet**](crate::context::Context::oxidegl_get) with argument [`GL_MAX_LABEL_LENGTH`](crate::enums::GL_MAX_LABEL_LENGTH).
-    pub unsafe fn oxidegl_object_ptr_label(
+    pub(crate) unsafe fn oxidegl_object_ptr_label(
         &mut self,
         ptr: *const GLvoid,
         length: GLsizei,
@@ -181,14 +182,14 @@ impl Context {
     ///
     /// ### Associated Gets
     /// [**glGet**](crate::context::Context::oxidegl_get) with argument [`GL_MAX_LABEL_LENGTH`](crate::enums::GL_MAX_LABEL_LENGTH).
-    pub unsafe fn oxidegl_get_object_label(
+    pub(crate) unsafe fn oxidegl_get_object_label(
         &mut self,
         identifier: ObjectIdentifier,
         name: GLuint,
         buf_size: GLsizei,
         length: *mut GLsizei,
         label: *mut GLchar,
-    ) {
+    ) -> GlFallible<()> {
         const EMPTY: &CStr = c"";
         gl_assert!(buf_size >= 0, InvalidValue);
         #[allow(clippy::cast_sign_loss)]
@@ -228,20 +229,20 @@ impl Context {
                         *length = 0;
                     }
                 }
-                return;
+                return Ok(());
             }
             // overload to write out the total string length, not the number of bytes written
             (true, false, _) => {
                 // Safety: checked for null, otherwise caller ensures that length is valid for writes
-                #[allow(clippy::cast_possible_truncation)]
+                #[allow(clippy::cast_possible_wrap)]
                 unsafe {
                     *length = (label_len_with_nul - 1) as i32;
                 }
-                return;
+                return Ok(());
             }
             (true, true, _) => {
                 gl_warn!(src: Api, ty: Portability, "Unspecified behavior: both <length> and <label> for glGetObjectLabel are null");
-                return;
+                return Ok(());
             }
         }
 
@@ -255,8 +256,8 @@ impl Context {
         let bytes_to_copy = buf_size.min(label_len_with_nul) - 1;
 
         if !length.is_null() {
-            // Safety: if length is non-null, caller ensures that it is valid for stores of u32
-            #[allow(clippy::cast_possible_truncation)]
+            // Safety: if length is non-null, otherwise caller ensures that it is valid for writes
+            #[allow(clippy::cast_possible_wrap)]
             unsafe {
                 *length = (bytes_to_copy) as i32;
             };
@@ -273,6 +274,7 @@ impl Context {
         buf[0..(bytes_to_copy as usize)].copy_from_slice(&label_bytes[0..(bytes_to_copy as usize)]);
         // write nul terminator
         buf[bytes_to_copy as usize + 1] = MaybeUninit::new(0);
+        Ok(())
     }
 
     /// ### Parameters
@@ -305,7 +307,7 @@ impl Context {
     ///
     /// ### Associated Gets
     /// [**glGet**](crate::context::Context::oxidegl_get) with argument [`GL_MAX_LABEL_LENGTH`](crate::enums::GL_MAX_LABEL_LENGTH).
-    pub unsafe fn oxidegl_get_object_ptr_label(
+    pub(crate) unsafe fn oxidegl_get_object_ptr_label(
         &mut self,
         ptr: *const GLvoid,
         buf_size: GLsizei,
@@ -346,7 +348,7 @@ impl Context {
     /// available in the compatibility profile for all GL versions, and accepts
     /// additional queries. However, these reference pages document only the core
     /// profile.
-    pub unsafe fn oxidegl_get_pointerv(
+    pub(crate) unsafe fn oxidegl_get_pointerv(
         &mut self,
         pname: GetPointervPName,
         params: *mut *mut GLvoid,
@@ -396,7 +398,7 @@ impl Context {
     /// in the client's address space. In such cases, the callback function may
     /// not be invoked and the user should retrieve debug messages from the context's
     /// debug message log by calling [**glGetDebugMessageLog**](crate::context::Context::oxidegl_get_debug_message_log).
-    pub unsafe fn oxidegl_debug_message_callback(
+    pub(crate) unsafe fn oxidegl_debug_message_callback(
         &mut self,
         callback: GLDEBUGPROC,
         user_param: *const GLvoid,
@@ -494,7 +496,7 @@ impl Context {
     /// [`GL_DEBUG_TYPE_POP_GROUP`](crate::enums::GL_DEBUG_TYPE_POP_GROUP), and
     /// [`GL_DEBUG_SEVERITY_NOTIFICATION`](crate::enums::GL_DEBUG_SEVERITY_NOTIFICATION)
     /// are available only if the GL version is 4.3 or higher.
-    pub unsafe fn oxidegl_debug_message_control(
+    pub(crate) unsafe fn oxidegl_debug_message_control(
         &mut self,
         source: DebugSource,
         r#type: DebugType,
@@ -565,7 +567,7 @@ impl Context {
     /// [`GL_DEBUG_TYPE_POP_GROUP`](crate::enums::GL_DEBUG_TYPE_POP_GROUP), and
     /// [`GL_DEBUG_SEVERITY_NOTIFICATION`](crate::enums::GL_DEBUG_SEVERITY_NOTIFICATION)
     /// are available only if the GL version is 4.3 or higher.
-    pub unsafe fn oxidegl_debug_message_insert(
+    pub(crate) unsafe fn oxidegl_debug_message_insert(
         &mut self,
         source: DebugSource,
         r#type: DebugType,

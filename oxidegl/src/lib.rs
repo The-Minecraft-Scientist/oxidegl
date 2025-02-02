@@ -4,7 +4,8 @@
     clippy::missing_panics_doc,
     clippy::module_name_repetitions,
     clippy::float_cmp,
-    clippy::too_many_lines
+    clippy::too_many_lines,
+    clippy::missing_errors_doc
 )]
 
 use objc2::{rc::Retained, runtime::ProtocolObject};

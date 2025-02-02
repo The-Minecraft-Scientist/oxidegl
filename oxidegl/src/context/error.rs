@@ -1,3 +1,4 @@
+#![allow(clippy::inline_always)]
 use std::{convert::Infallible, hint::unreachable_unchecked, mem, panic::Location, ptr};
 
 use crate::{
@@ -30,8 +31,8 @@ pub(crate) enum GlError {
 }
 impl GlError {
     #[inline]
-    pub(crate) fn e(self) -> GlErrorInternal {
-        GlErrorInternal {
+    pub(crate) fn e(self) -> GlFallibleError {
+        GlFallibleError {
             #[cfg(not(feature = "unsound_noerror"))]
             err: self,
         }
@@ -45,11 +46,11 @@ impl From<GlError> for ErrorCode {
     }
 }
 #[derive(Clone, Copy, Debug)]
-pub(crate) struct GlErrorInternal {
+pub struct GlFallibleError {
     #[cfg(not(feature = "unsound_noerror"))]
     err: GlError,
 }
-impl GlErrorInternal {
+impl GlFallibleError {
     #[inline]
     pub(crate) fn get(self) -> ErrorCode {
         #[cfg(feature = "unsound_noerror")]
@@ -62,7 +63,7 @@ impl GlErrorInternal {
     }
 }
 #[cfg(not(feature = "unsound_noerror"))]
-impl From<GlError> for GlErrorInternal {
+impl From<GlError> for GlFallibleError {
     #[inline(always)]
     #[cfg_attr(debug_assertions, track_caller)]
     fn from(err: GlError) -> Self {
@@ -75,7 +76,7 @@ impl From<GlError> for GlErrorInternal {
     }
 }
 #[cfg(feature = "unsound_noerror")]
-impl From<GlError> for GlErrorInternal {
+impl From<GlError> for GlFallibleError {
     #[inline(always)]
     fn from(_: GlError) -> Self {
         // Safety: user opts into and thus takes responsibility for any potential unsoundess/UB by enabling this feature
@@ -93,7 +94,7 @@ pub(crate) trait GlResult<T, E>: Sized {
     #[inline(always)]
     fn normalize(self) -> GlFallible<T>
     where
-        E: Into<GlErrorInternal>,
+        E: Into<GlFallibleError>,
     {
         self.into_result().map_err(Into::into)
     }
@@ -113,9 +114,9 @@ impl<T> GlResult<T, Infallible> for T {
         Ok(self)
     }
 }
-impl<T> GlResult<T, GlErrorInternal> for GlFallible<T> {
+impl<T> GlResult<T, GlFallibleError> for GlFallible<T> {
     #[inline(always)]
-    fn into_result(self) -> Result<T, GlErrorInternal> {
+    fn into_result(self) -> Result<T, GlFallibleError> {
         self
     }
 }
@@ -125,18 +126,18 @@ impl From<Infallible> for ErrorCode {
         unsafe { unreachable_unchecked() }
     }
 }
-impl From<Infallible> for GlErrorInternal {
+impl From<Infallible> for GlFallibleError {
     fn from(_: Infallible) -> Self {
         // Safety: a value of type Infallible cannot ever exist
         unsafe { unreachable_unchecked() }
     }
 }
-impl From<GlErrorInternal> for ErrorCode {
-    fn from(value: GlErrorInternal) -> Self {
+impl From<GlFallibleError> for ErrorCode {
+    fn from(value: GlFallibleError) -> Self {
         value.get()
     }
 }
-pub(crate) type GlFallible<T> = Result<T, GlErrorInternal>;
+pub type GlFallible<T> = Result<T, GlFallibleError>;
 
 /// Trait that defines the value returned from a GL command returning this type if there is an error within that command
 pub(crate) trait GetErrorReturnValue<T> {
@@ -146,28 +147,28 @@ pub(crate) trait GetErrorReturnValue<T> {
     }
     const VAL: T;
 }
-impl GetErrorReturnValue<()> for GlErrorInternal {
+impl GetErrorReturnValue<()> for GlFallibleError {
     const VAL: () = ();
 }
-impl GetErrorReturnValue<GLenum> for GlErrorInternal {
+impl GetErrorReturnValue<GLenum> for GlFallibleError {
     const VAL: GLenum = 0;
 }
-impl GetErrorReturnValue<GLboolean> for GlErrorInternal {
+impl GetErrorReturnValue<GLboolean> for GlFallibleError {
     const VAL: GLboolean = false;
 }
-impl GetErrorReturnValue<GLint> for GlErrorInternal {
+impl GetErrorReturnValue<GLint> for GlFallibleError {
     const VAL: GLint = 0;
 }
-impl GetErrorReturnValue<f32> for GlErrorInternal {
+impl GetErrorReturnValue<f32> for GlFallibleError {
     const VAL: f32 = 0.0;
 }
-impl<T> GetErrorReturnValue<*const T> for GlErrorInternal {
+impl<T> GetErrorReturnValue<*const T> for GlFallibleError {
     const VAL: *const T = ptr::null();
 }
-impl<T> GetErrorReturnValue<*mut T> for GlErrorInternal {
+impl<T> GetErrorReturnValue<*mut T> for GlFallibleError {
     const VAL: *mut T = ptr::null_mut();
 }
-impl GetErrorReturnValue<GLsync> for GlErrorInternal {
+impl GetErrorReturnValue<GLsync> for GlFallibleError {
     const VAL: GLsync = None;
 }
 impl<T: Sized> GetErrorReturnValue<T> for Infallible {

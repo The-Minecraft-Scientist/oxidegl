@@ -1,6 +1,7 @@
 use self::error::GetErrorReturnValue;
 use self::state::GLState;
 use crate::enums::ErrorCode;
+use debug::gl_trace;
 use likely_stable::if_likely;
 use objc2::rc::Retained;
 use objc2_app_kit::NSView;
@@ -94,8 +95,9 @@ pub(crate) fn with_ctx_mut<
             let ret = match f(p).into_result() {
                 Ok(ret) => ret,
                 Err(e) => {
-                    // Safety: f necessarily consumes p, the only other exclusive reference to this context, prior to the evaluation of this match arm,
-                    // meaning we are free to create another one to write the error out
+                    gl_trace!(ty: Error, "command execution failed");
+                    // Safety: f consumes p, the only other exclusive reference to this context, prior to the evaluation of this match arm,
+                    // meaning we are free to create another one to write the error out with
                     unsafe { ptr.as_mut() }.gl_state.error = e.into();
                     // Return the default value for the type
                     <Err as GetErrorReturnValue<Ret>>::get()

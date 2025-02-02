@@ -134,7 +134,7 @@ impl Context {
         r#type: VertexAttribType,
         normalized: GLboolean,
         relativeoffset: GLuint,
-    ) {
+    ) -> GlFallible<()> {
         self.oxidegl_vertex_attrib_format_internal(
             attribindex,
             size as u32,
@@ -142,7 +142,7 @@ impl Context {
             relativeoffset,
             IntegralCastBehavior::Cast,
             CurrentBinding,
-        );
+        )
     }
     #[allow(clippy::cast_sign_loss)]
     pub(crate) fn oxidegl_vertex_attrib_i_format(
@@ -151,7 +151,7 @@ impl Context {
         size: GLint,
         r#type: VertexAttribIType,
         relativeoffset: GLuint,
-    ) {
+    ) -> GlFallible<()> {
         self.oxidegl_vertex_attrib_format_internal(
             attribindex,
             size as u32,
@@ -161,7 +161,7 @@ impl Context {
             relativeoffset,
             IntegralCastBehavior::Native,
             CurrentBinding,
-        );
+        )
     }
     #[allow(clippy::cast_sign_loss)]
     pub(crate) fn oxidegl_vertex_array_attrib_format(
@@ -172,7 +172,7 @@ impl Context {
         r#type: VertexAttribType,
         normalized: GLboolean,
         relativeoffset: GLuint,
-    ) {
+    ) -> GlFallible<()> {
         self.oxidegl_vertex_attrib_format_internal(
             attribindex,
             size as u32,
@@ -180,7 +180,7 @@ impl Context {
             relativeoffset,
             IntegralCastBehavior::Cast,
             vaobj,
-        );
+        )
     }
     #[allow(clippy::cast_sign_loss)]
     pub(crate) fn oxidegl_vertex_array_attrib_i_format(
@@ -190,7 +190,7 @@ impl Context {
         size: GLint,
         r#type: VertexAttribIType,
         relativeoffset: GLuint,
-    ) {
+    ) -> GlFallible<()> {
         self.oxidegl_vertex_attrib_format_internal(
             attribindex,
             size as u32,
@@ -200,7 +200,7 @@ impl Context {
             relativeoffset,
             IntegralCastBehavior::Native,
             vaobj,
-        );
+        )
     }
     pub(crate) fn oxidegl_vertex_array_attrib_l_format(
         &mut self,
@@ -234,7 +234,7 @@ impl Context {
         let vao = self.get_vao(maybe_name)?;
         let attrib = vao.get_attrib_mut(attrib_index)?;
         gl_assert!(
-            relative_offset <= MAX_VERTEX_ATTRIBUTE_STRIDE as u32,
+            relative_offset <= u32::from(MAX_VERTEX_ATTRIBUTE_STRIDE),
             InvalidValue
         );
         // Caller ensures num_components is in-bounds
@@ -359,9 +359,9 @@ impl Context {
         &mut self,
         vao: impl MaybeObjectName<Vao>,
         idx: u32,
-        buffers: impl Iterator<Item = Option<ObjectName<Buffer>>> + ExactSizeIterator + Clone,
-        offsets: impl Iterator<Item = GLintptr> + ExactSizeIterator,
-        strides: impl Iterator<Item = GLsizei> + ExactSizeIterator,
+        buffers: impl ExactSizeIterator<Item = Option<ObjectName<Buffer>>> + Clone,
+        offsets: impl ExactSizeIterator<Item = GLintptr>,
+        strides: impl ExactSizeIterator<Item = GLsizei>,
     ) -> GlFallible<()> {
         buffers.clone().try_for_each(|v| -> GlFallible<()> {
             gl_assert!(
@@ -472,6 +472,7 @@ impl Context {
         offsets: *const GLintptr,
         strides: *const GLsizei,
     ) -> GlFallible<()> {
+        sizei!(count);
         self.vertex_array_vertex_buffers_internal(
             CurrentBinding,
             first,
@@ -500,6 +501,7 @@ impl Context {
         offsets: *const GLintptr,
         strides: *const GLsizei,
     ) -> GlFallible<()> {
+        sizei!(count);
         self.vertex_array_vertex_buffers_internal(
             vaobj,
             first,
@@ -695,17 +697,25 @@ impl Context {
 /// [**glGetVertexAttribPointerv**](crate::context::Context::oxidegl_get_vertex_attrib_pointerv)
 /// with arguments `index` and [`GL_VERTEX_ATTRIB_ARRAY_POINTER`](crate::enums::GL_VERTEX_ATTRIB_ARRAY_POINTER)
 impl Context {
-    pub(crate) fn oxidegl_disable_vertex_attrib_array(&mut self, index: GLuint) {
-        self.disable_vertex_array_attrib(CurrentBinding, index);
+    pub(crate) fn oxidegl_disable_vertex_attrib_array(&mut self, index: GLuint) -> GlFallible<()> {
+        self.disable_vertex_array_attrib(CurrentBinding, index)
     }
-    pub(crate) fn oxidegl_enable_vertex_attrib_array(&mut self, index: GLuint) {
-        self.enable_vertex_array_attrib(CurrentBinding, index);
+    pub(crate) fn oxidegl_enable_vertex_attrib_array(&mut self, index: GLuint) -> GlFallible<()> {
+        self.enable_vertex_array_attrib(CurrentBinding, index)
     }
-    pub(crate) fn oxidegl_disable_vertex_array_attrib(&mut self, vaobj: GLuint, index: GLuint) {
-        self.disable_vertex_array_attrib(vaobj, index);
+    pub(crate) fn oxidegl_disable_vertex_array_attrib(
+        &mut self,
+        vaobj: GLuint,
+        index: GLuint,
+    ) -> GlFallible<()> {
+        self.disable_vertex_array_attrib(vaobj, index)
     }
-    pub(crate) fn oxidegl_enable_vertex_array_attrib(&mut self, vaobj: GLuint, index: GLuint) {
-        self.enable_vertex_array_attrib(vaobj, index);
+    pub(crate) fn oxidegl_enable_vertex_array_attrib(
+        &mut self,
+        vaobj: GLuint,
+        index: GLuint,
+    ) -> GlFallible<()> {
+        self.enable_vertex_array_attrib(vaobj, index)
     }
 }
 
@@ -843,16 +853,20 @@ impl Context {
 /// [**glGet**](crate::context::Context::oxidegl_get) with arguments [`GL_MAX_VERTEX_ATTRIB_BINDINGS`](crate::enums::GL_MAX_VERTEX_ATTRIB_BINDINGS),
 /// [`GL_VERTEX_BINDING_DIVISOR`](crate::enums::GL_VERTEX_BINDING_DIVISOR).
 impl Context {
-    pub(crate) fn oxidegl_vertex_binding_divisor(&mut self, bindingindex: GLuint, divisor: GLuint) {
-        self.vertex_binding_divisor_internal(CurrentBinding, bindingindex, divisor);
+    pub(crate) fn oxidegl_vertex_binding_divisor(
+        &mut self,
+        bindingindex: GLuint,
+        divisor: GLuint,
+    ) -> GlFallible<()> {
+        self.vertex_binding_divisor_internal(CurrentBinding, bindingindex, divisor)
     }
     pub(crate) fn oxidegl_vertex_array_binding_divisor(
         &mut self,
         vaobj: GLuint,
         bindingindex: GLuint,
         divisor: GLuint,
-    ) {
-        self.vertex_binding_divisor_internal(vaobj, bindingindex, divisor);
+    ) -> GlFallible<()> {
+        self.vertex_binding_divisor_internal(vaobj, bindingindex, divisor)
     }
 }
 
@@ -1018,7 +1032,7 @@ impl Context {
         normalized: GLboolean,
         stride: GLsizei,
         pointer: *const GLvoid,
-    ) {
+    ) -> GlFallible<()> {
         self.vertex_attrib_pointer_internal(
             index,
             size as u32,
@@ -1033,7 +1047,7 @@ impl Context {
                     IntegralCastBehavior::Cast
                 }
             },
-        );
+        )
     }
     #[allow(clippy::cast_sign_loss)]
     pub(crate) unsafe fn oxidegl_vertex_attrib_i_pointer(
@@ -1043,7 +1057,7 @@ impl Context {
         r#type: VertexAttribIType,
         stride: GLsizei,
         pointer: *const GLvoid,
-    ) {
+    ) -> GlFallible<()> {
         self.vertex_attrib_pointer_internal(
             index,
             size as u32,
@@ -1052,7 +1066,7 @@ impl Context {
             stride,
             pointer,
             IntegralCastBehavior::Native,
-        );
+        )
     }
     pub(crate) unsafe fn oxidegl_vertex_attrib_l_pointer(
         &mut self,
@@ -1265,7 +1279,6 @@ impl VertexAttrib {
     }
     #[inline]
     pub(crate) fn get_mtl_layout(&self) -> AttributeFormatWithConversion {
-        self.validate();
         gl_attribute_to_mtl(self.component_type, self.components, self.integral_cast)
     }
 }
