@@ -134,7 +134,7 @@ impl Context {
         r#type: VertexAttribType,
         normalized: GLboolean,
         relativeoffset: GLuint,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         self.oxidegl_vertex_attrib_format_internal(
             attribindex,
             size as u32,
@@ -151,7 +151,7 @@ impl Context {
         size: GLint,
         r#type: VertexAttribIType,
         relativeoffset: GLuint,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         self.oxidegl_vertex_attrib_format_internal(
             attribindex,
             size as u32,
@@ -172,7 +172,7 @@ impl Context {
         r#type: VertexAttribType,
         normalized: GLboolean,
         relativeoffset: GLuint,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         self.oxidegl_vertex_attrib_format_internal(
             attribindex,
             size as u32,
@@ -190,7 +190,7 @@ impl Context {
         size: GLint,
         r#type: VertexAttribIType,
         relativeoffset: GLuint,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         self.oxidegl_vertex_attrib_format_internal(
             attribindex,
             size as u32,
@@ -230,7 +230,7 @@ impl Context {
         relative_offset: GLuint,
         integer_behavior: IntegralCastBehavior,
         maybe_name: impl MaybeObjectName<Vao>,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         let vao = self.get_vao(maybe_name)?;
         let attrib = vao.get_attrib_mut(attrib_index)?;
         gl_assert!(
@@ -322,7 +322,7 @@ impl Context {
         buffer: GLuint,
         offset: GLintptr,
         stride: GLsizei,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         self.vertex_array_vertex_buffers_internal(
             CurrentBinding,
             bindingindex,
@@ -338,7 +338,7 @@ impl Context {
         buffer: GLuint,
         offset: GLintptr,
         stride: GLsizei,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         self.vertex_array_vertex_buffers_internal(
             vaobj,
             bindingindex,
@@ -362,8 +362,8 @@ impl Context {
         buffers: impl ExactSizeIterator<Item = Option<ObjectName<Buffer>>> + Clone,
         offsets: impl ExactSizeIterator<Item = GLintptr>,
         strides: impl ExactSizeIterator<Item = GLsizei>,
-    ) -> GlFallible<()> {
-        buffers.clone().try_for_each(|v| -> GlFallible<()> {
+    ) -> GlFallible {
+        buffers.clone().try_for_each(|v| -> GlFallible {
             gl_assert!(
                 v.is_none_or(|n| self.gl_state.buffer_list.is(n)),
                 InvalidOperation,
@@ -471,7 +471,7 @@ impl Context {
         buffers: *const GLuint,
         offsets: *const GLintptr,
         strides: *const GLsizei,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         sizei!(count);
         self.vertex_array_vertex_buffers_internal(
             CurrentBinding,
@@ -500,7 +500,7 @@ impl Context {
         buffers: *const GLuint,
         offsets: *const GLintptr,
         strides: *const GLsizei,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         sizei!(count);
         self.vertex_array_vertex_buffers_internal(
             vaobj,
@@ -593,7 +593,7 @@ impl Context {
     /// `array` is first bound. If the bind is successful no change is made to
     /// the state of the vertex array object, and any previous vertex array object
     /// binding is broken.
-    pub(crate) fn oxidegl_bind_vertex_array(&mut self, array: GLuint) -> GlFallible<()> {
+    pub(crate) fn oxidegl_bind_vertex_array(&mut self, array: GLuint) -> GlFallible {
         let name = ObjectName::try_from_raw(array).ok();
         if let Some(name) = name {
             self.gl_state.vao_list.ensure_init(name, Vao::new_default)?;
@@ -697,24 +697,24 @@ impl Context {
 /// [**glGetVertexAttribPointerv**](crate::context::Context::oxidegl_get_vertex_attrib_pointerv)
 /// with arguments `index` and [`GL_VERTEX_ATTRIB_ARRAY_POINTER`](crate::enums::GL_VERTEX_ATTRIB_ARRAY_POINTER)
 impl Context {
-    pub(crate) fn oxidegl_disable_vertex_attrib_array(&mut self, index: GLuint) -> GlFallible<()> {
+    pub(crate) fn oxidegl_disable_vertex_attrib_array(&mut self, index: GLuint) -> GlFallible {
         self.disable_vertex_array_attrib(CurrentBinding, index)
     }
-    pub(crate) fn oxidegl_enable_vertex_attrib_array(&mut self, index: GLuint) -> GlFallible<()> {
+    pub(crate) fn oxidegl_enable_vertex_attrib_array(&mut self, index: GLuint) -> GlFallible {
         self.enable_vertex_array_attrib(CurrentBinding, index)
     }
     pub(crate) fn oxidegl_disable_vertex_array_attrib(
         &mut self,
         vaobj: GLuint,
         index: GLuint,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         self.disable_vertex_array_attrib(vaobj, index)
     }
     pub(crate) fn oxidegl_enable_vertex_array_attrib(
         &mut self,
         vaobj: GLuint,
         index: GLuint,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         self.enable_vertex_array_attrib(vaobj, index)
     }
 }
@@ -726,7 +726,7 @@ impl Context {
         &mut self,
         vao: impl MaybeObjectName<Vao>,
         index: GLuint,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         let vao = self.get_vao(vao)?;
         gl_debug!(
             "enabling vertex attribute at index {index} of {:?}",
@@ -741,7 +741,7 @@ impl Context {
         &mut self,
         vao: impl MaybeObjectName<Vao>,
         index: GLuint,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         let vao = self.get_vao(vao)?;
         gl_debug!(
             "disabling vertex attribute at index {index} of {:?}",
@@ -786,7 +786,7 @@ impl Context {
         &mut self,
         attribindex: GLuint,
         bindingindex: GLuint,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         self.vertex_attrib_binding_internal(CurrentBinding, attribindex, bindingindex)
     }
     pub(crate) fn oxidegl_vertex_array_attrib_binding(
@@ -794,7 +794,7 @@ impl Context {
         vaobj: GLuint,
         attribindex: GLuint,
         bindingindex: GLuint,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         self.vertex_attrib_binding_internal(vaobj, attribindex, bindingindex)
     }
 }
@@ -805,7 +805,7 @@ impl Context {
         vao: impl MaybeObjectName<Vao>,
         attrib_index: u32,
         binding_index: u32,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         gl_assert!(
             (binding_index as usize) < MAX_VERTEX_ATTRIB_BUFFER_BINDINGS,
             InvalidValue,
@@ -857,7 +857,7 @@ impl Context {
         &mut self,
         bindingindex: GLuint,
         divisor: GLuint,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         self.vertex_binding_divisor_internal(CurrentBinding, bindingindex, divisor)
     }
     pub(crate) fn oxidegl_vertex_array_binding_divisor(
@@ -865,7 +865,7 @@ impl Context {
         vaobj: GLuint,
         bindingindex: GLuint,
         divisor: GLuint,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         self.vertex_binding_divisor_internal(vaobj, bindingindex, divisor)
     }
 }
@@ -877,7 +877,7 @@ impl Context {
         vao: impl MaybeObjectName<Vao>,
         binding_index: u32,
         divisor: u32,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         let vao = self.get_vao(vao)?;
         debug!("setting vertex attribute binding divisor at buffer binding index {binding_index} to {divisor}");
         vao.get_binding_mut(binding_index)?.divisor = NonZeroU32::new(divisor);
@@ -1032,7 +1032,7 @@ impl Context {
         normalized: GLboolean,
         stride: GLsizei,
         pointer: *const GLvoid,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         self.vertex_attrib_pointer_internal(
             index,
             size as u32,
@@ -1057,7 +1057,7 @@ impl Context {
         r#type: VertexAttribIType,
         stride: GLsizei,
         pointer: *const GLvoid,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         self.vertex_attrib_pointer_internal(
             index,
             size as u32,
@@ -1090,7 +1090,7 @@ impl Context {
         stride: GLsizei,
         pointer: *const GLvoid,
         integer_behavior: IntegralCastBehavior,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         //FIXME highly suboptimal implementation, the logic of all of the commands should be moved onto methods on `Vao`
         sizei!(stride);
         let vao = self.get_vao(CurrentBinding)?;
@@ -1194,7 +1194,7 @@ pub(crate) struct VertexAttrib {
 
 impl VertexAttrib {
     #[inline]
-    pub(crate) fn validate(&self) -> GlFallible<()> {
+    pub(crate) fn validate(&self) -> GlFallible {
         let components = self.components;
         let component_type = self.component_type;
         let normalize = self.integral_cast == IntegralCastBehavior::Normalize;

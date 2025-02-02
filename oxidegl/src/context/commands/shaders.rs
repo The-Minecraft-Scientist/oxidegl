@@ -128,7 +128,7 @@ impl Context {
         count: GLsizei,
         string: *const *const GLchar,
         length: *const GLint,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         sizei!(count);
         // Safety: Caller ensures array length is correct and shader strings are valid
         let sources = unsafe { core::slice::from_raw_parts(string, count as usize) };

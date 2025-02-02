@@ -1057,7 +1057,7 @@ impl GLTypes {
     }
     fn fallible_rust_ret_type(&self) -> String {
         match self {
-            Self::GLvoid => " -> GlFallible<()>".to_owned(),
+            Self::GLvoid => " -> GlFallible".to_owned(),
             _ => {
                 format!(" -> GlFallible<{}>", &self.rust_type())
             }

@@ -66,7 +66,7 @@ impl Context {
         name: GLuint,
         length: GLsizei,
         label: *const GLchar,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         let lengthi = length;
         sizei!(length);
         let label = match (label.is_null(), lengthi) {
@@ -189,7 +189,7 @@ impl Context {
         buf_size: GLsizei,
         length: *mut GLsizei,
         label: *mut GLchar,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         const EMPTY: &CStr = c"";
         gl_assert!(buf_size >= 0, InvalidValue);
         #[allow(clippy::cast_sign_loss)]

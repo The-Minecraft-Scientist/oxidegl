@@ -80,10 +80,10 @@ impl Context {
         &mut self,
         id: GLuint,
         mode: ConditionalRenderMode,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_begin_conditional_render not yet implemented");
     }
-    pub(crate) fn oxidegl_end_conditional_render(&mut self) -> GlFallible<()> {
+    pub(crate) fn oxidegl_end_conditional_render(&mut self) -> GlFallible {
         panic!("command oxidegl_end_conditional_render not yet implemented");
     }
 }
@@ -211,14 +211,10 @@ impl Context {
 /// The query target [`GL_ANY_SAMPLES_PASSED_CONSERVATIVE`](crate::enums::GL_ANY_SAMPLES_PASSED_CONSERVATIVE)
 /// is available only of the GL version is 4.3 or higher.
 impl Context {
-    pub(crate) fn oxidegl_begin_query(
-        &mut self,
-        target: QueryTarget,
-        id: GLuint,
-    ) -> GlFallible<()> {
+    pub(crate) fn oxidegl_begin_query(&mut self, target: QueryTarget, id: GLuint) -> GlFallible {
         panic!("command oxidegl_begin_query not yet implemented");
     }
-    pub(crate) fn oxidegl_end_query(&mut self, target: QueryTarget) -> GlFallible<()> {
+    pub(crate) fn oxidegl_end_query(&mut self, target: QueryTarget) -> GlFallible {
         panic!("command oxidegl_end_query not yet implemented");
     }
 }
@@ -366,14 +362,14 @@ impl Context {
         target: QueryTarget,
         index: GLuint,
         id: GLuint,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_begin_query_indexed not yet implemented");
     }
     pub(crate) fn oxidegl_end_query_indexed(
         &mut self,
         target: QueryTarget,
         index: GLuint,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_end_query_indexed not yet implemented");
     }
 }
@@ -418,10 +414,10 @@ impl Context {
     pub(crate) fn oxidegl_begin_transform_feedback(
         &mut self,
         primitive_mode: PrimitiveType,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_begin_transform_feedback not yet implemented");
     }
-    pub(crate) fn oxidegl_end_transform_feedback(&mut self) -> GlFallible<()> {
+    pub(crate) fn oxidegl_end_transform_feedback(&mut self) -> GlFallible {
         panic!("command oxidegl_end_transform_feedback not yet implemented");
     }
 }
@@ -486,14 +482,14 @@ impl Context {
 ///
 /// [**glGet**](crate::context::Context::oxidegl_get) with an argument of [`GL_BLEND_EQUATION_ALPHA`](crate::enums::GL_BLEND_EQUATION_ALPHA)
 impl Context {
-    pub(crate) fn oxidegl_blend_equation(&mut self, mode: BlendEquationModeEXT) -> GlFallible<()> {
+    pub(crate) fn oxidegl_blend_equation(&mut self, mode: BlendEquationModeEXT) -> GlFallible {
         panic!("command oxidegl_blend_equation not yet implemented");
     }
     pub(crate) fn oxidegl_blend_equationi(
         &mut self,
         buf: GLuint,
         mode: BlendEquationModeEXT,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_blend_equationi not yet implemented");
     }
 }
@@ -569,7 +565,7 @@ impl Context {
         &mut self,
         mode_r_g_b: BlendEquationModeEXT,
         mode_alpha: BlendEquationModeEXT,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_blend_equation_separate not yet implemented");
     }
     pub(crate) fn oxidegl_blend_equation_separatei(
@@ -577,7 +573,7 @@ impl Context {
         buf: GLuint,
         mode_r_g_b: BlendEquationModeEXT,
         mode_alpha: BlendEquationModeEXT,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_blend_equation_separatei not yet implemented");
     }
 }
@@ -717,7 +713,7 @@ impl Context {
         &mut self,
         sfactor: BlendingFactor,
         dfactor: BlendingFactor,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_blend_func not yet implemented");
     }
     pub(crate) fn oxidegl_blend_funci(
@@ -725,7 +721,7 @@ impl Context {
         buf: GLuint,
         src: BlendingFactor,
         dst: BlendingFactor,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_blend_funci not yet implemented");
     }
 }
@@ -863,7 +859,7 @@ impl Context {
         dfactor_r_g_b: BlendingFactor,
         sfactor_alpha: BlendingFactor,
         dfactor_alpha: BlendingFactor,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_blend_func_separate not yet implemented");
     }
     pub(crate) fn oxidegl_blend_func_separatei(
@@ -873,7 +869,7 @@ impl Context {
         dst_r_g_b: BlendingFactor,
         src_alpha: BlendingFactor,
         dst_alpha: BlendingFactor,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_blend_func_separatei not yet implemented");
     }
 }
@@ -988,7 +984,7 @@ impl Context {
         dst_y1: GLint,
         mask: ClearBufferMask,
         filter: BlitFramebufferFilter,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_blit_framebuffer not yet implemented");
     }
     pub(crate) fn oxidegl_blit_named_framebuffer(
@@ -1005,7 +1001,7 @@ impl Context {
         dst_y1: GLint,
         mask: ClearBufferMask,
         filter: BlitFramebufferFilter,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_blit_named_framebuffer not yet implemented");
     }
 }
@@ -1136,7 +1132,7 @@ impl Context {
         size: GLsizeiptr,
         data: *const GLvoid,
         usage: BufferUsage,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_buffer_data not yet implemented");
     }
     pub(crate) unsafe fn oxidegl_named_buffer_data(
@@ -1145,7 +1141,7 @@ impl Context {
         size: GLsizeiptr,
         data: *const GLvoid,
         usage: VertexBufferObjectUsage,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_named_buffer_data not yet implemented");
     }
 }
@@ -1232,7 +1228,7 @@ impl Context {
         offset: GLintptr,
         size: GLsizeiptr,
         data: *const GLvoid,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_buffer_sub_data not yet implemented");
     }
     pub(crate) unsafe fn oxidegl_named_buffer_sub_data(
@@ -1241,7 +1237,7 @@ impl Context {
         offset: GLintptr,
         size: GLsizeiptr,
         data: *const GLvoid,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_named_buffer_sub_data not yet implemented");
     }
 }
@@ -1425,7 +1421,7 @@ impl Context {
         buffer: Buffer,
         drawbuffer: GLint,
         value: *const GLint,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_clear_bufferiv not yet implemented");
     }
     pub(crate) unsafe fn oxidegl_clear_bufferuiv(
@@ -1433,7 +1429,7 @@ impl Context {
         buffer: Buffer,
         drawbuffer: GLint,
         value: *const GLuint,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_clear_bufferuiv not yet implemented");
     }
     pub(crate) unsafe fn oxidegl_clear_bufferfv(
@@ -1441,7 +1437,7 @@ impl Context {
         buffer: Buffer,
         drawbuffer: GLint,
         value: *const GLfloat,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_clear_bufferfv not yet implemented");
     }
     pub(crate) fn oxidegl_clear_bufferfi(
@@ -1450,7 +1446,7 @@ impl Context {
         drawbuffer: GLint,
         depth: GLfloat,
         stencil: GLint,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_clear_bufferfi not yet implemented");
     }
     pub(crate) unsafe fn oxidegl_clear_named_framebufferiv(
@@ -1459,7 +1455,7 @@ impl Context {
         buffer: Buffer,
         drawbuffer: GLint,
         value: *const GLint,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_clear_named_framebufferiv not yet implemented");
     }
     pub(crate) unsafe fn oxidegl_clear_named_framebufferuiv(
@@ -1468,7 +1464,7 @@ impl Context {
         buffer: Buffer,
         drawbuffer: GLint,
         value: *const GLuint,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_clear_named_framebufferuiv not yet implemented");
     }
     pub(crate) unsafe fn oxidegl_clear_named_framebufferfv(
@@ -1477,7 +1473,7 @@ impl Context {
         buffer: Buffer,
         drawbuffer: GLint,
         value: *const GLfloat,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_clear_named_framebufferfv not yet implemented");
     }
     pub(crate) fn oxidegl_clear_named_framebufferfi(
@@ -1487,7 +1483,7 @@ impl Context {
         drawbuffer: GLint,
         depth: GLfloat,
         stencil: GLint,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_clear_named_framebufferfi not yet implemented");
     }
 }
@@ -1592,7 +1588,7 @@ impl Context {
         format: PixelFormat,
         r#type: PixelType,
         data: *const GLvoid,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_clear_buffer_data not yet implemented");
     }
     pub(crate) unsafe fn oxidegl_clear_named_buffer_data(
@@ -1602,7 +1598,7 @@ impl Context {
         format: PixelFormat,
         r#type: PixelType,
         data: *const GLvoid,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_clear_named_buffer_data not yet implemented");
     }
 }
@@ -1720,7 +1716,7 @@ impl Context {
         format: PixelFormat,
         r#type: PixelType,
         data: *const GLvoid,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_clear_buffer_sub_data not yet implemented");
     }
     pub(crate) unsafe fn oxidegl_clear_named_buffer_sub_data(
@@ -1732,7 +1728,7 @@ impl Context {
         format: PixelFormat,
         r#type: PixelType,
         data: *const GLvoid,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_clear_named_buffer_sub_data not yet implemented");
     }
 }
@@ -1775,7 +1771,7 @@ impl Context {
         green: GLboolean,
         blue: GLboolean,
         alpha: GLboolean,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_color_mask not yet implemented");
     }
     pub(crate) fn oxidegl_color_maski(
@@ -1785,7 +1781,7 @@ impl Context {
         g: GLboolean,
         b: GLboolean,
         a: GLboolean,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_color_maski not yet implemented");
     }
 }
@@ -1866,7 +1862,7 @@ impl Context {
         format: InternalFormat,
         image_size: GLsizei,
         data: *const GLvoid,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_compressed_tex_sub_image1_d not yet implemented");
     }
     pub(crate) unsafe fn oxidegl_compressed_texture_sub_image1_d(
@@ -1878,7 +1874,7 @@ impl Context {
         format: InternalFormat,
         image_size: GLsizei,
         data: *const GLvoid,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_compressed_texture_sub_image1_d not yet implemented");
     }
 }
@@ -1975,7 +1971,7 @@ impl Context {
         format: InternalFormat,
         image_size: GLsizei,
         data: *const GLvoid,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_compressed_tex_sub_image2_d not yet implemented");
     }
     pub(crate) unsafe fn oxidegl_compressed_texture_sub_image2_d(
@@ -1989,7 +1985,7 @@ impl Context {
         format: InternalFormat,
         image_size: GLsizei,
         data: *const GLvoid,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_compressed_texture_sub_image2_d not yet implemented");
     }
 }
@@ -2092,7 +2088,7 @@ impl Context {
         format: InternalFormat,
         image_size: GLsizei,
         data: *const GLvoid,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_compressed_tex_sub_image3_d not yet implemented");
     }
     pub(crate) unsafe fn oxidegl_compressed_texture_sub_image3_d(
@@ -2108,7 +2104,7 @@ impl Context {
         format: InternalFormat,
         image_size: GLsizei,
         data: *const GLvoid,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_compressed_texture_sub_image3_d not yet implemented");
     }
 }
@@ -2203,7 +2199,7 @@ impl Context {
         read_offset: GLintptr,
         write_offset: GLintptr,
         size: GLsizeiptr,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_copy_buffer_sub_data not yet implemented");
     }
     pub(crate) fn oxidegl_copy_named_buffer_sub_data(
@@ -2213,7 +2209,7 @@ impl Context {
         read_offset: GLintptr,
         write_offset: GLintptr,
         size: GLsizeiptr,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_copy_named_buffer_sub_data not yet implemented");
     }
 }
@@ -2292,7 +2288,7 @@ impl Context {
         x: GLint,
         y: GLint,
         width: GLsizei,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_copy_tex_sub_image1_d not yet implemented");
     }
     pub(crate) fn oxidegl_copy_texture_sub_image1_d(
@@ -2303,7 +2299,7 @@ impl Context {
         x: GLint,
         y: GLint,
         width: GLsizei,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_copy_texture_sub_image1_d not yet implemented");
     }
 }
@@ -2406,7 +2402,7 @@ impl Context {
         y: GLint,
         width: GLsizei,
         height: GLsizei,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_copy_tex_sub_image2_d not yet implemented");
     }
     pub(crate) fn oxidegl_copy_texture_sub_image2_d(
@@ -2419,7 +2415,7 @@ impl Context {
         y: GLint,
         width: GLsizei,
         height: GLsizei,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_copy_texture_sub_image2_d not yet implemented");
     }
 }
@@ -2515,7 +2511,7 @@ impl Context {
         y: GLint,
         width: GLsizei,
         height: GLsizei,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_copy_tex_sub_image3_d not yet implemented");
     }
     pub(crate) fn oxidegl_copy_texture_sub_image3_d(
@@ -2529,7 +2525,7 @@ impl Context {
         y: GLint,
         width: GLsizei,
         height: GLsizei,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_copy_texture_sub_image3_d not yet implemented");
     }
 }
@@ -2569,10 +2565,10 @@ impl Context {
 /// ### Associated Gets
 /// [**glGet**](crate::context::Context::oxidegl_get) with argument [`GL_DEPTH_RANGE`](crate::enums::GL_DEPTH_RANGE)
 impl Context {
-    pub(crate) fn oxidegl_depth_range(&mut self, n: GLdouble, f: GLdouble) -> GlFallible<()> {
+    pub(crate) fn oxidegl_depth_range(&mut self, n: GLdouble, f: GLdouble) -> GlFallible {
         panic!("command oxidegl_depth_range not yet implemented");
     }
-    pub(crate) fn oxidegl_depth_rangef(&mut self, n: GLfloat, f: GLfloat) -> GlFallible<()> {
+    pub(crate) fn oxidegl_depth_rangef(&mut self, n: GLfloat, f: GLfloat) -> GlFallible {
         panic!("command oxidegl_depth_rangef not yet implemented");
     }
 }
@@ -2669,14 +2665,14 @@ impl Context {
 /// ### Associated Gets
 /// [**glGet**](crate::context::Context::oxidegl_get) with argument [`GL_DRAW_BUFFER`](crate::enums::GL_DRAW_BUFFER)
 impl Context {
-    pub(crate) fn oxidegl_draw_buffer(&mut self, buf: DrawBufferMode) -> GlFallible<()> {
+    pub(crate) fn oxidegl_draw_buffer(&mut self, buf: DrawBufferMode) -> GlFallible {
         panic!("command oxidegl_draw_buffer not yet implemented");
     }
     pub(crate) fn oxidegl_named_framebuffer_draw_buffer(
         &mut self,
         framebuffer: GLuint,
         buf: ColorBuffer,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_named_framebuffer_draw_buffer not yet implemented");
     }
 }
@@ -2763,11 +2759,7 @@ impl Context {
 /// *i* where ** indicates the number of the draw buffer whose value is to
 /// be queried.
 impl Context {
-    pub(crate) fn oxidegl_draw_buffers(
-        &mut self,
-        n: GLsizei,
-        bufs: DrawBufferMode,
-    ) -> GlFallible<()> {
+    pub(crate) fn oxidegl_draw_buffers(&mut self, n: GLsizei, bufs: DrawBufferMode) -> GlFallible {
         panic!("command oxidegl_draw_buffers not yet implemented");
     }
     pub(crate) fn oxidegl_named_framebuffer_draw_buffers(
@@ -2775,7 +2767,7 @@ impl Context {
         framebuffer: GLuint,
         n: GLsizei,
         bufs: ColorBuffer,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_named_framebuffer_draw_buffers not yet implemented");
     }
 }
@@ -2846,7 +2838,7 @@ impl Context {
         target: BufferTarget,
         offset: GLintptr,
         length: GLsizeiptr,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_flush_mapped_buffer_range not yet implemented");
     }
     pub(crate) fn oxidegl_flush_mapped_named_buffer_range(
@@ -2854,7 +2846,7 @@ impl Context {
         buffer: GLuint,
         offset: GLintptr,
         length: GLsizeiptr,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_flush_mapped_named_buffer_range not yet implemented");
     }
 }
@@ -2942,7 +2934,7 @@ impl Context {
         target: FramebufferTarget,
         pname: FramebufferParameterName,
         param: GLint,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_framebuffer_parameteri not yet implemented");
     }
     pub(crate) fn oxidegl_named_framebuffer_parameteri(
@@ -2950,7 +2942,7 @@ impl Context {
         framebuffer: GLuint,
         pname: FramebufferParameterName,
         param: GLint,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_named_framebuffer_parameteri not yet implemented");
     }
 }
@@ -3027,7 +3019,7 @@ impl Context {
         attachment: FramebufferAttachment,
         renderbuffertarget: GLenum,
         renderbuffer: GLuint,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_framebuffer_renderbuffer not yet implemented");
     }
     pub(crate) fn oxidegl_named_framebuffer_renderbuffer(
@@ -3036,7 +3028,7 @@ impl Context {
         attachment: FramebufferAttachment,
         renderbuffertarget: GLenum,
         renderbuffer: GLuint,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_named_framebuffer_renderbuffer not yet implemented");
     }
 }
@@ -3174,7 +3166,7 @@ impl Context {
         textarget: TextureTarget,
         texture: GLuint,
         level: GLint,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_framebuffer_texture1_d not yet implemented");
     }
     pub(crate) fn oxidegl_framebuffer_texture2_d(
@@ -3184,7 +3176,7 @@ impl Context {
         textarget: TextureTarget,
         texture: GLuint,
         level: GLint,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_framebuffer_texture2_d not yet implemented");
     }
     pub(crate) fn oxidegl_framebuffer_texture3_d(
@@ -3195,7 +3187,7 @@ impl Context {
         texture: GLuint,
         level: GLint,
         zoffset: GLint,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_framebuffer_texture3_d not yet implemented");
     }
     pub(crate) fn oxidegl_framebuffer_texture(
@@ -3204,7 +3196,7 @@ impl Context {
         attachment: FramebufferAttachment,
         texture: GLuint,
         level: GLint,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_framebuffer_texture not yet implemented");
     }
     pub(crate) fn oxidegl_named_framebuffer_texture(
@@ -3213,7 +3205,7 @@ impl Context {
         attachment: FramebufferAttachment,
         texture: GLuint,
         level: GLint,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_named_framebuffer_texture not yet implemented");
     }
 }
@@ -3291,7 +3283,7 @@ impl Context {
         texture: GLuint,
         level: GLint,
         layer: GLint,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_framebuffer_texture_layer not yet implemented");
     }
     pub(crate) fn oxidegl_named_framebuffer_texture_layer(
@@ -3301,7 +3293,7 @@ impl Context {
         texture: GLuint,
         level: GLint,
         layer: GLint,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_named_framebuffer_texture_layer not yet implemented");
     }
 }
@@ -3342,10 +3334,10 @@ impl Context {
 /// ### Notes
 /// Cube map array textures are accepted only if the GL version is 4.0 or higher.
 impl Context {
-    pub(crate) fn oxidegl_generate_mipmap(&mut self, target: TextureTarget) -> GlFallible<()> {
+    pub(crate) fn oxidegl_generate_mipmap(&mut self, target: TextureTarget) -> GlFallible {
         panic!("command oxidegl_generate_mipmap not yet implemented");
     }
-    pub(crate) fn oxidegl_generate_texture_mipmap(&mut self, texture: GLuint) -> GlFallible<()> {
+    pub(crate) fn oxidegl_generate_texture_mipmap(&mut self, texture: GLuint) -> GlFallible {
         panic!("command oxidegl_generate_texture_mipmap not yet implemented");
     }
 }
@@ -3473,7 +3465,7 @@ impl Context {
         target: BufferTarget,
         pname: BufferPName,
         params: *mut GLint,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_get_buffer_parameteriv not yet implemented");
     }
     pub(crate) unsafe fn oxidegl_get_buffer_parameteri64v(
@@ -3481,7 +3473,7 @@ impl Context {
         target: BufferTarget,
         pname: BufferPName,
         params: *mut GLint64,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_get_buffer_parameteri64v not yet implemented");
     }
     pub(crate) unsafe fn oxidegl_get_named_buffer_parameteriv(
@@ -3489,7 +3481,7 @@ impl Context {
         buffer: GLuint,
         pname: BufferPName,
         params: *mut GLint,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_get_named_buffer_parameteriv not yet implemented");
     }
     pub(crate) unsafe fn oxidegl_get_named_buffer_parameteri64v(
@@ -3497,7 +3489,7 @@ impl Context {
         buffer: GLuint,
         pname: BufferPName,
         params: *mut GLint64,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_get_named_buffer_parameteri64v not yet implemented");
     }
 }
@@ -3566,7 +3558,7 @@ impl Context {
         target: BufferTarget,
         pname: GLenum,
         params: *mut *mut GLvoid,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_get_buffer_pointerv not yet implemented");
     }
     pub(crate) unsafe fn oxidegl_get_named_buffer_pointerv(
@@ -3574,7 +3566,7 @@ impl Context {
         buffer: GLuint,
         pname: GLenum,
         params: *mut *mut GLvoid,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_get_named_buffer_pointerv not yet implemented");
     }
 }
@@ -3647,7 +3639,7 @@ impl Context {
         offset: GLintptr,
         size: GLsizeiptr,
         data: *mut GLvoid,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_get_buffer_sub_data not yet implemented");
     }
     pub(crate) unsafe fn oxidegl_get_named_buffer_sub_data(
@@ -3656,7 +3648,7 @@ impl Context {
         offset: GLintptr,
         size: GLsizeiptr,
         data: *mut GLvoid,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_get_named_buffer_sub_data not yet implemented");
     }
 }
@@ -3746,7 +3738,7 @@ impl Context {
         target: TextureTarget,
         level: GLint,
         img: *mut GLvoid,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_get_compressed_tex_image not yet implemented");
     }
     pub(crate) unsafe fn oxidegl_get_compressed_texture_image(
@@ -3755,7 +3747,7 @@ impl Context {
         level: GLint,
         buf_size: GLsizei,
         pixels: *mut GLvoid,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_get_compressed_texture_image not yet implemented");
     }
     pub(crate) unsafe fn oxidegl_getn_compressed_tex_image(
@@ -3764,7 +3756,7 @@ impl Context {
         lod: GLint,
         buf_size: GLsizei,
         pixels: *mut GLvoid,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_getn_compressed_tex_image not yet implemented");
     }
 }
@@ -3924,7 +3916,7 @@ impl Context {
         attachment: FramebufferAttachment,
         pname: FramebufferAttachmentParameterName,
         params: *mut GLint,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_get_framebuffer_attachment_parameteriv not yet implemented");
     }
     pub(crate) unsafe fn oxidegl_get_named_framebuffer_attachment_parameteriv(
@@ -3933,7 +3925,7 @@ impl Context {
         attachment: FramebufferAttachment,
         pname: FramebufferAttachmentParameterName,
         params: *mut GLint,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_get_named_framebuffer_attachment_parameteriv not yet implemented");
     }
 }
@@ -4055,7 +4047,7 @@ impl Context {
         target: FramebufferTarget,
         pname: FramebufferAttachmentParameterName,
         params: *mut GLint,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_get_framebuffer_parameteriv not yet implemented");
     }
     pub(crate) unsafe fn oxidegl_get_named_framebuffer_parameteriv(
@@ -4063,7 +4055,7 @@ impl Context {
         framebuffer: GLuint,
         pname: GetFramebufferParameter,
         param: *mut GLint,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_get_named_framebuffer_parameteriv not yet implemented");
     }
 }
@@ -4483,7 +4475,7 @@ impl Context {
         pname: InternalFormatPName,
         count: GLsizei,
         params: *mut GLint,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_get_internalformativ not yet implemented");
     }
     pub(crate) unsafe fn oxidegl_get_internalformati64v(
@@ -4493,7 +4485,7 @@ impl Context {
         pname: InternalFormatPName,
         count: GLsizei,
         params: *mut GLint64,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_get_internalformati64v not yet implemented");
     }
 }
@@ -4593,7 +4585,7 @@ impl Context {
         id: GLuint,
         pname: QueryObjectParameterName,
         params: *mut GLint,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_get_query_objectiv not yet implemented");
     }
     pub(crate) unsafe fn oxidegl_get_query_objectuiv(
@@ -4601,7 +4593,7 @@ impl Context {
         id: GLuint,
         pname: QueryObjectParameterName,
         params: *mut GLuint,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_get_query_objectuiv not yet implemented");
     }
     pub(crate) unsafe fn oxidegl_get_query_objecti64v(
@@ -4609,7 +4601,7 @@ impl Context {
         id: GLuint,
         pname: QueryObjectParameterName,
         params: *mut GLint64,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_get_query_objecti64v not yet implemented");
     }
     pub(crate) unsafe fn oxidegl_get_query_objectui64v(
@@ -4617,7 +4609,7 @@ impl Context {
         id: GLuint,
         pname: QueryObjectParameterName,
         params: *mut GLuint64,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_get_query_objectui64v not yet implemented");
     }
     pub(crate) fn oxidegl_get_query_buffer_objecti64v(
@@ -4626,7 +4618,7 @@ impl Context {
         buffer: GLuint,
         pname: QueryObjectParameterName,
         offset: GLintptr,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_get_query_buffer_objecti64v not yet implemented");
     }
     pub(crate) fn oxidegl_get_query_buffer_objectiv(
@@ -4635,7 +4627,7 @@ impl Context {
         buffer: GLuint,
         pname: QueryObjectParameterName,
         offset: GLintptr,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_get_query_buffer_objectiv not yet implemented");
     }
     pub(crate) fn oxidegl_get_query_buffer_objectui64v(
@@ -4644,7 +4636,7 @@ impl Context {
         buffer: GLuint,
         pname: QueryObjectParameterName,
         offset: GLintptr,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_get_query_buffer_objectui64v not yet implemented");
     }
     pub(crate) fn oxidegl_get_query_buffer_objectuiv(
@@ -4653,7 +4645,7 @@ impl Context {
         buffer: GLuint,
         pname: QueryObjectParameterName,
         offset: GLintptr,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_get_query_buffer_objectuiv not yet implemented");
     }
 }
@@ -4712,7 +4704,7 @@ impl Context {
         target: GLenum,
         pname: RenderbufferParameterName,
         params: *mut GLint,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_get_renderbuffer_parameteriv not yet implemented");
     }
     pub(crate) unsafe fn oxidegl_get_named_renderbuffer_parameteriv(
@@ -4720,7 +4712,7 @@ impl Context {
         renderbuffer: GLuint,
         pname: RenderbufferParameterName,
         params: *mut GLint,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_get_named_renderbuffer_parameteriv not yet implemented");
     }
 }
@@ -4814,7 +4806,7 @@ impl Context {
         sampler: GLuint,
         pname: SamplerParameter,
         params: *mut GLint,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_get_sampler_parameteriv not yet implemented");
     }
     pub(crate) unsafe fn oxidegl_get_sampler_parameter_iiv(
@@ -4822,7 +4814,7 @@ impl Context {
         sampler: GLuint,
         pname: SamplerParameter,
         params: *mut GLint,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_get_sampler_parameter_iiv not yet implemented");
     }
     pub(crate) unsafe fn oxidegl_get_sampler_parameterfv(
@@ -4830,7 +4822,7 @@ impl Context {
         sampler: GLuint,
         pname: SamplerParameter,
         params: *mut GLfloat,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_get_sampler_parameterfv not yet implemented");
     }
     pub(crate) unsafe fn oxidegl_get_sampler_parameter_iuiv(
@@ -4838,7 +4830,7 @@ impl Context {
         sampler: GLuint,
         pname: SamplerParameter,
         params: *mut GLuint,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_get_sampler_parameter_iuiv not yet implemented");
     }
 }
@@ -5015,7 +5007,7 @@ impl Context {
         format: PixelFormat,
         r#type: PixelType,
         pixels: *mut GLvoid,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_get_tex_image not yet implemented");
     }
     pub(crate) unsafe fn oxidegl_get_texture_image(
@@ -5026,7 +5018,7 @@ impl Context {
         r#type: PixelType,
         buf_size: GLsizei,
         pixels: *mut GLvoid,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_get_texture_image not yet implemented");
     }
     pub(crate) unsafe fn oxidegl_getn_tex_image(
@@ -5037,7 +5029,7 @@ impl Context {
         r#type: PixelType,
         buf_size: GLsizei,
         pixels: *mut GLvoid,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_getn_tex_image not yet implemented");
     }
 }
@@ -5212,7 +5204,7 @@ impl Context {
         level: GLint,
         pname: GetTextureParameter,
         params: *mut GLfloat,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_get_tex_level_parameterfv not yet implemented");
     }
     pub(crate) unsafe fn oxidegl_get_tex_level_parameteriv(
@@ -5221,7 +5213,7 @@ impl Context {
         level: GLint,
         pname: GetTextureParameter,
         params: *mut GLint,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_get_tex_level_parameteriv not yet implemented");
     }
     pub(crate) unsafe fn oxidegl_get_texture_level_parameterfv(
@@ -5230,7 +5222,7 @@ impl Context {
         level: GLint,
         pname: GetTextureParameter,
         params: *mut GLfloat,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_get_texture_level_parameterfv not yet implemented");
     }
     pub(crate) unsafe fn oxidegl_get_texture_level_parameteriv(
@@ -5239,7 +5231,7 @@ impl Context {
         level: GLint,
         pname: GetTextureParameter,
         params: *mut GLint,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_get_texture_level_parameteriv not yet implemented");
     }
 }
@@ -5468,7 +5460,7 @@ impl Context {
         target: TextureTarget,
         pname: GetTextureParameter,
         params: *mut GLfloat,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_get_tex_parameterfv not yet implemented");
     }
     pub(crate) unsafe fn oxidegl_get_tex_parameteriv(
@@ -5476,7 +5468,7 @@ impl Context {
         target: TextureTarget,
         pname: GetTextureParameter,
         params: *mut GLint,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_get_tex_parameteriv not yet implemented");
     }
     pub(crate) unsafe fn oxidegl_get_tex_parameter_iiv(
@@ -5484,7 +5476,7 @@ impl Context {
         target: TextureTarget,
         pname: GetTextureParameter,
         params: *mut GLint,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_get_tex_parameter_iiv not yet implemented");
     }
     pub(crate) unsafe fn oxidegl_get_tex_parameter_iuiv(
@@ -5492,7 +5484,7 @@ impl Context {
         target: TextureTarget,
         pname: GetTextureParameter,
         params: *mut GLuint,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_get_tex_parameter_iuiv not yet implemented");
     }
     pub(crate) unsafe fn oxidegl_get_texture_parameterfv(
@@ -5500,7 +5492,7 @@ impl Context {
         texture: GLuint,
         pname: GetTextureParameter,
         params: *mut GLfloat,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_get_texture_parameterfv not yet implemented");
     }
     pub(crate) unsafe fn oxidegl_get_texture_parameter_iiv(
@@ -5508,7 +5500,7 @@ impl Context {
         texture: GLuint,
         pname: GetTextureParameter,
         params: *mut GLint,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_get_texture_parameter_iiv not yet implemented");
     }
     pub(crate) unsafe fn oxidegl_get_texture_parameter_iuiv(
@@ -5516,7 +5508,7 @@ impl Context {
         texture: GLuint,
         pname: GetTextureParameter,
         params: *mut GLuint,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_get_texture_parameter_iuiv not yet implemented");
     }
     pub(crate) unsafe fn oxidegl_get_texture_parameteriv(
@@ -5524,7 +5516,7 @@ impl Context {
         texture: GLuint,
         pname: GetTextureParameter,
         params: *mut GLint,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_get_texture_parameteriv not yet implemented");
     }
 }
@@ -5609,7 +5601,7 @@ impl Context {
         xfb: GLuint,
         pname: TransformFeedbackPName,
         param: *mut GLint,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_get_transform_feedbackiv not yet implemented");
     }
     pub(crate) unsafe fn oxidegl_get_transform_feedbacki_v(
@@ -5618,7 +5610,7 @@ impl Context {
         pname: TransformFeedbackPName,
         index: GLuint,
         param: *mut GLint,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_get_transform_feedbacki_v not yet implemented");
     }
     pub(crate) unsafe fn oxidegl_get_transform_feedbacki64_v(
@@ -5627,7 +5619,7 @@ impl Context {
         pname: TransformFeedbackPName,
         index: GLuint,
         param: *mut GLint64,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_get_transform_feedbacki64_v not yet implemented");
     }
 }
@@ -5699,7 +5691,7 @@ impl Context {
         program: GLuint,
         location: GLint,
         params: *mut GLfloat,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_get_uniformfv not yet implemented");
     }
     pub(crate) unsafe fn oxidegl_get_uniformiv(
@@ -5707,7 +5699,7 @@ impl Context {
         program: GLuint,
         location: GLint,
         params: *mut GLint,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_get_uniformiv not yet implemented");
     }
     pub(crate) unsafe fn oxidegl_get_uniformuiv(
@@ -5715,7 +5707,7 @@ impl Context {
         program: GLuint,
         location: GLint,
         params: *mut GLuint,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_get_uniformuiv not yet implemented");
     }
     pub(crate) unsafe fn oxidegl_get_uniformdv(
@@ -5723,7 +5715,7 @@ impl Context {
         program: GLuint,
         location: GLint,
         params: *mut GLdouble,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_get_uniformdv not yet implemented");
     }
     pub(crate) unsafe fn oxidegl_getn_uniformdv(
@@ -5732,7 +5724,7 @@ impl Context {
         location: GLint,
         buf_size: GLsizei,
         params: *mut GLdouble,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_getn_uniformdv not yet implemented");
     }
     pub(crate) unsafe fn oxidegl_getn_uniformfv(
@@ -5741,7 +5733,7 @@ impl Context {
         location: GLint,
         buf_size: GLsizei,
         params: *mut GLfloat,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_getn_uniformfv not yet implemented");
     }
     pub(crate) unsafe fn oxidegl_getn_uniformiv(
@@ -5750,7 +5742,7 @@ impl Context {
         location: GLint,
         buf_size: GLsizei,
         params: *mut GLint,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_getn_uniformiv not yet implemented");
     }
     pub(crate) unsafe fn oxidegl_getn_uniformuiv(
@@ -5759,7 +5751,7 @@ impl Context {
         location: GLint,
         buf_size: GLsizei,
         params: *mut GLuint,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_getn_uniformuiv not yet implemented");
     }
 }
@@ -5872,7 +5864,7 @@ impl Context {
         index: GLuint,
         pname: VertexArrayPName,
         param: *mut GLint,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_get_vertex_array_indexediv not yet implemented");
     }
     pub(crate) unsafe fn oxidegl_get_vertex_array_indexed64iv(
@@ -5881,7 +5873,7 @@ impl Context {
         index: GLuint,
         pname: VertexArrayPName,
         param: *mut GLint64,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_get_vertex_array_indexed64iv not yet implemented");
     }
 }
@@ -6036,7 +6028,7 @@ impl Context {
         index: GLuint,
         pname: VertexAttribProperty,
         params: *mut GLdouble,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_get_vertex_attribdv not yet implemented");
     }
     pub(crate) unsafe fn oxidegl_get_vertex_attribfv(
@@ -6044,7 +6036,7 @@ impl Context {
         index: GLuint,
         pname: VertexAttribProperty,
         params: *mut GLfloat,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_get_vertex_attribfv not yet implemented");
     }
     pub(crate) unsafe fn oxidegl_get_vertex_attribiv(
@@ -6052,7 +6044,7 @@ impl Context {
         index: GLuint,
         pname: VertexAttribProperty,
         params: *mut GLint,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_get_vertex_attribiv not yet implemented");
     }
     pub(crate) unsafe fn oxidegl_get_vertex_attrib_iiv(
@@ -6060,7 +6052,7 @@ impl Context {
         index: GLuint,
         pname: VertexAttribEnum,
         params: *mut GLint,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_get_vertex_attrib_iiv not yet implemented");
     }
     pub(crate) unsafe fn oxidegl_get_vertex_attrib_iuiv(
@@ -6068,7 +6060,7 @@ impl Context {
         index: GLuint,
         pname: VertexAttribEnum,
         params: *mut GLuint,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_get_vertex_attrib_iuiv not yet implemented");
     }
     pub(crate) unsafe fn oxidegl_get_vertex_attrib_ldv(
@@ -6076,7 +6068,7 @@ impl Context {
         index: GLuint,
         pname: VertexAttribEnum,
         params: *mut GLdouble,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_get_vertex_attrib_ldv not yet implemented");
     }
 }
@@ -6149,7 +6141,7 @@ impl Context {
         target: FramebufferTarget,
         num_attachments: GLsizei,
         attachments: InvalidateFramebufferAttachment,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_invalidate_framebuffer not yet implemented");
     }
     pub(crate) fn oxidegl_invalidate_named_framebuffer_data(
@@ -6157,7 +6149,7 @@ impl Context {
         framebuffer: GLuint,
         num_attachments: GLsizei,
         attachments: FramebufferAttachment,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_invalidate_named_framebuffer_data not yet implemented");
     }
 }
@@ -6259,7 +6251,7 @@ impl Context {
         y: GLint,
         width: GLsizei,
         height: GLsizei,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_invalidate_sub_framebuffer not yet implemented");
     }
     pub(crate) fn oxidegl_invalidate_named_framebuffer_sub_data(
@@ -6271,7 +6263,7 @@ impl Context {
         y: GLint,
         width: GLsizei,
         height: GLsizei,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_invalidate_named_framebuffer_sub_data not yet implemented");
     }
 }
@@ -6874,13 +6866,13 @@ impl Context {
 /// [`GL_QUERY_BUFFER_BARRIER_BIT`](crate::enums::GL_QUERY_BUFFER_BARRIER_BIT)
 /// is available only if the GL version is 4.4 or higher.
 impl Context {
-    pub(crate) fn oxidegl_memory_barrier(&mut self, barriers: MemoryBarrierMask) -> GlFallible<()> {
+    pub(crate) fn oxidegl_memory_barrier(&mut self, barriers: MemoryBarrierMask) -> GlFallible {
         panic!("command oxidegl_memory_barrier not yet implemented");
     }
     pub(crate) fn oxidegl_memory_barrier_by_region(
         &mut self,
         barriers: MemoryBarrierMask,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_memory_barrier_by_region not yet implemented");
     }
 }
@@ -6933,14 +6925,14 @@ impl Context {
         &mut self,
         pname: PatchParameterName,
         value: GLint,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_patch_parameteri not yet implemented");
     }
     pub(crate) unsafe fn oxidegl_patch_parameterfv(
         &mut self,
         pname: PatchParameterName,
         values: *const GLfloat,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_patch_parameterfv not yet implemented");
     }
 }
@@ -7216,14 +7208,14 @@ impl Context {
         &mut self,
         pname: PixelStoreParameter,
         param: GLfloat,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_pixel_storef not yet implemented");
     }
     pub(crate) fn oxidegl_pixel_storei(
         &mut self,
         pname: PixelStoreParameter,
         param: GLint,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_pixel_storei not yet implemented");
     }
 }
@@ -7269,32 +7261,24 @@ impl Context {
 ///
 /// [**glGet**](crate::context::Context::oxidegl_get) with argument [`GL_POINT_SPRITE_COORD_ORIGIN`](crate::enums::GL_POINT_SPRITE_COORD_ORIGIN)
 impl Context {
-    pub(crate) fn oxidegl_point_parameterf(
-        &mut self,
-        pname: GLenum,
-        param: GLfloat,
-    ) -> GlFallible<()> {
+    pub(crate) fn oxidegl_point_parameterf(&mut self, pname: GLenum, param: GLfloat) -> GlFallible {
         panic!("command oxidegl_point_parameterf not yet implemented");
     }
     pub(crate) unsafe fn oxidegl_point_parameterfv(
         &mut self,
         pname: GLenum,
         params: *const GLfloat,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_point_parameterfv not yet implemented");
     }
-    pub(crate) fn oxidegl_point_parameteri(
-        &mut self,
-        pname: GLenum,
-        param: GLint,
-    ) -> GlFallible<()> {
+    pub(crate) fn oxidegl_point_parameteri(&mut self, pname: GLenum, param: GLint) -> GlFallible {
         panic!("command oxidegl_point_parameteri not yet implemented");
     }
     pub(crate) unsafe fn oxidegl_point_parameteriv(
         &mut self,
         pname: GLenum,
         params: *const GLint,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_point_parameteriv not yet implemented");
     }
 }
@@ -7446,7 +7430,7 @@ impl Context {
         program: GLuint,
         location: GLint,
         v0: GLint,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_program_uniform1i not yet implemented");
     }
     pub(crate) unsafe fn oxidegl_program_uniform1iv(
@@ -7455,7 +7439,7 @@ impl Context {
         location: GLint,
         count: GLsizei,
         value: *const GLint,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_program_uniform1iv not yet implemented");
     }
     pub(crate) fn oxidegl_program_uniform1f(
@@ -7463,7 +7447,7 @@ impl Context {
         program: GLuint,
         location: GLint,
         v0: GLfloat,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_program_uniform1f not yet implemented");
     }
     pub(crate) unsafe fn oxidegl_program_uniform1fv(
@@ -7472,7 +7456,7 @@ impl Context {
         location: GLint,
         count: GLsizei,
         value: *const GLfloat,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_program_uniform1fv not yet implemented");
     }
     pub(crate) fn oxidegl_program_uniform1ui(
@@ -7480,7 +7464,7 @@ impl Context {
         program: GLuint,
         location: GLint,
         v0: GLuint,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_program_uniform1ui not yet implemented");
     }
     pub(crate) unsafe fn oxidegl_program_uniform1uiv(
@@ -7489,7 +7473,7 @@ impl Context {
         location: GLint,
         count: GLsizei,
         value: *const GLuint,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_program_uniform1uiv not yet implemented");
     }
     pub(crate) fn oxidegl_program_uniform2i(
@@ -7498,7 +7482,7 @@ impl Context {
         location: GLint,
         v0: GLint,
         v1: GLint,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_program_uniform2i not yet implemented");
     }
     pub(crate) unsafe fn oxidegl_program_uniform2iv(
@@ -7507,7 +7491,7 @@ impl Context {
         location: GLint,
         count: GLsizei,
         value: *const GLint,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_program_uniform2iv not yet implemented");
     }
     pub(crate) fn oxidegl_program_uniform2f(
@@ -7516,7 +7500,7 @@ impl Context {
         location: GLint,
         v0: GLfloat,
         v1: GLfloat,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_program_uniform2f not yet implemented");
     }
     pub(crate) unsafe fn oxidegl_program_uniform2fv(
@@ -7525,7 +7509,7 @@ impl Context {
         location: GLint,
         count: GLsizei,
         value: *const GLfloat,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_program_uniform2fv not yet implemented");
     }
     pub(crate) fn oxidegl_program_uniform2ui(
@@ -7534,7 +7518,7 @@ impl Context {
         location: GLint,
         v0: GLuint,
         v1: GLuint,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_program_uniform2ui not yet implemented");
     }
     pub(crate) unsafe fn oxidegl_program_uniform2uiv(
@@ -7543,7 +7527,7 @@ impl Context {
         location: GLint,
         count: GLsizei,
         value: *const GLuint,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_program_uniform2uiv not yet implemented");
     }
     pub(crate) fn oxidegl_program_uniform3i(
@@ -7553,7 +7537,7 @@ impl Context {
         v0: GLint,
         v1: GLint,
         v2: GLint,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_program_uniform3i not yet implemented");
     }
     pub(crate) unsafe fn oxidegl_program_uniform3iv(
@@ -7562,7 +7546,7 @@ impl Context {
         location: GLint,
         count: GLsizei,
         value: *const GLint,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_program_uniform3iv not yet implemented");
     }
     pub(crate) fn oxidegl_program_uniform3f(
@@ -7572,7 +7556,7 @@ impl Context {
         v0: GLfloat,
         v1: GLfloat,
         v2: GLfloat,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_program_uniform3f not yet implemented");
     }
     pub(crate) unsafe fn oxidegl_program_uniform3fv(
@@ -7581,7 +7565,7 @@ impl Context {
         location: GLint,
         count: GLsizei,
         value: *const GLfloat,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_program_uniform3fv not yet implemented");
     }
     pub(crate) fn oxidegl_program_uniform3ui(
@@ -7591,7 +7575,7 @@ impl Context {
         v0: GLuint,
         v1: GLuint,
         v2: GLuint,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_program_uniform3ui not yet implemented");
     }
     pub(crate) unsafe fn oxidegl_program_uniform3uiv(
@@ -7600,7 +7584,7 @@ impl Context {
         location: GLint,
         count: GLsizei,
         value: *const GLuint,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_program_uniform3uiv not yet implemented");
     }
     pub(crate) fn oxidegl_program_uniform4i(
@@ -7611,7 +7595,7 @@ impl Context {
         v1: GLint,
         v2: GLint,
         v3: GLint,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_program_uniform4i not yet implemented");
     }
     pub(crate) unsafe fn oxidegl_program_uniform4iv(
@@ -7620,7 +7604,7 @@ impl Context {
         location: GLint,
         count: GLsizei,
         value: *const GLint,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_program_uniform4iv not yet implemented");
     }
     pub(crate) fn oxidegl_program_uniform4f(
@@ -7631,7 +7615,7 @@ impl Context {
         v1: GLfloat,
         v2: GLfloat,
         v3: GLfloat,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_program_uniform4f not yet implemented");
     }
     pub(crate) unsafe fn oxidegl_program_uniform4fv(
@@ -7640,7 +7624,7 @@ impl Context {
         location: GLint,
         count: GLsizei,
         value: *const GLfloat,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_program_uniform4fv not yet implemented");
     }
     pub(crate) fn oxidegl_program_uniform4ui(
@@ -7651,7 +7635,7 @@ impl Context {
         v1: GLuint,
         v2: GLuint,
         v3: GLuint,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_program_uniform4ui not yet implemented");
     }
     pub(crate) unsafe fn oxidegl_program_uniform4uiv(
@@ -7660,7 +7644,7 @@ impl Context {
         location: GLint,
         count: GLsizei,
         value: *const GLuint,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_program_uniform4uiv not yet implemented");
     }
     pub(crate) unsafe fn oxidegl_program_uniform_matrix2fv(
@@ -7670,7 +7654,7 @@ impl Context {
         count: GLsizei,
         transpose: GLboolean,
         value: *const GLfloat,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_program_uniform_matrix2fv not yet implemented");
     }
     pub(crate) unsafe fn oxidegl_program_uniform_matrix3fv(
@@ -7680,7 +7664,7 @@ impl Context {
         count: GLsizei,
         transpose: GLboolean,
         value: *const GLfloat,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_program_uniform_matrix3fv not yet implemented");
     }
     pub(crate) unsafe fn oxidegl_program_uniform_matrix4fv(
@@ -7690,7 +7674,7 @@ impl Context {
         count: GLsizei,
         transpose: GLboolean,
         value: *const GLfloat,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_program_uniform_matrix4fv not yet implemented");
     }
     pub(crate) unsafe fn oxidegl_program_uniform_matrix2x3fv(
@@ -7700,7 +7684,7 @@ impl Context {
         count: GLsizei,
         transpose: GLboolean,
         value: *const GLfloat,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_program_uniform_matrix2x3fv not yet implemented");
     }
     pub(crate) unsafe fn oxidegl_program_uniform_matrix3x2fv(
@@ -7710,7 +7694,7 @@ impl Context {
         count: GLsizei,
         transpose: GLboolean,
         value: *const GLfloat,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_program_uniform_matrix3x2fv not yet implemented");
     }
     pub(crate) unsafe fn oxidegl_program_uniform_matrix2x4fv(
@@ -7720,7 +7704,7 @@ impl Context {
         count: GLsizei,
         transpose: GLboolean,
         value: *const GLfloat,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_program_uniform_matrix2x4fv not yet implemented");
     }
     pub(crate) unsafe fn oxidegl_program_uniform_matrix4x2fv(
@@ -7730,7 +7714,7 @@ impl Context {
         count: GLsizei,
         transpose: GLboolean,
         value: *const GLfloat,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_program_uniform_matrix4x2fv not yet implemented");
     }
     pub(crate) unsafe fn oxidegl_program_uniform_matrix3x4fv(
@@ -7740,7 +7724,7 @@ impl Context {
         count: GLsizei,
         transpose: GLboolean,
         value: *const GLfloat,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_program_uniform_matrix3x4fv not yet implemented");
     }
     pub(crate) unsafe fn oxidegl_program_uniform_matrix4x3fv(
@@ -7750,7 +7734,7 @@ impl Context {
         count: GLsizei,
         transpose: GLboolean,
         value: *const GLfloat,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_program_uniform_matrix4x3fv not yet implemented");
     }
 }
@@ -7807,14 +7791,14 @@ impl Context {
 /// ### Associated Gets
 /// [**glGet**](crate::context::Context::oxidegl_get) with argument [`GL_READ_BUFFER`](crate::enums::GL_READ_BUFFER)
 impl Context {
-    pub(crate) fn oxidegl_read_buffer(&mut self, src: ReadBufferMode) -> GlFallible<()> {
+    pub(crate) fn oxidegl_read_buffer(&mut self, src: ReadBufferMode) -> GlFallible {
         panic!("command oxidegl_read_buffer not yet implemented");
     }
     pub(crate) fn oxidegl_named_framebuffer_read_buffer(
         &mut self,
         framebuffer: GLuint,
         src: ColorBuffer,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_named_framebuffer_read_buffer not yet implemented");
     }
 }
@@ -7996,7 +7980,7 @@ impl Context {
         format: PixelFormat,
         r#type: PixelType,
         pixels: *mut GLvoid,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_read_pixels not yet implemented");
     }
     pub(crate) unsafe fn oxidegl_readn_pixels(
@@ -8009,7 +7993,7 @@ impl Context {
         r#type: PixelType,
         buf_size: GLsizei,
         data: *mut GLvoid,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_readn_pixels not yet implemented");
     }
 }
@@ -8064,7 +8048,7 @@ impl Context {
         internalformat: InternalFormat,
         width: GLsizei,
         height: GLsizei,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_renderbuffer_storage not yet implemented");
     }
     pub(crate) fn oxidegl_named_renderbuffer_storage(
@@ -8073,7 +8057,7 @@ impl Context {
         internalformat: InternalFormat,
         width: GLsizei,
         height: GLsizei,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_named_renderbuffer_storage not yet implemented");
     }
 }
@@ -8136,7 +8120,7 @@ impl Context {
         internalformat: InternalFormat,
         width: GLsizei,
         height: GLsizei,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_renderbuffer_storage_multisample not yet implemented");
     }
     pub(crate) fn oxidegl_named_renderbuffer_storage_multisample(
@@ -8146,7 +8130,7 @@ impl Context {
         internalformat: InternalFormat,
         width: GLsizei,
         height: GLsizei,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_named_renderbuffer_storage_multisample not yet implemented");
     }
 }
@@ -8398,7 +8382,7 @@ impl Context {
         sampler: GLuint,
         pname: SamplerParameter,
         param: GLint,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_sampler_parameteri not yet implemented");
     }
     pub(crate) unsafe fn oxidegl_sampler_parameteriv(
@@ -8406,7 +8390,7 @@ impl Context {
         sampler: GLuint,
         pname: SamplerParameter,
         param: *const GLint,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_sampler_parameteriv not yet implemented");
     }
     pub(crate) fn oxidegl_sampler_parameterf(
@@ -8414,7 +8398,7 @@ impl Context {
         sampler: GLuint,
         pname: SamplerParameter,
         param: GLfloat,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_sampler_parameterf not yet implemented");
     }
     pub(crate) unsafe fn oxidegl_sampler_parameterfv(
@@ -8422,7 +8406,7 @@ impl Context {
         sampler: GLuint,
         pname: SamplerParameter,
         param: *const GLfloat,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_sampler_parameterfv not yet implemented");
     }
     pub(crate) unsafe fn oxidegl_sampler_parameter_iiv(
@@ -8430,7 +8414,7 @@ impl Context {
         sampler: GLuint,
         pname: SamplerParameter,
         param: *const GLint,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_sampler_parameter_iiv not yet implemented");
     }
     pub(crate) unsafe fn oxidegl_sampler_parameter_iuiv(
@@ -8438,7 +8422,7 @@ impl Context {
         sampler: GLuint,
         pname: SamplerParameter,
         param: *const GLuint,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_sampler_parameter_iuiv not yet implemented");
     }
 }
@@ -8500,14 +8484,14 @@ impl Context {
         bottom: GLint,
         width: GLsizei,
         height: GLsizei,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_scissor_indexed not yet implemented");
     }
     pub(crate) unsafe fn oxidegl_scissor_indexedv(
         &mut self,
         index: GLuint,
         v: *const GLint,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_scissor_indexedv not yet implemented");
     }
 }
@@ -8605,7 +8589,7 @@ impl Context {
         target: TextureTarget,
         internalformat: SizedInternalFormat,
         buffer: GLuint,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_tex_buffer not yet implemented");
     }
     pub(crate) fn oxidegl_texture_buffer(
@@ -8613,7 +8597,7 @@ impl Context {
         texture: GLuint,
         internalformat: SizedInternalFormat,
         buffer: GLuint,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_texture_buffer not yet implemented");
     }
 }
@@ -8728,7 +8712,7 @@ impl Context {
         buffer: GLuint,
         offset: GLintptr,
         size: GLsizeiptr,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_tex_buffer_range not yet implemented");
     }
     pub(crate) fn oxidegl_texture_buffer_range(
@@ -8738,7 +8722,7 @@ impl Context {
         buffer: GLuint,
         offset: GLintptr,
         size: GLsizeiptr,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_texture_buffer_range not yet implemented");
     }
 }
@@ -9124,7 +9108,7 @@ impl Context {
         target: TextureTarget,
         pname: TextureParameterName,
         param: GLfloat,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_tex_parameterf not yet implemented");
     }
     pub(crate) unsafe fn oxidegl_tex_parameterfv(
@@ -9132,7 +9116,7 @@ impl Context {
         target: TextureTarget,
         pname: TextureParameterName,
         params: *const GLfloat,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_tex_parameterfv not yet implemented");
     }
     pub(crate) fn oxidegl_tex_parameteri(
@@ -9140,7 +9124,7 @@ impl Context {
         target: TextureTarget,
         pname: TextureParameterName,
         param: GLint,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_tex_parameteri not yet implemented");
     }
     pub(crate) unsafe fn oxidegl_tex_parameteriv(
@@ -9148,7 +9132,7 @@ impl Context {
         target: TextureTarget,
         pname: TextureParameterName,
         params: *const GLint,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_tex_parameteriv not yet implemented");
     }
     pub(crate) unsafe fn oxidegl_tex_parameter_iiv(
@@ -9156,7 +9140,7 @@ impl Context {
         target: TextureTarget,
         pname: TextureParameterName,
         params: *const GLint,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_tex_parameter_iiv not yet implemented");
     }
     pub(crate) unsafe fn oxidegl_tex_parameter_iuiv(
@@ -9164,7 +9148,7 @@ impl Context {
         target: TextureTarget,
         pname: TextureParameterName,
         params: *const GLuint,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_tex_parameter_iuiv not yet implemented");
     }
     pub(crate) fn oxidegl_texture_parameterf(
@@ -9172,7 +9156,7 @@ impl Context {
         texture: GLuint,
         pname: TextureParameterName,
         param: GLfloat,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_texture_parameterf not yet implemented");
     }
     pub(crate) unsafe fn oxidegl_texture_parameterfv(
@@ -9180,7 +9164,7 @@ impl Context {
         texture: GLuint,
         pname: TextureParameterName,
         param: *const GLfloat,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_texture_parameterfv not yet implemented");
     }
     pub(crate) fn oxidegl_texture_parameteri(
@@ -9188,7 +9172,7 @@ impl Context {
         texture: GLuint,
         pname: TextureParameterName,
         param: GLint,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_texture_parameteri not yet implemented");
     }
     pub(crate) unsafe fn oxidegl_texture_parameter_iiv(
@@ -9196,7 +9180,7 @@ impl Context {
         texture: GLuint,
         pname: TextureParameterName,
         params: *const GLint,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_texture_parameter_iiv not yet implemented");
     }
     pub(crate) unsafe fn oxidegl_texture_parameter_iuiv(
@@ -9204,7 +9188,7 @@ impl Context {
         texture: GLuint,
         pname: TextureParameterName,
         params: *const GLuint,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_texture_parameter_iuiv not yet implemented");
     }
     pub(crate) unsafe fn oxidegl_texture_parameteriv(
@@ -9212,7 +9196,7 @@ impl Context {
         texture: GLuint,
         pname: TextureParameterName,
         param: *const GLint,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_texture_parameteriv not yet implemented");
     }
 }
@@ -9355,7 +9339,7 @@ impl Context {
         levels: GLsizei,
         internalformat: SizedInternalFormat,
         width: GLsizei,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_tex_storage1_d not yet implemented");
     }
     pub(crate) fn oxidegl_texture_storage1_d(
@@ -9364,7 +9348,7 @@ impl Context {
         levels: GLsizei,
         internalformat: SizedInternalFormat,
         width: GLsizei,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_texture_storage1_d not yet implemented");
     }
 }
@@ -9530,7 +9514,7 @@ impl Context {
         internalformat: SizedInternalFormat,
         width: GLsizei,
         height: GLsizei,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_tex_storage2_d not yet implemented");
     }
     pub(crate) fn oxidegl_texture_storage2_d(
@@ -9540,7 +9524,7 @@ impl Context {
         internalformat: SizedInternalFormat,
         width: GLsizei,
         height: GLsizei,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_texture_storage2_d not yet implemented");
     }
 }
@@ -9670,7 +9654,7 @@ impl Context {
         width: GLsizei,
         height: GLsizei,
         fixedsamplelocations: GLboolean,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_tex_storage2_d_multisample not yet implemented");
     }
     pub(crate) fn oxidegl_texture_storage2_d_multisample(
@@ -9681,7 +9665,7 @@ impl Context {
         width: GLsizei,
         height: GLsizei,
         fixedsamplelocations: GLboolean,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_texture_storage2_d_multisample not yet implemented");
     }
 }
@@ -9847,7 +9831,7 @@ impl Context {
         width: GLsizei,
         height: GLsizei,
         depth: GLsizei,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_tex_storage3_d not yet implemented");
     }
     pub(crate) fn oxidegl_texture_storage3_d(
@@ -9858,7 +9842,7 @@ impl Context {
         width: GLsizei,
         height: GLsizei,
         depth: GLsizei,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_texture_storage3_d not yet implemented");
     }
 }
@@ -10001,7 +9985,7 @@ impl Context {
         height: GLsizei,
         depth: GLsizei,
         fixedsamplelocations: GLboolean,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_tex_storage3_d_multisample not yet implemented");
     }
     pub(crate) fn oxidegl_texture_storage3_d_multisample(
@@ -10013,7 +9997,7 @@ impl Context {
         height: GLsizei,
         depth: GLsizei,
         fixedsamplelocations: GLboolean,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_texture_storage3_d_multisample not yet implemented");
     }
 }
@@ -10114,7 +10098,7 @@ impl Context {
         format: PixelFormat,
         r#type: PixelType,
         pixels: *const GLvoid,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_tex_sub_image1_d not yet implemented");
     }
     pub(crate) unsafe fn oxidegl_texture_sub_image1_d(
@@ -10126,7 +10110,7 @@ impl Context {
         format: PixelFormat,
         r#type: PixelType,
         pixels: *const GLvoid,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_texture_sub_image1_d not yet implemented");
     }
 }
@@ -10242,7 +10226,7 @@ impl Context {
         format: PixelFormat,
         r#type: PixelType,
         pixels: *const GLvoid,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_tex_sub_image2_d not yet implemented");
     }
     pub(crate) unsafe fn oxidegl_texture_sub_image2_d(
@@ -10256,7 +10240,7 @@ impl Context {
         format: PixelFormat,
         r#type: PixelType,
         pixels: *const GLvoid,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_texture_sub_image2_d not yet implemented");
     }
 }
@@ -10375,7 +10359,7 @@ impl Context {
         format: PixelFormat,
         r#type: PixelType,
         pixels: *const GLvoid,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_tex_sub_image3_d not yet implemented");
     }
     pub(crate) unsafe fn oxidegl_texture_sub_image3_d(
@@ -10391,7 +10375,7 @@ impl Context {
         format: PixelFormat,
         r#type: PixelType,
         pixels: *const GLvoid,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_texture_sub_image3_d not yet implemented");
     }
 }
@@ -10536,7 +10520,7 @@ impl Context {
 /// [**glGetUniformLocation**](crate::context::Context::oxidegl_get_uniform_location)
 /// with the handle of a program object and the name of a uniform variable
 impl Context {
-    pub(crate) fn oxidegl_uniform1f(&mut self, location: GLint, v0: GLfloat) -> GlFallible<()> {
+    pub(crate) fn oxidegl_uniform1f(&mut self, location: GLint, v0: GLfloat) -> GlFallible {
         panic!("command oxidegl_uniform1f not yet implemented");
     }
     pub(crate) fn oxidegl_uniform2f(
@@ -10544,7 +10528,7 @@ impl Context {
         location: GLint,
         v0: GLfloat,
         v1: GLfloat,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_uniform2f not yet implemented");
     }
     pub(crate) fn oxidegl_uniform3f(
@@ -10553,7 +10537,7 @@ impl Context {
         v0: GLfloat,
         v1: GLfloat,
         v2: GLfloat,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_uniform3f not yet implemented");
     }
     pub(crate) fn oxidegl_uniform4f(
@@ -10563,10 +10547,10 @@ impl Context {
         v1: GLfloat,
         v2: GLfloat,
         v3: GLfloat,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_uniform4f not yet implemented");
     }
-    pub(crate) fn oxidegl_uniform1i(&mut self, location: GLint, v0: GLint) -> GlFallible<()> {
+    pub(crate) fn oxidegl_uniform1i(&mut self, location: GLint, v0: GLint) -> GlFallible {
         panic!("command oxidegl_uniform1i not yet implemented");
     }
     pub(crate) fn oxidegl_uniform2i(
@@ -10574,7 +10558,7 @@ impl Context {
         location: GLint,
         v0: GLint,
         v1: GLint,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_uniform2i not yet implemented");
     }
     pub(crate) fn oxidegl_uniform3i(
@@ -10583,7 +10567,7 @@ impl Context {
         v0: GLint,
         v1: GLint,
         v2: GLint,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_uniform3i not yet implemented");
     }
     pub(crate) fn oxidegl_uniform4i(
@@ -10593,7 +10577,7 @@ impl Context {
         v1: GLint,
         v2: GLint,
         v3: GLint,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_uniform4i not yet implemented");
     }
     pub(crate) unsafe fn oxidegl_uniform1fv(
@@ -10601,7 +10585,7 @@ impl Context {
         location: GLint,
         count: GLsizei,
         value: *const GLfloat,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_uniform1fv not yet implemented");
     }
     pub(crate) unsafe fn oxidegl_uniform2fv(
@@ -10609,7 +10593,7 @@ impl Context {
         location: GLint,
         count: GLsizei,
         value: *const GLfloat,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_uniform2fv not yet implemented");
     }
     pub(crate) unsafe fn oxidegl_uniform3fv(
@@ -10617,7 +10601,7 @@ impl Context {
         location: GLint,
         count: GLsizei,
         value: *const GLfloat,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_uniform3fv not yet implemented");
     }
     pub(crate) unsafe fn oxidegl_uniform4fv(
@@ -10625,7 +10609,7 @@ impl Context {
         location: GLint,
         count: GLsizei,
         value: *const GLfloat,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_uniform4fv not yet implemented");
     }
     pub(crate) unsafe fn oxidegl_uniform1iv(
@@ -10633,7 +10617,7 @@ impl Context {
         location: GLint,
         count: GLsizei,
         value: *const GLint,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_uniform1iv not yet implemented");
     }
     pub(crate) unsafe fn oxidegl_uniform2iv(
@@ -10641,7 +10625,7 @@ impl Context {
         location: GLint,
         count: GLsizei,
         value: *const GLint,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_uniform2iv not yet implemented");
     }
     pub(crate) unsafe fn oxidegl_uniform3iv(
@@ -10649,7 +10633,7 @@ impl Context {
         location: GLint,
         count: GLsizei,
         value: *const GLint,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_uniform3iv not yet implemented");
     }
     pub(crate) unsafe fn oxidegl_uniform4iv(
@@ -10657,7 +10641,7 @@ impl Context {
         location: GLint,
         count: GLsizei,
         value: *const GLint,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_uniform4iv not yet implemented");
     }
     pub(crate) unsafe fn oxidegl_uniform_matrix2fv(
@@ -10666,7 +10650,7 @@ impl Context {
         count: GLsizei,
         transpose: GLboolean,
         value: *const GLfloat,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_uniform_matrix2fv not yet implemented");
     }
     pub(crate) unsafe fn oxidegl_uniform_matrix3fv(
@@ -10675,7 +10659,7 @@ impl Context {
         count: GLsizei,
         transpose: GLboolean,
         value: *const GLfloat,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_uniform_matrix3fv not yet implemented");
     }
     pub(crate) unsafe fn oxidegl_uniform_matrix4fv(
@@ -10684,7 +10668,7 @@ impl Context {
         count: GLsizei,
         transpose: GLboolean,
         value: *const GLfloat,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_uniform_matrix4fv not yet implemented");
     }
     pub(crate) unsafe fn oxidegl_uniform_matrix2x3fv(
@@ -10693,7 +10677,7 @@ impl Context {
         count: GLsizei,
         transpose: GLboolean,
         value: *const GLfloat,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_uniform_matrix2x3fv not yet implemented");
     }
     pub(crate) unsafe fn oxidegl_uniform_matrix3x2fv(
@@ -10702,7 +10686,7 @@ impl Context {
         count: GLsizei,
         transpose: GLboolean,
         value: *const GLfloat,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_uniform_matrix3x2fv not yet implemented");
     }
     pub(crate) unsafe fn oxidegl_uniform_matrix2x4fv(
@@ -10711,7 +10695,7 @@ impl Context {
         count: GLsizei,
         transpose: GLboolean,
         value: *const GLfloat,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_uniform_matrix2x4fv not yet implemented");
     }
     pub(crate) unsafe fn oxidegl_uniform_matrix4x2fv(
@@ -10720,7 +10704,7 @@ impl Context {
         count: GLsizei,
         transpose: GLboolean,
         value: *const GLfloat,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_uniform_matrix4x2fv not yet implemented");
     }
     pub(crate) unsafe fn oxidegl_uniform_matrix3x4fv(
@@ -10729,7 +10713,7 @@ impl Context {
         count: GLsizei,
         transpose: GLboolean,
         value: *const GLfloat,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_uniform_matrix3x4fv not yet implemented");
     }
     pub(crate) unsafe fn oxidegl_uniform_matrix4x3fv(
@@ -10738,10 +10722,10 @@ impl Context {
         count: GLsizei,
         transpose: GLboolean,
         value: *const GLfloat,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_uniform_matrix4x3fv not yet implemented");
     }
-    pub(crate) fn oxidegl_uniform1ui(&mut self, location: GLint, v0: GLuint) -> GlFallible<()> {
+    pub(crate) fn oxidegl_uniform1ui(&mut self, location: GLint, v0: GLuint) -> GlFallible {
         panic!("command oxidegl_uniform1ui not yet implemented");
     }
     pub(crate) fn oxidegl_uniform2ui(
@@ -10749,7 +10733,7 @@ impl Context {
         location: GLint,
         v0: GLuint,
         v1: GLuint,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_uniform2ui not yet implemented");
     }
     pub(crate) fn oxidegl_uniform3ui(
@@ -10758,7 +10742,7 @@ impl Context {
         v0: GLuint,
         v1: GLuint,
         v2: GLuint,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_uniform3ui not yet implemented");
     }
     pub(crate) fn oxidegl_uniform4ui(
@@ -10768,7 +10752,7 @@ impl Context {
         v1: GLuint,
         v2: GLuint,
         v3: GLuint,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_uniform4ui not yet implemented");
     }
     pub(crate) unsafe fn oxidegl_uniform1uiv(
@@ -10776,7 +10760,7 @@ impl Context {
         location: GLint,
         count: GLsizei,
         value: *const GLuint,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_uniform1uiv not yet implemented");
     }
     pub(crate) unsafe fn oxidegl_uniform2uiv(
@@ -10784,7 +10768,7 @@ impl Context {
         location: GLint,
         count: GLsizei,
         value: *const GLuint,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_uniform2uiv not yet implemented");
     }
     pub(crate) unsafe fn oxidegl_uniform3uiv(
@@ -10792,7 +10776,7 @@ impl Context {
         location: GLint,
         count: GLsizei,
         value: *const GLuint,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_uniform3uiv not yet implemented");
     }
     pub(crate) unsafe fn oxidegl_uniform4uiv(
@@ -10800,7 +10784,7 @@ impl Context {
         location: GLint,
         count: GLsizei,
         value: *const GLuint,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_uniform4uiv not yet implemented");
     }
 }
@@ -11035,34 +11019,34 @@ impl Context {
 /// with arguments [`GL_CURRENT_VERTEX_ATTRIB`](crate::enums::GL_CURRENT_VERTEX_ATTRIB)
 /// and `index`
 impl Context {
-    pub(crate) fn oxidegl_vertex_attrib1d(&mut self, index: GLuint, x: GLdouble) -> GlFallible<()> {
+    pub(crate) fn oxidegl_vertex_attrib1d(&mut self, index: GLuint, x: GLdouble) -> GlFallible {
         panic!("command oxidegl_vertex_attrib1d not yet implemented");
     }
     pub(crate) unsafe fn oxidegl_vertex_attrib1dv(
         &mut self,
         index: GLuint,
         v: *const GLdouble,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_vertex_attrib1dv not yet implemented");
     }
-    pub(crate) fn oxidegl_vertex_attrib1f(&mut self, index: GLuint, x: GLfloat) -> GlFallible<()> {
+    pub(crate) fn oxidegl_vertex_attrib1f(&mut self, index: GLuint, x: GLfloat) -> GlFallible {
         panic!("command oxidegl_vertex_attrib1f not yet implemented");
     }
     pub(crate) unsafe fn oxidegl_vertex_attrib1fv(
         &mut self,
         index: GLuint,
         v: *const GLfloat,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_vertex_attrib1fv not yet implemented");
     }
-    pub(crate) fn oxidegl_vertex_attrib1s(&mut self, index: GLuint, x: GLshort) -> GlFallible<()> {
+    pub(crate) fn oxidegl_vertex_attrib1s(&mut self, index: GLuint, x: GLshort) -> GlFallible {
         panic!("command oxidegl_vertex_attrib1s not yet implemented");
     }
     pub(crate) unsafe fn oxidegl_vertex_attrib1sv(
         &mut self,
         index: GLuint,
         v: *const GLshort,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_vertex_attrib1sv not yet implemented");
     }
     pub(crate) fn oxidegl_vertex_attrib2d(
@@ -11070,14 +11054,14 @@ impl Context {
         index: GLuint,
         x: GLdouble,
         y: GLdouble,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_vertex_attrib2d not yet implemented");
     }
     pub(crate) unsafe fn oxidegl_vertex_attrib2dv(
         &mut self,
         index: GLuint,
         v: *const GLdouble,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_vertex_attrib2dv not yet implemented");
     }
     pub(crate) fn oxidegl_vertex_attrib2f(
@@ -11085,14 +11069,14 @@ impl Context {
         index: GLuint,
         x: GLfloat,
         y: GLfloat,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_vertex_attrib2f not yet implemented");
     }
     pub(crate) unsafe fn oxidegl_vertex_attrib2fv(
         &mut self,
         index: GLuint,
         v: *const GLfloat,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_vertex_attrib2fv not yet implemented");
     }
     pub(crate) fn oxidegl_vertex_attrib2s(
@@ -11100,14 +11084,14 @@ impl Context {
         index: GLuint,
         x: GLshort,
         y: GLshort,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_vertex_attrib2s not yet implemented");
     }
     pub(crate) unsafe fn oxidegl_vertex_attrib2sv(
         &mut self,
         index: GLuint,
         v: *const GLshort,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_vertex_attrib2sv not yet implemented");
     }
     pub(crate) fn oxidegl_vertex_attrib3d(
@@ -11116,14 +11100,14 @@ impl Context {
         x: GLdouble,
         y: GLdouble,
         z: GLdouble,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_vertex_attrib3d not yet implemented");
     }
     pub(crate) unsafe fn oxidegl_vertex_attrib3dv(
         &mut self,
         index: GLuint,
         v: *const GLdouble,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_vertex_attrib3dv not yet implemented");
     }
     pub(crate) fn oxidegl_vertex_attrib3f(
@@ -11132,14 +11116,14 @@ impl Context {
         x: GLfloat,
         y: GLfloat,
         z: GLfloat,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_vertex_attrib3f not yet implemented");
     }
     pub(crate) unsafe fn oxidegl_vertex_attrib3fv(
         &mut self,
         index: GLuint,
         v: *const GLfloat,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_vertex_attrib3fv not yet implemented");
     }
     pub(crate) fn oxidegl_vertex_attrib3s(
@@ -11148,35 +11132,35 @@ impl Context {
         x: GLshort,
         y: GLshort,
         z: GLshort,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_vertex_attrib3s not yet implemented");
     }
     pub(crate) unsafe fn oxidegl_vertex_attrib3sv(
         &mut self,
         index: GLuint,
         v: *const GLshort,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_vertex_attrib3sv not yet implemented");
     }
     pub(crate) unsafe fn oxidegl_vertex_attrib4_nbv(
         &mut self,
         index: GLuint,
         v: *const GLbyte,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_vertex_attrib4_nbv not yet implemented");
     }
     pub(crate) unsafe fn oxidegl_vertex_attrib4_niv(
         &mut self,
         index: GLuint,
         v: *const GLint,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_vertex_attrib4_niv not yet implemented");
     }
     pub(crate) unsafe fn oxidegl_vertex_attrib4_nsv(
         &mut self,
         index: GLuint,
         v: *const GLshort,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_vertex_attrib4_nsv not yet implemented");
     }
     pub(crate) fn oxidegl_vertex_attrib4_nub(
@@ -11186,35 +11170,35 @@ impl Context {
         y: GLubyte,
         z: GLubyte,
         w: GLubyte,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_vertex_attrib4_nub not yet implemented");
     }
     pub(crate) unsafe fn oxidegl_vertex_attrib4_nubv(
         &mut self,
         index: GLuint,
         v: *const GLubyte,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_vertex_attrib4_nubv not yet implemented");
     }
     pub(crate) unsafe fn oxidegl_vertex_attrib4_nuiv(
         &mut self,
         index: GLuint,
         v: *const GLuint,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_vertex_attrib4_nuiv not yet implemented");
     }
     pub(crate) unsafe fn oxidegl_vertex_attrib4_nusv(
         &mut self,
         index: GLuint,
         v: *const GLushort,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_vertex_attrib4_nusv not yet implemented");
     }
     pub(crate) unsafe fn oxidegl_vertex_attrib4bv(
         &mut self,
         index: GLuint,
         v: *const GLbyte,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_vertex_attrib4bv not yet implemented");
     }
     pub(crate) fn oxidegl_vertex_attrib4d(
@@ -11224,14 +11208,14 @@ impl Context {
         y: GLdouble,
         z: GLdouble,
         w: GLdouble,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_vertex_attrib4d not yet implemented");
     }
     pub(crate) unsafe fn oxidegl_vertex_attrib4dv(
         &mut self,
         index: GLuint,
         v: *const GLdouble,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_vertex_attrib4dv not yet implemented");
     }
     pub(crate) fn oxidegl_vertex_attrib4f(
@@ -11241,21 +11225,21 @@ impl Context {
         y: GLfloat,
         z: GLfloat,
         w: GLfloat,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_vertex_attrib4f not yet implemented");
     }
     pub(crate) unsafe fn oxidegl_vertex_attrib4fv(
         &mut self,
         index: GLuint,
         v: *const GLfloat,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_vertex_attrib4fv not yet implemented");
     }
     pub(crate) unsafe fn oxidegl_vertex_attrib4iv(
         &mut self,
         index: GLuint,
         v: *const GLint,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_vertex_attrib4iv not yet implemented");
     }
     pub(crate) fn oxidegl_vertex_attrib4s(
@@ -11265,38 +11249,38 @@ impl Context {
         y: GLshort,
         z: GLshort,
         w: GLshort,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_vertex_attrib4s not yet implemented");
     }
     pub(crate) unsafe fn oxidegl_vertex_attrib4sv(
         &mut self,
         index: GLuint,
         v: *const GLshort,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_vertex_attrib4sv not yet implemented");
     }
     pub(crate) unsafe fn oxidegl_vertex_attrib4ubv(
         &mut self,
         index: GLuint,
         v: *const GLubyte,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_vertex_attrib4ubv not yet implemented");
     }
     pub(crate) unsafe fn oxidegl_vertex_attrib4uiv(
         &mut self,
         index: GLuint,
         v: *const GLuint,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_vertex_attrib4uiv not yet implemented");
     }
     pub(crate) unsafe fn oxidegl_vertex_attrib4usv(
         &mut self,
         index: GLuint,
         v: *const GLushort,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_vertex_attrib4usv not yet implemented");
     }
-    pub(crate) fn oxidegl_vertex_attrib_i1i(&mut self, index: GLuint, x: GLint) -> GlFallible<()> {
+    pub(crate) fn oxidegl_vertex_attrib_i1i(&mut self, index: GLuint, x: GLint) -> GlFallible {
         panic!("command oxidegl_vertex_attrib_i1i not yet implemented");
     }
     pub(crate) fn oxidegl_vertex_attrib_i2i(
@@ -11304,7 +11288,7 @@ impl Context {
         index: GLuint,
         x: GLint,
         y: GLint,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_vertex_attrib_i2i not yet implemented");
     }
     pub(crate) fn oxidegl_vertex_attrib_i3i(
@@ -11313,7 +11297,7 @@ impl Context {
         x: GLint,
         y: GLint,
         z: GLint,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_vertex_attrib_i3i not yet implemented");
     }
     pub(crate) fn oxidegl_vertex_attrib_i4i(
@@ -11323,14 +11307,10 @@ impl Context {
         y: GLint,
         z: GLint,
         w: GLint,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_vertex_attrib_i4i not yet implemented");
     }
-    pub(crate) fn oxidegl_vertex_attrib_i1ui(
-        &mut self,
-        index: GLuint,
-        x: GLuint,
-    ) -> GlFallible<()> {
+    pub(crate) fn oxidegl_vertex_attrib_i1ui(&mut self, index: GLuint, x: GLuint) -> GlFallible {
         panic!("command oxidegl_vertex_attrib_i1ui not yet implemented");
     }
     pub(crate) fn oxidegl_vertex_attrib_i2ui(
@@ -11338,7 +11318,7 @@ impl Context {
         index: GLuint,
         x: GLuint,
         y: GLuint,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_vertex_attrib_i2ui not yet implemented");
     }
     pub(crate) fn oxidegl_vertex_attrib_i3ui(
@@ -11347,7 +11327,7 @@ impl Context {
         x: GLuint,
         y: GLuint,
         z: GLuint,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_vertex_attrib_i3ui not yet implemented");
     }
     pub(crate) fn oxidegl_vertex_attrib_i4ui(
@@ -11357,91 +11337,91 @@ impl Context {
         y: GLuint,
         z: GLuint,
         w: GLuint,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_vertex_attrib_i4ui not yet implemented");
     }
     pub(crate) unsafe fn oxidegl_vertex_attrib_i1iv(
         &mut self,
         index: GLuint,
         v: *const GLint,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_vertex_attrib_i1iv not yet implemented");
     }
     pub(crate) unsafe fn oxidegl_vertex_attrib_i2iv(
         &mut self,
         index: GLuint,
         v: *const GLint,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_vertex_attrib_i2iv not yet implemented");
     }
     pub(crate) unsafe fn oxidegl_vertex_attrib_i3iv(
         &mut self,
         index: GLuint,
         v: *const GLint,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_vertex_attrib_i3iv not yet implemented");
     }
     pub(crate) unsafe fn oxidegl_vertex_attrib_i4iv(
         &mut self,
         index: GLuint,
         v: *const GLint,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_vertex_attrib_i4iv not yet implemented");
     }
     pub(crate) unsafe fn oxidegl_vertex_attrib_i1uiv(
         &mut self,
         index: GLuint,
         v: *const GLuint,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_vertex_attrib_i1uiv not yet implemented");
     }
     pub(crate) unsafe fn oxidegl_vertex_attrib_i2uiv(
         &mut self,
         index: GLuint,
         v: *const GLuint,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_vertex_attrib_i2uiv not yet implemented");
     }
     pub(crate) unsafe fn oxidegl_vertex_attrib_i3uiv(
         &mut self,
         index: GLuint,
         v: *const GLuint,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_vertex_attrib_i3uiv not yet implemented");
     }
     pub(crate) unsafe fn oxidegl_vertex_attrib_i4uiv(
         &mut self,
         index: GLuint,
         v: *const GLuint,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_vertex_attrib_i4uiv not yet implemented");
     }
     pub(crate) unsafe fn oxidegl_vertex_attrib_i4bv(
         &mut self,
         index: GLuint,
         v: *const GLbyte,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_vertex_attrib_i4bv not yet implemented");
     }
     pub(crate) unsafe fn oxidegl_vertex_attrib_i4sv(
         &mut self,
         index: GLuint,
         v: *const GLshort,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_vertex_attrib_i4sv not yet implemented");
     }
     pub(crate) unsafe fn oxidegl_vertex_attrib_i4ubv(
         &mut self,
         index: GLuint,
         v: *const GLubyte,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_vertex_attrib_i4ubv not yet implemented");
     }
     pub(crate) unsafe fn oxidegl_vertex_attrib_i4usv(
         &mut self,
         index: GLuint,
         v: *const GLushort,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_vertex_attrib_i4usv not yet implemented");
     }
     pub(crate) fn oxidegl_vertex_attrib_p1ui(
@@ -11450,7 +11430,7 @@ impl Context {
         r#type: VertexAttribPointerType,
         normalized: GLboolean,
         value: GLuint,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_vertex_attrib_p1ui not yet implemented");
     }
     pub(crate) fn oxidegl_vertex_attrib_p2ui(
@@ -11459,7 +11439,7 @@ impl Context {
         r#type: VertexAttribPointerType,
         normalized: GLboolean,
         value: GLuint,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_vertex_attrib_p2ui not yet implemented");
     }
     pub(crate) fn oxidegl_vertex_attrib_p3ui(
@@ -11468,7 +11448,7 @@ impl Context {
         r#type: VertexAttribPointerType,
         normalized: GLboolean,
         value: GLuint,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_vertex_attrib_p3ui not yet implemented");
     }
     pub(crate) fn oxidegl_vertex_attrib_p4ui(
@@ -11477,14 +11457,10 @@ impl Context {
         r#type: VertexAttribPointerType,
         normalized: GLboolean,
         value: GLuint,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_vertex_attrib_p4ui not yet implemented");
     }
-    pub(crate) fn oxidegl_vertex_attrib_l1d(
-        &mut self,
-        index: GLuint,
-        x: GLdouble,
-    ) -> GlFallible<()> {
+    pub(crate) fn oxidegl_vertex_attrib_l1d(&mut self, index: GLuint, x: GLdouble) -> GlFallible {
         panic!("command oxidegl_vertex_attrib_l1d not yet implemented");
     }
     pub(crate) fn oxidegl_vertex_attrib_l2d(
@@ -11492,7 +11468,7 @@ impl Context {
         index: GLuint,
         x: GLdouble,
         y: GLdouble,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_vertex_attrib_l2d not yet implemented");
     }
     pub(crate) fn oxidegl_vertex_attrib_l3d(
@@ -11501,7 +11477,7 @@ impl Context {
         x: GLdouble,
         y: GLdouble,
         z: GLdouble,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_vertex_attrib_l3d not yet implemented");
     }
     pub(crate) fn oxidegl_vertex_attrib_l4d(
@@ -11511,35 +11487,35 @@ impl Context {
         y: GLdouble,
         z: GLdouble,
         w: GLdouble,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_vertex_attrib_l4d not yet implemented");
     }
     pub(crate) unsafe fn oxidegl_vertex_attrib_l1dv(
         &mut self,
         index: GLuint,
         v: *const GLdouble,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_vertex_attrib_l1dv not yet implemented");
     }
     pub(crate) unsafe fn oxidegl_vertex_attrib_l2dv(
         &mut self,
         index: GLuint,
         v: *const GLdouble,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_vertex_attrib_l2dv not yet implemented");
     }
     pub(crate) unsafe fn oxidegl_vertex_attrib_l3dv(
         &mut self,
         index: GLuint,
         v: *const GLdouble,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_vertex_attrib_l3dv not yet implemented");
     }
     pub(crate) unsafe fn oxidegl_vertex_attrib_l4dv(
         &mut self,
         index: GLuint,
         v: *const GLdouble,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_vertex_attrib_l4dv not yet implemented");
     }
 }
@@ -11616,14 +11592,14 @@ impl Context {
         y: GLfloat,
         w: GLfloat,
         h: GLfloat,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_viewport_indexedf not yet implemented");
     }
     pub(crate) unsafe fn oxidegl_viewport_indexedfv(
         &mut self,
         index: GLuint,
         v: *const GLfloat,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_viewport_indexedfv not yet implemented");
     }
 }
@@ -11649,7 +11625,7 @@ impl Context {
         &mut self,
         pipeline: GLuint,
         program: GLuint,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_active_shader_program not yet implemented");
     }
     /// ### Parameters
@@ -11670,7 +11646,7 @@ impl Context {
     /// ### Associated Gets
     /// [**glGet**](crate::context::Context::oxidegl_get) with argument [`GL_ACTIVE_TEXTURE`](crate::enums::GL_ACTIVE_TEXTURE),
     /// or [`GL_MAX_COMBINED_TEXTURE_IMAGE_UNITS`](crate::enums::GL_MAX_COMBINED_TEXTURE_IMAGE_UNITS).
-    pub(crate) fn oxidegl_active_texture(&mut self, texture: TextureUnit) -> GlFallible<()> {
+    pub(crate) fn oxidegl_active_texture(&mut self, texture: TextureUnit) -> GlFallible {
         panic!("command oxidegl_active_texture not yet implemented");
     }
     /// ### Parameters
@@ -11772,7 +11748,7 @@ impl Context {
         program: GLuint,
         index: GLuint,
         name: *const GLchar,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_bind_attrib_location not yet implemented");
     }
     /// ### Parameters
@@ -11826,7 +11802,7 @@ impl Context {
         program: GLuint,
         color: GLuint,
         name: *const GLchar,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_bind_frag_data_location not yet implemented");
     }
     /// ### Parameters
@@ -11896,7 +11872,7 @@ impl Context {
         color_number: GLuint,
         index: GLuint,
         name: *const GLchar,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_bind_frag_data_location_indexed not yet implemented");
     }
     /// ### Parameters
@@ -11927,7 +11903,7 @@ impl Context {
         &mut self,
         target: FramebufferTarget,
         framebuffer: GLuint,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_bind_framebuffer not yet implemented");
     }
     /// ### Parameters
@@ -12070,7 +12046,7 @@ impl Context {
         layer: GLint,
         access: BufferAccess,
         format: InternalFormat,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_bind_image_texture not yet implemented");
     }
     /// ### Parameters
@@ -12138,7 +12114,7 @@ impl Context {
         first: GLuint,
         count: GLsizei,
         textures: *const GLuint,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_bind_image_textures not yet implemented");
     }
     /// ### Parameters
@@ -12164,7 +12140,7 @@ impl Context {
     /// the bound program pipeline object has no effect on rendering or uniform
     /// updates. When a bound program pipeline object is used for rendering, individual
     /// shader executables are taken from its program objects.
-    pub(crate) fn oxidegl_bind_program_pipeline(&mut self, pipeline: GLuint) -> GlFallible<()> {
+    pub(crate) fn oxidegl_bind_program_pipeline(&mut self, pipeline: GLuint) -> GlFallible {
         panic!("command oxidegl_bind_program_pipeline not yet implemented");
     }
     /// ### Parameters
@@ -12188,7 +12164,7 @@ impl Context {
         &mut self,
         target: GLenum,
         renderbuffer: GLuint,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_bind_renderbuffer not yet implemented");
     }
     /// ### Parameters
@@ -12218,7 +12194,7 @@ impl Context {
     ///
     /// ### Associated Gets
     /// [**glGet**](crate::context::Context::oxidegl_get) with argument [`GL_SAMPLER_BINDING`](crate::enums::GL_SAMPLER_BINDING)
-    pub(crate) fn oxidegl_bind_sampler(&mut self, unit: GLuint, sampler: GLuint) -> GlFallible<()> {
+    pub(crate) fn oxidegl_bind_sampler(&mut self, unit: GLuint, sampler: GLuint) -> GlFallible {
         panic!("command oxidegl_bind_sampler not yet implemented");
     }
     /// ### Parameters
@@ -12268,7 +12244,7 @@ impl Context {
         first: GLuint,
         count: GLsizei,
         samplers: *const GLuint,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_bind_samplers not yet implemented");
     }
     /// ### Parameters
@@ -12364,7 +12340,7 @@ impl Context {
         &mut self,
         target: TextureTarget,
         texture: GLuint,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_bind_texture not yet implemented");
     }
     /// ### Parameters
@@ -12431,7 +12407,7 @@ impl Context {
         first: GLuint,
         count: GLsizei,
         textures: *const GLuint,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_bind_textures not yet implemented");
     }
     /// ### Parameters
@@ -12470,7 +12446,7 @@ impl Context {
         &mut self,
         unit: GLuint,
         texture: GLuint,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_bind_texture_unit not yet implemented");
     }
     /// ### Parameters
@@ -12510,7 +12486,7 @@ impl Context {
         &mut self,
         target: GLenum,
         id: GLuint,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_bind_transform_feedback not yet implemented");
     }
     /// ### Parameters
@@ -12545,7 +12521,7 @@ impl Context {
         green: GLfloat,
         blue: GLfloat,
         alpha: GLfloat,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_blend_color not yet implemented");
     }
     /// ### Parameters
@@ -12574,7 +12550,7 @@ impl Context {
         &mut self,
         target: GLenum,
         clamp: ClampColorMode,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_clamp_color not yet implemented");
     }
     /// ### Parameters
@@ -12637,7 +12613,7 @@ impl Context {
         format: PixelFormat,
         r#type: PixelType,
         data: *const GLvoid,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_clear_tex_image not yet implemented");
     }
     /// ### Parameters
@@ -12759,7 +12735,7 @@ impl Context {
         format: PixelFormat,
         r#type: PixelType,
         data: *const GLvoid,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_clear_tex_sub_image not yet implemented");
     }
     /// ### Parameters
@@ -12861,7 +12837,7 @@ impl Context {
         &mut self,
         origin: ClipControlOrigin,
         depth: ClipControlDepth,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_clip_control not yet implemented");
     }
     /// ### Parameters
@@ -12978,7 +12954,7 @@ impl Context {
         border: GLint,
         image_size: GLsizei,
         data: *const GLvoid,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_compressed_tex_image1_d not yet implemented");
     }
     /// ### Parameters
@@ -13125,7 +13101,7 @@ impl Context {
         border: GLint,
         image_size: GLsizei,
         data: *const GLvoid,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_compressed_tex_image2_d not yet implemented");
     }
     /// ### Parameters
@@ -13262,7 +13238,7 @@ impl Context {
         border: GLint,
         image_size: GLsizei,
         data: *const GLvoid,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_compressed_tex_image3_d not yet implemented");
     }
     /// ### Parameters
@@ -13417,7 +13393,7 @@ impl Context {
         src_width: GLsizei,
         src_height: GLsizei,
         src_depth: GLsizei,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_copy_image_sub_data not yet implemented");
     }
     /// ### Parameters
@@ -13511,7 +13487,7 @@ impl Context {
         y: GLint,
         width: GLsizei,
         border: GLint,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_copy_tex_image1_d not yet implemented");
     }
     /// ### Parameters
@@ -13613,7 +13589,7 @@ impl Context {
         width: GLsizei,
         height: GLsizei,
         border: GLint,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_copy_tex_image2_d not yet implemented");
     }
     /// ### Parameters
@@ -13633,7 +13609,7 @@ impl Context {
         &mut self,
         n: GLsizei,
         framebuffers: *mut GLuint,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_create_framebuffers not yet implemented");
     }
     /// ### Parameters
@@ -13654,7 +13630,7 @@ impl Context {
         &mut self,
         n: GLsizei,
         pipelines: *mut GLuint,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_create_program_pipelines not yet implemented");
     }
     /// ### Parameters
@@ -13684,7 +13660,7 @@ impl Context {
         target: QueryTarget,
         n: GLsizei,
         ids: *mut GLuint,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_create_queries not yet implemented");
     }
     /// ### Parameters
@@ -13705,7 +13681,7 @@ impl Context {
         &mut self,
         n: GLsizei,
         renderbuffers: *mut GLuint,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_create_renderbuffers not yet implemented");
     }
     /// ### Parameters
@@ -13725,7 +13701,7 @@ impl Context {
         &mut self,
         n: GLsizei,
         samplers: *mut GLuint,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_create_samplers not yet implemented");
     }
     /// ### Parameters
@@ -13793,7 +13769,7 @@ impl Context {
         target: TextureTarget,
         n: GLsizei,
         textures: *mut GLuint,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_create_textures not yet implemented");
     }
     /// ### Parameters
@@ -13815,7 +13791,7 @@ impl Context {
         &mut self,
         n: GLsizei,
         ids: *mut GLuint,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_create_transform_feedbacks not yet implemented");
     }
     /// ### Parameters
@@ -13848,7 +13824,7 @@ impl Context {
     /// [`GL_CULL_FACE`](crate::enums::GL_CULL_FACE)
     ///
     /// [**glGet**](crate::context::Context::oxidegl_get) with argument [`GL_CULL_FACE_MODE`](crate::enums::GL_CULL_FACE_MODE)
-    pub(crate) fn oxidegl_cull_face(&mut self, mode: TriangleFace) -> GlFallible<()> {
+    pub(crate) fn oxidegl_cull_face(&mut self, mode: TriangleFace) -> GlFallible {
         panic!("command oxidegl_cull_face not yet implemented");
     }
     /// ### Parameters
@@ -13875,7 +13851,7 @@ impl Context {
         &mut self,
         n: GLsizei,
         framebuffers: *const GLuint,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_delete_framebuffers not yet implemented");
     }
     /// ### Parameters
@@ -13908,7 +13884,7 @@ impl Context {
     /// `program` and [`GL_DELETE_STATUS`](crate::enums::GL_DELETE_STATUS)
     ///
     /// [**glIsProgram**](crate::context::Context::oxidegl_is_program)
-    pub(crate) fn oxidegl_delete_program(&mut self, program: GLuint) -> GlFallible<()> {
+    pub(crate) fn oxidegl_delete_program(&mut self, program: GLuint) -> GlFallible {
         panic!("command oxidegl_delete_program not yet implemented");
     }
     /// ### Parameters
@@ -13935,7 +13911,7 @@ impl Context {
         &mut self,
         n: GLsizei,
         pipelines: *const GLuint,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_delete_program_pipelines not yet implemented");
     }
     /// ### Parameters
@@ -13964,7 +13940,7 @@ impl Context {
         &mut self,
         n: GLsizei,
         ids: *const GLuint,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_delete_queries not yet implemented");
     }
     /// ### Parameters
@@ -13999,7 +13975,7 @@ impl Context {
         &mut self,
         n: GLsizei,
         renderbuffers: *const GLuint,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_delete_renderbuffers not yet implemented");
     }
     /// ### Parameters
@@ -14030,7 +14006,7 @@ impl Context {
         &mut self,
         count: GLsizei,
         samplers: *const GLuint,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_delete_samplers not yet implemented");
     }
     /// ### Parameters
@@ -14057,7 +14033,7 @@ impl Context {
     /// ### Notes
     /// [**glSync**](crate::context::Context::oxidegl_sync) is only supported if
     /// the GL version is 3.2 or greater, or if the
-    pub(crate) fn oxidegl_delete_sync(&mut self, sync: GLsync) -> GlFallible<()> {
+    pub(crate) fn oxidegl_delete_sync(&mut self, sync: GLsync) -> GlFallible {
         panic!("command oxidegl_delete_sync not yet implemented");
     }
     /// ### Parameters
@@ -14086,7 +14062,7 @@ impl Context {
         &mut self,
         n: GLsizei,
         textures: *const GLuint,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_delete_textures not yet implemented");
     }
     /// ### Parameters
@@ -14113,7 +14089,7 @@ impl Context {
         &mut self,
         n: GLsizei,
         ids: *const GLuint,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_delete_transform_feedbacks not yet implemented");
     }
     /// ### Parameters
@@ -14186,7 +14162,7 @@ impl Context {
     ///
     /// [**glIsEnabled**](crate::context::Context::oxidegl_is_enabled) with argument
     /// [`GL_DEPTH_TEST`](crate::enums::GL_DEPTH_TEST)
-    pub(crate) fn oxidegl_depth_func(&mut self, func: DepthFunction) -> GlFallible<()> {
+    pub(crate) fn oxidegl_depth_func(&mut self, func: DepthFunction) -> GlFallible {
         panic!("command oxidegl_depth_func not yet implemented");
     }
     /// ### Parameters
@@ -14211,7 +14187,7 @@ impl Context {
     /// write to the depth buffer, the depth test should be enabled and set to
     /// [`GL_ALWAYS`](crate::enums::GL_ALWAYS) (see [**glDepthFunc**](crate::context::Context::oxidegl_depth_func)
     /// ).
-    pub(crate) fn oxidegl_depth_mask(&mut self, flag: GLboolean) -> GlFallible<()> {
+    pub(crate) fn oxidegl_depth_mask(&mut self, flag: GLboolean) -> GlFallible {
         panic!("command oxidegl_depth_mask not yet implemented");
     }
     /// ### Parameters
@@ -14262,7 +14238,7 @@ impl Context {
         first: GLuint,
         count: GLsizei,
         v: *const GLdouble,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_depth_range_arrayv not yet implemented");
     }
     /// ### Parameters
@@ -14312,7 +14288,7 @@ impl Context {
         index: GLuint,
         n: GLdouble,
         f: GLdouble,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_depth_range_indexed not yet implemented");
     }
     /// ### Parameters
@@ -14344,7 +14320,7 @@ impl Context {
         num_groups_x: GLuint,
         num_groups_y: GLuint,
         num_groups_z: GLuint,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_dispatch_compute not yet implemented");
     }
     /// ### Parameters
@@ -14377,10 +14353,7 @@ impl Context {
     ///
     /// ### Associated Gets
     /// [**glGet**](crate::context::Context::oxidegl_get) with argument [`GL_MAX_COMPUTE_WORK_GROUP_COUNT`](crate::enums::GL_MAX_COMPUTE_WORK_GROUP_COUNT)
-    pub(crate) fn oxidegl_dispatch_compute_indirect(
-        &mut self,
-        indirect: GLintptr,
-    ) -> GlFallible<()> {
+    pub(crate) fn oxidegl_dispatch_compute_indirect(&mut self, indirect: GLintptr) -> GlFallible {
         panic!("command oxidegl_dispatch_compute_indirect not yet implemented");
     }
     /// ### Parameters
@@ -14438,7 +14411,7 @@ impl Context {
     /// ### Notes
     /// [**glFinish**](crate::context::Context::oxidegl_finish) requires a round
     /// trip to the server.
-    pub(crate) fn oxidegl_finish(&mut self) -> GlFallible<()> {
+    pub(crate) fn oxidegl_finish(&mut self) -> GlFallible {
         panic!("command oxidegl_finish not yet implemented");
     }
     /// ### Description
@@ -14459,7 +14432,7 @@ impl Context {
     /// [**glFlush**](crate::context::Context::oxidegl_flush) can return at any
     /// time. It does not wait until the execution of all previously issued GL
     /// commands is complete.
-    pub(crate) fn oxidegl_flush(&mut self) -> GlFallible<()> {
+    pub(crate) fn oxidegl_flush(&mut self) -> GlFallible {
         panic!("command oxidegl_flush not yet implemented");
     }
     /// ### Parameters
@@ -14493,7 +14466,7 @@ impl Context {
     ///
     /// ### Associated Gets
     /// [**glGet**](crate::context::Context::oxidegl_get) with argument [`GL_FRONT_FACE`](crate::enums::GL_FRONT_FACE)
-    pub(crate) fn oxidegl_front_face(&mut self, mode: FrontFaceDirection) -> GlFallible<()> {
+    pub(crate) fn oxidegl_front_face(&mut self, mode: FrontFaceDirection) -> GlFallible {
         panic!("command oxidegl_front_face not yet implemented");
     }
     /// ### Parameters
@@ -14523,7 +14496,7 @@ impl Context {
         &mut self,
         n: GLsizei,
         framebuffers: *mut GLuint,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_gen_framebuffers not yet implemented");
     }
     /// ### Parameters
@@ -14550,7 +14523,7 @@ impl Context {
         &mut self,
         n: GLsizei,
         pipelines: *mut GLuint,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_gen_program_pipelines not yet implemented");
     }
     /// ### Parameters
@@ -14581,7 +14554,7 @@ impl Context {
         &mut self,
         n: GLsizei,
         ids: *mut GLuint,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_gen_queries not yet implemented");
     }
     /// ### Parameters
@@ -14612,7 +14585,7 @@ impl Context {
         &mut self,
         n: GLsizei,
         renderbuffers: *mut GLuint,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_gen_renderbuffers not yet implemented");
     }
     /// ### Parameters
@@ -14645,7 +14618,7 @@ impl Context {
         &mut self,
         count: GLsizei,
         samplers: *mut GLuint,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_gen_samplers not yet implemented");
     }
     /// ### Parameters
@@ -14677,7 +14650,7 @@ impl Context {
         &mut self,
         n: GLsizei,
         textures: *mut GLuint,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_gen_textures not yet implemented");
     }
     /// ### Parameters
@@ -14704,7 +14677,7 @@ impl Context {
         &mut self,
         n: GLsizei,
         ids: *mut GLuint,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_gen_transform_feedbacks not yet implemented");
     }
     /// ### Parameters
@@ -14785,7 +14758,7 @@ impl Context {
         buffer_index: GLuint,
         pname: AtomicCounterBufferPName,
         params: *mut GLint,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_get_active_atomic_counter_bufferiv not yet implemented");
     }
     /// ### Parameters
@@ -14906,7 +14879,7 @@ impl Context {
         size: *mut GLint,
         r#type: AttributeType,
         name: *mut GLchar,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_get_active_attrib not yet implemented");
     }
     /// ### Parameters
@@ -14961,7 +14934,7 @@ impl Context {
         buf_size: GLsizei,
         length: *mut GLsizei,
         name: *mut GLchar,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_get_active_subroutine_name not yet implemented");
     }
     /// ### Parameters
@@ -15029,7 +15002,7 @@ impl Context {
         index: GLuint,
         pname: SubroutineParameterName,
         values: *mut GLint,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_get_active_subroutine_uniformiv not yet implemented");
     }
     /// ### Parameters
@@ -15090,7 +15063,7 @@ impl Context {
         buf_size: GLsizei,
         length: *mut GLsizei,
         name: *mut GLchar,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_get_active_subroutine_uniform_name not yet implemented");
     }
     /// ### Parameters
@@ -15360,7 +15333,7 @@ impl Context {
         size: *mut GLint,
         r#type: UniformType,
         name: *mut GLchar,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_get_active_uniform not yet implemented");
     }
     /// ### Parameters
@@ -15448,7 +15421,7 @@ impl Context {
         uniform_block_index: GLuint,
         pname: UniformBlockPName,
         params: *mut GLint,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_get_active_uniform_blockiv not yet implemented");
     }
     /// ### Parameters
@@ -15507,7 +15480,7 @@ impl Context {
         buf_size: GLsizei,
         length: *mut GLsizei,
         uniform_block_name: *mut GLchar,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_get_active_uniform_block_name not yet implemented");
     }
     /// ### Parameters
@@ -15562,7 +15535,7 @@ impl Context {
         buf_size: GLsizei,
         length: *mut GLsizei,
         uniform_name: *mut GLchar,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_get_active_uniform_name not yet implemented");
     }
     /// ### Parameters
@@ -15772,7 +15745,7 @@ impl Context {
         uniform_indices: *const GLuint,
         pname: UniformPName,
         params: *mut GLint,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_get_active_uniformsiv not yet implemented");
     }
     /// ### Parameters
@@ -15821,7 +15794,7 @@ impl Context {
         max_count: GLsizei,
         count: *mut GLsizei,
         shaders: *mut GLuint,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_get_attached_shaders not yet implemented");
     }
     /// ### Parameters
@@ -15979,7 +15952,7 @@ impl Context {
         depth: GLsizei,
         buf_size: GLsizei,
         pixels: *mut GLvoid,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_get_compressed_texture_sub_image not yet implemented");
     }
     /// ### Parameters
@@ -16307,7 +16280,7 @@ impl Context {
         pname: GLenum,
         index: GLuint,
         val: *mut GLfloat,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_get_multisamplefv not yet implemented");
     }
     /// ### Parameters
@@ -16361,7 +16334,7 @@ impl Context {
         length: *mut GLsizei,
         binary_format: *mut GLenum,
         binary: *mut GLvoid,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_get_program_binary not yet implemented");
     }
     /// ### Parameters
@@ -16424,7 +16397,7 @@ impl Context {
         buf_size: GLsizei,
         length: *mut GLsizei,
         info_log: *mut GLchar,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_get_program_info_log not yet implemented");
     }
     /// ### Parameters
@@ -16578,7 +16551,7 @@ impl Context {
         program_interface: ProgramInterface,
         pname: ProgramInterfacePName,
         params: *mut GLint,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_get_program_interfaceiv not yet implemented");
     }
     /// ### Parameters
@@ -16634,7 +16607,7 @@ impl Context {
         pipeline: GLuint,
         pname: PipelineParameterName,
         params: *mut GLint,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_get_program_pipelineiv not yet implemented");
     }
     /// ### Parameters
@@ -16681,7 +16654,7 @@ impl Context {
         buf_size: GLsizei,
         length: *mut GLsizei,
         info_log: *mut GLchar,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_get_program_pipeline_info_log not yet implemented");
     }
     /// ### Parameters
@@ -16903,7 +16876,7 @@ impl Context {
         count: GLsizei,
         length: *mut GLsizei,
         params: *mut GLint,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_get_program_resourceiv not yet implemented");
     }
     /// ### Parameters
@@ -17270,7 +17243,7 @@ impl Context {
         buf_size: GLsizei,
         length: *mut GLsizei,
         name: *mut GLchar,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_get_program_resource_name not yet implemented");
     }
     /// ### Parameters
@@ -17333,7 +17306,7 @@ impl Context {
         shadertype: ShaderType,
         pname: ProgramStagePName,
         values: *mut GLint,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_get_program_stageiv not yet implemented");
     }
     /// ### Parameters
@@ -17385,7 +17358,7 @@ impl Context {
         index: GLuint,
         pname: QueryParameterName,
         params: *mut GLint,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_get_query_indexediv not yet implemented");
     }
     /// ### Parameters
@@ -17427,7 +17400,7 @@ impl Context {
         target: QueryTarget,
         pname: QueryParameterName,
         params: *mut GLint,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_get_queryiv not yet implemented");
     }
     /// ### Parameters
@@ -17489,7 +17462,7 @@ impl Context {
         buf_size: GLsizei,
         length: *mut GLsizei,
         info_log: *mut GLchar,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_get_shader_info_log not yet implemented");
     }
     /// ### Parameters
@@ -17539,7 +17512,7 @@ impl Context {
         precisiontype: PrecisionType,
         range: *mut GLint,
         precision: *mut GLint,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_get_shader_precision_format not yet implemented");
     }
     /// ### Parameters
@@ -17589,7 +17562,7 @@ impl Context {
         buf_size: GLsizei,
         length: *mut GLsizei,
         source: *mut GLchar,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_get_shader_source not yet implemented");
     }
     /// ### Parameters
@@ -17729,7 +17702,7 @@ impl Context {
         count: GLsizei,
         length: *mut GLsizei,
         values: *mut GLint,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_get_synciv not yet implemented");
     }
     /// ### Parameters
@@ -17868,7 +17841,7 @@ impl Context {
         r#type: PixelType,
         buf_size: GLsizei,
         pixels: *mut GLvoid,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_get_texture_sub_image not yet implemented");
     }
     /// ### Parameters
@@ -17946,7 +17919,7 @@ impl Context {
         size: *mut GLsizei,
         r#type: AttributeType,
         name: *mut GLchar,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_get_transform_feedback_varying not yet implemented");
     }
     /// ### Parameters
@@ -18038,7 +18011,7 @@ impl Context {
         uniform_count: GLsizei,
         uniform_names: *const *const GLchar,
         uniform_indices: *mut GLuint,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_get_uniform_indices not yet implemented");
     }
     /// ### Parameters
@@ -18132,7 +18105,7 @@ impl Context {
         shadertype: ShaderType,
         location: GLint,
         params: *mut GLuint,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_get_uniform_subroutineuiv not yet implemented");
     }
     /// ### Parameters
@@ -18165,7 +18138,7 @@ impl Context {
         vaobj: GLuint,
         pname: VertexArrayPName,
         param: *mut GLint,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_get_vertex_arrayiv not yet implemented");
     }
     /// ### Parameters
@@ -18206,7 +18179,7 @@ impl Context {
         index: GLuint,
         pname: GLenum,
         pointer: *mut *mut GLvoid,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_get_vertex_attrib_pointerv not yet implemented");
     }
     /// ### Parameters
@@ -18287,7 +18260,7 @@ impl Context {
     /// ### Notes
     /// The interpretation of hints depends on the implementation. Some implementations
     /// ignore [**glHint**](crate::context::Context::oxidegl_hint) settings.
-    pub(crate) fn oxidegl_hint(&mut self, target: HintTarget, mode: HintMode) -> GlFallible<()> {
+    pub(crate) fn oxidegl_hint(&mut self, target: HintTarget, mode: HintMode) -> GlFallible {
         panic!("command oxidegl_hint not yet implemented");
     }
     /// ### Parameters
@@ -18303,7 +18276,7 @@ impl Context {
     /// ### Associated Gets
     /// [**glGetBufferParameter**](crate::context::Context::oxidegl_get_buffer_parameter)
     /// with argument [`GL_BUFFER_SIZE`](crate::enums::GL_BUFFER_SIZE)
-    pub(crate) fn oxidegl_invalidate_buffer_data(&mut self, buffer: GLuint) -> GlFallible<()> {
+    pub(crate) fn oxidegl_invalidate_buffer_data(&mut self, buffer: GLuint) -> GlFallible {
         panic!("command oxidegl_invalidate_buffer_data not yet implemented");
     }
     /// ### Parameters
@@ -18335,7 +18308,7 @@ impl Context {
         buffer: GLuint,
         offset: GLintptr,
         length: GLsizeiptr,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_invalidate_buffer_sub_data not yet implemented");
     }
     /// ### Parameters
@@ -18367,7 +18340,7 @@ impl Context {
         &mut self,
         texture: GLuint,
         level: GLint,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_invalidate_tex_image not yet implemented");
     }
     /// ### Parameters
@@ -18441,7 +18414,7 @@ impl Context {
         width: GLsizei,
         height: GLsizei,
         depth: GLsizei,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_invalidate_tex_sub_image not yet implemented");
     }
     /// ### Parameters
@@ -18754,7 +18727,7 @@ impl Context {
     ///
     /// [**glIsEnabled**](crate::context::Context::oxidegl_is_enabled) with argument
     /// [`GL_LINE_SMOOTH`](crate::enums::GL_LINE_SMOOTH)
-    pub(crate) fn oxidegl_line_width(&mut self, width: GLfloat) -> GlFallible<()> {
+    pub(crate) fn oxidegl_line_width(&mut self, width: GLfloat) -> GlFallible {
         panic!("command oxidegl_line_width not yet implemented");
     }
     /// ### Parameters
@@ -18820,7 +18793,7 @@ impl Context {
     ///
     /// [**glIsEnabled**](crate::context::Context::oxidegl_is_enabled) with argument
     /// [`GL_COLOR_LOGIC_OP`](crate::enums::GL_COLOR_LOGIC_OP).
-    pub(crate) fn oxidegl_logic_op(&mut self, opcode: LogicOp) -> GlFallible<()> {
+    pub(crate) fn oxidegl_logic_op(&mut self, opcode: LogicOp) -> GlFallible {
         panic!("command oxidegl_logic_op not yet implemented");
     }
     /// ### Parameters
@@ -18856,7 +18829,7 @@ impl Context {
     /// [**glGet**](crate::context::Context::oxidegl_get) with argument [`GL_MIN_SAMPLE_SHADING`](crate::enums::GL_MIN_SAMPLE_SHADING).
     ///
     /// [**glGet**](crate::context::Context::oxidegl_get) with argument [`GL_SAMPLES`](crate::enums::GL_SAMPLES).
-    pub(crate) fn oxidegl_min_sample_shading(&mut self, value: GLfloat) -> GlFallible<()> {
+    pub(crate) fn oxidegl_min_sample_shading(&mut self, value: GLfloat) -> GlFallible {
         panic!("command oxidegl_min_sample_shading not yet implemented");
     }
     /// ### Parameters
@@ -18916,7 +18889,7 @@ impl Context {
         first: *const GLint,
         count: *const GLsizei,
         drawcount: GLsizei,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_multi_draw_arrays not yet implemented");
     }
     /// ### Parameters
@@ -18988,7 +18961,7 @@ impl Context {
         indirect: *const GLvoid,
         drawcount: GLsizei,
         stride: GLsizei,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_multi_draw_arrays_indirect not yet implemented");
     }
     /// ### Parameters
@@ -19048,7 +19021,7 @@ impl Context {
         r#type: DrawElementsType,
         indices: *mut *const GLvoid,
         drawcount: GLsizei,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_multi_draw_elements not yet implemented");
     }
     /// ### Parameters
@@ -19108,7 +19081,7 @@ impl Context {
         indices: *mut *const GLvoid,
         drawcount: GLsizei,
         basevertex: *const GLint,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_multi_draw_elements_base_vertex not yet implemented");
     }
     /// ### Parameters
@@ -19186,7 +19159,7 @@ impl Context {
         indirect: *const GLvoid,
         drawcount: GLsizei,
         stride: GLsizei,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_multi_draw_elements_indirect not yet implemented");
     }
     /// ### Description
@@ -19196,7 +19169,7 @@ impl Context {
     /// feedback is still considered active and changing most transform feedback
     /// state related to the object results in an error. However, a new transform
     /// feedback object may be bound while transform feedback is paused.
-    pub(crate) fn oxidegl_pause_transform_feedback(&mut self) -> GlFallible<()> {
+    pub(crate) fn oxidegl_pause_transform_feedback(&mut self) -> GlFallible {
         panic!("command oxidegl_pause_transform_feedback not yet implemented");
     }
     /// ### Parameters
@@ -19229,7 +19202,7 @@ impl Context {
     ///
     /// [**glIsEnabled**](crate::context::Context::oxidegl_is_enabled) with argument
     /// [`GL_PROGRAM_POINT_SIZE`](crate::enums::GL_PROGRAM_POINT_SIZE)
-    pub(crate) fn oxidegl_point_size(&mut self, size: GLfloat) -> GlFallible<()> {
+    pub(crate) fn oxidegl_point_size(&mut self, size: GLfloat) -> GlFallible {
         panic!("command oxidegl_point_size not yet implemented");
     }
     /// ### Parameters
@@ -19286,7 +19259,7 @@ impl Context {
         &mut self,
         face: TriangleFace,
         mode: PolygonMode,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_polygon_mode not yet implemented");
     }
     /// ### Parameters
@@ -19318,11 +19291,7 @@ impl Context {
     ///
     /// [**glGet**](crate::context::Context::oxidegl_get) with argument [`GL_POLYGON_OFFSET_FACTOR`](crate::enums::GL_POLYGON_OFFSET_FACTOR)
     /// or [`GL_POLYGON_OFFSET_UNITS`](crate::enums::GL_POLYGON_OFFSET_UNITS).
-    pub(crate) fn oxidegl_polygon_offset(
-        &mut self,
-        factor: GLfloat,
-        units: GLfloat,
-    ) -> GlFallible<()> {
+    pub(crate) fn oxidegl_polygon_offset(&mut self, factor: GLfloat, units: GLfloat) -> GlFallible {
         panic!("command oxidegl_polygon_offset not yet implemented");
     }
     /// ### Description
@@ -19340,7 +19309,7 @@ impl Context {
     ///
     /// ### Associated Gets
     /// [**glGet**](crate::context::Context::oxidegl_get) with argument [`GL_MAX_DEBUG_MESSAGE_LENGTH`](crate::enums::GL_MAX_DEBUG_MESSAGE_LENGTH).
-    pub(crate) fn oxidegl_pop_debug_group(&mut self) -> GlFallible<()> {
+    pub(crate) fn oxidegl_pop_debug_group(&mut self) -> GlFallible {
         panic!("command oxidegl_pop_debug_group not yet implemented");
     }
     /// ### Parameters
@@ -19371,7 +19340,7 @@ impl Context {
     /// ### Notes
     /// [**glPrimitiveRestartIndex**](crate::context::Context::oxidegl_primitive_restart_index)
     /// is available only if the GL version is 3.1 or greater.
-    pub(crate) fn oxidegl_primitive_restart_index(&mut self, index: GLuint) -> GlFallible<()> {
+    pub(crate) fn oxidegl_primitive_restart_index(&mut self, index: GLuint) -> GlFallible {
         panic!("command oxidegl_primitive_restart_index not yet implemented");
     }
     /// ### Parameters
@@ -19439,7 +19408,7 @@ impl Context {
         binary_format: GLenum,
         binary: *const GLvoid,
         length: GLsizei,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_program_binary not yet implemented");
     }
     /// ### Parameters
@@ -19487,7 +19456,7 @@ impl Context {
         program: GLuint,
         pname: ProgramParameterPName,
         value: GLint,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_program_parameteri not yet implemented");
     }
     /// ### Parameters
@@ -19528,7 +19497,7 @@ impl Context {
     /// ### Notes
     /// [**glProvokingVertex**](crate::context::Context::oxidegl_provoking_vertex)
     /// is available only if the GL version is 3.2 or greater.
-    pub(crate) fn oxidegl_provoking_vertex(&mut self, mode: VertexProvokingMode) -> GlFallible<()> {
+    pub(crate) fn oxidegl_provoking_vertex(&mut self, mode: VertexProvokingMode) -> GlFallible {
         panic!("command oxidegl_provoking_vertex not yet implemented");
     }
     /// ### Parameters
@@ -19571,7 +19540,7 @@ impl Context {
         id: GLuint,
         length: GLsizei,
         message: *const GLchar,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_push_debug_group not yet implemented");
     }
     /// ### Parameters
@@ -19598,7 +19567,7 @@ impl Context {
     /// ### Notes
     /// [**glQueryCounter**](crate::context::Context::oxidegl_query_counter) is
     /// available only if the GL version is 3.3 or higher.
-    pub(crate) fn oxidegl_query_counter(&mut self, id: GLuint, target: GLenum) -> GlFallible<()> {
+    pub(crate) fn oxidegl_query_counter(&mut self, id: GLuint, target: GLenum) -> GlFallible {
         panic!("command oxidegl_query_counter not yet implemented");
     }
     /// ### Description
@@ -19607,7 +19576,7 @@ impl Context {
     /// associated with its shader compiler. [**glCompileShader**](crate::context::Context::oxidegl_compile_shader)
     /// may subsequently be called and the implementation may at that time reallocate
     /// resources previously freed by the call to [**glReleaseShaderCompiler**](crate::context::Context::oxidegl_release_shader_compiler).
-    pub(crate) fn oxidegl_release_shader_compiler(&mut self) -> GlFallible<()> {
+    pub(crate) fn oxidegl_release_shader_compiler(&mut self) -> GlFallible {
         panic!("command oxidegl_release_shader_compiler not yet implemented");
     }
     /// ### Description
@@ -19617,7 +19586,7 @@ impl Context {
     /// feedback is still considered active and changing most transform feedback
     /// state related to the object results in an error. However, a new transform
     /// feedback object may be bound while transform feedback is paused.
-    pub(crate) fn oxidegl_resume_transform_feedback(&mut self) -> GlFallible<()> {
+    pub(crate) fn oxidegl_resume_transform_feedback(&mut self) -> GlFallible {
         panic!("command oxidegl_resume_transform_feedback not yet implemented");
     }
     /// ### Parameters
@@ -19677,7 +19646,7 @@ impl Context {
         &mut self,
         value: GLfloat,
         invert: GLboolean,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_sample_coverage not yet implemented");
     }
     /// ### Parameters
@@ -19705,7 +19674,7 @@ impl Context {
         &mut self,
         mask_number: GLuint,
         mask: GLbitfield,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_sample_maski not yet implemented");
     }
     /// ### Parameters
@@ -19759,7 +19728,7 @@ impl Context {
         binary_format: GLenum,
         binary: *const GLvoid,
         length: GLsizei,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_shader_binary not yet implemented");
     }
     /// ### Parameters
@@ -19804,7 +19773,7 @@ impl Context {
         program: GLuint,
         storage_block_index: GLuint,
         storage_block_binding: GLuint,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_shader_storage_block_binding not yet implemented");
     }
     /// ### Parameters
@@ -19918,7 +19887,7 @@ impl Context {
         func: StencilFunction,
         r#ref: GLint,
         mask: GLuint,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_stencil_func not yet implemented");
     }
     /// ### Parameters
@@ -20035,7 +20004,7 @@ impl Context {
         func: StencilFunction,
         r#ref: GLint,
         mask: GLuint,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_stencil_func_separate not yet implemented");
     }
     /// ### Parameters
@@ -20064,7 +20033,7 @@ impl Context {
     /// [**glGet**](crate::context::Context::oxidegl_get) with argument [`GL_STENCIL_WRITEMASK`](crate::enums::GL_STENCIL_WRITEMASK),
     /// [`GL_STENCIL_BACK_WRITEMASK`](crate::enums::GL_STENCIL_BACK_WRITEMASK),
     /// or [`GL_STENCIL_BITS`](crate::enums::GL_STENCIL_BITS)
-    pub(crate) fn oxidegl_stencil_mask(&mut self, mask: GLuint) -> GlFallible<()> {
+    pub(crate) fn oxidegl_stencil_mask(&mut self, mask: GLuint) -> GlFallible {
         panic!("command oxidegl_stencil_mask not yet implemented");
     }
     /// ### Parameters
@@ -20098,7 +20067,7 @@ impl Context {
         &mut self,
         face: TriangleFace,
         mask: GLuint,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_stencil_mask_separate not yet implemented");
     }
     /// ### Parameters
@@ -20222,7 +20191,7 @@ impl Context {
         fail: StencilOp,
         zfail: StencilOp,
         zpass: StencilOp,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_stencil_op not yet implemented");
     }
     /// ### Parameters
@@ -20350,7 +20319,7 @@ impl Context {
         sfail: StencilOp,
         dpfail: StencilOp,
         dppass: StencilOp,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_stencil_op_separate not yet implemented");
     }
     /// ### Parameters
@@ -20662,7 +20631,7 @@ impl Context {
         format: PixelFormat,
         r#type: PixelType,
         pixels: *const GLvoid,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_tex_image1_d not yet implemented");
     }
     /// ### Parameters
@@ -21008,7 +20977,7 @@ impl Context {
         format: PixelFormat,
         r#type: PixelType,
         pixels: *const GLvoid,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_tex_image2_d not yet implemented");
     }
     /// ### Parameters
@@ -21079,7 +21048,7 @@ impl Context {
         width: GLsizei,
         height: GLsizei,
         fixedsamplelocations: GLboolean,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_tex_image2_d_multisample not yet implemented");
     }
     /// ### Parameters
@@ -21399,7 +21368,7 @@ impl Context {
         format: PixelFormat,
         r#type: PixelType,
         pixels: *const GLvoid,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_tex_image3_d not yet implemented");
     }
     /// ### Parameters
@@ -21472,7 +21441,7 @@ impl Context {
         height: GLsizei,
         depth: GLsizei,
         fixedsamplelocations: GLboolean,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_tex_image3_d_multisample not yet implemented");
     }
     /// ### Description
@@ -21488,7 +21457,7 @@ impl Context {
     /// ### Notes
     /// The situation described above is referred to as a *rendering feedback loop*
     /// and is discussed in more detail in section 9.3 of the OpenGL 4.5 Specification.
-    pub(crate) fn oxidegl_texture_barrier(&mut self) -> GlFallible<()> {
+    pub(crate) fn oxidegl_texture_barrier(&mut self) -> GlFallible {
         panic!("command oxidegl_texture_barrier not yet implemented");
     }
     /// ### Parameters
@@ -21627,7 +21596,7 @@ impl Context {
         numlevels: GLuint,
         minlayer: GLuint,
         numlayers: GLuint,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_texture_view not yet implemented");
     }
     /// ### Parameters
@@ -21657,7 +21626,7 @@ impl Context {
         xfb: GLuint,
         index: GLuint,
         buffer: GLuint,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_transform_feedback_buffer_base not yet implemented");
     }
     /// ### Parameters
@@ -21700,7 +21669,7 @@ impl Context {
         buffer: GLuint,
         offset: GLintptr,
         size: GLsizeiptr,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_transform_feedback_buffer_range not yet implemented");
     }
     /// ### Parameters
@@ -21784,7 +21753,7 @@ impl Context {
         count: GLsizei,
         varyings: *const *const GLchar,
         buffer_mode: TransformFeedbackBufferMode,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_transform_feedback_varyings not yet implemented");
     }
     /// ### Parameters
@@ -21831,7 +21800,7 @@ impl Context {
         program: GLuint,
         uniform_block_index: GLuint,
         uniform_block_binding: GLuint,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_uniform_block_binding not yet implemented");
     }
     /// ### Parameters
@@ -21872,7 +21841,7 @@ impl Context {
         shadertype: ShaderType,
         count: GLsizei,
         indices: *const GLuint,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_uniform_subroutinesuiv not yet implemented");
     }
     /// ### Parameters
@@ -21923,7 +21892,7 @@ impl Context {
         pipeline: GLuint,
         stages: UseProgramStageMask,
         program: GLuint,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_use_program_stages not yet implemented");
     }
     /// ### Parameters
@@ -21952,7 +21921,7 @@ impl Context {
     /// ### Associated Gets
     /// [**glGetProgramPipeline**](crate::context::Context::oxidegl_get_program_pipeline)
     /// with parameter [`GL_VALIDATE_STATUS`](crate::enums::GL_VALIDATE_STATUS).
-    pub(crate) fn oxidegl_validate_program_pipeline(&mut self, pipeline: GLuint) -> GlFallible<()> {
+    pub(crate) fn oxidegl_validate_program_pipeline(&mut self, pipeline: GLuint) -> GlFallible {
         panic!("command oxidegl_validate_program_pipeline not yet implemented");
     }
     /// ### Parameters
@@ -21980,7 +21949,7 @@ impl Context {
         &mut self,
         vaobj: GLuint,
         buffer: GLuint,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_vertex_array_element_buffer not yet implemented");
     }
     /// ### Parameters
@@ -22012,7 +21981,7 @@ impl Context {
         &mut self,
         index: GLuint,
         divisor: GLuint,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_vertex_attrib_divisor not yet implemented");
     }
     /// ### Parameters
@@ -22058,7 +22027,7 @@ impl Context {
         sync: GLsync,
         flags: GLbitfield,
         timeout: GLuint64,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_wait_sync not yet implemented");
     }
     pub(crate) unsafe fn oxidegl_vertex_attrib_p1uiv(
@@ -22067,7 +22036,7 @@ impl Context {
         r#type: VertexAttribPointerType,
         normalized: GLboolean,
         value: *const GLuint,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_vertex_attrib_p1uiv not yet implemented");
     }
     pub(crate) unsafe fn oxidegl_vertex_attrib_p2uiv(
@@ -22076,7 +22045,7 @@ impl Context {
         r#type: VertexAttribPointerType,
         normalized: GLboolean,
         value: *const GLuint,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_vertex_attrib_p2uiv not yet implemented");
     }
     pub(crate) unsafe fn oxidegl_vertex_attrib_p3uiv(
@@ -22085,7 +22054,7 @@ impl Context {
         r#type: VertexAttribPointerType,
         normalized: GLboolean,
         value: *const GLuint,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_vertex_attrib_p3uiv not yet implemented");
     }
     pub(crate) unsafe fn oxidegl_vertex_attrib_p4uiv(
@@ -22094,10 +22063,10 @@ impl Context {
         r#type: VertexAttribPointerType,
         normalized: GLboolean,
         value: *const GLuint,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_vertex_attrib_p4uiv not yet implemented");
     }
-    pub(crate) fn oxidegl_uniform1d(&mut self, location: GLint, x: GLdouble) -> GlFallible<()> {
+    pub(crate) fn oxidegl_uniform1d(&mut self, location: GLint, x: GLdouble) -> GlFallible {
         panic!("command oxidegl_uniform1d not yet implemented");
     }
     pub(crate) fn oxidegl_uniform2d(
@@ -22105,7 +22074,7 @@ impl Context {
         location: GLint,
         x: GLdouble,
         y: GLdouble,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_uniform2d not yet implemented");
     }
     pub(crate) fn oxidegl_uniform3d(
@@ -22114,7 +22083,7 @@ impl Context {
         x: GLdouble,
         y: GLdouble,
         z: GLdouble,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_uniform3d not yet implemented");
     }
     pub(crate) fn oxidegl_uniform4d(
@@ -22124,7 +22093,7 @@ impl Context {
         y: GLdouble,
         z: GLdouble,
         w: GLdouble,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_uniform4d not yet implemented");
     }
     pub(crate) unsafe fn oxidegl_uniform1dv(
@@ -22132,7 +22101,7 @@ impl Context {
         location: GLint,
         count: GLsizei,
         value: *const GLdouble,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_uniform1dv not yet implemented");
     }
     pub(crate) unsafe fn oxidegl_uniform2dv(
@@ -22140,7 +22109,7 @@ impl Context {
         location: GLint,
         count: GLsizei,
         value: *const GLdouble,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_uniform2dv not yet implemented");
     }
     pub(crate) unsafe fn oxidegl_uniform3dv(
@@ -22148,7 +22117,7 @@ impl Context {
         location: GLint,
         count: GLsizei,
         value: *const GLdouble,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_uniform3dv not yet implemented");
     }
     pub(crate) unsafe fn oxidegl_uniform4dv(
@@ -22156,7 +22125,7 @@ impl Context {
         location: GLint,
         count: GLsizei,
         value: *const GLdouble,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_uniform4dv not yet implemented");
     }
     pub(crate) unsafe fn oxidegl_uniform_matrix2dv(
@@ -22165,7 +22134,7 @@ impl Context {
         count: GLsizei,
         transpose: GLboolean,
         value: *const GLdouble,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_uniform_matrix2dv not yet implemented");
     }
     pub(crate) unsafe fn oxidegl_uniform_matrix3dv(
@@ -22174,7 +22143,7 @@ impl Context {
         count: GLsizei,
         transpose: GLboolean,
         value: *const GLdouble,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_uniform_matrix3dv not yet implemented");
     }
     pub(crate) unsafe fn oxidegl_uniform_matrix4dv(
@@ -22183,7 +22152,7 @@ impl Context {
         count: GLsizei,
         transpose: GLboolean,
         value: *const GLdouble,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_uniform_matrix4dv not yet implemented");
     }
     pub(crate) unsafe fn oxidegl_uniform_matrix2x3dv(
@@ -22192,7 +22161,7 @@ impl Context {
         count: GLsizei,
         transpose: GLboolean,
         value: *const GLdouble,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_uniform_matrix2x3dv not yet implemented");
     }
     pub(crate) unsafe fn oxidegl_uniform_matrix2x4dv(
@@ -22201,7 +22170,7 @@ impl Context {
         count: GLsizei,
         transpose: GLboolean,
         value: *const GLdouble,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_uniform_matrix2x4dv not yet implemented");
     }
     pub(crate) unsafe fn oxidegl_uniform_matrix3x2dv(
@@ -22210,7 +22179,7 @@ impl Context {
         count: GLsizei,
         transpose: GLboolean,
         value: *const GLdouble,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_uniform_matrix3x2dv not yet implemented");
     }
     pub(crate) unsafe fn oxidegl_uniform_matrix3x4dv(
@@ -22219,7 +22188,7 @@ impl Context {
         count: GLsizei,
         transpose: GLboolean,
         value: *const GLdouble,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_uniform_matrix3x4dv not yet implemented");
     }
     pub(crate) unsafe fn oxidegl_uniform_matrix4x2dv(
@@ -22228,7 +22197,7 @@ impl Context {
         count: GLsizei,
         transpose: GLboolean,
         value: *const GLdouble,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_uniform_matrix4x2dv not yet implemented");
     }
     pub(crate) unsafe fn oxidegl_uniform_matrix4x3dv(
@@ -22237,7 +22206,7 @@ impl Context {
         count: GLsizei,
         transpose: GLboolean,
         value: *const GLdouble,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_uniform_matrix4x3dv not yet implemented");
     }
     pub(crate) fn oxidegl_program_uniform1d(
@@ -22245,7 +22214,7 @@ impl Context {
         program: GLuint,
         location: GLint,
         v0: GLdouble,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_program_uniform1d not yet implemented");
     }
     pub(crate) unsafe fn oxidegl_program_uniform1dv(
@@ -22254,7 +22223,7 @@ impl Context {
         location: GLint,
         count: GLsizei,
         value: *const GLdouble,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_program_uniform1dv not yet implemented");
     }
     pub(crate) fn oxidegl_program_uniform2d(
@@ -22263,7 +22232,7 @@ impl Context {
         location: GLint,
         v0: GLdouble,
         v1: GLdouble,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_program_uniform2d not yet implemented");
     }
     pub(crate) unsafe fn oxidegl_program_uniform2dv(
@@ -22272,7 +22241,7 @@ impl Context {
         location: GLint,
         count: GLsizei,
         value: *const GLdouble,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_program_uniform2dv not yet implemented");
     }
     pub(crate) fn oxidegl_program_uniform3d(
@@ -22282,7 +22251,7 @@ impl Context {
         v0: GLdouble,
         v1: GLdouble,
         v2: GLdouble,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_program_uniform3d not yet implemented");
     }
     pub(crate) unsafe fn oxidegl_program_uniform3dv(
@@ -22291,7 +22260,7 @@ impl Context {
         location: GLint,
         count: GLsizei,
         value: *const GLdouble,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_program_uniform3dv not yet implemented");
     }
     pub(crate) fn oxidegl_program_uniform4d(
@@ -22302,7 +22271,7 @@ impl Context {
         v1: GLdouble,
         v2: GLdouble,
         v3: GLdouble,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_program_uniform4d not yet implemented");
     }
     pub(crate) unsafe fn oxidegl_program_uniform4dv(
@@ -22311,7 +22280,7 @@ impl Context {
         location: GLint,
         count: GLsizei,
         value: *const GLdouble,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_program_uniform4dv not yet implemented");
     }
     pub(crate) unsafe fn oxidegl_program_uniform_matrix2dv(
@@ -22321,7 +22290,7 @@ impl Context {
         count: GLsizei,
         transpose: GLboolean,
         value: *const GLdouble,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_program_uniform_matrix2dv not yet implemented");
     }
     pub(crate) unsafe fn oxidegl_program_uniform_matrix3dv(
@@ -22331,7 +22300,7 @@ impl Context {
         count: GLsizei,
         transpose: GLboolean,
         value: *const GLdouble,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_program_uniform_matrix3dv not yet implemented");
     }
     pub(crate) unsafe fn oxidegl_program_uniform_matrix4dv(
@@ -22341,7 +22310,7 @@ impl Context {
         count: GLsizei,
         transpose: GLboolean,
         value: *const GLdouble,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_program_uniform_matrix4dv not yet implemented");
     }
     pub(crate) unsafe fn oxidegl_program_uniform_matrix2x3dv(
@@ -22351,7 +22320,7 @@ impl Context {
         count: GLsizei,
         transpose: GLboolean,
         value: *const GLdouble,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_program_uniform_matrix2x3dv not yet implemented");
     }
     pub(crate) unsafe fn oxidegl_program_uniform_matrix3x2dv(
@@ -22361,7 +22330,7 @@ impl Context {
         count: GLsizei,
         transpose: GLboolean,
         value: *const GLdouble,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_program_uniform_matrix3x2dv not yet implemented");
     }
     pub(crate) unsafe fn oxidegl_program_uniform_matrix2x4dv(
@@ -22371,7 +22340,7 @@ impl Context {
         count: GLsizei,
         transpose: GLboolean,
         value: *const GLdouble,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_program_uniform_matrix2x4dv not yet implemented");
     }
     pub(crate) unsafe fn oxidegl_program_uniform_matrix4x2dv(
@@ -22381,7 +22350,7 @@ impl Context {
         count: GLsizei,
         transpose: GLboolean,
         value: *const GLdouble,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_program_uniform_matrix4x2dv not yet implemented");
     }
     pub(crate) unsafe fn oxidegl_program_uniform_matrix3x4dv(
@@ -22391,7 +22360,7 @@ impl Context {
         count: GLsizei,
         transpose: GLboolean,
         value: *const GLdouble,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_program_uniform_matrix3x4dv not yet implemented");
     }
     pub(crate) unsafe fn oxidegl_program_uniform_matrix4x3dv(
@@ -22401,7 +22370,7 @@ impl Context {
         count: GLsizei,
         transpose: GLboolean,
         value: *const GLdouble,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_program_uniform_matrix4x3dv not yet implemented");
     }
     pub(crate) unsafe fn oxidegl_specialize_shader(
@@ -22411,7 +22380,7 @@ impl Context {
         num_specialization_constants: GLuint,
         p_constant_index: *const GLuint,
         p_constant_value: *const GLuint,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_specialize_shader not yet implemented");
     }
     pub(crate) unsafe fn oxidegl_multi_draw_arrays_indirect_count(
@@ -22421,7 +22390,7 @@ impl Context {
         drawcount: GLintptr,
         maxdrawcount: GLsizei,
         stride: GLsizei,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_multi_draw_arrays_indirect_count not yet implemented");
     }
     pub(crate) unsafe fn oxidegl_multi_draw_elements_indirect_count(
@@ -22432,7 +22401,7 @@ impl Context {
         drawcount: GLintptr,
         maxdrawcount: GLsizei,
         stride: GLsizei,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_multi_draw_elements_indirect_count not yet implemented");
     }
     pub(crate) fn oxidegl_polygon_offset_clamp(
@@ -22440,7 +22409,7 @@ impl Context {
         factor: GLfloat,
         units: GLfloat,
         clamp: GLfloat,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_polygon_offset_clamp not yet implemented");
     }
 }

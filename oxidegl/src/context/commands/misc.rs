@@ -140,7 +140,7 @@ impl Context {
         y: GLint,
         width: GLsizei,
         height: GLsizei,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         gl_debug!("glViewport, x {x} y {y} width {width} height {height}");
         gl_assert!(width >= 0 && height >= 0, InvalidValue);
         debug_assert!(x >= 0 && y >= 0, "negative base coordinate in glViewport");

@@ -137,7 +137,7 @@ impl From<GlFallibleError> for ErrorCode {
         value.get()
     }
 }
-pub type GlFallible<T> = Result<T, GlFallibleError>;
+pub type GlFallible<T = ()> = Result<T, GlFallibleError>;
 
 /// Trait that defines the value returned from a GL command returning this type if there is an error within that command
 pub(crate) trait GetErrorReturnValue<T> {

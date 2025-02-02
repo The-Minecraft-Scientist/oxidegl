@@ -261,7 +261,7 @@ impl Context {
         &mut self,
         target: BufferTarget,
         buffer: GLuint,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         self.bind_buffer_internal(ObjectName::try_from_raw(buffer).ok(), target, NoIndex)
     }
     /// ### Parameters
@@ -305,7 +305,7 @@ impl Context {
         target: BufferTarget,
         index: GLuint,
         buffer: GLuint,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_bind_buffer_base not yet implemented");
     }
     /// ### Parameters
@@ -360,7 +360,7 @@ impl Context {
         buffer: GLuint,
         offset: GLintptr,
         size: GLsizeiptr,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_bind_buffer_range not yet implemented");
     }
     /// ### Parameters
@@ -409,7 +409,7 @@ impl Context {
         first: GLuint,
         count: GLsizei,
         buffers: *const GLuint,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_bind_buffers_base not yet implemented");
     }
     /// ### Parameters
@@ -473,7 +473,7 @@ impl Context {
         buffers: *const GLuint,
         offsets: *const GLintptr,
         sizes: *const GLsizeiptr,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         panic!("command oxidegl_bind_buffers_range not yet implemented");
     }
     /// ### Parameters
@@ -681,7 +681,7 @@ impl Context {
         size: GLsizeiptr,
         data: *const GLvoid,
         flags: BufferStorageMask,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         let binding = self
             .get_buffer_binding_mut(
                 // Safety: BufferStorageTarget has the same set of valid values as BufferTarget
@@ -698,7 +698,7 @@ impl Context {
         size: GLsizeiptr,
         data: *const GLvoid,
         flags: BufferStorageMask,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         let name = ObjectName::try_from_raw(buffer)?;
         // Safety: Caller ensures data pointer is correctly initialized
         unsafe {
@@ -716,7 +716,7 @@ impl Context {
         size: GLsizeiptr,
         data: *const GLvoid,
         flags: BufferStorageMask,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         // a bound buffer might have just gained its storage
         self.update_encoder();
 
@@ -823,7 +823,7 @@ impl Context {
         to_bind: Option<ObjectName<Buffer>>,
         target: BufferTarget,
         idx: I,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         if let Some(maybe_named) = to_bind {
             self.gl_state
                 .buffer_list

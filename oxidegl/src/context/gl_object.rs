@@ -522,7 +522,7 @@ impl<Obj: NamedObject> NamedObjectList<Obj> {
         &mut self,
         name: ObjectName<Obj>,
         default: impl Fn(ObjectName<Obj>) -> Obj,
-    ) -> GlFallible<()> {
+    ) -> GlFallible {
         if let Some(v) = self.objects.get_mut(name.to_idx()) {
             if v.get().is_none() {
                 *v = <Obj::LateInitType as GetCellType>::Cell::new_init(default(name));
