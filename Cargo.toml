@@ -6,8 +6,10 @@ members = ["oxidegl", "xtask"]
 codegen-units = 1
 lto = "thin"
 panic = "abort"
+debug = true
 
 [profile.dev]
 codegen-units = 512
 # lto = "thin"
 panic = "abort"
+incremental = true
