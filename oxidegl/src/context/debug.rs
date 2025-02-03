@@ -1,7 +1,7 @@
 use ahash::{HashMap, HashMapExt, HashSet, HashSetExt};
 use flexi_logger::Logger;
 use log::{logger, Level, Record, RecordBuilder};
-use objc2::ClassType;
+use objc2::{AllocAnyThread, ClassType};
 use objc2_foundation::NSString;
 use std::{
     any,

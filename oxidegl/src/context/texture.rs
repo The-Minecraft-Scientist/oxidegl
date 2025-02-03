@@ -52,33 +52,27 @@ impl Texture {
 impl From<TextureTarget> for MTLTextureType {
     fn from(value: TextureTarget) -> Self {
         match value {
-            TextureTarget::Texture1D | TextureTarget::ProxyTexture1D => Self::MTLTextureType1D,
-            TextureTarget::Texture1DArray | TextureTarget::ProxyTexture1DArray => {
-                Self::MTLTextureType1DArray
-            }
+            TextureTarget::Texture1D | TextureTarget::ProxyTexture1D => Self::Type1D,
+            TextureTarget::Texture1DArray | TextureTarget::ProxyTexture1DArray => Self::Type1DArray,
             TextureTarget::Renderbuffer
             | TextureTarget::TextureRectangle
             | TextureTarget::ProxyTextureRectangle
             | TextureTarget::Texture2D
-            | TextureTarget::ProxyTexture2D => Self::MTLTextureType2D,
+            | TextureTarget::ProxyTexture2D => Self::Type2D,
 
-            TextureTarget::Texture2DArray | TextureTarget::ProxyTexture2DArray => {
-                Self::MTLTextureType2DArray
-            }
+            TextureTarget::Texture2DArray | TextureTarget::ProxyTexture2DArray => Self::Type2DArray,
             TextureTarget::Texture2DMultisample | TextureTarget::ProxyTexture2DMultisample => {
-                Self::MTLTextureType2DMultisample
+                Self::Type2DMultisample
             }
             TextureTarget::Texture2DMultisampleArray
-            | TextureTarget::ProxyTexture2DMultisampleArray => {
-                Self::MTLTextureType2DMultisampleArray
-            }
-            TextureTarget::TextureCubeMap | TextureTarget::ProxyTextureCubeMap => Self::Cube,
+            | TextureTarget::ProxyTexture2DMultisampleArray => Self::Type2DMultisampleArray,
+            TextureTarget::TextureCubeMap | TextureTarget::ProxyTextureCubeMap => Self::TypeCube,
             TextureTarget::TextureCubeMapArray | TextureTarget::ProxyTextureCubeMapArray => {
-                Self::CubeArray
+                Self::TypeCubeArray
             }
 
-            TextureTarget::TextureBuffer => Self::TextureBuffer,
-            TextureTarget::Texture3D | TextureTarget::ProxyTexture3D => Self::MTLTextureType3D,
+            TextureTarget::TextureBuffer => Self::TypeTextureBuffer,
+            TextureTarget::Texture3D | TextureTarget::ProxyTexture3D => Self::Type3D,
             _ => {
                 panic!("invalid texture target")
             }

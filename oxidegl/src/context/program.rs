@@ -2,7 +2,7 @@ use std::{mem, ptr::NonNull};
 
 use ahash::{HashSet, HashSetExt};
 use glslang::Compiler as GlslLangCompiler;
-use objc2::{rc::Retained, ClassType};
+use objc2::{rc::Retained, AllocAnyThread, ClassType};
 //use naga::back::msl::{Options, PipelineOptions};
 use crate::{
     context::{

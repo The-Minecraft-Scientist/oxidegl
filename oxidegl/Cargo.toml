@@ -10,25 +10,34 @@ crate-type = ["cdylib"]
 # MacOS deps
 
 # Objective C Base
-objc2 = "0.5.2"
+objc2 = "0.6.0"
+
+# Need to speak Metal for... well... doing graphics
+objc2-metal = { version = "0.3.0" }
+
 # Need to speak Cocoa to interact with windows and layers
-objc2-app-kit = { version = "0.2.2", features = [
+objc2-app-kit = { default-features = false, version = "0.3.0", features = [
+    "std",
+    "objc2-core-foundation",
     "NSView",
     "NSWindow",
     "NSResponder",
     "objc2-quartz-core",
 ] }
-# Need to speak Metal for... well... doing graphics
-objc2-metal = { version = "0.2.2", features = ["all"] }
 
 # Need to speak CoreAnimation for CAMetalLayer
-objc2-quartz-core = { version = "0.2.2", features = [
+objc2-quartz-core = { default-features = false, version = "0.3.0", features = [
+    "std",
+    "objc2-core-foundation",
     "objc2-metal",
     "CAMetalLayer",
     "CALayer",
 ] }
 # needed for MainThreadMarker/`is_main_thread` and ProcessInfo to get the MacOS version
-objc2-foundation = { version = "0.2.2", features = ["NSProcessInfo"] }
+objc2-foundation = { default-features = false, version = "0.3.0", features = [
+    "std",
+    "NSProcessInfo",
+] }
 
 # Need access to raw mach vm_allocate for [MTLDevice newBufferWithBytesNoCopy]
 # mach2 = { git = "https://github.com/JohnTitor/mach2/" }
@@ -50,7 +59,7 @@ ahash = "0.8.11"
 # Macro utilities
 concat-idents = "1.1.5"
 # Used for const str/[u8] appending for commit hash/version constants
-constcat = "0.5.0"
+constcat = "0.6.0"
 
 # Used for crimes (nsgl_shim)
 ctor = { version = "0.2.8", optional = true }

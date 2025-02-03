@@ -10,20 +10,21 @@ use core_foundation_sys::{
 use libc::{dlopen, dlsym, RTLD_LAZY};
 use log::trace;
 use objc2::{
-    declare_class, extern_class,
+    define_class, extern_class,
     ffi::{
-        class_getClassMethod, class_replaceMethod, method_getTypeEncoding, objc_class,
+        class_getClassMethod, class_replaceMethod, method_getTypeEncoding,
         objc_getAssociatedObject, objc_setAssociatedObject, OBJC_ASSOCIATION_RETAIN,
     },
-    msg_send_id, mutability,
-    rc::{Allocated, Retained},
-    runtime::{AnyClass, NSObject},
-    sel, ClassType, DeclaredClass,
+    msg_send,
+    rc::Retained,
+    runtime::{AnyClass, AnyObject, NSObject, Sel},
+    sel, AllocAnyThread, ClassType, DeclaredClass,
 };
+use objc2_foundation::NSObjectProtocol;
 use std::{
     cell::OnceCell,
     ffi::{c_void, CStr},
-    mem,
+    mem::{self, MaybeUninit},
     ptr::{self, NonNull},
     sync::Once,
 };
@@ -32,24 +33,14 @@ use std::{
 // and sometimes, it feels like the abyss is staring back, questioning my sanity for writing this.
 
 use objc2_app_kit::NSView;
-declare_class!(
+define_class!(
+    #[unsafe(super(NSObject))]
+    #[ivars = NonNull<c_void>]
+    #[name = "OXGLOxideGLCtxAssociatedObject"]
     struct OXGLOxideGLCtxAssociatedObject;
-    unsafe impl ClassType for OXGLOxideGLCtxAssociatedObject {
-        type Super = NSObject;
-        type Mutability = mutability::Mutable;
-        const NAME: &'static str = "OXGLOxideGLCtxAssociatedObject";
-    }
-    impl DeclaredClass for OXGLOxideGLCtxAssociatedObject {
-        type Ivars = NonNull<c_void>;
-    }
-    unsafe impl OXGLOxideGLCtxAssociatedObject {
-        #[method_id(initWithCtx:)]
-        fn init_with_ctx(this: Allocated<Self>, ctx: NonNull<c_void>) -> Option<Retained<Self>> {
-            let this = this.set_ivars(ctx);
-            // Safety: superclass is NSObject and the init method exists on it
-            unsafe {msg_send_id![super(this), init]}
-        }
-        #[method(getCtx)]
+
+    impl OXGLOxideGLCtxAssociatedObject {
+        #[unsafe(method(getCtx))]
         fn get_ctx(&self) -> NonNull<c_void> {
             *self.ivars()
         }
@@ -57,135 +48,141 @@ declare_class!(
 );
 impl OXGLOxideGLCtxAssociatedObject {
     fn new_with_ctx(ctx: NonNull<Context>) -> Option<Retained<OXGLOxideGLCtxAssociatedObject>> {
-        let alloc = OXGLOxideGLCtxAssociatedObject::alloc();
+        let this = Self::alloc().set_ivars(ctx.cast());
+
         // Safety: init method exists on super
-        unsafe { msg_send_id![alloc, initWithCtx:ctx.as_ptr().cast::<c_void>()] }
+        unsafe { msg_send![super(this), init] }
     }
 }
 
-declare_class! (
-    /// This is a placeholder class used to conveniently generate instance/class methods that will be swizzled onto NSOpenGLContext
-    struct OXGLOxideGlCtxShim;
-    unsafe impl ClassType for OXGLOxideGlCtxShim {
-        type Super = NSObject;
-        type Mutability = mutability::InteriorMutable;
-        const NAME: &'static str = "OXGLOxideGlCtxShim";
+struct OXGLOxideGlCtxShim {
+    _inhabited: MaybeUninit<()>,
+}
+impl OXGLOxideGlCtxShim {
+    unsafe extern "C-unwind" fn init_with_format_share_ctx(
+        this: *mut NSOpenGLContext,
+        _format: *const AnyClass,
+        share: Option<NonNull<NSOpenGLContext>>,
+    ) -> objc2::rc::Retained<objc2_foundation::NSObject> {
+        trace!("initialized OBJC context shim");
+
+        assert!(share.is_none(), "OxideGL does not support linked contexts!");
+
+        // Safety: superclass is NSObject and the init method exists on it
+        // Safety: Allocated<T> is guaranteed to have the same layout/ABI as *mut T
+        let this = NSObject::init(unsafe {
+            mem::transmute::<*mut NSOpenGLContext, objc2::rc::Allocated<objc2_foundation::NSObject>>(
+                this,
+            )
+        });
+        let ctx_ptr = box_ctx(Context::new());
+        Self::set_assoc_obj(
+            Retained::as_ptr(&this).cast_mut().cast(),
+            OXGLOxideGLCtxAssociatedObject::new_with_ctx(ctx_ptr.cast())
+                .expect("failed to create associated object for context storage"),
+        );
+        this
     }
-    impl DeclaredClass for OXGLOxideGlCtxShim {
+    unsafe extern "C-unwind" fn init_with_cgl_pf_obj(
+        this: *mut NSOpenGLContext,
+        _obj: *const c_void,
+    ) -> objc2::rc::Retained<objc2_foundation::NSObject> {
+        trace!("initialized OBJC context shim");
+
+        // Safety: superclass is NSObject and the init method exists on it
+        // Safety: Allocated<T> is guaranteed to have the same layout/ABI as *mut T
+        let this = NSObject::init(unsafe {
+            mem::transmute::<*mut NSOpenGLContext, objc2::rc::Allocated<objc2_foundation::NSObject>>(
+                this,
+            )
+        });
+        let ctx_ptr = box_ctx(Context::new());
+        Self::set_assoc_obj(
+            Retained::as_ptr(&this).cast_mut().cast(),
+            OXGLOxideGLCtxAssociatedObject::new_with_ctx(ctx_ptr.cast())
+                .expect("failed to create associated object for context storage"),
+        );
+        this
     }
-    unsafe impl OXGLOxideGlCtxShim {
-        #[method_id(initWithFormat:shareContext:)]
-        fn init_with_format_share_ctx(this: Allocated<Self>, _format: &AnyClass, share: Option<&Self>) -> Option<Retained<Self>> {
-            trace!("initialized OBJC context shim");
-
-            assert!(share.is_none(), "OxideGL does not support linked contexts!");
-
-            let this = this.set_ivars(());
-            // Safety: superclass is NSObject and the init method exists on it
-            let this: Option<Retained<Self>> = unsafe {msg_send_id![super(this), init]};
-            let this = this.unwrap();
-            let ctx_ptr = box_ctx(Context::new());
-            this.set_assoc_obj(OXGLOxideGLCtxAssociatedObject::new_with_ctx(ctx_ptr.cast())
-                .expect("failed to create associated object for context storage"));
-            Some(this)
-
-        }
-        #[method_id(initWithCGLPixelFormatObj:)]
-        fn init_with_cgl_pf_obj(this: Allocated<Self>, _obj: *const c_void) -> Option<Retained<Self>> {
-            trace!("initialized OBJC context shim");
-            let this = this.set_ivars(());
-            // Safety: superclass is NSObject and the init method exists on it
-            let this: Option<Retained<Self>> = unsafe {msg_send_id![super(this), init]};
-            let this = this.unwrap();
-            let ctx_ptr = box_ctx(Context::new());
-            this.set_assoc_obj(OXGLOxideGLCtxAssociatedObject::new_with_ctx(ctx_ptr.cast())
-                .expect("failed to create associated object for context storage"));
-            Some(this)
-        }
-        #[method(setValues:forParameter:)]
-        fn set_values(&self, _values: *const i32, _parameter: isize) {}
-        #[method(getValues:forParameter:)]
-        unsafe fn get_values(&self, values: *mut i32, parameter: isize) {
-            let outv = match parameter {
+    unsafe extern "C-unwind" fn set_values(
+        _this: *mut NSOpenGLContext,
+        _values: *const i32,
+        _parameter: isize,
+    ) {
+    }
+    unsafe extern "C-unwind" fn get_values(
+        _this: *mut NSOpenGLContext,
+        values: *mut i32,
+        parameter: isize,
+    ) {
+        let outv = match parameter {
                 // NSGLParamSwapInterval | NSGLParamSurfaceOrder
                 222 | 235 => 1,
                 _ => panic!("tried to get NSGL context parameters from oxidegl nsgl shim (param code {parameter})"),
             };
-            // Safety: caller ensures pointer is valid
-            unsafe { *values = outv };
-        }
-        #[method(makeCurrentContext)]
-        fn make_current(&self) {
-            let obj = self.get_assoc_obj();
-            set_context(Some(obj.ivars().cast()));
-        }
-        #[method(clearCurrentContext)]
-        fn clear_current() {
-            set_context(None);
-        }
-        #[method(flushBuffer)]
-        fn flush_buffer(&self) {
-            swap_buffers();
-        }
-        #[method(setView:)]
-        fn set_view(&self, view: Option<&NSView>) {
-            if let Some(v) = view {
-                let obj = self.get_assoc_obj();
-                let mut ptr = obj.ivars().cast::<Context>();
-
-                // take current context to avoid potential aliasing references
-                let ctx = CTX.take();
-
-                // Safety: pointer is non null, points to an initialized and heap-allocated Context.
-                // pointer cannot have aliasing Rust references (since this class and CTX are the only places where the
-                // pointer is actually read from, and we emptied CTX prior to creating this reference)
-
-                unsafe { ptr.as_mut() }.set_view(&v.retain());
-                CTX.set(ctx);
-            }
-        }
-
+        // Safety: caller ensures pointer is valid
+        unsafe { *values = outv };
     }
-);
+    unsafe extern "C-unwind" fn make_current(this: *mut NSOpenGLContext) {
+        let obj = Self::get_assoc_obj(this.cast());
+        set_context(Some(obj.ivars().cast()));
+    }
+    unsafe extern "C-unwind" fn clear_current(_: *const AnyClass) {
+        set_context(None);
+    }
+    unsafe extern "C-unwind" fn flush_buffer(_this: *mut NSOpenGLContext) {
+        swap_buffers();
+    }
+    unsafe extern "C-unwind" fn set_view(
+        this: *mut NSOpenGLContext,
+        view: Option<NonNull<NSView>>,
+    ) {
+        if let Some(v) = view {
+            let obj = Self::get_assoc_obj(this.cast());
+            let mut ptr = obj.ivars().cast::<Context>();
+
+            // take current context to avoid potential aliasing references
+            let ctx = CTX.take();
+
+            // Safety: pointer is non null, points to an initialized and heap-allocated Context.
+            // pointer cannot have aliasing Rust references (since this class and CTX are the only places where the
+            // pointer is actually read from, and we emptied CTX prior to creating this reference)
+            unsafe { ptr.as_mut() }.set_view(&unsafe { Retained::retain(v.as_ptr()) }.unwrap());
+            CTX.set(ctx);
+        }
+    }
+}
 
 extern_class!(
     #[derive(Debug, PartialEq, Eq, Hash)]
+    #[unsafe(super(NSObject))]
     pub(crate) struct NSOpenGLContext;
-
-    #[rustfmt::skip]
-    unsafe impl ClassType for NSOpenGLContext {
-        type Super = NSObject;
-        type Mutability = mutability::InteriorMutable;
-    }
 );
+// Safety: NSOpenGLContext conforms to its superclass protocol, NSObjectProtocol
+unsafe impl NSObjectProtocol for NSOpenGLContext {}
 
+fn get_sel(sel: Sel) -> *const c_void {
+    // Safety: Sel is a repr(transparent) wrapper on NonNull<c_void> which has a compatible layout for transmutes with
+    unsafe { mem::transmute(sel) }
+}
 impl OXGLOxideGlCtxShim {
-    fn set_assoc_obj(&self, mut obj: Retained<OXGLOxideGLCtxAssociatedObject>) {
+    fn set_assoc_obj(this: *mut AnyObject, assoc: Retained<OXGLOxideGLCtxAssociatedObject>) {
         // Safety: self is a valid objective-C object, obj is a retained pointer to an initialized associated object
         unsafe {
             objc_setAssociatedObject(
-                ptr::from_ref(self).cast_mut().cast(),
-                sel!(oxglAssocObj).as_ptr().cast(),
-                Retained::as_mut_ptr(&mut obj).cast(),
+                this,
+                get_sel(sel!(oxglAssocObj)),
+                Retained::into_raw(assoc.into()),
                 OBJC_ASSOCIATION_RETAIN,
             );
         };
     }
-    fn get_assoc_obj(&self) -> &OXGLOxideGLCtxAssociatedObject {
+    fn get_assoc_obj(this: *mut AnyObject) -> Retained<OXGLOxideGLCtxAssociatedObject> {
         // Safety: self is a valid objective c object
-        let ptr = unsafe {
-            objc_getAssociatedObject(
-                ptr::from_ref(self).cast_mut().cast(),
-                sel!(oxglAssocObj).as_ptr().cast(),
-            )
-        };
+        let ptr = unsafe { objc_getAssociatedObject(this, get_sel(sel!(oxglAssocObj))) };
         // Safety: ptr is either null (not set) or a pointer to an associated object as set by set_assoc_obj
-        unsafe {
-            ptr.cast_mut()
-                .cast::<OXGLOxideGLCtxAssociatedObject>()
-                .as_ref()
-        }
-        .expect("OxideGL context assoc objc not set!")
+        unsafe { Retained::retain(ptr.cast_mut().cast::<OXGLOxideGLCtxAssociatedObject>()) }
+            .expect("OxideGL context assoc objc not set!")
     }
     /// # Safety
     /// Must be called from a serial objc context (e.g. a static initializer or +load method)
@@ -197,103 +194,92 @@ impl OXGLOxideGlCtxShim {
             // Calling `class` ensures that the class actually gets loaded and registered before we try to do things with it
             let opengl_ctx_class_ptr = ptr::from_ref(NSOpenGLContext::class())
                 .cast_mut()
-                .cast::<objc_class>();
+                .cast::<AnyClass>();
             let opengl_ctx_class_metaclass_ptr =
                 ptr::from_ref(NSOpenGLContext::class().metaclass())
                     .cast_mut()
-                    .cast::<objc_class>();
+                    .cast::<AnyClass>();
             // Safety: Caller ensures this method is only called from within
             // a static initializer
             #[allow(clippy::missing_transmute_annotations)]
             // Replace all of the relevant methods on NSOpenGLContext context and its metaclass
             unsafe {
-                let sel_ptr = sel!(initWithFormat:shareContext:).as_ptr();
+                let sel_ptr = sel!(initWithFormat:shareContext:);
 
                 class_replaceMethod(
                     opengl_ctx_class_ptr,
                     sel_ptr,
-                    Some(mem::transmute(
-                        Self::init_with_format_share_ctx as unsafe extern "C" fn(_, _, _, _) -> _,
-                    )),
+                    mem::transmute(
+                        Self::init_with_format_share_ctx
+                            as unsafe extern "C-unwind" fn(_, _, _) -> _,
+                    ),
                     method_getTypeEncoding(class_getClassMethod(opengl_ctx_class_ptr, sel_ptr)),
                 );
-                let sel_ptr = sel!(initWithCGLPixelFormatObj:).as_ptr();
+                let sel_ptr = sel!(initWithCGLPixelFormatObj:);
                 class_replaceMethod(
                     opengl_ctx_class_ptr,
                     sel_ptr,
-                    Some(mem::transmute(
-                        Self::init_with_cgl_pf_obj as unsafe extern "C" fn(_, _, _) -> _,
-                    )),
+                    mem::transmute(
+                        Self::init_with_cgl_pf_obj as unsafe extern "C-unwind" fn(_, _) -> _,
+                    ),
                     method_getTypeEncoding(class_getClassMethod(opengl_ctx_class_ptr, sel_ptr)),
                 );
-                let sel_ptr = sel!(initWithCGLPixelFormatObj:).as_ptr();
+                let sel_ptr = sel!(initWithCGLPixelFormatObj:);
                 class_replaceMethod(
                     opengl_ctx_class_ptr,
                     sel_ptr,
-                    Some(mem::transmute(
-                        Self::init_with_cgl_pf_obj as unsafe extern "C" fn(_, _, _) -> _,
-                    )),
+                    mem::transmute(
+                        Self::init_with_cgl_pf_obj as unsafe extern "C-unwind" fn(_, _) -> _,
+                    ),
                     method_getTypeEncoding(class_getClassMethod(opengl_ctx_class_ptr, sel_ptr)),
                 );
 
-                let sel_ptr = sel!(setValues:forParameter:).as_ptr();
+                let sel_ptr = sel!(setValues:forParameter:);
                 class_replaceMethod(
                     opengl_ctx_class_ptr,
                     sel_ptr,
-                    Some(mem::transmute(
-                        Self::set_values as unsafe extern "C" fn(_, _, _, _) -> _,
-                    )),
+                    mem::transmute(Self::set_values as unsafe extern "C-unwind" fn(_, _, _) -> _),
                     method_getTypeEncoding(class_getClassMethod(opengl_ctx_class_ptr, sel_ptr)),
                 );
-                let sel_ptr = sel!(getValues:forParameter:).as_ptr();
+                let sel_ptr = sel!(getValues:forParameter:);
                 class_replaceMethod(
                     opengl_ctx_class_ptr,
                     sel_ptr,
-                    Some(mem::transmute(
-                        Self::get_values as unsafe extern "C" fn(_, _, _, _) -> _,
-                    )),
+                    mem::transmute(Self::get_values as unsafe extern "C-unwind" fn(_, _, _) -> _),
                     method_getTypeEncoding(class_getClassMethod(opengl_ctx_class_ptr, sel_ptr)),
                 );
-                let sel_ptr = sel!(makeCurrentContext).as_ptr();
+                let sel_ptr = sel!(makeCurrentContext);
                 class_replaceMethod(
                     opengl_ctx_class_ptr,
                     sel_ptr,
-                    Some(mem::transmute(
-                        Self::make_current as unsafe extern "C" fn(_, _) -> _,
-                    )),
+                    mem::transmute(Self::make_current as unsafe extern "C-unwind" fn(_) -> _),
                     method_getTypeEncoding(class_getClassMethod(opengl_ctx_class_ptr, sel_ptr)),
                 );
-                let sel_ptr: *const objc2::ffi::objc_selector = sel!(flushBuffer).as_ptr();
+                let sel_ptr = sel!(flushBuffer);
                 class_replaceMethod(
                     opengl_ctx_class_ptr,
                     sel_ptr,
-                    Some(mem::transmute(
-                        Self::flush_buffer as unsafe extern "C" fn(_, _) -> _,
-                    )),
+                    mem::transmute(Self::flush_buffer as unsafe extern "C-unwind" fn(_) -> _),
                     method_getTypeEncoding(class_getClassMethod(opengl_ctx_class_ptr, sel_ptr)),
                 );
-                let sel_ptr: *const objc2::ffi::objc_selector = sel!(setView:).as_ptr();
+                let sel_ptr = sel!(setView:);
                 class_replaceMethod(
                     opengl_ctx_class_ptr,
                     sel_ptr,
-                    Some(mem::transmute(
-                        Self::set_view as unsafe extern "C" fn(_, _, _) -> _,
-                    )),
+                    mem::transmute(Self::set_view as unsafe extern "C-unwind" fn(_, _) -> _),
                     method_getTypeEncoding(class_getClassMethod(opengl_ctx_class_ptr, sel_ptr)),
                 );
-                let sel_ptr: *const objc2::ffi::objc_selector = sel!(clearCurrentContext).as_ptr();
+                let sel_ptr = sel!(clearCurrentContext);
                 class_replaceMethod(
                     opengl_ctx_class_metaclass_ptr,
                     sel_ptr,
-                    Some(mem::transmute(
-                        Self::clear_current as unsafe extern "C" fn(_, _) -> _,
-                    )),
+                    mem::transmute(Self::clear_current as unsafe extern "C-unwind" fn(_) -> _),
                     method_getTypeEncoding(class_getClassMethod(
                         opengl_ctx_class_metaclass_ptr,
                         sel_ptr,
                     )),
                 );
-            };
+            }
         });
     }
 }

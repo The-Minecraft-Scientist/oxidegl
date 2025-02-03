@@ -4,7 +4,7 @@ members = ["oxidegl", "xtask"]
 
 [profile.release]
 codegen-units = 1
-lto = "fat"
+lto = "thin"
 # panic = "abort"
 
 [profile.dev]

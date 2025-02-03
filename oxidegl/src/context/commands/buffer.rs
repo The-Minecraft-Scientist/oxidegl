@@ -742,7 +742,7 @@ impl Context {
         let size = size as usize;
         // TODO: lower-coherence storage modes (StorageModeManaged or single-upload StorageModePrivate).
         // Shared backing buffers are going to annihilate perf with larger buffers
-        let options = MTLResourceOptions::MTLResourceStorageModeShared;
+        let options = MTLResourceOptions::StorageModeShared;
 
         let maybe_ptr = NonNull::new(data.cast_mut());
 

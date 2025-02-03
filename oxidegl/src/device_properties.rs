@@ -72,7 +72,7 @@ impl MetalProperties {
         let version = NSProcessInfo::processInfo().operatingSystemVersion();
         // common denominator of all Mac `MTLDevice`s
         #[allow(deprecated)]
-        let is_mac = device.supportsFeatureSet(objc2_metal::MTLFeatureSet::_macOS_GPUFamily1_v1);
+        let is_mac = device.supportsFeatureSet(objc2_metal::MTLFeatureSet::macOS_GPUFamily1_v1);
 
         let version = OsVersion {
             ty: if is_mac {
@@ -260,16 +260,18 @@ impl MetalProperties {
     }
 }
 fn get_msl_version(version: &OsVersion) -> MTLLanguageVersion {
-    if version.at_least((14, 0), (17, 0)) {
-        MTLLanguageVersion::MTLLanguageVersion3_1
+    if version.at_least((15, 0), (18, 0)) {
+        MTLLanguageVersion::Version3_2
+    } else if version.at_least((14, 0), (17, 0)) {
+        MTLLanguageVersion::Version3_1
     } else if version.at_least((13, 0), (16, 0)) {
-        MTLLanguageVersion::MTLLanguageVersion3_0
+        MTLLanguageVersion::Version3_0
     } else if version.at_least((12, 0), (15, 0)) {
-        MTLLanguageVersion::MTLLanguageVersion2_4
+        MTLLanguageVersion::Version2_4
     } else if version.at_least((11, 0), (14, 0)) {
-        MTLLanguageVersion::MTLLanguageVersion2_3
+        MTLLanguageVersion::Version2_3
     } else if version.at_least((10, 15), (13, 0)) {
-        MTLLanguageVersion::MTLLanguageVersion2_2
+        MTLLanguageVersion::Version2_2
     } else {
         unreachable!()
     }

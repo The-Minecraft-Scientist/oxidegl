@@ -252,7 +252,7 @@ impl PlatformState {
 
         if let Some(drawable) = self.drawable.take() {
             self.current_command_buffer()
-                .presentDrawable(drawable.as_ref().as_ref());
+                .presentDrawable(drawable.as_ref());
             drop(drawable);
         }
         self.current_command_buffer().commit();
@@ -263,7 +263,7 @@ impl PlatformState {
         depth_format: Option<MTLPixelFormat>,
         stencil_format: Option<MTLPixelFormat>,
     ) -> Self {
-        let device = unsafe { Retained::from_raw(MTLCreateSystemDefaultDevice()) }.unwrap();
+        let device = MTLCreateSystemDefaultDevice().unwrap();
 
         let layer = unsafe { CAMetalLayer::new() };
 

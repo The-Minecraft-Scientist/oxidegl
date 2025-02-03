@@ -60,11 +60,11 @@ fn main() {
         tvec.iter()
             .map(|v| v.0.to_string())
             .collect::<Vec<_>>()
-            .join(","),
+            .join(", "),
         tvec.into_iter()
             .map(|v| v.1)
             .collect::<Vec<_>>()
-            .join("\" ,\"")
+            .join("\", \"")
     );
     let mut f = BufWriter::new(
         File::create(Path::new(&env::var("OUT_DIR").unwrap()).join("generated.rs")).unwrap(),
