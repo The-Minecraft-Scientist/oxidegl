@@ -61,6 +61,7 @@ struct OXGLOxideGlCtxShim {
 impl OXGLOxideGlCtxShim {
     unsafe extern "C-unwind" fn init_with_format_share_ctx(
         this: *mut NSOpenGLContext,
+        _sel: Sel,
         _format: *const AnyClass,
         share: Option<NonNull<NSOpenGLContext>>,
     ) -> objc2::rc::Retained<objc2_foundation::NSObject> {
@@ -85,6 +86,7 @@ impl OXGLOxideGlCtxShim {
     }
     unsafe extern "C-unwind" fn init_with_cgl_pf_obj(
         this: *mut NSOpenGLContext,
+        _sel: Sel,
         _obj: *const c_void,
     ) -> objc2::rc::Retained<objc2_foundation::NSObject> {
         trace!("initialized OBJC context shim");
@@ -106,12 +108,14 @@ impl OXGLOxideGlCtxShim {
     }
     unsafe extern "C-unwind" fn set_values(
         _this: *mut NSOpenGLContext,
+        _sel: Sel,
         _values: *const i32,
         _parameter: isize,
     ) {
     }
     unsafe extern "C-unwind" fn get_values(
         _this: *mut NSOpenGLContext,
+        _sel: Sel,
         values: *mut i32,
         parameter: isize,
     ) {
@@ -123,18 +127,19 @@ impl OXGLOxideGlCtxShim {
         // Safety: caller ensures pointer is valid
         unsafe { *values = outv };
     }
-    unsafe extern "C-unwind" fn make_current(this: *mut NSOpenGLContext) {
+    unsafe extern "C-unwind" fn make_current(this: *mut NSOpenGLContext, _sel: Sel) {
         let obj = Self::get_assoc_obj(this.cast());
         set_context(Some(obj.ivars().cast()));
     }
-    unsafe extern "C-unwind" fn clear_current(_: *const AnyClass) {
+    unsafe extern "C-unwind" fn clear_current(_: *const AnyClass, _sel: Sel) {
         set_context(None);
     }
-    unsafe extern "C-unwind" fn flush_buffer(_this: *mut NSOpenGLContext) {
+    unsafe extern "C-unwind" fn flush_buffer(_this: *mut NSOpenGLContext, _sel: Sel) {
         swap_buffers();
     }
     unsafe extern "C-unwind" fn set_view(
         this: *mut NSOpenGLContext,
+        _sel: Sel,
         view: Option<NonNull<NSView>>,
     ) {
         if let Some(v) = view {
@@ -211,7 +216,7 @@ impl OXGLOxideGlCtxShim {
                     sel_ptr,
                     mem::transmute(
                         Self::init_with_format_share_ctx
-                            as unsafe extern "C-unwind" fn(_, _, _) -> _,
+                            as unsafe extern "C-unwind" fn(_, _, _, _) -> _,
                     ),
                     method_getTypeEncoding(class_getClassMethod(opengl_ctx_class_ptr, sel_ptr)),
                 );
@@ -220,7 +225,7 @@ impl OXGLOxideGlCtxShim {
                     opengl_ctx_class_ptr,
                     sel_ptr,
                     mem::transmute(
-                        Self::init_with_cgl_pf_obj as unsafe extern "C-unwind" fn(_, _) -> _,
+                        Self::init_with_cgl_pf_obj as unsafe extern "C-unwind" fn(_, _, _) -> _,
                     ),
                     method_getTypeEncoding(class_getClassMethod(opengl_ctx_class_ptr, sel_ptr)),
                 );
@@ -229,7 +234,7 @@ impl OXGLOxideGlCtxShim {
                     opengl_ctx_class_ptr,
                     sel_ptr,
                     mem::transmute(
-                        Self::init_with_cgl_pf_obj as unsafe extern "C-unwind" fn(_, _) -> _,
+                        Self::init_with_cgl_pf_obj as unsafe extern "C-unwind" fn(_, _, _) -> _,
                     ),
                     method_getTypeEncoding(class_getClassMethod(opengl_ctx_class_ptr, sel_ptr)),
                 );
@@ -238,42 +243,46 @@ impl OXGLOxideGlCtxShim {
                 class_replaceMethod(
                     opengl_ctx_class_ptr,
                     sel_ptr,
-                    mem::transmute(Self::set_values as unsafe extern "C-unwind" fn(_, _, _) -> _),
+                    mem::transmute(
+                        Self::set_values as unsafe extern "C-unwind" fn(_, _, _, _) -> _,
+                    ),
                     method_getTypeEncoding(class_getClassMethod(opengl_ctx_class_ptr, sel_ptr)),
                 );
                 let sel_ptr = sel!(getValues:forParameter:);
                 class_replaceMethod(
                     opengl_ctx_class_ptr,
                     sel_ptr,
-                    mem::transmute(Self::get_values as unsafe extern "C-unwind" fn(_, _, _) -> _),
+                    mem::transmute(
+                        Self::get_values as unsafe extern "C-unwind" fn(_, _, _, _) -> _,
+                    ),
                     method_getTypeEncoding(class_getClassMethod(opengl_ctx_class_ptr, sel_ptr)),
                 );
                 let sel_ptr = sel!(makeCurrentContext);
                 class_replaceMethod(
                     opengl_ctx_class_ptr,
                     sel_ptr,
-                    mem::transmute(Self::make_current as unsafe extern "C-unwind" fn(_) -> _),
+                    mem::transmute(Self::make_current as unsafe extern "C-unwind" fn(_, _) -> _),
                     method_getTypeEncoding(class_getClassMethod(opengl_ctx_class_ptr, sel_ptr)),
                 );
                 let sel_ptr = sel!(flushBuffer);
                 class_replaceMethod(
                     opengl_ctx_class_ptr,
                     sel_ptr,
-                    mem::transmute(Self::flush_buffer as unsafe extern "C-unwind" fn(_) -> _),
+                    mem::transmute(Self::flush_buffer as unsafe extern "C-unwind" fn(_, _) -> _),
                     method_getTypeEncoding(class_getClassMethod(opengl_ctx_class_ptr, sel_ptr)),
                 );
                 let sel_ptr = sel!(setView:);
                 class_replaceMethod(
                     opengl_ctx_class_ptr,
                     sel_ptr,
-                    mem::transmute(Self::set_view as unsafe extern "C-unwind" fn(_, _) -> _),
+                    mem::transmute(Self::set_view as unsafe extern "C-unwind" fn(_, _, _) -> _),
                     method_getTypeEncoding(class_getClassMethod(opengl_ctx_class_ptr, sel_ptr)),
                 );
                 let sel_ptr = sel!(clearCurrentContext);
                 class_replaceMethod(
                     opengl_ctx_class_metaclass_ptr,
                     sel_ptr,
-                    mem::transmute(Self::clear_current as unsafe extern "C-unwind" fn(_) -> _),
+                    mem::transmute(Self::clear_current as unsafe extern "C-unwind" fn(_, _) -> _),
                     method_getTypeEncoding(class_getClassMethod(
                         opengl_ctx_class_metaclass_ptr,
                         sel_ptr,
