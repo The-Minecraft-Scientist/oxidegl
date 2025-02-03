@@ -5,7 +5,8 @@ use crate::{
         state::PixelAlignedRect,
         Context,
     },
-    dispatch::gl_types::{GLfloat, GLint, GLsizei, GLuint},
+    dispatch::gl_types::{GLenum, GLfloat, GLint, GLsizei, GLuint},
+    enums::ErrorCode,
     run_if_changed,
 };
 
@@ -207,5 +208,81 @@ impl Context {
         v: *const GLfloat,
     ) {
         panic!("command oxidegl_viewport_arrayv not yet implemented");
+    }
+    /// ### Description
+    /// [**glGetError**](crate::context::Context::oxidegl_get_error) returns the
+    /// value of the error flag. Each detectable error is assigned a numeric code
+    /// and symbolic name. When an error occurs, the error flag is set to the appropriate
+    /// error code value. No other errors are recorded until [**glGetError**](crate::context::Context::oxidegl_get_error)
+    /// is called, the error code is returned, and the flag is reset to [`GL_NO_ERROR`](crate::enums::GL_NO_ERROR).
+    /// If a call to [**glGetError**](crate::context::Context::oxidegl_get_error)
+    /// returns [`GL_NO_ERROR`](crate::enums::GL_NO_ERROR), there has been no detectable
+    /// error since the last call to [**glGetError**](crate::context::Context::oxidegl_get_error),
+    /// or since the GL was initialized.
+    ///
+    /// To allow for distributed implementations, there may be several error flags.
+    /// If any single error flag has recorded an error, the value of that flag
+    /// is returned and that flag is reset to [`GL_NO_ERROR`](crate::enums::GL_NO_ERROR)
+    /// when [**glGetError**](crate::context::Context::oxidegl_get_error) is called.
+    /// If more than one flag has recorded an error, [**glGetError**](crate::context::Context::oxidegl_get_error)
+    /// returns and clears an arbitrary error flag value. Thus, [**glGetError**](crate::context::Context::oxidegl_get_error)
+    /// should always be called in a loop, until it returns [`GL_NO_ERROR`](crate::enums::GL_NO_ERROR),
+    /// if all error flags are to be reset.
+    ///
+    /// Initially, all error flags are set to [`GL_NO_ERROR`](crate::enums::GL_NO_ERROR).
+    ///
+    /// The following errors are currently defined:
+    ///
+    /// [`GL_NO_ERROR`](crate::enums::GL_NO_ERROR)
+    ///
+    /// > No error has been recorded. The value of this symbolic constant is guaranteed
+    /// > to be 0.
+    ///
+    /// [`GL_INVALID_ENUM`](crate::enums::GL_INVALID_ENUM)
+    ///
+    /// > An unacceptable value is specified for an enumerated argument. The offending
+    /// > command is ignored and has no other side effect than to set the error flag.
+    ///
+    /// [`GL_INVALID_VALUE`](crate::enums::GL_INVALID_VALUE)
+    ///
+    /// > A numeric argument is out of range. The offending command is ignored and
+    /// > has no other side effect than to set the error flag.
+    ///
+    /// [`GL_INVALID_OPERATION`](crate::enums::GL_INVALID_OPERATION)
+    ///
+    /// > The specified operation is not allowed in the current state. The offending
+    /// > command is ignored and has no other side effect than to set the error flag.
+    ///
+    /// [`GL_INVALID_FRAMEBUFFER_OPERATION`](crate::enums::GL_INVALID_FRAMEBUFFER_OPERATION)
+    ///
+    /// > The framebuffer object is not complete. The offending command is ignored
+    /// > and has no other side effect than to set the error flag.
+    ///
+    /// [`GL_OUT_OF_MEMORY`](crate::enums::GL_OUT_OF_MEMORY)
+    ///
+    /// > There is not enough memory left to execute the command. The state of the
+    /// > GL is undefined, except for the state of the error flags, after this error
+    /// > is recorded.
+    ///
+    /// [`GL_STACK_UNDERFLOW`](crate::enums::GL_STACK_UNDERFLOW)
+    ///
+    /// > An attempt has been made to perform an operation that would cause an internal
+    /// > stack to underflow.
+    ///
+    /// [`GL_STACK_OVERFLOW`](crate::enums::GL_STACK_OVERFLOW)
+    ///
+    /// > An attempt has been made to perform an operation that would cause an internal
+    /// > stack to overflow.
+    ///
+    /// When an error flag is set, results of a GL operation are undefined only
+    /// if [`GL_OUT_OF_MEMORY`](crate::enums::GL_OUT_OF_MEMORY) has occurred. In
+    /// all other cases, the command generating the error is ignored and has no
+    /// effect on the GL state or frame buffer contents. If the generating command
+    /// returns a value, it returns 0. If [**glGetError**](crate::context::Context::oxidegl_get_error)
+    /// itself generates an error, it returns 0.
+    pub(crate) fn oxidegl_get_error(&mut self) -> GLenum {
+        let r = self.gl_state.error;
+        self.gl_state.error = ErrorCode::NoError;
+        r.into()
     }
 }

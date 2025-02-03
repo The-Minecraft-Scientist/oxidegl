@@ -40,6 +40,7 @@ f:glGetPointerv
 f:glDebugMessageCallback
 f:glDebugMessageControl
 f:glDebugMessageInsert
+f:glGetDebugMessageLog
 
 // some draws
 f:glDrawArrays
@@ -109,3 +110,5 @@ f:glUseProgram
 //Shader manipulation
 f:glShaderSource
 f:glCompileShader
+
+f:glGetError

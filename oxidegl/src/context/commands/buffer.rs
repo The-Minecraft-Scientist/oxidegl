@@ -903,7 +903,7 @@ impl Buffer {
 }
 
 #[derive(Debug)]
-/// Specifies the location of a memory-mapped buffer to the GL client
+/// Specifies the location of a buffer that has been mapped to client memory
 pub struct MappingInfo {
     /// Pointer to the mapped location in system memory
     pub(crate) ptr: NonNull<c_void>,

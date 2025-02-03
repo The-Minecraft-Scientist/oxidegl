@@ -579,4 +579,94 @@ impl Context {
     ) {
         panic!("command oxidegl_debug_message_insert not yet implemented");
     }
+    /// ### Parameters
+    /// `count`
+    ///
+    /// > The number of debug messages to retrieve from the log.
+    ///
+    /// `bufSize`
+    ///
+    /// > The size of the buffer whose address is given by `messageLog`.
+    ///
+    /// `sources`
+    ///
+    /// > The address of an array of variables to receive the sources of the retrieved
+    /// > messages.
+    ///
+    /// `types`
+    ///
+    /// > The address of an array of variables to receive the types of the retrieved
+    /// > messages.
+    ///
+    /// `ids`
+    ///
+    /// > The address of an array of unsigned integers to receive the ids of the
+    /// > retrieved messages.
+    ///
+    /// `severities`
+    ///
+    /// > The address of an array of variables to receive the severites of the retrieved
+    /// > messages.
+    ///
+    /// `lengths`
+    ///
+    /// > The address of an array of variables to receive the lengths of the received
+    /// > messages.
+    ///
+    /// `messageLog`
+    ///
+    /// > The address of an array of characters that will receive the messages.
+    ///
+    /// ### Description
+    /// [**glGetDebugMessageLog**](crate::context::Context::oxidegl_get_debug_message_log)
+    /// retrieves messages from the debug message log. A maximum of `count` messages
+    /// are retrieved from the log. If `sources` is not NULL then the source of
+    /// each message is written into up to `count` elements of the array. If `types`
+    /// is not NULL then the type of each message is written into up to `count`
+    /// elements of the array. If `id` is not NULL then the identifier of each
+    /// message is written into up to `count` elements of the array. If `severities`
+    /// is not NULL then the severity of each message is written into up to `count`
+    /// elements of the array. If `lengths` is not NULL then the length of each
+    /// message is written into up to `count` elements of the array.
+    ///
+    /// `messageLog` specifies the address of a character array into which the
+    /// debug messages will be written. Each message will be concatenated onto
+    /// the array starting at the first element of `messageLog`. `bufSize` specifies
+    /// the size of the array `messageLog`. If a message will not fit into the
+    /// remaining space in `messageLog` then the function terminates and returns
+    /// the number of messages written so far, which may be zero.
+    ///
+    /// If [**glGetDebugMessageLog**](crate::context::Context::oxidegl_get_debug_message_log)
+    /// returns zero then no messages are present in the debug log, or there was
+    /// not enough space in `messageLog` to retrieve the first message in the queue.
+    /// If `messageLog` is NULL then no messages are written and the value of `bufSize`
+    /// is ignored.
+    ///
+    /// ### Notes
+    /// Although debug messages may be enabled in a non-debug context, the quantity
+    /// and detail of such messages may be substantially inferior to those in a
+    /// debug context. In particular, a valid implementation of the debug message
+    /// queue in a non-debug context may produce no messages at all.
+    ///
+    /// ### Associated Gets
+    /// [**glGet**](crate::context::Context::oxidegl_get) with argument [`GL_DEBUG_LOGGED_MESSAGES`](crate::enums::GL_DEBUG_LOGGED_MESSAGES)
+    ///
+    /// [**glGet**](crate::context::Context::oxidegl_get) with argument [`GL_DEBUG_NEXT_LOGGED_MESSAGE_LENGTH`](crate::enums::GL_DEBUG_NEXT_LOGGED_MESSAGE_LENGTH)
+    ///
+    /// [**glGet**](crate::context::Context::oxidegl_get) with argument [`GL_MAX_DEBUG_MESSAGE_LENGTH`](crate::enums::GL_MAX_DEBUG_MESSAGE_LENGTH)
+    ///
+    /// [**glGet**](crate::context::Context::oxidegl_get) with argument [`GL_MAX_DEBUG_LOGGED_MESSAGES`](crate::enums::GL_MAX_DEBUG_LOGGED_MESSAGES)
+    pub(crate) unsafe fn oxidegl_get_debug_message_log(
+        &mut self,
+        count: GLuint,
+        buf_size: GLsizei,
+        sources: DebugSource,
+        types: DebugType,
+        ids: *mut GLuint,
+        severities: DebugSeverity,
+        lengths: *mut GLsizei,
+        message_log: *mut GLchar,
+    ) -> GlFallible<GLuint> {
+        panic!("command oxidegl_get_debug_message_log not yet implemented");
+    }
 }

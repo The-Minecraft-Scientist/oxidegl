@@ -5,11 +5,11 @@ use crate::enums::{
     AtomicCounterBufferPName, AttributeType, BlendEquationModeEXT, BlendingFactor,
     BlitFramebufferFilter, Buffer, BufferAccess, BufferPName, BufferStorageTarget, BufferTarget,
     BufferUsage, ClampColorMode, ClearBufferMask, ClipControlDepth, ClipControlOrigin, ColorBuffer,
-    ConditionalRenderMode, CopyBufferSubDataTarget, CopyImageSubDataTarget, DebugSeverity,
-    DebugSource, DebugType, DepthFunction, DrawBufferMode, DrawElementsType, EnableCap,
-    FramebufferAttachment, FramebufferAttachmentParameterName, FramebufferParameterName,
-    FramebufferTarget, FrontFaceDirection, GetFramebufferParameter, GetTextureParameter, HintMode,
-    HintTarget, InternalFormat, InternalFormatPName, InvalidateFramebufferAttachment, LogicOp,
+    ConditionalRenderMode, CopyBufferSubDataTarget, CopyImageSubDataTarget, DebugSource,
+    DepthFunction, DrawBufferMode, DrawElementsType, EnableCap, FramebufferAttachment,
+    FramebufferAttachmentParameterName, FramebufferParameterName, FramebufferTarget,
+    FrontFaceDirection, GetFramebufferParameter, GetTextureParameter, HintMode, HintTarget,
+    InternalFormat, InternalFormatPName, InvalidateFramebufferAttachment, LogicOp,
     MapBufferAccessMask, MemoryBarrierMask, PatchParameterName, PipelineParameterName, PixelFormat,
     PixelStoreParameter, PixelType, PolygonMode, PrecisionType, PrimitiveType, ProgramInterface,
     ProgramInterfacePName, ProgramParameterPName, ProgramResourceProperty, ProgramStagePName,
@@ -15954,170 +15954,6 @@ impl Context {
         pixels: *mut GLvoid,
     ) -> GlFallible {
         panic!("command oxidegl_get_compressed_texture_sub_image not yet implemented");
-    }
-    /// ### Parameters
-    /// `count`
-    ///
-    /// > The number of debug messages to retrieve from the log.
-    ///
-    /// `bufSize`
-    ///
-    /// > The size of the buffer whose address is given by `messageLog`.
-    ///
-    /// `sources`
-    ///
-    /// > The address of an array of variables to receive the sources of the retrieved
-    /// > messages.
-    ///
-    /// `types`
-    ///
-    /// > The address of an array of variables to receive the types of the retrieved
-    /// > messages.
-    ///
-    /// `ids`
-    ///
-    /// > The address of an array of unsigned integers to receive the ids of the
-    /// > retrieved messages.
-    ///
-    /// `severities`
-    ///
-    /// > The address of an array of variables to receive the severites of the retrieved
-    /// > messages.
-    ///
-    /// `lengths`
-    ///
-    /// > The address of an array of variables to receive the lengths of the received
-    /// > messages.
-    ///
-    /// `messageLog`
-    ///
-    /// > The address of an array of characters that will receive the messages.
-    ///
-    /// ### Description
-    /// [**glGetDebugMessageLog**](crate::context::Context::oxidegl_get_debug_message_log)
-    /// retrieves messages from the debug message log. A maximum of `count` messages
-    /// are retrieved from the log. If `sources` is not NULL then the source of
-    /// each message is written into up to `count` elements of the array. If `types`
-    /// is not NULL then the type of each message is written into up to `count`
-    /// elements of the array. If `id` is not NULL then the identifier of each
-    /// message is written into up to `count` elements of the array. If `severities`
-    /// is not NULL then the severity of each message is written into up to `count`
-    /// elements of the array. If `lengths` is not NULL then the length of each
-    /// message is written into up to `count` elements of the array.
-    ///
-    /// `messageLog` specifies the address of a character array into which the
-    /// debug messages will be written. Each message will be concatenated onto
-    /// the array starting at the first element of `messageLog`. `bufSize` specifies
-    /// the size of the array `messageLog`. If a message will not fit into the
-    /// remaining space in `messageLog` then the function terminates and returns
-    /// the number of messages written so far, which may be zero.
-    ///
-    /// If [**glGetDebugMessageLog**](crate::context::Context::oxidegl_get_debug_message_log)
-    /// returns zero then no messages are present in the debug log, or there was
-    /// not enough space in `messageLog` to retrieve the first message in the queue.
-    /// If `messageLog` is NULL then no messages are written and the value of `bufSize`
-    /// is ignored.
-    ///
-    /// ### Notes
-    /// Although debug messages may be enabled in a non-debug context, the quantity
-    /// and detail of such messages may be substantially inferior to those in a
-    /// debug context. In particular, a valid implementation of the debug message
-    /// queue in a non-debug context may produce no messages at all.
-    ///
-    /// ### Associated Gets
-    /// [**glGet**](crate::context::Context::oxidegl_get) with argument [`GL_DEBUG_LOGGED_MESSAGES`](crate::enums::GL_DEBUG_LOGGED_MESSAGES)
-    ///
-    /// [**glGet**](crate::context::Context::oxidegl_get) with argument [`GL_DEBUG_NEXT_LOGGED_MESSAGE_LENGTH`](crate::enums::GL_DEBUG_NEXT_LOGGED_MESSAGE_LENGTH)
-    ///
-    /// [**glGet**](crate::context::Context::oxidegl_get) with argument [`GL_MAX_DEBUG_MESSAGE_LENGTH`](crate::enums::GL_MAX_DEBUG_MESSAGE_LENGTH)
-    ///
-    /// [**glGet**](crate::context::Context::oxidegl_get) with argument [`GL_MAX_DEBUG_LOGGED_MESSAGES`](crate::enums::GL_MAX_DEBUG_LOGGED_MESSAGES)
-    pub(crate) unsafe fn oxidegl_get_debug_message_log(
-        &mut self,
-        count: GLuint,
-        buf_size: GLsizei,
-        sources: DebugSource,
-        types: DebugType,
-        ids: *mut GLuint,
-        severities: DebugSeverity,
-        lengths: *mut GLsizei,
-        message_log: *mut GLchar,
-    ) -> GlFallible<GLuint> {
-        panic!("command oxidegl_get_debug_message_log not yet implemented");
-    }
-    /// ### Description
-    /// [**glGetError**](crate::context::Context::oxidegl_get_error) returns the
-    /// value of the error flag. Each detectable error is assigned a numeric code
-    /// and symbolic name. When an error occurs, the error flag is set to the appropriate
-    /// error code value. No other errors are recorded until [**glGetError**](crate::context::Context::oxidegl_get_error)
-    /// is called, the error code is returned, and the flag is reset to [`GL_NO_ERROR`](crate::enums::GL_NO_ERROR).
-    /// If a call to [**glGetError**](crate::context::Context::oxidegl_get_error)
-    /// returns [`GL_NO_ERROR`](crate::enums::GL_NO_ERROR), there has been no detectable
-    /// error since the last call to [**glGetError**](crate::context::Context::oxidegl_get_error),
-    /// or since the GL was initialized.
-    ///
-    /// To allow for distributed implementations, there may be several error flags.
-    /// If any single error flag has recorded an error, the value of that flag
-    /// is returned and that flag is reset to [`GL_NO_ERROR`](crate::enums::GL_NO_ERROR)
-    /// when [**glGetError**](crate::context::Context::oxidegl_get_error) is called.
-    /// If more than one flag has recorded an error, [**glGetError**](crate::context::Context::oxidegl_get_error)
-    /// returns and clears an arbitrary error flag value. Thus, [**glGetError**](crate::context::Context::oxidegl_get_error)
-    /// should always be called in a loop, until it returns [`GL_NO_ERROR`](crate::enums::GL_NO_ERROR),
-    /// if all error flags are to be reset.
-    ///
-    /// Initially, all error flags are set to [`GL_NO_ERROR`](crate::enums::GL_NO_ERROR).
-    ///
-    /// The following errors are currently defined:
-    ///
-    /// [`GL_NO_ERROR`](crate::enums::GL_NO_ERROR)
-    ///
-    /// > No error has been recorded. The value of this symbolic constant is guaranteed
-    /// > to be 0.
-    ///
-    /// [`GL_INVALID_ENUM`](crate::enums::GL_INVALID_ENUM)
-    ///
-    /// > An unacceptable value is specified for an enumerated argument. The offending
-    /// > command is ignored and has no other side effect than to set the error flag.
-    ///
-    /// [`GL_INVALID_VALUE`](crate::enums::GL_INVALID_VALUE)
-    ///
-    /// > A numeric argument is out of range. The offending command is ignored and
-    /// > has no other side effect than to set the error flag.
-    ///
-    /// [`GL_INVALID_OPERATION`](crate::enums::GL_INVALID_OPERATION)
-    ///
-    /// > The specified operation is not allowed in the current state. The offending
-    /// > command is ignored and has no other side effect than to set the error flag.
-    ///
-    /// [`GL_INVALID_FRAMEBUFFER_OPERATION`](crate::enums::GL_INVALID_FRAMEBUFFER_OPERATION)
-    ///
-    /// > The framebuffer object is not complete. The offending command is ignored
-    /// > and has no other side effect than to set the error flag.
-    ///
-    /// [`GL_OUT_OF_MEMORY`](crate::enums::GL_OUT_OF_MEMORY)
-    ///
-    /// > There is not enough memory left to execute the command. The state of the
-    /// > GL is undefined, except for the state of the error flags, after this error
-    /// > is recorded.
-    ///
-    /// [`GL_STACK_UNDERFLOW`](crate::enums::GL_STACK_UNDERFLOW)
-    ///
-    /// > An attempt has been made to perform an operation that would cause an internal
-    /// > stack to underflow.
-    ///
-    /// [`GL_STACK_OVERFLOW`](crate::enums::GL_STACK_OVERFLOW)
-    ///
-    /// > An attempt has been made to perform an operation that would cause an internal
-    /// > stack to overflow.
-    ///
-    /// When an error flag is set, results of a GL operation are undefined only
-    /// if [`GL_OUT_OF_MEMORY`](crate::enums::GL_OUT_OF_MEMORY) has occurred. In
-    /// all other cases, the command generating the error is ignored and has no
-    /// effect on the GL state or frame buffer contents. If the generating command
-    /// returns a value, it returns 0. If [**glGetError**](crate::context::Context::oxidegl_get_error)
-    /// itself generates an error, it returns 0.
-    pub(crate) fn oxidegl_get_error(&mut self) -> GlFallible<GLenum> {
-        panic!("command oxidegl_get_error not yet implemented");
     }
     /// ### Parameters
     /// `program`

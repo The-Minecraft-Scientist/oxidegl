@@ -5,3 +5,4 @@ generated
 *install.sh
 /tests/HelloTriangle/bin/*
 *.log
+*.json.gz

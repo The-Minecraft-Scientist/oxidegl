@@ -1367,8 +1367,7 @@ pub const GL_TEXTURE_MAX_ANISOTROPY: GLenum = 34046;
 pub const GL_MAX_TEXTURE_MAX_ANISOTROPY: GLenum = 34047;
 pub const GL_TRANSFORM_FEEDBACK_OVERFLOW: GLenum = 33516;
 pub const GL_TRANSFORM_FEEDBACK_STREAM_OVERFLOW: GLenum = 33517;
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-#[cfg_attr(debug_assertions, derive(::strum_macros::FromRepr))]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, ::strum_macros::FromRepr)]
 #[repr(u32)]
 pub enum UniformType {
     Int = GL_INT,
@@ -1469,8 +1468,7 @@ impl<Dst: GlDstType> SrcType<Dst> for UniformType {
         Dst::from_uint(self as u32)
     }
 }
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-#[cfg_attr(debug_assertions, derive(::strum_macros::FromRepr))]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, ::strum_macros::FromRepr)]
 #[repr(u32)]
 pub enum ProgramParameterPName {
     ProgramBinaryRetrievableHint = GL_PROGRAM_BINARY_RETRIEVABLE_HINT,
@@ -1495,8 +1493,7 @@ impl<Dst: GlDstType> SrcType<Dst> for ProgramParameterPName {
         Dst::from_uint(self as u32)
     }
 }
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-#[cfg_attr(debug_assertions, derive(::strum_macros::FromRepr))]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, ::strum_macros::FromRepr)]
 #[repr(u32)]
 pub enum FramebufferParameterName {
     FramebufferDefaultWidth = GL_FRAMEBUFFER_DEFAULT_WIDTH,
@@ -1524,8 +1521,7 @@ impl<Dst: GlDstType> SrcType<Dst> for FramebufferParameterName {
         Dst::from_uint(self as u32)
     }
 }
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-#[cfg_attr(debug_assertions, derive(::strum_macros::FromRepr))]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, ::strum_macros::FromRepr)]
 #[repr(u32)]
 pub enum BlitFramebufferFilter {
     Nearest = GL_NEAREST,
@@ -1550,8 +1546,7 @@ impl<Dst: GlDstType> SrcType<Dst> for BlitFramebufferFilter {
         Dst::from_uint(self as u32)
     }
 }
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-#[cfg_attr(debug_assertions, derive(::strum_macros::FromRepr))]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, ::strum_macros::FromRepr)]
 #[repr(u32)]
 pub enum SubroutineParameterName {
     UniformSize = GL_UNIFORM_SIZE,
@@ -1578,8 +1573,7 @@ impl<Dst: GlDstType> SrcType<Dst> for SubroutineParameterName {
         Dst::from_uint(self as u32)
     }
 }
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-#[cfg_attr(debug_assertions, derive(::strum_macros::FromRepr))]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, ::strum_macros::FromRepr)]
 #[repr(u32)]
 pub enum InvalidateFramebufferAttachment {
     Color = GL_COLOR,
@@ -1639,8 +1633,7 @@ impl<Dst: GlDstType> SrcType<Dst> for InvalidateFramebufferAttachment {
         Dst::from_uint(self as u32)
     }
 }
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-#[cfg_attr(debug_assertions, derive(::strum_macros::FromRepr))]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, ::strum_macros::FromRepr)]
 #[repr(u32)]
 pub enum BlendingFactor {
     Zero = GL_ZERO,
@@ -1682,8 +1675,7 @@ impl<Dst: GlDstType> SrcType<Dst> for BlendingFactor {
         Dst::from_uint(self as u32)
     }
 }
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-#[cfg_attr(debug_assertions, derive(::strum_macros::FromRepr))]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, ::strum_macros::FromRepr)]
 #[repr(u32)]
 pub enum FramebufferAttachment {
     DepthStencilAttachment = GL_DEPTH_STENCIL_ATTACHMENT,
@@ -1741,8 +1733,7 @@ impl<Dst: GlDstType> SrcType<Dst> for FramebufferAttachment {
         Dst::from_uint(self as u32)
     }
 }
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-#[cfg_attr(debug_assertions, derive(::strum_macros::FromRepr))]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, ::strum_macros::FromRepr)]
 #[repr(u32)]
 pub enum StencilOp {
     Zero = GL_ZERO,
@@ -1773,8 +1764,7 @@ impl<Dst: GlDstType> SrcType<Dst> for StencilOp {
         Dst::from_uint(self as u32)
     }
 }
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-#[cfg_attr(debug_assertions, derive(::strum_macros::FromRepr))]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, ::strum_macros::FromRepr)]
 #[repr(u32)]
 pub enum ReadBufferMode {
     FrontLeft = GL_FRONT_LEFT,
@@ -1822,8 +1812,7 @@ impl<Dst: GlDstType> SrcType<Dst> for ReadBufferMode {
         Dst::from_uint(self as u32)
     }
 }
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-#[cfg_attr(debug_assertions, derive(::strum_macros::FromRepr))]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, ::strum_macros::FromRepr)]
 #[repr(u32)]
 pub enum LogicOp {
     Clear = GL_CLEAR,
@@ -1862,8 +1851,7 @@ impl<Dst: GlDstType> SrcType<Dst> for LogicOp {
         Dst::from_uint(self as u32)
     }
 }
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-#[cfg_attr(debug_assertions, derive(::strum_macros::FromRepr))]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, ::strum_macros::FromRepr)]
 #[repr(u32)]
 pub enum BufferPName {
     BufferSize = GL_BUFFER_SIZE,
@@ -1895,8 +1883,7 @@ impl<Dst: GlDstType> SrcType<Dst> for BufferPName {
         Dst::from_uint(self as u32)
     }
 }
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-#[cfg_attr(debug_assertions, derive(::strum_macros::FromRepr))]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, ::strum_macros::FromRepr)]
 #[repr(u32)]
 pub enum PrecisionType {
     LowFloat = GL_LOW_FLOAT,
@@ -1925,8 +1912,7 @@ impl<Dst: GlDstType> SrcType<Dst> for PrecisionType {
         Dst::from_uint(self as u32)
     }
 }
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-#[cfg_attr(debug_assertions, derive(::strum_macros::FromRepr))]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, ::strum_macros::FromRepr)]
 #[repr(u32)]
 pub enum BufferAccess {
     ReadOnly = GL_READ_ONLY,
@@ -1952,8 +1938,7 @@ impl<Dst: GlDstType> SrcType<Dst> for BufferAccess {
         Dst::from_uint(self as u32)
     }
 }
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-#[cfg_attr(debug_assertions, derive(::strum_macros::FromRepr))]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, ::strum_macros::FromRepr)]
 #[repr(u32)]
 pub enum DrawElementsType {
     UnsignedByte = GL_UNSIGNED_BYTE,
@@ -1979,8 +1964,7 @@ impl<Dst: GlDstType> SrcType<Dst> for DrawElementsType {
         Dst::from_uint(self as u32)
     }
 }
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-#[cfg_attr(debug_assertions, derive(::strum_macros::FromRepr))]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, ::strum_macros::FromRepr)]
 #[repr(u32)]
 pub enum ErrorCode {
     InvalidEnum = GL_INVALID_ENUM,
@@ -2011,8 +1995,7 @@ impl<Dst: GlDstType> SrcType<Dst> for ErrorCode {
         Dst::from_uint(self as u32)
     }
 }
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-#[cfg_attr(debug_assertions, derive(::strum_macros::FromRepr))]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, ::strum_macros::FromRepr)]
 #[repr(u32)]
 pub enum HintMode {
     DontCare = GL_DONT_CARE,
@@ -2038,8 +2021,7 @@ impl<Dst: GlDstType> SrcType<Dst> for HintMode {
         Dst::from_uint(self as u32)
     }
 }
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-#[cfg_attr(debug_assertions, derive(::strum_macros::FromRepr))]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, ::strum_macros::FromRepr)]
 #[repr(u32)]
 pub enum ProgramResourceProperty {
     NumCompatibleSubroutines = GL_NUM_COMPATIBLE_SUBROUTINES,
@@ -2092,8 +2074,7 @@ impl<Dst: GlDstType> SrcType<Dst> for ProgramResourceProperty {
         Dst::from_uint(self as u32)
     }
 }
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-#[cfg_attr(debug_assertions, derive(::strum_macros::FromRepr))]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, ::strum_macros::FromRepr)]
 #[repr(u32)]
 pub enum BufferTarget {
     ArrayBuffer = GL_ARRAY_BUFFER,
@@ -2131,8 +2112,7 @@ impl<Dst: GlDstType> SrcType<Dst> for BufferTarget {
         Dst::from_uint(self as u32)
     }
 }
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-#[cfg_attr(debug_assertions, derive(::strum_macros::FromRepr))]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, ::strum_macros::FromRepr)]
 #[repr(u32)]
 pub enum TextureWrapMode {
     Repeat = GL_REPEAT,
@@ -2159,8 +2139,7 @@ impl<Dst: GlDstType> SrcType<Dst> for TextureWrapMode {
         Dst::from_uint(self as u32)
     }
 }
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-#[cfg_attr(debug_assertions, derive(::strum_macros::FromRepr))]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, ::strum_macros::FromRepr)]
 #[repr(u32)]
 pub enum VertexBufferObjectUsage {
     StreamDraw = GL_STREAM_DRAW,
@@ -2192,8 +2171,7 @@ impl<Dst: GlDstType> SrcType<Dst> for VertexBufferObjectUsage {
         Dst::from_uint(self as u32)
     }
 }
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-#[cfg_attr(debug_assertions, derive(::strum_macros::FromRepr))]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, ::strum_macros::FromRepr)]
 #[repr(u32)]
 pub enum VertexAttribProperty {
     VertexAttribArrayBufferBinding = GL_VERTEX_ATTRIB_ARRAY_BUFFER_BINDING,
@@ -2228,8 +2206,7 @@ impl<Dst: GlDstType> SrcType<Dst> for VertexAttribProperty {
         Dst::from_uint(self as u32)
     }
 }
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-#[cfg_attr(debug_assertions, derive(::strum_macros::FromRepr))]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, ::strum_macros::FromRepr)]
 #[repr(u32)]
 pub enum ClipControlDepth {
     NegativeOneToOne = GL_NEGATIVE_ONE_TO_ONE,
@@ -2254,8 +2231,7 @@ impl<Dst: GlDstType> SrcType<Dst> for ClipControlDepth {
         Dst::from_uint(self as u32)
     }
 }
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-#[cfg_attr(debug_assertions, derive(::strum_macros::FromRepr))]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, ::strum_macros::FromRepr)]
 #[repr(u32)]
 pub enum PatchParameterName {
     PatchVertices = GL_PATCH_VERTICES,
@@ -2281,8 +2257,7 @@ impl<Dst: GlDstType> SrcType<Dst> for PatchParameterName {
         Dst::from_uint(self as u32)
     }
 }
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-#[cfg_attr(debug_assertions, derive(::strum_macros::FromRepr))]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, ::strum_macros::FromRepr)]
 #[repr(u32)]
 pub enum QueryTarget {
     SamplesPassed = GL_SAMPLES_PASSED,
@@ -2315,8 +2290,7 @@ impl<Dst: GlDstType> SrcType<Dst> for QueryTarget {
         Dst::from_uint(self as u32)
     }
 }
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-#[cfg_attr(debug_assertions, derive(::strum_macros::FromRepr))]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, ::strum_macros::FromRepr)]
 #[repr(u32)]
 pub enum VertexAttribType {
     Byte = GL_BYTE,
@@ -2352,8 +2326,7 @@ impl<Dst: GlDstType> SrcType<Dst> for VertexAttribType {
         Dst::from_uint(self as u32)
     }
 }
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-#[cfg_attr(debug_assertions, derive(::strum_macros::FromRepr))]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, ::strum_macros::FromRepr)]
 #[repr(u32)]
 pub enum DebugSource {
     DontCare = GL_DONT_CARE,
@@ -2383,8 +2356,7 @@ impl<Dst: GlDstType> SrcType<Dst> for DebugSource {
         Dst::from_uint(self as u32)
     }
 }
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-#[cfg_attr(debug_assertions, derive(::strum_macros::FromRepr))]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, ::strum_macros::FromRepr)]
 #[repr(u32)]
 pub enum TextureMinFilter {
     Nearest = GL_NEAREST,
@@ -2413,8 +2385,7 @@ impl<Dst: GlDstType> SrcType<Dst> for TextureMinFilter {
         Dst::from_uint(self as u32)
     }
 }
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-#[cfg_attr(debug_assertions, derive(::strum_macros::FromRepr))]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, ::strum_macros::FromRepr)]
 #[repr(u32)]
 pub enum GetPointervPName {
     DebugCallbackFunction = GL_DEBUG_CALLBACK_FUNCTION,
@@ -2439,8 +2410,7 @@ impl<Dst: GlDstType> SrcType<Dst> for GetPointervPName {
         Dst::from_uint(self as u32)
     }
 }
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-#[cfg_attr(debug_assertions, derive(::strum_macros::FromRepr))]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, ::strum_macros::FromRepr)]
 #[repr(u32)]
 pub enum ProgramProperty {
     DeleteStatus = GL_DELETE_STATUS,
@@ -2483,8 +2453,7 @@ impl<Dst: GlDstType> SrcType<Dst> for ProgramProperty {
         Dst::from_uint(self as u32)
     }
 }
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-#[cfg_attr(debug_assertions, derive(::strum_macros::FromRepr))]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, ::strum_macros::FromRepr)]
 #[repr(u32)]
 pub enum BufferStorageTarget {
     ArrayBuffer = GL_ARRAY_BUFFER,
@@ -2548,8 +2517,7 @@ impl<Dst: GlDstType> SrcType<Dst> for ClearBufferMask {
         Dst::from_uint(self.bits())
     }
 }
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-#[cfg_attr(debug_assertions, derive(::strum_macros::FromRepr))]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, ::strum_macros::FromRepr)]
 #[repr(u32)]
 pub enum ClampColorMode {
     False = GL_FALSE,
@@ -2575,8 +2543,7 @@ impl<Dst: GlDstType> SrcType<Dst> for ClampColorMode {
         Dst::from_uint(self as u32)
     }
 }
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-#[cfg_attr(debug_assertions, derive(::strum_macros::FromRepr))]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, ::strum_macros::FromRepr)]
 #[repr(u32)]
 pub enum TextureSwizzle {
     Zero = GL_ZERO,
@@ -2605,8 +2572,7 @@ impl<Dst: GlDstType> SrcType<Dst> for TextureSwizzle {
         Dst::from_uint(self as u32)
     }
 }
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-#[cfg_attr(debug_assertions, derive(::strum_macros::FromRepr))]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, ::strum_macros::FromRepr)]
 #[repr(u32)]
 pub enum DebugType {
     DontCare = GL_DONT_CARE,
@@ -2639,8 +2605,7 @@ impl<Dst: GlDstType> SrcType<Dst> for DebugType {
         Dst::from_uint(self as u32)
     }
 }
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-#[cfg_attr(debug_assertions, derive(::strum_macros::FromRepr))]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, ::strum_macros::FromRepr)]
 #[repr(u32)]
 pub enum PipelineParameterName {
     FragmentShader = GL_FRAGMENT_SHADER,
@@ -2670,8 +2635,7 @@ impl<Dst: GlDstType> SrcType<Dst> for PipelineParameterName {
         Dst::from_uint(self as u32)
     }
 }
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-#[cfg_attr(debug_assertions, derive(::strum_macros::FromRepr))]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, ::strum_macros::FromRepr)]
 #[repr(u32)]
 pub enum FramebufferAttachmentParameterName {
     FramebufferAttachmentColorEncoding = GL_FRAMEBUFFER_ATTACHMENT_COLOR_ENCODING,
@@ -2738,8 +2702,7 @@ impl<Dst: GlDstType> SrcType<Dst> for BufferStorageMask {
         Dst::from_uint(self.bits())
     }
 }
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-#[cfg_attr(debug_assertions, derive(::strum_macros::FromRepr))]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, ::strum_macros::FromRepr)]
 #[repr(u32)]
 pub enum StencilFunction {
     Never = GL_NEVER,
@@ -2770,8 +2733,7 @@ impl<Dst: GlDstType> SrcType<Dst> for StencilFunction {
         Dst::from_uint(self as u32)
     }
 }
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-#[cfg_attr(debug_assertions, derive(::strum_macros::FromRepr))]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, ::strum_macros::FromRepr)]
 #[repr(u32)]
 pub enum TextureUnit {
     Texture0 = GL_TEXTURE0,
@@ -2826,8 +2788,7 @@ impl<Dst: GlDstType> SrcType<Dst> for TextureUnit {
         Dst::from_uint(self as u32)
     }
 }
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-#[cfg_attr(debug_assertions, derive(::strum_macros::FromRepr))]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, ::strum_macros::FromRepr)]
 #[repr(u32)]
 pub enum TextureTarget {
     Texture1D = GL_TEXTURE_1D,
@@ -2878,8 +2839,7 @@ impl<Dst: GlDstType> SrcType<Dst> for TextureTarget {
         Dst::from_uint(self as u32)
     }
 }
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-#[cfg_attr(debug_assertions, derive(::strum_macros::FromRepr))]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, ::strum_macros::FromRepr)]
 #[repr(u32)]
 pub enum ShaderType {
     FragmentShader = GL_FRAGMENT_SHADER,
@@ -2908,8 +2868,7 @@ impl<Dst: GlDstType> SrcType<Dst> for ShaderType {
         Dst::from_uint(self as u32)
     }
 }
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-#[cfg_attr(debug_assertions, derive(::strum_macros::FromRepr))]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, ::strum_macros::FromRepr)]
 #[repr(u32)]
 pub enum InternalFormatPName {
     Samples = GL_SAMPLES,
@@ -3002,8 +2961,7 @@ impl<Dst: GlDstType> SrcType<Dst> for InternalFormatPName {
         Dst::from_uint(self as u32)
     }
 }
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-#[cfg_attr(debug_assertions, derive(::strum_macros::FromRepr))]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, ::strum_macros::FromRepr)]
 #[repr(u32)]
 pub enum BufferUsage {
     StreamDraw = GL_STREAM_DRAW,
@@ -3035,8 +2993,7 @@ impl<Dst: GlDstType> SrcType<Dst> for BufferUsage {
         Dst::from_uint(self as u32)
     }
 }
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-#[cfg_attr(debug_assertions, derive(::strum_macros::FromRepr))]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, ::strum_macros::FromRepr)]
 #[repr(u32)]
 pub enum VertexAttribPointerType {
     Byte = GL_BYTE,
@@ -3072,8 +3029,7 @@ impl<Dst: GlDstType> SrcType<Dst> for VertexAttribPointerType {
         Dst::from_uint(self as u32)
     }
 }
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-#[cfg_attr(debug_assertions, derive(::strum_macros::FromRepr))]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, ::strum_macros::FromRepr)]
 #[repr(u32)]
 pub enum GetFramebufferParameter {
     Doublebuffer = GL_DOUBLEBUFFER,
@@ -3107,8 +3063,7 @@ impl<Dst: GlDstType> SrcType<Dst> for GetFramebufferParameter {
         Dst::from_uint(self as u32)
     }
 }
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-#[cfg_attr(debug_assertions, derive(::strum_macros::FromRepr))]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, ::strum_macros::FromRepr)]
 #[repr(u32)]
 pub enum RenderbufferParameterName {
     RenderbufferSamples = GL_RENDERBUFFER_SAMPLES,
@@ -3141,8 +3096,7 @@ impl<Dst: GlDstType> SrcType<Dst> for RenderbufferParameterName {
         Dst::from_uint(self as u32)
     }
 }
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-#[cfg_attr(debug_assertions, derive(::strum_macros::FromRepr))]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, ::strum_macros::FromRepr)]
 #[repr(u32)]
 pub enum SyncParameterName {
     ObjectType = GL_OBJECT_TYPE,
@@ -3169,8 +3123,7 @@ impl<Dst: GlDstType> SrcType<Dst> for SyncParameterName {
         Dst::from_uint(self as u32)
     }
 }
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-#[cfg_attr(debug_assertions, derive(::strum_macros::FromRepr))]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, ::strum_macros::FromRepr)]
 #[repr(u32)]
 pub enum PixelType {
     Byte = GL_BYTE,
@@ -3217,8 +3170,7 @@ impl<Dst: GlDstType> SrcType<Dst> for PixelType {
         Dst::from_uint(self as u32)
     }
 }
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-#[cfg_attr(debug_assertions, derive(::strum_macros::FromRepr))]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, ::strum_macros::FromRepr)]
 #[repr(u32)]
 pub enum SizedInternalFormat {
     R3G3B2 = GL_R3_G3_B2,
@@ -3333,8 +3285,7 @@ impl<Dst: GlDstType> SrcType<Dst> for SizedInternalFormat {
         Dst::from_uint(self as u32)
     }
 }
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-#[cfg_attr(debug_assertions, derive(::strum_macros::FromRepr))]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, ::strum_macros::FromRepr)]
 #[repr(u32)]
 pub enum ProgramInterface {
     Uniform = GL_UNIFORM,
@@ -3417,8 +3368,7 @@ impl<Dst: GlDstType> SrcType<Dst> for MemoryBarrierMask {
         Dst::from_uint(self.bits())
     }
 }
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-#[cfg_attr(debug_assertions, derive(::strum_macros::FromRepr))]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, ::strum_macros::FromRepr)]
 #[repr(u32)]
 pub enum EnableCap {
     LineSmooth = GL_LINE_SMOOTH,
@@ -3481,8 +3431,7 @@ impl<Dst: GlDstType> SrcType<Dst> for EnableCap {
         Dst::from_uint(self as u32)
     }
 }
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-#[cfg_attr(debug_assertions, derive(::strum_macros::FromRepr))]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, ::strum_macros::FromRepr)]
 #[repr(u32)]
 pub enum AttributeType {
     Int = GL_INT,
@@ -3614,8 +3563,7 @@ impl<Dst: GlDstType> SrcType<Dst> for AttributeType {
         Dst::from_uint(self as u32)
     }
 }
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-#[cfg_attr(debug_assertions, derive(::strum_macros::FromRepr))]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, ::strum_macros::FromRepr)]
 #[repr(u32)]
 pub enum UniformPName {
     UniformType = GL_UNIFORM_TYPE,
@@ -3647,8 +3595,7 @@ impl<Dst: GlDstType> SrcType<Dst> for UniformPName {
         Dst::from_uint(self as u32)
     }
 }
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-#[cfg_attr(debug_assertions, derive(::strum_macros::FromRepr))]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, ::strum_macros::FromRepr)]
 #[repr(u32)]
 pub enum PixelFormat {
     UnsignedShort = GL_UNSIGNED_SHORT,
@@ -3693,8 +3640,7 @@ impl<Dst: GlDstType> SrcType<Dst> for PixelFormat {
         Dst::from_uint(self as u32)
     }
 }
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-#[cfg_attr(debug_assertions, derive(::strum_macros::FromRepr))]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, ::strum_macros::FromRepr)]
 #[repr(u32)]
 pub enum PolygonMode {
     Point = GL_POINT,
@@ -3720,8 +3666,7 @@ impl<Dst: GlDstType> SrcType<Dst> for PolygonMode {
         Dst::from_uint(self as u32)
     }
 }
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-#[cfg_attr(debug_assertions, derive(::strum_macros::FromRepr))]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, ::strum_macros::FromRepr)]
 #[repr(u32)]
 pub enum SamplerParameter {
     TextureBorderColor = GL_TEXTURE_BORDER_COLOR,
@@ -3756,8 +3701,7 @@ impl<Dst: GlDstType> SrcType<Dst> for SamplerParameter {
         Dst::from_uint(self as u32)
     }
 }
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-#[cfg_attr(debug_assertions, derive(::strum_macros::FromRepr))]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, ::strum_macros::FromRepr)]
 #[repr(u32)]
 pub enum FramebufferTarget {
     ReadFramebuffer = GL_READ_FRAMEBUFFER,
@@ -3783,8 +3727,7 @@ impl<Dst: GlDstType> SrcType<Dst> for FramebufferTarget {
         Dst::from_uint(self as u32)
     }
 }
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-#[cfg_attr(debug_assertions, derive(::strum_macros::FromRepr))]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, ::strum_macros::FromRepr)]
 #[repr(u32)]
 pub enum ProgramStagePName {
     ActiveSubroutines = GL_ACTIVE_SUBROUTINES,
@@ -3812,8 +3755,7 @@ impl<Dst: GlDstType> SrcType<Dst> for ProgramStagePName {
         Dst::from_uint(self as u32)
     }
 }
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-#[cfg_attr(debug_assertions, derive(::strum_macros::FromRepr))]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, ::strum_macros::FromRepr)]
 #[repr(u32)]
 pub enum TriangleFace {
     Front = GL_FRONT,
@@ -3839,8 +3781,7 @@ impl<Dst: GlDstType> SrcType<Dst> for TriangleFace {
         Dst::from_uint(self as u32)
     }
 }
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-#[cfg_attr(debug_assertions, derive(::strum_macros::FromRepr))]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, ::strum_macros::FromRepr)]
 #[repr(u32)]
 pub enum StringName {
     Vendor = GL_VENDOR,
@@ -3868,8 +3809,7 @@ impl<Dst: GlDstType> SrcType<Dst> for StringName {
         Dst::from_uint(self as u32)
     }
 }
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-#[cfg_attr(debug_assertions, derive(::strum_macros::FromRepr))]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, ::strum_macros::FromRepr)]
 #[repr(u32)]
 pub enum TextureParameterName {
     TextureWidth = GL_TEXTURE_WIDTH,
@@ -3919,8 +3859,7 @@ impl<Dst: GlDstType> SrcType<Dst> for TextureParameterName {
         Dst::from_uint(self as u32)
     }
 }
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-#[cfg_attr(debug_assertions, derive(::strum_macros::FromRepr))]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, ::strum_macros::FromRepr)]
 #[repr(u32)]
 pub enum ClipControlOrigin {
     LowerLeft = GL_LOWER_LEFT,
@@ -3945,8 +3884,7 @@ impl<Dst: GlDstType> SrcType<Dst> for ClipControlOrigin {
         Dst::from_uint(self as u32)
     }
 }
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-#[cfg_attr(debug_assertions, derive(::strum_macros::FromRepr))]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, ::strum_macros::FromRepr)]
 #[repr(u32)]
 pub enum ProgramInterfacePName {
     ActiveResources = GL_ACTIVE_RESOURCES,
@@ -3973,8 +3911,7 @@ impl<Dst: GlDstType> SrcType<Dst> for ProgramInterfacePName {
         Dst::from_uint(self as u32)
     }
 }
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-#[cfg_attr(debug_assertions, derive(::strum_macros::FromRepr))]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, ::strum_macros::FromRepr)]
 #[repr(u32)]
 pub enum GetPName {
     PointSize = GL_POINT_SIZE,
@@ -4247,8 +4184,7 @@ impl<Dst: GlDstType> SrcType<Dst> for GetPName {
         Dst::from_uint(self as u32)
     }
 }
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-#[cfg_attr(debug_assertions, derive(::strum_macros::FromRepr))]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, ::strum_macros::FromRepr)]
 #[repr(u32)]
 pub enum GetTextureParameter {
     TextureWidth = GL_TEXTURE_WIDTH,
@@ -4283,8 +4219,7 @@ impl<Dst: GlDstType> SrcType<Dst> for GetTextureParameter {
         Dst::from_uint(self as u32)
     }
 }
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-#[cfg_attr(debug_assertions, derive(::strum_macros::FromRepr))]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, ::strum_macros::FromRepr)]
 #[repr(u32)]
 pub enum PrimitiveType {
     Points = GL_POINTS,
@@ -4320,8 +4255,7 @@ impl<Dst: GlDstType> SrcType<Dst> for PrimitiveType {
         Dst::from_uint(self as u32)
     }
 }
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-#[cfg_attr(debug_assertions, derive(::strum_macros::FromRepr))]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, ::strum_macros::FromRepr)]
 #[repr(u32)]
 pub enum VertexProvokingMode {
     FirstVertexConvention = GL_FIRST_VERTEX_CONVENTION,
@@ -4346,8 +4280,7 @@ impl<Dst: GlDstType> SrcType<Dst> for VertexProvokingMode {
         Dst::from_uint(self as u32)
     }
 }
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-#[cfg_attr(debug_assertions, derive(::strum_macros::FromRepr))]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, ::strum_macros::FromRepr)]
 #[repr(u32)]
 pub enum VertexArrayPName {
     VertexAttribArrayEnabled = GL_VERTEX_ATTRIB_ARRAY_ENABLED,
@@ -4379,8 +4312,7 @@ impl<Dst: GlDstType> SrcType<Dst> for VertexArrayPName {
         Dst::from_uint(self as u32)
     }
 }
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-#[cfg_attr(debug_assertions, derive(::strum_macros::FromRepr))]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, ::strum_macros::FromRepr)]
 #[repr(u32)]
 pub enum DepthFunction {
     Never = GL_NEVER,
@@ -4411,8 +4343,7 @@ impl<Dst: GlDstType> SrcType<Dst> for DepthFunction {
         Dst::from_uint(self as u32)
     }
 }
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-#[cfg_attr(debug_assertions, derive(::strum_macros::FromRepr))]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, ::strum_macros::FromRepr)]
 #[repr(u32)]
 pub enum BlendEquationModeEXT {
     FuncAdd = GL_FUNC_ADD,
@@ -4440,8 +4371,7 @@ impl<Dst: GlDstType> SrcType<Dst> for BlendEquationModeEXT {
         Dst::from_uint(self as u32)
     }
 }
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-#[cfg_attr(debug_assertions, derive(::strum_macros::FromRepr))]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, ::strum_macros::FromRepr)]
 #[repr(u32)]
 pub enum CopyImageSubDataTarget {
     Texture1D = GL_TEXTURE_1D,
@@ -4475,8 +4405,7 @@ impl<Dst: GlDstType> SrcType<Dst> for CopyImageSubDataTarget {
         Dst::from_uint(self as u32)
     }
 }
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-#[cfg_attr(debug_assertions, derive(::strum_macros::FromRepr))]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, ::strum_macros::FromRepr)]
 #[repr(u32)]
 pub enum UniformBlockPName {
     UniformBlockBinding = GL_UNIFORM_BLOCK_BINDING,
@@ -4543,8 +4472,7 @@ impl<Dst: GlDstType> SrcType<Dst> for MapBufferAccessMask {
         Dst::from_uint(self.bits())
     }
 }
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-#[cfg_attr(debug_assertions, derive(::strum_macros::FromRepr))]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, ::strum_macros::FromRepr)]
 #[repr(u32)]
 pub enum VertexAttribEnum {
     VertexAttribArrayBufferBinding = GL_VERTEX_ATTRIB_ARRAY_BUFFER_BINDING,
@@ -4576,8 +4504,7 @@ impl<Dst: GlDstType> SrcType<Dst> for VertexAttribEnum {
         Dst::from_uint(self as u32)
     }
 }
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-#[cfg_attr(debug_assertions, derive(::strum_macros::FromRepr))]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, ::strum_macros::FromRepr)]
 #[repr(u32)]
 pub enum TextureMagFilter {
     Nearest = GL_NEAREST,
@@ -4602,8 +4529,7 @@ impl<Dst: GlDstType> SrcType<Dst> for TextureMagFilter {
         Dst::from_uint(self as u32)
     }
 }
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-#[cfg_attr(debug_assertions, derive(::strum_macros::FromRepr))]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, ::strum_macros::FromRepr)]
 #[repr(u32)]
 pub enum VertexAttribIType {
     Byte = GL_BYTE,
@@ -4632,8 +4558,7 @@ impl<Dst: GlDstType> SrcType<Dst> for VertexAttribIType {
         Dst::from_uint(self as u32)
     }
 }
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-#[cfg_attr(debug_assertions, derive(::strum_macros::FromRepr))]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, ::strum_macros::FromRepr)]
 #[repr(u32)]
 pub enum ObjectIdentifier {
     Texture = GL_TEXTURE,
@@ -4667,8 +4592,7 @@ impl<Dst: GlDstType> SrcType<Dst> for ObjectIdentifier {
         Dst::from_uint(self as u32)
     }
 }
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-#[cfg_attr(debug_assertions, derive(::strum_macros::FromRepr))]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, ::strum_macros::FromRepr)]
 #[repr(u32)]
 pub enum Buffer {
     Color = GL_COLOR,
@@ -4694,8 +4618,7 @@ impl<Dst: GlDstType> SrcType<Dst> for Buffer {
         Dst::from_uint(self as u32)
     }
 }
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-#[cfg_attr(debug_assertions, derive(::strum_macros::FromRepr))]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, ::strum_macros::FromRepr)]
 #[repr(u32)]
 pub enum DebugSeverity {
     DontCare = GL_DONT_CARE,
@@ -4723,8 +4646,7 @@ impl<Dst: GlDstType> SrcType<Dst> for DebugSeverity {
         Dst::from_uint(self as u32)
     }
 }
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-#[cfg_attr(debug_assertions, derive(::strum_macros::FromRepr))]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, ::strum_macros::FromRepr)]
 #[repr(u32)]
 pub enum TransformFeedbackPName {
     TransformFeedbackBufferStart = GL_TRANSFORM_FEEDBACK_BUFFER_START,
@@ -4752,8 +4674,7 @@ impl<Dst: GlDstType> SrcType<Dst> for TransformFeedbackPName {
         Dst::from_uint(self as u32)
     }
 }
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-#[cfg_attr(debug_assertions, derive(::strum_macros::FromRepr))]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, ::strum_macros::FromRepr)]
 #[repr(u32)]
 pub enum ColorBuffer {
     FrontLeft = GL_FRONT_LEFT,
@@ -4818,8 +4739,7 @@ impl<Dst: GlDstType> SrcType<Dst> for ColorBuffer {
         Dst::from_uint(self as u32)
     }
 }
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-#[cfg_attr(debug_assertions, derive(::strum_macros::FromRepr))]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, ::strum_macros::FromRepr)]
 #[repr(u32)]
 pub enum PixelStoreParameter {
     UnpackSwapBytes = GL_UNPACK_SWAP_BYTES,
@@ -4858,8 +4778,7 @@ impl<Dst: GlDstType> SrcType<Dst> for PixelStoreParameter {
         Dst::from_uint(self as u32)
     }
 }
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-#[cfg_attr(debug_assertions, derive(::strum_macros::FromRepr))]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, ::strum_macros::FromRepr)]
 #[repr(u32)]
 pub enum ConditionalRenderMode {
     QueryWait = GL_QUERY_WAIT,
@@ -4890,8 +4809,7 @@ impl<Dst: GlDstType> SrcType<Dst> for ConditionalRenderMode {
         Dst::from_uint(self as u32)
     }
 }
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-#[cfg_attr(debug_assertions, derive(::strum_macros::FromRepr))]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, ::strum_macros::FromRepr)]
 #[repr(u32)]
 pub enum InternalFormat {
     DepthComponent = GL_DEPTH_COMPONENT,
@@ -5021,8 +4939,7 @@ impl<Dst: GlDstType> SrcType<Dst> for InternalFormat {
         Dst::from_uint(self as u32)
     }
 }
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-#[cfg_attr(debug_assertions, derive(::strum_macros::FromRepr))]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, ::strum_macros::FromRepr)]
 #[repr(u32)]
 pub enum DrawBufferMode {
     FrontLeft = GL_FRONT_LEFT,
@@ -5087,8 +5004,7 @@ impl<Dst: GlDstType> SrcType<Dst> for DrawBufferMode {
         Dst::from_uint(self as u32)
     }
 }
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-#[cfg_attr(debug_assertions, derive(::strum_macros::FromRepr))]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, ::strum_macros::FromRepr)]
 #[repr(u32)]
 pub enum AtomicCounterBufferPName {
     AtomicCounterBufferBinding = GL_ATOMIC_COUNTER_BUFFER_BINDING,
@@ -5128,8 +5044,7 @@ impl<Dst: GlDstType> SrcType<Dst> for AtomicCounterBufferPName {
         Dst::from_uint(self as u32)
     }
 }
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-#[cfg_attr(debug_assertions, derive(::strum_macros::FromRepr))]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, ::strum_macros::FromRepr)]
 #[repr(u32)]
 pub enum TextureCompareMode {
     CompareRefToTexture = GL_COMPARE_REF_TO_TEXTURE,
@@ -5154,8 +5069,7 @@ impl<Dst: GlDstType> SrcType<Dst> for TextureCompareMode {
         Dst::from_uint(self as u32)
     }
 }
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-#[cfg_attr(debug_assertions, derive(::strum_macros::FromRepr))]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, ::strum_macros::FromRepr)]
 #[repr(u32)]
 pub enum FrontFaceDirection {
     Cw = GL_CW,
@@ -5180,8 +5094,7 @@ impl<Dst: GlDstType> SrcType<Dst> for FrontFaceDirection {
         Dst::from_uint(self as u32)
     }
 }
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-#[cfg_attr(debug_assertions, derive(::strum_macros::FromRepr))]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, ::strum_macros::FromRepr)]
 #[repr(u32)]
 pub enum QueryObjectParameterName {
     QueryResult = GL_QUERY_RESULT,
@@ -5208,8 +5121,7 @@ impl<Dst: GlDstType> SrcType<Dst> for QueryObjectParameterName {
         Dst::from_uint(self as u32)
     }
 }
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-#[cfg_attr(debug_assertions, derive(::strum_macros::FromRepr))]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, ::strum_macros::FromRepr)]
 #[repr(u32)]
 pub enum QueryParameterName {
     QueryCounterBits = GL_QUERY_COUNTER_BITS,
@@ -5234,8 +5146,7 @@ impl<Dst: GlDstType> SrcType<Dst> for QueryParameterName {
         Dst::from_uint(self as u32)
     }
 }
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-#[cfg_attr(debug_assertions, derive(::strum_macros::FromRepr))]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, ::strum_macros::FromRepr)]
 #[repr(u32)]
 pub enum HintTarget {
     LineSmoothHint = GL_LINE_SMOOTH_HINT,
@@ -5263,8 +5174,7 @@ impl<Dst: GlDstType> SrcType<Dst> for HintTarget {
         Dst::from_uint(self as u32)
     }
 }
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-#[cfg_attr(debug_assertions, derive(::strum_macros::FromRepr))]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, ::strum_macros::FromRepr)]
 #[repr(u32)]
 pub enum ShaderParameterName {
     ShaderType = GL_SHADER_TYPE,
@@ -5323,8 +5233,7 @@ impl<Dst: GlDstType> SrcType<Dst> for UseProgramStageMask {
         Dst::from_uint(self.bits())
     }
 }
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-#[cfg_attr(debug_assertions, derive(::strum_macros::FromRepr))]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, ::strum_macros::FromRepr)]
 #[repr(u32)]
 pub enum CopyBufferSubDataTarget {
     ArrayBuffer = GL_ARRAY_BUFFER,
@@ -5361,8 +5270,7 @@ impl<Dst: GlDstType> SrcType<Dst> for CopyBufferSubDataTarget {
         Dst::from_uint(self as u32)
     }
 }
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-#[cfg_attr(debug_assertions, derive(::strum_macros::FromRepr))]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, ::strum_macros::FromRepr)]
 #[repr(u32)]
 pub enum TransformFeedbackBufferMode {
     InterleavedAttribs = GL_INTERLEAVED_ATTRIBS,
