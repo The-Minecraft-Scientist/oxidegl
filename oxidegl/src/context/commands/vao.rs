@@ -1,15 +1,14 @@
 use core::slice;
-use std::{array, iter, num::NonZeroU32};
+use std::iter;
 
-use log::{debug, trace};
-use objc2_metal::MTLVertexFormat;
+use log::trace;
 
 use crate::{
     context::{
         commands::buffer::Buffer,
-        debug::gl_debug,
         error::{gl_assert, GlError, GlFallible},
-        gl_object::{LateInit, NamedObject, ObjectName},
+        gl_object::ObjectName,
+        vao::{IntegralCastBehavior, Vao},
         Context,
     },
     dispatch::{
@@ -21,8 +20,30 @@ use crate::{
 };
 
 //TODO glGetVertexAttribiv
-//TODO move logical components out of this file, should be ffi only
 
+impl Context {
+    #[inline]
+    pub(crate) fn get_vao(
+        &mut self,
+        maybe_name: impl MaybeObjectName<Vao>,
+    ) -> GlFallible<&mut Vao> {
+        if let Some(name) = maybe_name.get() {
+            self.gl_state
+                .vao_list
+                .get_opt_mut(name)
+                .ok_or(GlError::InvalidOperation.e())
+        } else {
+            self.gl_state
+                .vao_list
+                .get_opt_mut(
+                    self.gl_state
+                        .vao_binding
+                        .ok_or(GlError::InvalidOperation.e())?,
+                )
+                .ok_or(GlError::InvalidOperation.e())
+        }
+    }
+}
 /// ### Parameters
 /// `vaobj`
 ///
@@ -135,13 +156,12 @@ impl Context {
         normalized: GLboolean,
         relativeoffset: GLuint,
     ) -> GlFallible {
-        self.oxidegl_vertex_attrib_format_internal(
+        self.get_vao(CurrentBinding)?.attrib_format(
             attribindex,
             size as u32,
             r#type,
             relativeoffset,
             IntegralCastBehavior::Cast,
-            CurrentBinding,
         )
     }
     #[allow(clippy::cast_sign_loss)]
@@ -152,7 +172,7 @@ impl Context {
         r#type: VertexAttribIType,
         relativeoffset: GLuint,
     ) -> GlFallible {
-        self.oxidegl_vertex_attrib_format_internal(
+        self.get_vao(CurrentBinding)?.attrib_format(
             attribindex,
             size as u32,
             // Safety: transmute is sound because the allowed values of VertexAttribIType are
@@ -160,7 +180,6 @@ impl Context {
             unsafe { core::mem::transmute::<VertexAttribIType, VertexAttribType>(r#type) },
             relativeoffset,
             IntegralCastBehavior::Native,
-            CurrentBinding,
         )
     }
     #[allow(clippy::cast_sign_loss)]
@@ -173,13 +192,12 @@ impl Context {
         normalized: GLboolean,
         relativeoffset: GLuint,
     ) -> GlFallible {
-        self.oxidegl_vertex_attrib_format_internal(
+        self.get_vao(vaobj)?.attrib_format(
             attribindex,
             size as u32,
             r#type,
             relativeoffset,
             IntegralCastBehavior::Cast,
-            vaobj,
         )
     }
     #[allow(clippy::cast_sign_loss)]
@@ -191,7 +209,7 @@ impl Context {
         r#type: VertexAttribIType,
         relativeoffset: GLuint,
     ) -> GlFallible {
-        self.oxidegl_vertex_attrib_format_internal(
+        self.get_vao(vaobj)?.attrib_format(
             attribindex,
             size as u32,
             // Safety: transmute is sound because the allowed values of VertexAttribIType are
@@ -199,7 +217,6 @@ impl Context {
             unsafe { core::mem::transmute::<VertexAttribIType, VertexAttribType>(r#type) },
             relativeoffset,
             IntegralCastBehavior::Native,
-            vaobj,
         )
     }
     pub(crate) fn oxidegl_vertex_array_attrib_l_format(
@@ -220,52 +237,6 @@ impl Context {
         relativeoffset: GLuint,
     ) {
         panic!("OxideGL does not currently support vertex attributes of double type");
-    }
-    #[allow(clippy::cast_possible_truncation)]
-    pub(crate) fn oxidegl_vertex_attrib_format_internal(
-        &mut self,
-        attrib_index: u32,
-        num_components: u32,
-        r#type: VertexAttribType,
-        relative_offset: GLuint,
-        integer_behavior: IntegralCastBehavior,
-        maybe_name: impl MaybeObjectName<Vao>,
-    ) -> GlFallible {
-        let vao = self.get_vao(maybe_name)?;
-        let attrib = vao.get_attrib_mut(attrib_index)?;
-        gl_assert!(
-            relative_offset <= u32::from(MAX_VERTEX_ATTRIBUTE_STRIDE),
-            InvalidValue
-        );
-        // Caller ensures num_components is in-bounds
-        attrib.components = num_components as u8;
-        attrib.component_type = r#type;
-
-        attrib.relative_offset = relative_offset as u16;
-        attrib.validate()?;
-        gl_debug!("updated vertex attribute format at index {attrib_index} of {:#?} to {:?}*{num_components} with relative offset {relative_offset} and integer behavior {integer_behavior:?}", vao.name, r#type);
-        Ok(())
-    }
-    #[inline]
-    pub(crate) fn get_vao(
-        &mut self,
-        maybe_name: impl MaybeObjectName<Vao>,
-    ) -> GlFallible<&mut Vao> {
-        if let Some(name) = maybe_name.get() {
-            self.gl_state
-                .vao_list
-                .get_opt_mut(name)
-                .ok_or(GlError::InvalidOperation.e())
-        } else {
-            self.gl_state
-                .vao_list
-                .get_opt_mut(
-                    self.gl_state
-                        .vao_binding
-                        .ok_or(GlError::InvalidOperation.e())?,
-                )
-                .ok_or(GlError::InvalidOperation.e())
-        }
     }
 }
 
@@ -346,57 +317,6 @@ impl Context {
             iter::once(offset),
             iter::once(stride),
         )
-    }
-}
-impl Context {
-    #[inline]
-    #[allow(
-        clippy::cast_possible_truncation,
-        clippy::cast_sign_loss,
-        clippy::cast_lossless
-    )]
-    pub(crate) fn vertex_array_vertex_buffers_internal(
-        &mut self,
-        vao: impl MaybeObjectName<Vao>,
-        idx: u32,
-        buffers: impl ExactSizeIterator<Item = Option<ObjectName<Buffer>>> + Clone,
-        offsets: impl ExactSizeIterator<Item = GLintptr>,
-        strides: impl ExactSizeIterator<Item = GLsizei>,
-    ) -> GlFallible {
-        buffers.clone().try_for_each(|v| -> GlFallible {
-            gl_assert!(
-                v.is_none_or(|n| self.gl_state.buffer_list.is(n)),
-                InvalidOperation,
-                "VAO buffer binding buffer name must be zero or a valid buffer name"
-            );
-            Ok(())
-        })?;
-        let vao = self.get_vao(vao)?;
-        let vao_name = vao.name;
-
-        let mut bindingindex = idx;
-        for (name, (offset, stride)) in buffers.zip(offsets.zip(strides)) {
-            sizei!(stride);
-            gl_assert!(offset >= 0, InvalidValue);
-            gl_assert!(
-                stride <= MAX_VERTEX_ATTRIBUTE_STRIDE as u32,
-                InvalidValue,
-                "Vertex attribute binding stride larger than MAX_VERTEX_ATTRIBUTE_STRIDE"
-            );
-            let r = vao.get_binding_mut(bindingindex)?;
-            debug!("bound {name:?} to {:?} at binding index {bindingindex} with offset {offset} and stride {stride}", vao_name);
-            r.buf = name;
-            r.offset = offset as usize;
-            r.stride = stride as u16;
-
-            bindingindex += 1;
-        }
-        // mark dirty state if this vao is current
-        if self.gl_state.vao_binding == Some(vao_name) {
-            self.remap_buffers();
-            self.update_encoder();
-        }
-        Ok(())
     }
 }
 
@@ -520,6 +440,40 @@ impl Context {
                 .iter()
                 .copied(),
         )
+    }
+}
+impl Context {
+    #[inline]
+    #[allow(
+        clippy::cast_possible_truncation,
+        clippy::cast_sign_loss,
+        clippy::cast_lossless
+    )]
+    pub(crate) fn vertex_array_vertex_buffers_internal(
+        &mut self,
+        vao: impl MaybeObjectName<Vao>,
+        idx: u32,
+        buffers: impl ExactSizeIterator<Item = Option<ObjectName<Buffer>>> + Clone,
+        offsets: impl ExactSizeIterator<Item = GLintptr> + Clone,
+        strides: impl ExactSizeIterator<Item = GLsizei> + Clone,
+    ) -> GlFallible {
+        buffers.clone().try_for_each(|v| -> GlFallible {
+            gl_assert!(
+                v.is_none_or(|n| self.gl_state.buffer_list.is(n)),
+                InvalidOperation,
+                "VAO buffer binding buffer name must be zero or a valid buffer name"
+            );
+            Ok(())
+        })?;
+        let vao = self.get_vao(vao)?;
+        let vao_name = vao.name;
+        vao.buffers(idx, buffers, offsets, strides)?;
+        // mark dirty state if this vao is current
+        if self.gl_state.vao_binding == Some(vao_name) {
+            self.remap_buffers();
+            self.update_encoder();
+        }
+        Ok(())
     }
 }
 
@@ -698,57 +652,26 @@ impl Context {
 /// with arguments `index` and [`GL_VERTEX_ATTRIB_ARRAY_POINTER`](crate::enums::GL_VERTEX_ATTRIB_ARRAY_POINTER)
 impl Context {
     pub(crate) fn oxidegl_disable_vertex_attrib_array(&mut self, index: GLuint) -> GlFallible {
-        self.disable_vertex_array_attrib(CurrentBinding, index)
+        self.get_vao(CurrentBinding)?
+            .set_attrib_enabled(index, false)
     }
     pub(crate) fn oxidegl_enable_vertex_attrib_array(&mut self, index: GLuint) -> GlFallible {
-        self.enable_vertex_array_attrib(CurrentBinding, index)
+        self.get_vao(CurrentBinding)?
+            .set_attrib_enabled(index, true)
     }
     pub(crate) fn oxidegl_disable_vertex_array_attrib(
         &mut self,
         vaobj: GLuint,
         index: GLuint,
     ) -> GlFallible {
-        self.disable_vertex_array_attrib(vaobj, index)
+        self.get_vao(vaobj)?.set_attrib_enabled(index, false)
     }
     pub(crate) fn oxidegl_enable_vertex_array_attrib(
         &mut self,
         vaobj: GLuint,
         index: GLuint,
     ) -> GlFallible {
-        self.enable_vertex_array_attrib(vaobj, index)
-    }
-}
-
-impl Context {
-    #[allow(clippy::cast_possible_truncation)]
-    #[inline]
-    pub(crate) fn enable_vertex_array_attrib(
-        &mut self,
-        vao: impl MaybeObjectName<Vao>,
-        index: GLuint,
-    ) -> GlFallible {
-        let vao = self.get_vao(vao)?;
-        gl_debug!(
-            "enabling vertex attribute at index {index} of {:?}",
-            vao.name
-        );
-        vao.get_attrib_mut(index)?.enabled = true;
-        Ok(())
-    }
-    #[allow(clippy::cast_possible_truncation)]
-    #[inline]
-    pub(crate) fn disable_vertex_array_attrib(
-        &mut self,
-        vao: impl MaybeObjectName<Vao>,
-        index: GLuint,
-    ) -> GlFallible {
-        let vao = self.get_vao(vao)?;
-        gl_debug!(
-            "disabling vertex attribute at index {index} of {:?}",
-            vao.name
-        );
-        vao.get_attrib_mut(index)?.enabled = false;
-        Ok(())
+        self.get_vao(vaobj)?.set_attrib_enabled(index, true)
     }
 }
 
@@ -787,7 +710,8 @@ impl Context {
         attribindex: GLuint,
         bindingindex: GLuint,
     ) -> GlFallible {
-        self.vertex_attrib_binding_internal(CurrentBinding, attribindex, bindingindex)
+        self.get_vao(CurrentBinding)?
+            .attrib_binding(attribindex, bindingindex)
     }
     pub(crate) fn oxidegl_vertex_array_attrib_binding(
         &mut self,
@@ -795,29 +719,8 @@ impl Context {
         attribindex: GLuint,
         bindingindex: GLuint,
     ) -> GlFallible {
-        self.vertex_attrib_binding_internal(vaobj, attribindex, bindingindex)
-    }
-}
-impl Context {
-    #[allow(clippy::cast_possible_truncation)]
-    pub(crate) fn vertex_attrib_binding_internal(
-        &mut self,
-        vao: impl MaybeObjectName<Vao>,
-        attrib_index: u32,
-        binding_index: u32,
-    ) -> GlFallible {
-        gl_assert!(
-            (binding_index as usize) < MAX_VERTEX_ATTRIB_BUFFER_BINDINGS,
-            InvalidValue,
-            "out of bounds attribute buffer binding index"
-        );
-        let vao = self.get_vao(vao)?;
-        gl_debug!(
-            "binding vertex attribute index {attrib_index} to {:?} buffer binding {binding_index}",
-            vao.name
-        );
-        vao.get_attrib_mut(attrib_index)?.buffer_idx = binding_index as u8;
-        Ok(())
+        self.get_vao(vaobj)?
+            .attrib_binding(attribindex, bindingindex)
     }
 }
 
@@ -858,7 +761,8 @@ impl Context {
         bindingindex: GLuint,
         divisor: GLuint,
     ) -> GlFallible {
-        self.vertex_binding_divisor_internal(CurrentBinding, bindingindex, divisor)
+        self.get_vao(CurrentBinding)?
+            .binding_divisor(bindingindex, divisor)
     }
     pub(crate) fn oxidegl_vertex_array_binding_divisor(
         &mut self,
@@ -866,22 +770,7 @@ impl Context {
         bindingindex: GLuint,
         divisor: GLuint,
     ) -> GlFallible {
-        self.vertex_binding_divisor_internal(vaobj, bindingindex, divisor)
-    }
-}
-
-impl Context {
-    #[inline]
-    pub(crate) fn vertex_binding_divisor_internal(
-        &mut self,
-        vao: impl MaybeObjectName<Vao>,
-        binding_index: u32,
-        divisor: u32,
-    ) -> GlFallible {
-        let vao = self.get_vao(vao)?;
-        debug!("setting vertex attribute binding divisor at buffer binding index {binding_index} to {divisor}");
-        vao.get_binding_mut(binding_index)?.divisor = NonZeroU32::new(divisor);
-        Ok(())
+        self.get_vao(vaobj)?.binding_divisor(bindingindex, divisor)
     }
 }
 
@@ -1092,371 +981,19 @@ impl Context {
         integer_behavior: IntegralCastBehavior,
     ) -> GlFallible {
         //FIXME highly suboptimal implementation, the logic of all of the commands should be moved onto methods on `Vao`
-        sizei!(stride);
-        let vao = self.get_vao(CurrentBinding)?;
-        let saved_binding = *vao.get_binding_mut(index)?;
-        let saved_attr = *vao.get_attrib_mut(index)?;
-        let e = {
-            'bail: {
-                if let Err(e) = self.oxidegl_vertex_attrib_format_internal(
-                    index,
-                    size,
-                    ty,
-                    0,
-                    integer_behavior,
-                    CurrentBinding,
-                ) {
-                    break 'bail e;
-                }
-                if let Err(e) = self.vertex_attrib_binding_internal(CurrentBinding, index, index) {
-                    break 'bail e;
-                }
-                if let Err(e) = {
-                    let stride = if stride > 0 {
-                        stride
-                    } else {
-                        let vao = self.get_vao(CurrentBinding)?;
-                        let attrib = vao.get_attrib_mut(index)?;
-                        u32::from(attrib.compute_stride())
-                    };
-                    let buf = self
-                        .gl_state
-                        .buffer_bindings
-                        .array
-                        .ok_or(GlError::InvalidOperation)?
-                        .to_raw();
-                    #[allow(clippy::cast_possible_wrap, clippy::cast_possible_truncation)]
-                    self.oxidegl_bind_vertex_buffer(
-                        index,
-                        buf,
-                        pointer as usize as isize,
-                        stride as i32,
-                    )
-                } {
-                    break 'bail e;
-                }
-                // return if we didn't hit an error
-                return Ok(());
-            }
-        };
-        let vao = self.get_vao(CurrentBinding)?;
-        // Need to revert any side effects if we error halfway through
-        *vao.get_binding_mut(index)? = saved_binding;
-        *vao.get_attrib_mut(index)? = saved_attr;
-        Err(e)
-    }
-}
-pub const MAX_VERTEX_ATTRIBUTES: usize = 32;
-pub const MAX_VERTEX_ATTRIB_BUFFER_BINDINGS: usize = 16;
-pub const MAX_VERTEX_ATTRIBUTE_STRIDE: u16 = 2048;
-
-#[derive(Debug)]
-pub struct Vao {
-    pub(crate) name: ObjectName<Self>,
-    pub(crate) attribs: [VertexAttrib; MAX_VERTEX_ATTRIBUTES],
-    pub(crate) buffer_bindings: [AttributeBufferBinding; MAX_VERTEX_ATTRIB_BUFFER_BINDINGS],
-}
-impl Vao {
-    fn new_default(name: ObjectName<Self>) -> Self {
-        #[allow(clippy::cast_possible_truncation)]
-        Self {
-            name,
-            attribs: array::from_fn(|i| VertexAttrib::new_default(i as u8)),
-            buffer_bindings: [AttributeBufferBinding::new_default();
-                MAX_VERTEX_ATTRIB_BUFFER_BINDINGS],
-        }
-    }
-    fn get_binding_mut(&mut self, idx: u32) -> GlFallible<&mut AttributeBufferBinding> {
-        self.buffer_bindings
-            .get_mut(idx as usize)
-            .ok_or(GlError::InvalidValue.e())
-    }
-    fn get_attrib_mut(&mut self, idx: u32) -> GlFallible<&mut VertexAttrib> {
-        self.attribs
-            .get_mut(idx as usize)
-            .ok_or(GlError::InvalidValue.e())
-    }
-}
-impl NamedObject for Vao {
-    type LateInitType = LateInit<Self>;
-    const LATE_INIT_FUNC: fn(ObjectName<Self>) -> Self = Self::new_default;
-}
-
-#[derive(Debug, Clone, Copy)]
-pub(crate) struct VertexAttrib {
-    pub(crate) components: u8,
-    pub(crate) buffer_idx: u8,
-    pub(crate) relative_offset: u16,
-    pub(crate) integral_cast: IntegralCastBehavior,
-    pub(crate) component_type: VertexAttribType,
-    pub(crate) enabled: bool,
-}
-
-impl VertexAttrib {
-    #[inline]
-    pub(crate) fn validate(&self) -> GlFallible {
-        let components = self.components;
-        let component_type = self.component_type;
-        let normalize = self.integral_cast == IntegralCastBehavior::Normalize;
-        gl_assert!(
-            !((components == 0 || components > 4)
-                && !matches!(
-                    component_type,
-                    VertexAttribType::UnsignedInt2101010Rev | VertexAttribType::Int2101010Rev
-                )),
-            InvalidValue,
-            "UB: attribute size BGRA is not supported for non-BGR10A2 formats!"
-        );
-        gl_assert!(
-            !(matches!(
-                component_type,
-                VertexAttribType::UnsignedInt2101010Rev | VertexAttribType::Int2101010Rev
-            ) && components < 4
-                || components > 4),
-            InvalidValue,
-            "UB: attribute size {components} is not supported with BGR10A2 formats!"
-        );
-        gl_assert!(
-            !(component_type == VertexAttribType::UnsignedInt10F11F11FRev && components != 3),
-            InvalidValue,
-            "UB: attribute size for attribute with format RG11FB10F must be 3, got {components}"
-        );
-        gl_assert!(
-            !((components == 0 || components > 4) && !normalize),
-            InvalidValue,
-            "UB: size is GL_BGRA but normalize is false"
-        );
-        gl_assert!(
-            self.relative_offset < MAX_VERTEX_ATTRIBUTE_STRIDE,
-            InvalidValue,
-            "UB: relative offset greater than maximum stride"
-        );
-        assert!(!normalize);
-        Ok(())
-    }
-    pub(crate) const fn new_default(idx: u8) -> Self {
-        Self {
-            components: 4,
-            buffer_idx: idx,
-            relative_offset: 0,
-            integral_cast: IntegralCastBehavior::Native,
-            component_type: VertexAttribType::Float,
-            enabled: false,
-        }
-    }
-    #[inline]
-    pub(crate) fn component_byte_size(&self) -> usize {
-        match self.component_type {
-            VertexAttribType::Byte | VertexAttribType::UnsignedByte => 1,
-            VertexAttribType::HalfFloat
-            | VertexAttribType::Fixed
-            | VertexAttribType::Short
-            | VertexAttribType::UnsignedShort => 2,
-            VertexAttribType::Float | VertexAttribType::Int | VertexAttribType::UnsignedInt => 4,
-            VertexAttribType::Double => 8,
-            // Return a placeholder for 32bit packed values
-            VertexAttribType::UnsignedInt2101010Rev
-            | VertexAttribType::Int2101010Rev
-            | VertexAttribType::UnsignedInt10F11F11FRev => 0,
-        }
-    }
-    // FIXME: directly enforce MSL layout rules here
-    // See: Metal Shading Language Specification, tables 2.1, 2.2, 2.5
-    #[inline]
-    pub(crate) fn compute_stride(&self) -> u16 {
-        let component_size = self.component_byte_size();
-        // Packed values always have layout of uint
-        if component_size == 0 {
-            return 4;
-        }
-        let contiguous_size = component_size * self.components as usize;
-        let align = contiguous_size.next_power_of_two().max(16);
-
-        // Max allowable stride is 2048 (<u16::MAX)
-        #[allow(clippy::cast_possible_truncation)]
-        let ret = (contiguous_size.div_ceil(align) * align) as u16;
-        ret
-    }
-    #[inline]
-    pub(crate) fn get_mtl_layout(&self) -> AttributeFormatWithConversion {
-        gl_attribute_to_mtl(self.component_type, self.components, self.integral_cast)
-    }
-}
-
-#[derive(Debug, Clone, Copy)]
-pub struct AttributeBufferBinding {
-    pub(crate) buf: Option<ObjectName<Buffer>>,
-    pub(crate) offset: usize,
-    pub(crate) stride: u16,
-    pub(crate) divisor: Option<NonZeroU32>,
-}
-impl AttributeBufferBinding {
-    pub(crate) const fn new_default() -> Self {
-        Self {
-            buf: None,
-            offset: 0,
-            stride: 16,
-            divisor: None,
-        }
-    }
-}
-
-macro_rules! generate_attr_match_branch {
-    ($base:ident, $normalize:expr, $size:expr, $bitlen:expr, (norm: $nconvtype:expr, unnorm: $unconvtype:expr)) => {
-        if $normalize {
-            generate_attr_match_branch!(;$base, $size, $bitlen, $nconvtype, Normalized)
-        } else {
-            generate_attr_match_branch!(;$base, $size, $bitlen, $unconvtype, )
-        }
-    };
-    ($base:ident!, $normalize:expr, $size:expr, $bitlen:expr, (norm: $nconvtype:expr, unnorm: $unconvtype:expr)) => {
-        if $normalize {
-            generate_attr_match_branch!(;$base, $size, $bitlen, $nconvtype, )
-        } else {
-            generate_attr_match_branch!(;$base, $size, $bitlen, $unconvtype, )
-        }
-    };
-    (;$base:ident, $size:expr, $bitlen:expr, $convtype:expr, $($suffix:ident),* ) => {
-        AttributeFormatWithConversion {
-            mtl_format: {
-                    match $size {
-                    1 => concat_idents::concat_idents!(name = $base, $($suffix)* { MTLVertexFormat::name }),
-                    2 => concat_idents::concat_idents!(name = $base, 2, $($suffix)* { MTLVertexFormat::name }),
-                    3 => concat_idents::concat_idents!(name = $base, 3, $($suffix)* { MTLVertexFormat::name }),
-                    4 => concat_idents::concat_idents!(name = $base, 4, $($suffix)* { MTLVertexFormat::name }),
-                    #[allow(unused_unsafe)]
-                    // Safety: Caller ensures the number of components is in bounds
-                    _ => unreachable!("UB: invalid vertex attribute size!")
-                }.0 as u32
-            },
-            normalization_const: $bitlen,
-            conversion: $convtype,
-            bgra_shuffle: false,
-        }
-
-    };
-}
-
-#[inline]
-fn gl_attribute_to_mtl(
-    ty: VertexAttribType,
-    num_components: u8,
-    behavior: IntegralCastBehavior,
-) -> AttributeFormatWithConversion {
-    let normalize = behavior == IntegralCastBehavior::Normalize;
-    let bgra_shuffle = !(1..=4).contains(&num_components);
-    // All MTLVertexFormat values are in-bounds for u32
-    #[allow(clippy::cast_possible_truncation)]
-    match ty {
-        VertexAttribType::Byte => generate_attr_match_branch!(
-            Char,
-            normalize,
-            num_components,
-            7,
-            (norm: IntegralCastBehavior::Native, unnorm: behavior)
-        ),
-        VertexAttribType::UnsignedByte => generate_attr_match_branch!(
-            UChar,
-            normalize,
-            num_components,
-            8,
-            (norm: IntegralCastBehavior::Native, unnorm: behavior)
-        ),
-
-        VertexAttribType::Short => generate_attr_match_branch!(
-            Short,
-            normalize,
-            num_components,
-            15,
-            (norm: IntegralCastBehavior::Native, unnorm: behavior)
-        ),
-        VertexAttribType::UnsignedShort => generate_attr_match_branch!(
-            UShort,
-            normalize,
-            num_components,
-            16,
-            (norm: IntegralCastBehavior::Native, unnorm: behavior)
-        ),
-
-        VertexAttribType::Int => generate_attr_match_branch!(
-            Int!,
-            normalize,
-            num_components,
-            31,
-            (norm: IntegralCastBehavior::Normalize, unnorm: behavior)
-        ),
-        VertexAttribType::UnsignedInt => generate_attr_match_branch!(
-            UInt!,
-            normalize,
-            num_components,
-            32,
-            (norm: IntegralCastBehavior::Normalize, unnorm: behavior)
-        ),
-
-        VertexAttribType::HalfFloat => generate_attr_match_branch!(;
-            Half,
-            num_components,
-            0,
-            IntegralCastBehavior::Native,
-        ),
-        VertexAttribType::Float => generate_attr_match_branch!(;
-            Float,
-            num_components,
-            0,
-            IntegralCastBehavior::Native,
-        ),
-        VertexAttribType::UnsignedInt2101010Rev => AttributeFormatWithConversion {
-            mtl_format: MTLVertexFormat::UInt1010102Normalized.0 as u32,
-            normalization_const: 0,
-            conversion: IntegralCastBehavior::Native,
-            bgra_shuffle,
-        },
-        VertexAttribType::Int2101010Rev => AttributeFormatWithConversion {
-            mtl_format: MTLVertexFormat::Int1010102Normalized.0 as u32,
-            normalization_const: 0,
-            conversion: IntegralCastBehavior::Native,
-            bgra_shuffle,
-        },
-
-        VertexAttribType::UnsignedInt10F11F11FRev => AttributeFormatWithConversion {
-            mtl_format: MTLVertexFormat::FloatRG11B10.0 as u32,
-            normalization_const: 0,
-            conversion: IntegralCastBehavior::Native,
-            bgra_shuffle: false,
-        },
-
-        // Unsupported types
-        VertexAttribType::Double => {
-            panic!("OxideGL does not support vertex attributes of Double type");
-        }
-        VertexAttribType::Fixed => panic!("OxideGL does not support fixed-point parameter types"),
-    }
-}
-/// Describes conversion code that must be run on this vertex attribute before usage in the vertex shader
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-pub enum IntegralCastBehavior {
-    /// This vertex attribute's in-memory representation is integral but GL client requests normalization to float.
-    Normalize,
-    /// This vertex attribute's in-memory representation is integral but GL client requests casting to float
-    Cast,
-    /// This vertex attribute's in-memory representation is equivalent to the representation requested by the GL client
-    Native,
-}
-#[derive(Debug, Clone, Copy)]
-pub struct AttributeFormatWithConversion {
-    /// [`MTLVertexFormat`] truncated to 32 bits
-    pub(crate) mtl_format: u32,
-    /// Values should be divided or multiplied by `2^normalization_const` when normalizing
-    pub(crate) normalization_const: u8,
-    /// Type of conversion code that must be added to the vertex shader
-    pub(crate) conversion: IntegralCastBehavior,
-    pub(crate) bgra_shuffle: bool,
-}
-impl AttributeFormatWithConversion {
-    pub(crate) fn to_vertex_format(self) -> MTLVertexFormat {
-        MTLVertexFormat(self.mtl_format as usize)
-    }
-    pub(crate) fn validate(self) {
-        assert_eq!(self.conversion, IntegralCastBehavior::Native, "OxideGL does not yet support normalize or cast-to-float semantics for integer-typed vertex attributes");
+        let array_buffer = self
+            .gl_state
+            .buffer_bindings
+            .array
+            .ok_or(GlError::InvalidOperation)?;
+        self.get_vao(CurrentBinding)?.vertex_attrib_pointer(
+            index,
+            size,
+            ty,
+            stride,
+            pointer,
+            integer_behavior,
+            array_buffer,
+        )
     }
 }

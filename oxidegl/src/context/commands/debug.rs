@@ -1,12 +1,13 @@
 use crate::{
     context::{
-        commands::{buffer::Buffer, vao::Vao},
+        commands::buffer::Buffer,
         debug::{gl_warn, with_debug_state, with_debug_state_mut},
         error::{gl_assert, GlFallible},
         framebuffer::Framebuffer,
         gl_object::ObjectName,
         program::Program,
         shader::Shader,
+        vao::Vao,
         Context,
     },
     dispatch::{

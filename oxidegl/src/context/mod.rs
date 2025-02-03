@@ -30,6 +30,7 @@ pub(crate) mod program;
 pub(crate) mod shader;
 pub(crate) mod state;
 pub(crate) mod texture;
+pub(crate) mod vao;
 
 pub(crate) mod gl_object;
 pub(crate) mod platform;

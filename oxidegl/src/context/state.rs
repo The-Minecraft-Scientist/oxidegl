@@ -14,12 +14,13 @@ use crate::{
 };
 
 use super::{
-    commands::{buffer::Buffer, vao::Vao},
+    commands::buffer::Buffer,
     debug::DebugState,
     framebuffer::{DrawBuffers, Framebuffer, MAX_COLOR_ATTACHMENTS},
     gl_object::{NamedObjectList, ObjectName},
     program::Program,
     shader::Shader,
+    vao::Vao,
 };
 
 #[derive(Debug, Default)]
