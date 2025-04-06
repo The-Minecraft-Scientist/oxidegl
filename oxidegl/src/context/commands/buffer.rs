@@ -6,12 +6,11 @@ use objc2_metal::{MTLBuffer, MTLDevice, MTLResource, MTLResourceOptions};
 
 use crate::{
     context::{
-        debug::gl_debug,
-        error::{gl_assert, GlError, GlFallible},
-        gl_object::{LateInit, NamedObject, ObjectName},
         Context,
+        debug::gl_debug,
+        error::{GlError, GlFallible, gl_assert},
+        gl_object::{LateInit, NamedObject, ObjectName},
     },
-    debug_unreachable,
     dispatch::{
         conversions::{MaybeIndex, NoIndex},
         gl_types::{GLboolean, GLintptr, GLsizei, GLsizeiptr, GLuint, GLvoid},
@@ -20,7 +19,7 @@ use crate::{
         BufferAccess, BufferStorageMask, BufferStorageTarget, BufferTarget, BufferUsage,
         MapBufferAccessMask,
     },
-    ProtoObjRef,
+    util::{ProtoObjRef, debug_unreachable},
 };
 //TODO move logical components out of this file, should be ffi only
 
@@ -728,9 +727,12 @@ impl Context {
 
         gl_assert!(size >= 0, InvalidValue);
         if flags.intersects(BufferStorageMask::MAP_PERSISTENT_BIT) {
-            gl_assert!(flags.intersects(BufferStorageMask::MAP_READ_BIT | BufferStorageMask::MAP_WRITE_BIT), 
+            gl_assert!(
+                flags
+                    .intersects(BufferStorageMask::MAP_READ_BIT | BufferStorageMask::MAP_WRITE_BIT),
                 InvalidValue,
-                "Buffer storage may not be GL_MAP_PERSISTENT if it cannot be mapped. Please set GL_MAP_READ or GL_MAP_WRITE");
+                "Buffer storage may not be GL_MAP_PERSISTENT if it cannot be mapped. Please set GL_MAP_READ or GL_MAP_WRITE"
+            );
         } else {
             gl_assert!(
                 !flags.intersects(BufferStorageMask::MAP_COHERENT_BIT),

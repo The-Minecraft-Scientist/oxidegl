@@ -6,13 +6,14 @@ use objc2_app_kit::NSView;
 
 use crate::{
     context::{
+        CTX, Context,
         debug::{self, gl_trace},
-        with_ctx_mut, Context, CTX,
+        with_ctx_mut,
     },
     dispatch::gl_types::GLenum,
 };
 
-#[no_mangle]
+#[unsafe(no_mangle)]
 unsafe extern "C" fn oxidegl_set_current_context(ctx: Option<NonNull<Context>>) {
     set_context(ctx);
 }
@@ -45,7 +46,7 @@ pub fn swap_buffers() {
     });
     gl_trace!("swap buffers");
 }
-#[no_mangle]
+#[unsafe(no_mangle)]
 unsafe extern "C" fn oxidegl_swap_buffers(_ctx: Option<NonNull<Context>>) {
     swap_buffers();
 }
@@ -55,7 +56,7 @@ pub(crate) fn box_ctx(ctx: Context) -> NonNull<Context> {
     // Safety: Box guarantees that the pointer is non-null
     unsafe { NonNull::new_unchecked(p) }
 }
-#[no_mangle]
+#[unsafe(no_mangle)]
 /// # Safety
 /// This needs to be run as early as possible (ideally before the program spawns a thread other than the main thread)
 pub unsafe extern "C" fn oxidegl_platform_init() {
@@ -79,7 +80,7 @@ pub unsafe extern "C" fn oxidegl_platform_init() {
     });
 }
 
-#[no_mangle]
+#[unsafe(no_mangle)]
 /// # Safety
 /// This function must be called EXACTLY once per context, or it will result in a double free
 unsafe extern "C" fn oxidegl_destroy_context(ctx: Option<NonNull<Context>>) {
@@ -89,7 +90,7 @@ unsafe extern "C" fn oxidegl_destroy_context(ctx: Option<NonNull<Context>>) {
     }
 }
 
-#[no_mangle]
+#[unsafe(no_mangle)]
 unsafe extern "C" fn oxidegl_create_context(
     view: *mut NSView,
     format: GLenum,

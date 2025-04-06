@@ -1,8 +1,9 @@
 use crate::{
     context::{
         debug::{gl_debug, gl_trace},
-        error::GlFallible,
-        gl_object::ObjectName,
+        error::{GlError, GlFallible},
+        gl_object::{NamedObjectList, ObjectName},
+        program::Program,
         shader::{GlslShaderInternal, Shader, ShaderInternal},
         Context,
     },
@@ -139,7 +140,16 @@ impl Context {
             // Safety: Caller ensures array length and pointer are correct.
             Some(unsafe { core::slice::from_raw_parts(length, count as usize) })
         };
-        let mut strings = Vec::with_capacity(count as usize);
+        let shader = self
+            .gl_state
+            .shader_list
+            .get_shader_raw_mut(&self.gl_state.program_list, shader)?;
+        let ShaderInternal::Glsl(GlslShaderInternal { ref mut source, .. }) = shader.internal
+        else {
+            // TODO this branch should reset shader.internal to a GLSLShader and write sources to that
+            panic!("tried to write shader source to a SPIR-V shader object")
+        };
+        source.clear();
         for (i, &string) in sources.iter().enumerate() {
             let len = lengths.map(|r| r[i]).and_then(|v| u32::try_from(v).ok());
             let str = if let Some(len) = len {
@@ -154,18 +164,9 @@ impl Context {
                 cstr.to_str()
                     .expect("Shader source contained non-UTF8 character!")
             };
-            strings.push(str);
+            source.push_str(str);
         }
-        let shader = self.get_shader_raw_mut(shader);
-        let ShaderInternal::Glsl(GlslShaderInternal { source: s, .. }) = &mut shader.internal
-        else {
-            panic!("UB: tried to write text source to a non-GLSL shader object")
-        };
-        s.clear();
-        for str in strings {
-            s.push_str(str);
-        }
-        gl_trace!(src: ShaderCompiler, "set source of {:?} to:\n{}", shader.name, s);
+        gl_trace!(src: ShaderCompiler, "set source of {:?} to:\n{}", shader.name, source);
         Ok(())
     }
     /// ### Parameters
@@ -197,8 +198,9 @@ impl Context {
     /// `shader` and [`GL_COMPILE_STATUS`](crate::enums::GL_COMPILE_STATUS)
     ///
     /// [**glIsShader**](crate::context::Context::oxidegl_is_shader)
-    pub fn oxidegl_compile_shader(&mut self, shader: GLuint) {
-        self.get_shader_raw_mut(shader).compile();
+    pub fn oxidegl_compile_shader(&mut self, shader: GLuint) -> GlFallible {
+        self.gl_state.shader_list.get_raw_mut(shader)?.compile();
+        Ok(())
     }
     /// ### Parameters
     /// `shader`
@@ -268,20 +270,26 @@ impl Context {
         shader: GLuint,
         pname: ShaderParameterName,
         params: *mut GLint,
-    ) {
-        // TODO come up with a way to handle shader refcounting/delete status
-        let shader = self.get_shader_raw_mut(shader);
+    ) -> GlFallible {
+        let delete_status = ObjectName::try_from_raw(shader)
+            .map(|v| self.gl_state.shader_deletion_queue.contains(&v))
+            .is_ok_and(|v| v);
+        let shader = self
+            .gl_state
+            .shader_list
+            .get_shader_raw_mut(&self.gl_state.program_list, shader)?;
         // if someone is trying to compile a >4gb shader we have bigger problems
         #[allow(clippy::cast_possible_truncation)]
         let ret: u32 = match pname {
             ShaderParameterName::ShaderType => shader.stage.into(),
-            ShaderParameterName::DeleteStatus => u32::from(false),
+            ShaderParameterName::DeleteStatus => u32::from(delete_status),
             ShaderParameterName::CompileStatus => u32::from(shader.internal.compile_status()),
             ShaderParameterName::InfoLogLength => shader.compiler_log.len() as u32,
             ShaderParameterName::ShaderSourceLength => shader.internal.source_len(),
         };
         // Safety: caller ensures params pointer is correct
         unsafe { *params.cast() = ret };
+        Ok(())
     }
     /// ### Parameters
     /// `shader`
@@ -317,12 +325,33 @@ impl Context {
     }
 }
 
-impl Context {
-    //TODO: replace with gl_state.shader_list.get_raw_mut()
-    pub(crate) fn get_shader_raw_mut(&mut self, shader: GLuint) -> &mut Shader {
-        self.gl_state
-            .shader_list
-            .get_opt_mut(ObjectName::from_raw(shader))
-            .expect("tried to compile a nonexistent shader")
+pub(crate) trait ShaderListExt {
+    /// gets a reference to a Shader from an object name with the correct GL error semantics for `glShader*`
+    fn get_shader_raw_mut(
+        &mut self,
+        program_list: &NamedObjectList<Program>,
+        shader: GLuint,
+    ) -> GlFallible<&mut Shader>;
+}
+impl ShaderListExt for NamedObjectList<Shader> {
+    #[inline]
+    fn get_shader_raw_mut(
+        &mut self,
+        program_list: &NamedObjectList<Program>,
+        shader: GLuint,
+    ) -> GlFallible<&mut Shader> {
+        if let Ok(name) = ObjectName::try_from_raw(shader) {
+            if let Some(shader) = self.get_opt_mut(name) {
+                Ok(shader)
+            } else {
+                Err(if program_list.is(name.cast()) {
+                    GlError::InvalidOperation.e()
+                } else {
+                    GlError::InvalidValue.e()
+                })
+            }
+        } else {
+            Err(GlError::InvalidValue.e())
+        }
     }
 }

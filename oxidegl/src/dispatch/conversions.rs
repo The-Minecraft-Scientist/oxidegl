@@ -6,7 +6,7 @@ use crate::{
         error::{GlError, GlFallible},
         gl_object::{NamedObject, ObjectName},
     },
-    trimmed_type_name,
+    util::trimmed_type_name,
 };
 
 use super::gl_types::{GLenum, GLsizei};
@@ -49,7 +49,7 @@ where
         T::from_enum(self).ok_or_else(
             #[inline]
             || {
-                gl_err!(ty: Error, "invalid value {self} for GLenum {}", trimmed_type_name::<T>());
+                gl_err!(ty: Error, "invalid value {self} for GLenum group {}", trimmed_type_name::<T>());
                 GlError::InvalidEnum.e()
             },
         )

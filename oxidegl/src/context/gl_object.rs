@@ -5,28 +5,28 @@ use objc2_foundation::NSString;
 
 use crate::{
     context::debug::gl_err,
-    debug_unreachable,
     dispatch::{
         conversions::{GlDstType, SrcType},
         gl_types::{GLboolean, GLsizei, GLuint},
     },
-    trimmed_type_name,
+    util::{debug_unreachable, trimmed_type_name},
 };
 
 use super::{
+    Context,
     debug::{gl_debug, with_debug_state},
     error::{GlError, GlFallible},
-    Context,
 };
 
 /// Trait that describes behaviors common to all OpenGL objects.
 /// * opt-in lazy-init semantics using the supplied init function pointer constant
 /// * an opt-in helper method to generically set the underlying API's debug label
 pub(crate) trait NamedObject: Sized + 'static {
+    #[expect(unused_variables)]
     fn set_debug_label(
-        _ctx: &mut Context,
-        _name: ObjectName<Self>,
-        _label: Option<Retained<NSString>>,
+        ctx: &mut Context,
+        name: ObjectName<Self>,
+        label: Option<Retained<NSString>>,
     ) {
     }
 
@@ -337,8 +337,9 @@ impl<Obj: NamedObject> NamedObjectList<Obj> {
             .expect(Self::NOT_INITIALIZED)
     }
     #[inline]
-    pub(crate) fn get_raw(&self, name: GLuint) -> &Obj {
-        self.get(ObjectName::from_raw(name))
+    pub(crate) fn get_raw(&self, name: GLuint) -> GlFallible<&Obj> {
+        self.get_opt(ObjectName::try_from_raw(name)?)
+            .ok_or(GlError::InvalidOperation.e())
     }
     #[inline]
     pub(crate) fn get_opt(&self, name: ObjectName<Obj>) -> Option<&Obj> {
@@ -366,8 +367,9 @@ impl<Obj: NamedObject> NamedObjectList<Obj> {
             .expect(Self::NOT_INITIALIZED)
     }
     #[inline]
-    pub(crate) fn get_raw_mut(&mut self, name: GLuint) -> &mut Obj {
-        self.get_mut(ObjectName::from_raw(name))
+    pub(crate) fn get_raw_mut(&mut self, name: GLuint) -> GlFallible<&mut Obj> {
+        self.get_opt_mut(ObjectName::try_from_raw(name)?)
+            .ok_or(GlError::InvalidOperation.e())
     }
     #[inline]
     pub(crate) fn get_opt_mut(&mut self, name: ObjectName<Obj>) -> Option<&mut Obj> {

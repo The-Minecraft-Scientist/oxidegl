@@ -4,13 +4,13 @@ use ahash::HashSet;
 use objc2_metal::{MTLBlendFactor, MTLBlendOperation};
 
 use crate::{
-    bitflag_bits,
     dispatch::gl_types::GLenum,
     enums::{
         BlendEquationModeEXT, BlendingFactor, ClearBufferMask, DepthFunction, ErrorCode,
-        StencilFunction, StencilOp, TriangleFace, GL_CONTEXT_CORE_PROFILE_BIT,
-        GL_CONTEXT_FLAG_FORWARD_COMPATIBLE_BIT, GL_CONTEXT_FLAG_NO_ERROR_BIT,
+        GL_CONTEXT_CORE_PROFILE_BIT, GL_CONTEXT_FLAG_FORWARD_COMPATIBLE_BIT,
+        GL_CONTEXT_FLAG_NO_ERROR_BIT, StencilFunction, StencilOp, TriangleFace,
     },
+    util::bitflag_bits,
 };
 
 use super::{

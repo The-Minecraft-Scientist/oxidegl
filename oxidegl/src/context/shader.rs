@@ -1,6 +1,6 @@
 use std::{fmt::Debug, mem};
 
-use crate::{enums::ShaderType, NoDebug};
+use crate::{enums::ShaderType, util::NoDebug};
 use glslang::{
     Compiler as GlslangCompiler, CompilerOptions, Shader as GlslLangShader, ShaderInput,
     ShaderMessage, ShaderSource, ShaderStage, SourceLanguage, Target,
@@ -139,7 +139,7 @@ impl Shader {
     }
     /// Decrements the program reference count on this shader. Call this function when detaching a shader object from a program.
     ///
-    /// Returns `true` if it is OK to deallocate this shader object after the decrement (i.e. it is not currently attached to any program objects)
+    /// Returns `true` if it is OK to drop this shader object after the decrement (i.e. it is not currently attached to any program objects)
     pub(crate) fn release_shader(&mut self) -> bool {
         if self.refcount <= 1 {
             self.refcount = 0;

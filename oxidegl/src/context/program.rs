@@ -9,8 +9,7 @@ use crate::{
         debug::{gl_debug, gl_trace, with_debug_state},
         shader::ShaderInternal,
     },
-    enums::ShaderType,
-    NoDebug, ProtoObjRef,
+    enums::ShaderType, util::{NoDebug, ProtoObjRef},
 };
 use objc2_foundation::NSString;
 use objc2_metal::{MTLDevice, MTLFunction, MTLLibrary};
@@ -176,10 +175,10 @@ impl Program {
     fn link_stage(
         shader_list: &NamedObjectList<Shader>,
         device: &ProtoObjRef<dyn MTLDevice>,
-        b: &mut ProgramStageBinding,
+        binding: &mut ProgramStageBinding,
         glslang_compiler: &GlslLangCompiler,
         label: Option<&Retained<NSString>>,
-    ) -> Result<LinkedShaderStage, Box<str>> {
+    ) -> Result<LinkedStage, Box<str>> {
         macro_rules! err_ret {
             ($e:expr) => {
                 return Err($e.to_string().into_boxed_str())
@@ -187,11 +186,12 @@ impl Program {
         }
         let mut used_shaders = Vec::with_capacity(1);
         let mut stage = None;
-        let mut stage_spirv = match b {
+        let mut stage_spirv = match binding {
             ProgramStageBinding::Unbound => unreachable!(),
             ProgramStageBinding::Spirv(_) => todo!(),
             ProgramStageBinding::Glsl(hash_set) => {
                 let mut program = glslang_compiler.create_program();
+                // dont need to recheck shader name validity here, we can just panic on failiure
                 for shader in hash_set.iter().copied().map(|name| shader_list.get(name)) {
                     used_shaders.push(shader.name.to_raw().to_string().into_boxed_str());
                     let ShaderInternal::Glsl(internal) = &shader.internal else {
@@ -247,7 +247,7 @@ impl Program {
             lib.setLabel(Some(label));
         }
         // TODO: coalesce ungrouped (named) uniforms into a single uniform block with a hashmap for by-identifier uniform lookup
-        Ok(LinkedShaderStage {
+        Ok(LinkedStage {
             function: lib
                 .newFunctionWithName(&NSString::from_str(&entry_name))
                 .unwrap(),
@@ -264,6 +264,7 @@ impl Program {
         shader_list: &mut NamedObjectList<Shader>,
         device: &ProtoObjRef<dyn MTLDevice>,
     ) {
+        //TODO errors
         self.latest_linkage = None;
         gl_debug!(src: ShaderCompiler, "attempting to link {:?}", self.name);
         let glslang_compiler =
@@ -276,7 +277,9 @@ impl Program {
         let label = with_debug_state(|state| state.get_label(self.name))
             .flatten()
             .as_deref()
-            .map(|c| unsafe {
+            .map(|c| 
+                // Safety: 
+                unsafe {
                 let alloc = NSString::alloc();
                 NSString::initWithCString_encoding(
                     alloc,
@@ -343,9 +346,9 @@ impl NamedObject for Program {
 
 #[derive(Debug)]
 pub struct LinkedProgram {
-    pub(crate) fragment: Option<LinkedShaderStage>,
-    pub(crate) vertex: Option<LinkedShaderStage>,
-    pub(crate) compute: Option<LinkedShaderStage>,
+    pub(crate) fragment: Option<LinkedStage>,
+    pub(crate) vertex: Option<LinkedStage>,
+    pub(crate) compute: Option<LinkedStage>,
 }
 #[inline]
 fn to_resource_vec(
@@ -414,7 +417,7 @@ pub struct ProgramResource {
     pub(crate) location: Option<u32>,
 }
 #[derive(Debug)]
-pub struct LinkedShaderStage {
+pub struct LinkedStage {
     /// the entry point for this stage
     pub(crate) function: ProtoObjRef<dyn MTLFunction>,
     /// a retained reference to the metal library that contains the entry point function for this stage

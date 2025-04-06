@@ -5,18 +5,18 @@ use log::trace;
 
 use crate::{
     context::{
+        Context,
         commands::buffer::Buffer,
-        error::{gl_assert, GlError, GlFallible},
+        error::{GlError, GlFallible, gl_assert},
         gl_object::ObjectName,
         vao::{IntegralCastBehavior, Vao},
-        Context,
     },
     dispatch::{
-        conversions::{sizei, CurrentBinding, MaybeObjectName},
+        conversions::{CurrentBinding, MaybeObjectName, sizei},
         gl_types::{GLboolean, GLenum, GLint, GLintptr, GLsizei, GLuint, GLvoid},
     },
     enums::{VertexAttribIType, VertexAttribPointerType, VertexAttribType},
-    run_if_changed,
+    util::run_if_changed,
 };
 
 //TODO glGetVertexAttribiv
@@ -932,9 +932,7 @@ impl Context {
             if normalized {
                 IntegralCastBehavior::Normalize
             } else {
-                {
-                    IntegralCastBehavior::Cast
-                }
+                { IntegralCastBehavior::Cast }
             },
         )
     }

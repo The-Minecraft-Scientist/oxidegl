@@ -4,7 +4,7 @@ use ahash::{HashMap, HashMapExt, HashSet, HashSetExt};
 use log::{info, trace};
 use objc2::rc::Retained;
 use objc2_app_kit::NSView;
-use objc2_foundation::{ns_string, NSString};
+use objc2_foundation::{NSString, ns_string};
 use objc2_metal::{
     MTLBlitCommandEncoder, MTLColorWriteMask, MTLCommandBuffer, MTLCommandBufferDescriptor,
     MTLCommandBufferErrorOption, MTLCommandEncoder, MTLCommandQueue, MTLCompareFunction,
@@ -17,26 +17,25 @@ use objc2_metal::{
     MTLVertexAttributeDescriptor, MTLVertexBufferLayoutDescriptor, MTLVertexDescriptor,
     MTLViewport,
 };
-use objc2_quartz_core::{kCAFilterNearest, CAMetalDrawable, CAMetalLayer};
+use objc2_quartz_core::{CAMetalDrawable, CAMetalLayer, kCAFilterNearest};
 
 use crate::{
-    bitflag_bits,
     context::{
         debug::{gl_debug, gl_trace},
-        state::StencilFaceState,
+        state::{Capabilities, StencilFaceState},
     },
     device_properties::MetalProperties,
     enums::{DepthFunction, DrawBufferMode, ShaderType, StencilFunction, StencilOp, TriangleFace},
-    ProtoObjRef,
+    util::{ProtoObjRef, bitflag_bits},
 };
 
 use super::{
+    Context,
     commands::buffer::Buffer,
     framebuffer::InternalDrawable,
     gl_object::{NamedObject, ObjectName},
-    program::LinkedShaderStage,
-    state::{Capabilities, ColorWriteMask, DrawbufferBlendState, GLState},
-    Context,
+    program::LinkedStage,
+    state::{ColorWriteMask, DrawbufferBlendState, GLState},
 };
 
 #[derive(Debug)]
@@ -204,14 +203,17 @@ impl<const MAX_ENTRIES: usize, T: NamedObject + 'static> ResourceMap<T, MAX_ENTR
             self.buf.insert(u32::from(idx));
             #[cfg(debug_assertions)]
             if let Some(prev_obj) = self.dbg_check.insert(u32::from(idx), name) {
-                panic!("tried to assign objects {name:?} and {prev_obj:?} to the same fixed argument table index ({idx})");
+                panic!(
+                    "tried to assign objects {name:?} and {prev_obj:?} to the same fixed argument table index ({idx})"
+                );
             }
         }
         #[expect(clippy::cast_possible_truncation, reason = "const checked")]
         let mut ctr = MAX_ENTRIES as u32 - 1;
         assert!(
             pinned_resources.len() + include_resources.len() <= MAX_ENTRIES,
-            "OxideGL exceeded the maximum number of Metal buffer binding points (31)"
+            "OxideGL exceeded the maximum number of Metal buffer binding points ({})",
+            MAX_ENTRIES
         );
         for res in include_resources.iter().copied() {
             loop {
@@ -274,7 +276,7 @@ impl PlatformState {
         };
         layer.setMagnificationFilter(unsafe { kCAFilterNearest });
 
-        // use `info` because gl logging state isn't initialized yet
+        // use `info` instead of `gl_info` because gl logging state might not be initialized yet
         info!("Metal device: {}", device.name());
         let queue = device
             .newCommandQueue()
@@ -393,7 +395,7 @@ impl PlatformState {
         }
 
         let all_dirty = self.dirty_state;
-        // if there is no VAO, we still need to modify render encoder state for some commands like glClear but not do any further work
+        // if there is no VAO, we still need to update render encoder state for some commands like glClear but not do any further work
         if state.vao_binding.is_none() {
             if is_draw_command {
                 panic!("tried to call a draw command without a VAO bound")
@@ -440,7 +442,9 @@ impl PlatformState {
             Self::linked_stage(state, ShaderType::FragmentShader),
             Self::linked_stage(state, ShaderType::VertexShader),
         ) else {
-            panic!("Tried to build a render pipeline while missing a linked vertex or fragment shader stage");
+            panic!(
+                "Tried to build a render pipeline while missing a linked vertex or fragment shader stage"
+            );
         };
         let attachments = desc.colorAttachments();
         if state.framebuffer_binding.is_some() {
@@ -529,7 +533,7 @@ impl PlatformState {
             enc.setCullMode(state.cull_face_mode.into());
         }
 
-        // we *could* set this only when blending is actually enabled, but that's done on a per-attachment basis anyways and
+        // we *could* set this only when blending is actually enabled, but that's done on a per-attachment basis anyways (and
         // this call is quite cheap (just sets a similar variable somewhere within the encoder state)
         let blend_col = state.blend.blend_color;
         enc.setBlendColorRed_green_blue_alpha(
@@ -757,10 +761,7 @@ impl PlatformState {
             .expect("failed to create drawable texture")
     }
     #[inline]
-    pub(crate) fn linked_stage(
-        state: &GLState,
-        shader_type: ShaderType,
-    ) -> Option<&LinkedShaderStage> {
+    pub(crate) fn linked_stage(state: &GLState, shader_type: ShaderType) -> Option<&LinkedStage> {
         //TODO: handle program pipelines
         let program = state
             .program_list
@@ -813,7 +814,7 @@ impl PlatformState {
     // TODO cache this info inside of LinkedShaderStage
     fn stage_pinned_buffers(
         state: &GLState,
-        shader_stage: &LinkedShaderStage,
+        shader_stage: &LinkedStage,
     ) -> Vec<(ObjectName<Buffer>, u8)> {
         let mut v = Vec::new();
         for ssbo in &shader_stage.resources.shader_storage_buffers {
@@ -821,7 +822,9 @@ impl PlatformState {
                 .binding
                 .expect("SSBO declaration missing binding attribute");
             let Some(name) = state.buffer_bindings.shader_storage[binding as usize] else {
-                panic!("Shader requested SSBO at binding {binding} but no buffer was bound at that index");
+                panic!(
+                    "Shader requested SSBO at binding {binding} but no buffer was bound at that index"
+                );
             };
             #[allow(clippy::cast_possible_truncation)]
             v.push((name, binding as u8));
@@ -831,7 +834,9 @@ impl PlatformState {
                 .binding
                 .expect("UBO declaration missing binding attribute");
             let Some(name) = state.buffer_bindings.shader_storage[binding as usize] else {
-                panic!("Shader requested UBO at binding {binding} but no buffer was bound at that index");
+                panic!(
+                    "Shader requested UBO at binding {binding} but no buffer was bound at that index"
+                );
             };
             #[allow(clippy::cast_possible_truncation)]
             v.push((name, binding as u8));
@@ -841,7 +846,9 @@ impl PlatformState {
                 .binding
                 .expect("atomic counter buffer declaration missing binding attribute");
             let Some(name) = state.buffer_bindings.shader_storage[binding as usize] else {
-                panic!("Shader requested atomic counter buffer at binding {binding} but no buffer was bound at that index");
+                panic!(
+                    "Shader requested atomic counter buffer at binding {binding} but no buffer was bound at that index"
+                );
             };
             #[allow(clippy::cast_possible_truncation)]
             v.push((name, binding as u8));
@@ -951,9 +958,9 @@ impl From<ColorWriteMask> for MTLColorWriteMask {
         let arr: [bool; 4] = value.into();
         // See: MTLRenderPipeline.h L#54
         let val = usize::from(arr[3])
-            | usize::from(arr[2]) << 1
-            | usize::from(arr[1]) << 2
-            | usize::from(arr[0]) << 3;
+            | (usize::from(arr[2]) << 1)
+            | (usize::from(arr[1]) << 2)
+            | (usize::from(arr[0]) << 3);
         Self(val)
     }
 }
@@ -962,7 +969,7 @@ impl From<TriangleFace> for MTLCullMode {
     fn from(value: TriangleFace) -> Self {
         match value {
             TriangleFace::Front => Self::Front,
-            //FIXME this is incorrect. This should cull all faces but not other polygons
+            //FIXME this is incorrect. This should cull all faces but not lines. This will be a fun™ behavior to emulate with transform feedback
             TriangleFace::FrontAndBack => Self::None,
             TriangleFace::Back => Self::Back,
         }

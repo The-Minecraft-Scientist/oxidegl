@@ -1,5 +1,3 @@
-#![allow(dead_code)]
-
 use anyhow::{Context, Result};
 use const_format::concatcp;
 use roxmltree::{Document, Node, ParsingOptions};
@@ -759,7 +757,7 @@ fn print_dispatch_fn<'a>(name: &'a str, ret_type: GLTypes, params: &[Parameter<'
 
     if params.is_empty() {
         return format!(
-            "#[no_mangle]\nunsafe extern \"C\" fn {}(){} {}",
+            "#[unsafe(no_mangle)]\nunsafe extern \"C\" fn {}(){} {}",
             name,
             ret_type.rust_ret_type(),
             body
@@ -784,7 +782,7 @@ fn print_dispatch_fn<'a>(name: &'a str, ret_type: GLTypes, params: &[Parameter<'
     }
 
     format!(
-        "#[no_mangle]\nunsafe extern \"C\" fn {}({}){} {}",
+        "#[unsafe(no_mangle)]\nunsafe extern \"C\" fn {}({}){} {}",
         name,
         str,
         ret_type.rust_ret_type(),
@@ -912,27 +910,6 @@ fn constant_to_pascal_case(val: &str) -> String {
     }
     s
 }
-fn print_abi_fn_type<'a>(_name: &'a str, ret_type: GLTypes, params: &[Parameter<'a>]) -> String {
-    if params.is_empty() {
-        return format!("unsafe extern \"C\" fn(){}", ret_type.rust_ret_type(),);
-    }
-    let mut str = "".to_owned();
-    for i in 0..(params.len()) {
-        let param = params[i].clone();
-
-        let na = sanitize_ident(param.name);
-        str = format!("{}{}: {}", str, na, param.parameter_type.rust_type());
-        if i != (params.len() - 1) {
-            str = format!("{}, ", str)
-        }
-    }
-
-    format!(
-        "#[no_mangle]\nunsafe extern \"C\" fn({}){}",
-        str,
-        ret_type.rust_ret_type()
-    )
-}
 
 fn print_rust_enum_entry(name: &str, value: u32) -> String {
     if name.to_ascii_lowercase().contains("bit") {
@@ -970,10 +947,6 @@ pub enum GLTypes {
     DontCare,
 }
 impl GLTypes {
-    //Laziness
-    fn opt(self) -> Option<Self> {
-        Some(self)
-    }
     fn bo(self) -> Box<Self> {
         Box::new(self)
     }

@@ -1,7 +1,7 @@
 [package]
 name = "oxidegl"
 version = "0.0.1"
-edition = "2021"
+edition = "2024"
 [lib]
 crate-type = ["cdylib"]
 
@@ -41,12 +41,11 @@ objc2-foundation = { default-features = false, version = "0.3.0", features = [
 
 # Need access to raw mach vm_allocate for [MTLDevice newBufferWithBytesNoCopy]
 # mach2 = { git = "https://github.com/JohnTitor/mach2/" }
-# TODO: rework buffer alloc
 
 
 # General deps
-# FromRepr used for checked GLenum wrapper creation on debug builds
-strum_macros = "0.26.3"
+# FromRepr used for checked GLenum wrapper creation
+strum_macros = "0.27.1"
 
 # Logging
 log = "0.4.21"
@@ -62,7 +61,7 @@ concat-idents = "1.1.5"
 constcat = "0.6.0"
 
 # Used for crimes (nsgl_shim)
-ctor = { version = "0.2.8", optional = true }
+ctor = { version = "0.4.1", optional = true }
 core-foundation-sys = { version = "0.8.7", optional = true }
 libc = { version = "0.2.158", optional = true }
 
@@ -75,6 +74,7 @@ glslang = "0.6.1"
 
 # used to optimize for the hot path in `with_context`
 likely_stable = "0.1.2"
+half = "2.4.1"
 
 [build-dependencies]
 # you do not want to know what this is for

@@ -1,11 +1,10 @@
-// Heavily inspired by code from WGPU's metal backend
-// (see https://github.com/gfx-rs/wgpu/blob/trunk/wgpu-hal/src/metal/mod.rs#L201)
-// (see https://github.com/gfx-rs/wgpu/blob/trunk/wgpu-hal/src/metal/adapter.rs#L842)
+// Heavily inspired by code from wgpu's metal backend
+// (see https://github.com/gfx-rs/wgpu/blob/trunk/wgpu-hal/src/metal/mod.rs#L201, https://github.com/gfx-rs/wgpu/blob/trunk/wgpu-hal/src/metal/adapter.rs#L842)
 
 use objc2_foundation::{NSOperatingSystemVersion, NSProcessInfo};
 use objc2_metal::{MTLDevice, MTLGPUFamily, MTLLanguageVersion, MTLPixelFormat};
 
-use crate::{bitflag_bits, ProtoObjRef};
+use crate::util::{ProtoObjRef, bitflag_bits};
 
 pub(crate) enum PlatformType {
     Ios,
@@ -30,21 +29,21 @@ impl OsVersion {
 
 bitflag_bits! {
     pub(crate) struct TextureCaps: u8 bits: {
-        /// The GPU can filter a texture with this pixel format during sampling
+        /// The device can filter a texture with this pixel format during sampling
         FILTER: 0,
-        /// The GPU can write to a texture on a per-pixel basis with this pixel format
+        /// The device can write new pixel values to a texture with this pixel format
         WRITE: 1,
-        /// The GPU can use a texture with this pixel format as a color render target
+        /// The device can use a texture with this pixel format as a color render target
         COLOR: 2,
-        /// The GPU can blend a texture with this pixel format
+        /// The device can blend a texture with this pixel format
         BLEND: 3,
-        /// The GPU can use a texture with this pixel format as a destination for multisample antialiased (MSAA) data
+        /// The device can use a texture with this pixel format as a destination for multisample antialiased (MSAA) data
         MSAA: 4,
-        /// The GPU supports sparse-texture allocations for textures with this pixel format
+        /// The device supports sparse-texture allocations for textures with this pixel format
         SPARSE: 5,
-        /// The GPU can use a texture with this pixel format as a source for multisample antialias (MSAA) resolve operations
+        /// The device can use a texture with this pixel format as a source for multisample antialias (MSAA) resolve operations
         RESOLVE: 6,
-        /// The GPU can use atomic operations on textures with this pixel format
+        /// The device can perform atomic operations on textures with this pixel format
         ATOMIC: 7
     }
 }
@@ -65,6 +64,7 @@ pub(crate) struct MetalProperties {
     /// The maximum amount of supported vertex amplifications for multiview/layered rendering
     max_vertex_amp: u32,
     max_texture_arguments: u32,
+    apple7_8_supports_bc: bool,
 }
 
 impl MetalProperties {
@@ -84,7 +84,7 @@ impl MetalProperties {
         };
         assert!(
             version.at_least((10, 15), (13, 0)),
-            "OxideGL only supports Metal 2.2 and above. Please update your OS version"
+            "OxideGL requires Metal 2.2 or above. Please update your OS version"
         );
 
         let mut max_vertex_amp = 2u32;
@@ -111,9 +111,10 @@ impl MetalProperties {
             } else {
                 31
             },
+            apple7_8_supports_bc: device.supportsBCTextureCompression(),
         }
     }
-    fn get_texture_caps(&self, format: MTLPixelFormat) -> TextureCaps {
+    fn get_texture_caps(&self, format: MTLPixelFormat) -> Option<TextureCaps> {
         use MTLPixelFormat as MF;
 
         let device_families = self.families;
@@ -135,22 +136,9 @@ impl MetalProperties {
             | MF::RGBA8Unorm
             | MF::RGBA8Snorm
             | MF::BGRA8Unorm
-            | MF::BGR10A2Unorm => TextureCaps::ALL,
-            MF::A8Unorm => {
-                if device_families == Families::APPLE2 {
-                    TextureCaps::FILTER
-                } else {
-                    TextureCaps::ALL
-                }
-            }
-            // non-Mac2 only
-            MF::R8Unorm_sRGB | MF::RG8Unorm_sRGB => {
-                if device_families == Families::MAC2 {
-                    TextureCaps::NONE
-                } else {
-                    TextureCaps::ALL
-                }
-            }
+            | MF::BGR10A2Unorm
+            | MF::RGBA16Float => Some(TextureCaps::ALL),
+
             MF::R8Uint
             | MF::R8Sint
             | MF::R16Uint
@@ -160,47 +148,70 @@ impl MetalProperties {
             | MF::RG16Sint
             | MF::RG16Uint
             | MF::RGBA8Uint
-            | MF::RGBA8Sint => TextureCaps::WRITE | TextureCaps::COLOR | TextureCaps::MSAA | sparse,
-            MF::R16Unorm | MF::R16Snorm | MF::RG16Unorm | MF::RG16Snorm => {
-                if device_families.intersects(Families::MAC2) {
-                    TextureCaps::ALL
+            | MF::RGBA16Sint
+            | MF::RGBA16Uint
+            | MF::RGBA8Sint => {
+                Some(TextureCaps::WRITE | TextureCaps::COLOR | TextureCaps::MSAA | sparse)
+            }
+
+            MF::A8Unorm => Some(if device_families == Families::APPLE2 {
+                TextureCaps::FILTER
+            } else {
+                TextureCaps::ALL
+            }),
+            // non-Mac2 only
+            MF::R8Unorm_sRGB | MF::RG8Unorm_sRGB => {
+                if device_families == Families::MAC2 {
+                    None
                 } else {
-                    TextureCaps::FILTER
-                        | TextureCaps::WRITE
-                        | TextureCaps::COLOR
-                        | TextureCaps::MSAA
-                        | TextureCaps::BLEND
-                        | sparse
+                    Some(TextureCaps::ALL)
                 }
             }
+
+            MF::R16Unorm
+            | MF::R16Snorm
+            | MF::RG16Unorm
+            | MF::RG16Snorm
+            | MF::RGBA16Unorm
+            | MF::RGBA16Snorm => Some(if device_families.intersects(Families::MAC2) {
+                TextureCaps::ALL
+            } else {
+                TextureCaps::FILTER
+                    | TextureCaps::WRITE
+                    | TextureCaps::COLOR
+                    | TextureCaps::MSAA
+                    | TextureCaps::BLEND
+                    | sparse
+            }),
             // packed 16-bit formats
             MF::B5G6R5Unorm | MF::A1BGR5Unorm | MF::ABGR4Unorm | MF::BGR5A1Unorm => {
                 if device_families == Families::MAC2 {
-                    TextureCaps::NONE
+                    None
                 } else {
-                    TextureCaps::FILTER
-                        | TextureCaps::COLOR
-                        | TextureCaps::MSAA
-                        | TextureCaps::RESOLVE
-                        | TextureCaps::BLEND
-                        | sparse
+                    Some(
+                        TextureCaps::FILTER
+                            | TextureCaps::COLOR
+                            | TextureCaps::MSAA
+                            | TextureCaps::RESOLVE
+                            | TextureCaps::BLEND
+                            | sparse,
+                    )
                 }
             }
             MF::R32Uint | MF::R32Sint => {
-                TextureCaps::WRITE
-                    | TextureCaps::COLOR
-                    | sparse
-                    | if device_families.contains(Families::MAC2) {
-                        TextureCaps::ATOMIC | TextureCaps::MSAA
-                    } else if device_families.intersects(
-                        Families::APPLE6 | Families::APPLE7 | Families::APPLE8 | Families::APPLE9,
-                    ) {
-                        TextureCaps::ATOMIC
-                    } else {
-                        TextureCaps::NONE
-                    }
+                let mut r = TextureCaps::WRITE | TextureCaps::COLOR | sparse;
+
+                if device_families.contains(Families::MAC2) {
+                    r |= TextureCaps::ATOMIC | TextureCaps::MSAA;
+                }
+                if device_families.intersects(
+                    Families::APPLE6 | Families::APPLE7 | Families::APPLE8 | Families::APPLE9,
+                ) {
+                    r |= TextureCaps::ATOMIC;
+                }
+                Some(r)
             }
-            MF::R32Float => {
+            MF::R32Float => Some(
                 if device_families.intersects(Families::MAC2 | Families::APPLE9) {
                     TextureCaps::ALL
                 } else {
@@ -209,10 +220,10 @@ impl MetalProperties {
                         | TextureCaps::MSAA
                         | TextureCaps::BLEND
                         | sparse
-                }
-            }
+                },
+            ),
             MF::RGBA8Unorm_sRGB | MF::BGRA8Unorm_sRGB => {
-                if device_families == Families::MAC2 {
+                Some(if device_families == Families::MAC2 {
                     TextureCaps::FILTER
                         | TextureCaps::COLOR
                         | TextureCaps::MSAA
@@ -220,43 +231,107 @@ impl MetalProperties {
                         | TextureCaps::BLEND
                 } else {
                     TextureCaps::ALL
-                }
+                })
             }
-            MF::RG11B10Float | MF::RGB10A2Unorm => {
-                if device_families == Families::APPLE2 {
-                    TextureCaps::FILTER
-                        | TextureCaps::COLOR
-                        | TextureCaps::MSAA
-                        | TextureCaps::RESOLVE
-                        | TextureCaps::BLEND
-                } else {
-                    TextureCaps::ALL
-                }
-            }
-            MF::RGB9E5Float => {
-                if device_families == Families::APPLE2 {
-                    TextureCaps::FILTER
-                        | TextureCaps::COLOR
-                        | TextureCaps::MSAA
-                        | TextureCaps::RESOLVE
-                        | TextureCaps::BLEND
-                } else if device_families == Families::MAC2 {
-                    TextureCaps::FILTER
-                } else {
-                    TextureCaps::ALL
-                }
-            }
-            MF::RGB10A2Uint => {
+            MF::RG11B10Float | MF::RGB10A2Unorm => Some(if device_families == Families::APPLE2 {
+                TextureCaps::FILTER
+                    | TextureCaps::COLOR
+                    | TextureCaps::MSAA
+                    | TextureCaps::RESOLVE
+                    | TextureCaps::BLEND
+            } else {
+                TextureCaps::ALL
+            }),
+            MF::RGB9E5Float => Some(if device_families == Families::APPLE2 {
+                TextureCaps::FILTER
+                    | TextureCaps::COLOR
+                    | TextureCaps::MSAA
+                    | TextureCaps::RESOLVE
+                    | TextureCaps::BLEND
+            } else if device_families == Families::MAC2 {
+                TextureCaps::FILTER
+            } else {
+                TextureCaps::ALL
+            }),
+            MF::RGB10A2Uint => Some(
                 sparse
                     | if device_families == Families::APPLE2 {
                         TextureCaps::COLOR | TextureCaps::MSAA
                     } else {
                         TextureCaps::WRITE | TextureCaps::COLOR | TextureCaps::MSAA
+                    },
+            ),
+            MF::RG32Uint | MF::RG32Sint => {
+                let mut r = sparse | TextureCaps::WRITE | TextureCaps::COLOR;
+                if device_families.intersects(
+                    Families::APPLE7 | Families::APPLE8 | Families::APPLE9 | Families::MAC2,
+                ) {
+                    r |= TextureCaps::MSAA;
+                }
+                if device_families.intersects(Families::APPLE8 | Families::APPLE9) {
+                    r |= TextureCaps::ATOMIC;
+                }
+                Some(r)
+            }
+            MF::RG32Float => Some(
+                if device_families.intersects(Families::APPLE9 | Families::MAC2) {
+                    TextureCaps::ALL
+                } else {
+                    let r = sparse | TextureCaps::WRITE | TextureCaps::COLOR | TextureCaps::BLEND;
+                    if device_families.intersects(Families::APPLE7 | Families::APPLE8) {
+                        r | TextureCaps::MSAA
+                    } else {
+                        r
                     }
+                },
+            ),
+
+            MF::RGBA32Uint | MF::RGBA32Sint => {
+                let v = TextureCaps::WRITE | TextureCaps::COLOR | TextureCaps::SPARSE;
+                Some(if device_families.intersects(Families::MAC2) {
+                    v | TextureCaps::MSAA
+                } else {
+                    v
+                })
+            }
+            MF::RGBA32Float => {
+                let v = TextureCaps::WRITE | TextureCaps::COLOR | sparse;
+                Some(
+                    if device_families.intersects(Families::APPLE9 | Families::MAC2) {
+                        TextureCaps::ALL
+                    } else if device_families.intersects(Families::APPLE7 | Families::APPLE8) {
+                        v | TextureCaps::MSAA
+                    } else {
+                        v
+                    },
+                )
+            }
+            MF::BC1_RGBA
+            | MF::BC1_RGBA_sRGB
+            | MF::BC2_RGBA
+            | MF::BC2_RGBA_sRGB
+            | MF::BC3_RGBA
+            | MF::BC3_RGBA_sRGB
+            | MF::BC4_RSnorm
+            | MF::BC4_RUnorm
+            | MF::BC5_RGSnorm
+            | MF::BC5_RGUnorm
+            | MF::BC6H_RGBFloat
+            | MF::BC6H_RGBUfloat
+            | MF::BC7_RGBAUnorm
+            | MF::BC7_RGBAUnorm_sRGB => {
+                if device_families.intersects(Families::MAC2) {
+                    Some(TextureCaps::FILTER)
+                } else if device_families.intersects(Families::APPLE9) || self.apple7_8_supports_bc
+                {
+                    Some(TextureCaps::FILTER | TextureCaps::SPARSE)
+                } else {
+                    None
+                }
             }
             _ => panic!("invalid pixel format"),
         }
-        // TODO 64 bit formats, 128 bit formats and compressed formats
+        // TODO 64 bit formats, 128 bit formats and
     }
 }
 fn get_msl_version(version: &OsVersion) -> MTLLanguageVersion {

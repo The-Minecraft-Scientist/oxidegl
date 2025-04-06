@@ -1,29 +1,29 @@
 use crate::{
-    context::{Context, CTX},
+    context::{CTX, Context},
     entry_point::{box_ctx, set_context, swap_buffers},
 };
 use core_foundation_sys::{
     base::CFEqual,
     bundle::{CFBundleGetFunctionPointerForName, CFBundleGetIdentifier, CFBundleRef},
-    string::{kCFStringEncodingASCII, CFStringCreateWithCString, CFStringGetCString, CFStringRef},
+    string::{CFStringCreateWithCString, CFStringGetCString, CFStringRef, kCFStringEncodingASCII},
 };
-use libc::{dlopen, dlsym, RTLD_LAZY};
+use libc::{RTLD_LAZY, dlopen, dlsym};
 use log::trace;
 use objc2::{
-    define_class, extern_class,
+    AllocAnyThread, ClassType, DeclaredClass, define_class, extern_class,
     ffi::{
-        class_getClassMethod, class_replaceMethod, method_getTypeEncoding,
-        objc_getAssociatedObject, objc_setAssociatedObject, OBJC_ASSOCIATION_RETAIN,
+        OBJC_ASSOCIATION_RETAIN, class_getClassMethod, class_replaceMethod, method_getTypeEncoding,
+        objc_getAssociatedObject, objc_setAssociatedObject,
     },
     msg_send,
     rc::Retained,
     runtime::{AnyClass, AnyObject, NSObject, Sel},
-    sel, AllocAnyThread, ClassType, DeclaredClass,
+    sel,
 };
 use objc2_foundation::NSObjectProtocol;
 use std::{
     cell::OnceCell,
-    ffi::{c_void, CStr},
+    ffi::{CStr, c_void},
     mem::{self, MaybeUninit},
     ptr::{self, NonNull},
     sync::Once,
@@ -120,10 +120,12 @@ impl OXGLOxideGlCtxShim {
         parameter: isize,
     ) {
         let outv = match parameter {
-                // NSGLParamSwapInterval | NSGLParamSurfaceOrder
-                222 | 235 => 1,
-                _ => panic!("tried to get NSGL context parameters from oxidegl nsgl shim (param code {parameter})"),
-            };
+            // NSGLParamSwapInterval | NSGLParamSurfaceOrder
+            222 | 235 => 1,
+            _ => panic!(
+                "tried to get NSGL context parameters from oxidegl nsgl shim (param code {parameter})"
+            ),
+        };
         // Safety: caller ensures pointer is valid
         unsafe { *values = outv };
     }
@@ -384,7 +386,7 @@ unsafe impl Sync for DyldInterposeTuple {}
 // I love linker magic
 
 #[allow(private_interfaces)]
-#[link_section = "__DATA,__interpose"]
+#[unsafe(link_section = "__DATA,__interpose")]
 #[used]
 pub static DYLD_CF_BUNDLE_GET_FUNCTION_PTR_FOR_NAME_INTERPOSE: DyldInterposeTuple =
     DyldInterposeTuple {
@@ -395,14 +397,14 @@ pub static DYLD_CF_BUNDLE_GET_FUNCTION_PTR_FOR_NAME_INTERPOSE: DyldInterposeTupl
     };
 
 #[allow(private_interfaces)]
-#[link_section = "__DATA,__interpose"]
+#[unsafe(link_section = "__DATA,__interpose")]
 #[used]
 pub static DYLD_LIBC_DLOPEN_INTERPOSE: DyldInterposeTuple = DyldInterposeTuple {
     replacement: dlopen_override as unsafe extern "C" fn(_, _) -> _ as *const c_void,
     replacee: dlopen as unsafe extern "C" fn(_, _) -> _ as *const c_void,
 };
 
-// our crimes break the Rust test runner infra for some reason (probably due to nasal demon summoning) so we need to not commit them if this is a test build
+// our crimes break Rust libtest for some reason (probably due to nasal demon summoning) so we need to not commit them if this is a test build
 #[cfg(not(test))]
 mod ctor {
     use ctor::ctor;
@@ -410,7 +412,9 @@ mod ctor {
     use crate::{entry_point::oxidegl_platform_init, nsgl_shim::OXGLOxideGlCtxShim};
     #[ctor]
     fn ctor() {
-        println!("OxideGL running static constructor. Ensure liboxidegl is loaded BEFORE main is run. Loading liboxidegl after main may cause nasal demons to spontaneously appear");
+        println!(
+            "OxideGL running static constructor. Ensure liboxidegl is loaded BEFORE main is run. Loading liboxidegl after main may cause nasal demons to spontaneously appear"
+        );
         // Safety: we are living the good life (before main), so there are no other threads to race on environment variables with
         unsafe { oxidegl_platform_init() }
         // Safety: running from static ctor (equivalent to objc +load context)

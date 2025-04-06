@@ -1,7 +1,7 @@
 use ahash::{HashMap, HashMapExt, HashSet, HashSetExt};
 use flexi_logger::Logger;
 use log::{logger, Level, Record, RecordBuilder};
-use objc2::{AllocAnyThread, ClassType};
+use objc2::AllocAnyThread;
 use objc2_foundation::NSString;
 use std::{
     any,
@@ -27,10 +27,8 @@ use super::{
 };
 
 thread_local! {
-    // We store the debug logging infrastructure in a separate thread local to avoid passing it in by-reference every log call (which cannot be avoided/worked around with macros)
-    static DEBUG_STATE: Cell<Option<DebugState>> = const {Cell::new(None)};
-    // Cache env var read
-    static STDOUT_LOGGER: bool = env::var("OXIDEGL_LOG_TO_STDOUT").is_ok_and(|v| v != "0")
+    // We store the debug logging infrastructure for the current context in a separate thread local to avoid passing it in by-reference every log call (which cannot be avoided/worked around with macros)
+    static DEBUG_STATE: Cell<Option<DebugState>> = const { Cell::new(None) };
 }
 
 #[inline]
@@ -240,7 +238,7 @@ impl DebugState {
                 // Safety: caller ensures that if length is positive, it represents the length of message
                     unsafe { slice::from_raw_parts(message.cast::<u8>(), length as usize) }
                         .to_vec();
-                // message is not guaranteed to be nul-terminated, rust's CStr(ing) (and the GL client) expects this
+                // message is not guaranteed to be nul-terminated afaict, rust's CStr(ing) (and the GL client) expects this
                 if *bytes.last().unwrap() != 0 {
                     bytes.push(0);
                 };
@@ -280,6 +278,7 @@ impl DebugState {
     /// glPopDebugGroup impl
     pub(crate) fn pop_debug_group(&mut self) {
         if self.debug_groups.len() == 1 {
+            // should be GL_STACK_UNDERFLOW (lmao)
             log::warn!("Tried to pop the root GL debug group");
             return;
         }
@@ -831,16 +830,17 @@ pub(crate) mod macros {
         };
     }
     pub(crate) use gl_log;
-    // Thanks to yandros for the pointers with the $_dollar trick
+    // Thanks to yandros for pointers on refining the $_dollar trick
     macro_rules! gen_log_macros {(
         #![dollar = $_:tt]
         $(
-            $(#[doc = $doc:expr])?
+            $( #[doc = $doc:expr] )+
             $lvl:ident => macro_rules! $name:ident
-        ),+ $(,)?
+        ),+ 
+        $(,)?
     ) => (
         $(
-            $(#[doc = $doc])?
+            $( #[doc = $doc] )+
             #[allow(unused)]
             macro_rules! $name {
                 ( src: $_src:ident, ty: $_ty:ident, $_($_rest:tt)+ ) => (

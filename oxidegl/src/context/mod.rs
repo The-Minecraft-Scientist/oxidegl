@@ -26,6 +26,7 @@ pub(crate) mod commands;
 pub(crate) mod debug;
 pub(crate) mod error;
 pub(crate) mod framebuffer;
+pub(crate) mod pixel;
 pub(crate) mod program;
 pub(crate) mod shader;
 pub(crate) mod state;
@@ -71,9 +72,9 @@ impl Default for Context {
         Self::new()
     }
 }
-// This function is only used by GL dispatch. It is always advantageous for it to be inlined in that usage
+
 #[expect(clippy::inline_always)]
-#[inline(always)]
+#[inline]
 #[expect(unused_mut, unused_variables, reason = "lint bug")]
 pub(crate) fn with_ctx_mut<
     Ret,
@@ -83,13 +84,16 @@ pub(crate) fn with_ctx_mut<
 >(
     f: Func,
 ) -> Ret {
-    // use if_likely to tell LLVM that it should optimize for the Some(ptr) case
+    // optimizer hint for the Some(ptr) case
     if_likely! {
         // take the current context pointer
-        // (this effectively takes a single-threaded "lock" on the context which protects against
-        // the user doing Weird Stuff and running multiple GL commands simultaneously)
+        // this effectively takes a single-threaded "lock" on the context which protects against
+        // the user doing Weird Stuff and running multiple GL commands simultaneously
+        // (i.e. by calling a GL command from the debug callback)
 
-        let Some(mut ptr) = CTX.take() => {
+        let Some(ptr) = CTX.take() => {
+            // need to reassign due to macro jank
+            let mut ptr = ptr;
             // Safety: we are the exclusive accessor of ptr due to its thread locality and the fact that we called `take` on it previously
             // wrap the context reference in a pin to ensure it is not moved out of
             let mut p = Pin::new(unsafe { ptr.as_mut() });

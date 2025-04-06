@@ -1,13 +1,13 @@
 use crate::{
     context::{
-        debug::gl_debug,
-        error::{gl_assert, GlFallible},
-        state::PixelAlignedRect,
         Context,
+        debug::gl_debug,
+        error::{GlFallible, gl_assert},
+        state::PixelAlignedRect,
     },
     dispatch::gl_types::{GLenum, GLfloat, GLint, GLsizei, GLuint},
     enums::ErrorCode,
-    run_if_changed,
+    util::run_if_changed,
 };
 
 impl Context {

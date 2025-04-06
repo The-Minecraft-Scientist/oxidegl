@@ -1,8 +1,8 @@
-use objc2_metal::{MTLDevice, MTLTexture};
+use objc2_metal::MTLTexture;
 
 use crate::{
     enums::{DrawBufferMode, TextureTarget},
-    ProtoObjRef,
+    util::ProtoObjRef,
 };
 
 use super::gl_object::{LateInit, NamedObject, ObjectName};

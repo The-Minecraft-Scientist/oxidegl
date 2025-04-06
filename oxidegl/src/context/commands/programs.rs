@@ -1,9 +1,18 @@
 use crate::{
-    context::{debug::gl_debug, gl_object::ObjectName, program::Program, Context},
+    context::{
+        Context,
+        debug::gl_debug,
+        error::{GlError, GlFallible},
+        gl_object::{NamedObjectList, ObjectName},
+        program::Program,
+        shader::Shader,
+    },
     dispatch::gl_types::{GLint, GLuint},
     enums::ProgramProperty,
-    run_if_changed,
+    util::run_if_changed,
 };
+
+use super::shaders::ShaderListExt;
 
 impl Context {
     /// ### Description
@@ -243,7 +252,7 @@ impl Context {
     /// with argument `program` and a uniform variable name
     ///
     /// [**glIsProgram**](crate::context::Context::oxidegl_is_program)
-    pub fn oxidegl_link_program(&mut self, program: GLuint) {
+    pub fn oxidegl_link_program(&mut self, program: GLuint) -> GlFallible {
         // regenerate program-related state if this program is the currently bound one
         // TODO program pipelines will complicate this
         if self
@@ -256,8 +265,12 @@ impl Context {
             self.remap_buffers();
         }
 
-        let program = self.gl_state.program_list.get_raw_mut(program);
+        let program = self
+            .gl_state
+            .program_list
+            .get_program_raw_mut(&self.gl_state.shader_list, program)?;
         program.link(&mut self.gl_state.shader_list, &self.platform_state.device);
+        Ok(())
     }
     /// ### Parameters
     /// `program`
@@ -299,9 +312,18 @@ impl Context {
     /// [**glIsProgram**](crate::context::Context::oxidegl_is_program)
     ///
     /// [**glIsShader**](crate::context::Context::oxidegl_is_shader)
-    pub fn oxidegl_attach_shader(&mut self, program: GLuint, shader: GLuint) {
-        let program = self.gl_state.program_list.get_raw_mut(program);
-        program.attach_shader(self.gl_state.shader_list.get_raw_mut(shader));
+    pub fn oxidegl_attach_shader(&mut self, program: GLuint, shader: GLuint) -> GlFallible {
+        let shader = self
+            .gl_state
+            .shader_list
+            .get_shader_raw_mut(&self.gl_state.program_list, shader)?
+            .name;
+        let program = self
+            .gl_state
+            .program_list
+            .get_program_raw_mut(&self.gl_state.shader_list, program)?;
+        program.attach_shader(self.gl_state.shader_list.get_mut(shader));
+        Ok(())
     }
     /// ### Parameters
     /// `program`
@@ -332,14 +354,23 @@ impl Context {
     /// [**glIsProgram**](crate::context::Context::oxidegl_is_program)
     ///
     /// [**glIsShader**](crate::context::Context::oxidegl_is_shader)
-    pub fn oxidegl_detach_shader(&mut self, program: GLuint, shader: GLuint) {
-        let program = self.gl_state.program_list.get_raw_mut(program);
-        let shader = self.gl_state.shader_list.get_raw_mut(shader);
-        let name = shader.name;
-        if program.detach_shader(shader) && self.gl_state.shader_deletion_queue.contains(&name) {
-            self.gl_state.shader_list.delete(name);
-            self.gl_state.shader_deletion_queue.remove(&name);
+    pub fn oxidegl_detach_shader(&mut self, program: GLuint, shader: GLuint) -> GlFallible {
+        let shader = self
+            .gl_state
+            .shader_list
+            .get_shader_raw_mut(&self.gl_state.program_list, shader)?
+            .name;
+        let program = self
+            .gl_state
+            .program_list
+            .get_program_raw_mut(&self.gl_state.shader_list, program)?;
+        if program.detach_shader(self.gl_state.shader_list.get_mut(shader))
+            && self.gl_state.shader_deletion_queue.contains(&shader)
+        {
+            self.gl_state.shader_list.delete(shader);
+            self.gl_state.shader_deletion_queue.remove(&shader);
         }
+        Ok(())
     }
     /// ### Parameters
     /// `program`
@@ -522,10 +553,13 @@ impl Context {
         program: GLuint,
         pname: ProgramProperty,
         params: *mut GLint,
-    ) {
-        let program = self.gl_state.program_list.get_raw(program);
+    ) -> GlFallible {
+        let program = self
+            .gl_state
+            .program_list
+            .get_program_raw_mut(&self.gl_state.shader_list, program)?;
         gl_debug!("getting program property {pname:?} of {:?}", program.name);
-        //2gb shader is not real :3
+        //4gb shader is not real :3
         #[expect(clippy::cast_possible_truncation, clippy::cast_possible_wrap)]
         let ret = match pname {
             ProgramProperty::DeleteStatus => {
@@ -555,6 +589,7 @@ impl Context {
         };
         // Safety: caller ensures params points to a valid storage and is aligned correctly for `i32`
         unsafe { core::ptr::write(params, ret) };
+        Ok(())
     }
 
     /// ### Parameters
@@ -699,19 +734,55 @@ impl Context {
     /// with a valid program object and the name of a uniform variable
     ///
     /// [**glIsProgram**](crate::context::Context::oxidegl_is_program)
-    pub fn oxidegl_use_program(&mut self, program: GLuint) {
-        let name = ObjectName::try_from_raw(program).ok();
-        debug_assert!(
-            name.map(|name| self.gl_state.program_list.is(name))
-                .is_some_and(|b| b),
-            "UB: tried to bind an invalid shader program!"
-        );
-        run_if_changed!(self.gl_state.program_binding;= name => {
+    pub fn oxidegl_use_program(&mut self, program: GLuint) -> GlFallible {
+        let name = self
+            .gl_state
+            .program_list
+            .get_program_raw_mut(&self.gl_state.shader_list, program)
+            .and_then(|p| {
+                if p.latest_linkage.is_some() {
+                    Ok(p.name)
+                } else {
+                    Err(GlError::InvalidOperation.e())
+                }
+            })?;
+        run_if_changed!(self.gl_state.program_binding;= Some(name) => {
                 self.new_pipeline();
                 self.new_encoder();
                 self.remap_buffers();
             }
         );
         gl_debug!("bound {name:?} as current shader program");
+        Ok(())
+    }
+}
+pub(crate) trait ProgramListExt {
+    /// gets a reference to a Program from an object name with the correct GL error semantics for `glProgram*`
+    fn get_program_raw_mut(
+        &mut self,
+        shader_list: &NamedObjectList<Shader>,
+        name: GLuint,
+    ) -> GlFallible<&mut Program>;
+}
+impl ProgramListExt for NamedObjectList<Program> {
+    #[inline]
+    fn get_program_raw_mut(
+        &mut self,
+        shader_list: &NamedObjectList<Shader>,
+        name: GLuint,
+    ) -> GlFallible<&mut Program> {
+        if let Ok(name) = ObjectName::try_from_raw(name) {
+            if let Some(program) = self.get_opt_mut(name) {
+                Ok(program)
+            } else {
+                Err(if shader_list.is(name.cast()) {
+                    GlError::InvalidOperation.e()
+                } else {
+                    GlError::InvalidValue.e()
+                })
+            }
+        } else {
+            Err(GlError::InvalidValue.e())
+        }
     }
 }
