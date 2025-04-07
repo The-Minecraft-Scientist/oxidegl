@@ -212,8 +212,7 @@ impl<const MAX_ENTRIES: usize, T: NamedObject + 'static> ResourceMap<T, MAX_ENTR
         let mut ctr = MAX_ENTRIES as u32 - 1;
         assert!(
             pinned_resources.len() + include_resources.len() <= MAX_ENTRIES,
-            "OxideGL exceeded the maximum number of Metal buffer binding points ({})",
-            MAX_ENTRIES
+            "OxideGL exceeded the maximum number of Metal buffer binding points ({MAX_ENTRIES})"
         );
         for res in include_resources.iter().copied() {
             loop {
@@ -697,7 +696,7 @@ impl PlatformState {
             let mut replacement = Some(InternalDrawable::new(new_tex, dims));
             mem::swap(r, &mut replacement);
             drop(replacement);
-        };
+        }
         // must be Some due to code above
         r.as_ref().unwrap()
     }

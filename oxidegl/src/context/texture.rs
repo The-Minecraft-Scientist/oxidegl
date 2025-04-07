@@ -1,27 +1,21 @@
 use std::{cell::Cell, fmt::Debug, num::NonZeroU32};
 
-use log::trace;
 use objc2::rc::Retained;
 use objc2_metal::{
-    MTLPixelFormat, MTLSamplerAddressMode, MTLSamplerBorderColor, MTLSamplerDescriptor,
-    MTLSamplerMinMagFilter, MTLSamplerMipFilter, MTLTexture, MTLTextureSwizzle, MTLTextureType,
+    MTLSamplerAddressMode, MTLSamplerBorderColor, MTLSamplerDescriptor, MTLSamplerMinMagFilter,
+    MTLSamplerMipFilter, MTLTexture, MTLTextureSwizzle, MTLTextureType,
 };
 
 use crate::{
-    context::debug::gl_warn,
-    dispatch::conversions::{GLenumExt, GlEnumGroup, SrcType},
+    dispatch::conversions::{GLenumExt, SrcType},
     enums::{
-        DepthFunction, InternalFormat, PixelFormat, PixelType, SamplerParameter, TextureMagFilter,
-        TextureMinFilter, TextureSwizzle, TextureTarget, TextureWrapMode,
+        DepthFunction, InternalFormat, SamplerParameter, TextureMagFilter, TextureMinFilter,
+        TextureSwizzle, TextureTarget, TextureWrapMode,
     },
     util::ProtoObjRef,
 };
 
-use super::{
-    debug::gl_err,
-    error::{GlError, GlFallible},
-    gl_object::ObjectName,
-};
+use super::{debug::gl_err, error::GlFallible, gl_object::ObjectName};
 
 /// * named: name is reserved, object is considered uninitialized
 /// * bound: object is initialized to default state, has no storage
@@ -103,17 +97,16 @@ pub(crate) enum Anisotropy {
 
 impl Anisotropy {
     fn from_float(val: f32) -> Option<Self> {
+        // Next floating point value from 2.0
+        const VAL: f32 = 2.0_f32.next_up();
         match val {
             1.0..2.0 => Some(Self::NoAnisotropic),
-            // Next floating point value from 1.0
             #[expect(
                 clippy::cast_possible_truncation,
                 clippy::cast_sign_loss,
                 reason = "cast will not truncate due to range qualifier on match arm"
             )]
-            // FIXME should be `1.0.next_up()`
-            // (hopefully) stable in 1.68 (see https://github.com/rust-lang/rust/pull/135661)
-            2.000_000_000_000_000_2..=16.0 => Some(Self::Samples(val.floor() as u8)),
+            VAL..=16.0 => Some(Self::Samples(val.floor() as u8)),
             _ => None,
         }
     }

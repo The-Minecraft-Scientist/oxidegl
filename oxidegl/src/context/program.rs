@@ -2,7 +2,7 @@ use std::{mem, ptr::NonNull};
 
 use ahash::{HashSet, HashSetExt};
 use glslang::Compiler as GlslLangCompiler;
-use objc2::{rc::Retained, AllocAnyThread, ClassType};
+use objc2::{rc::Retained, AllocAnyThread};
 //use naga::back::msl::{Options, PipelineOptions};
 use crate::{
     context::{
@@ -70,7 +70,7 @@ impl ProgramStageBinding {
                 hash_set.insert(shader.name);
             }
             (_, _) => panic!("tried to mix GLSL and SPIR-V shaders in a single stage or tried to link multiple SPIR-V shader objects to the same stage"),
-        };
+        }
     }
     /// remove a shader from this program stage binding point. Returns whether the shader was present in the binding before removal
     #[inline]

@@ -241,7 +241,7 @@ impl DebugState {
                 // message is not guaranteed to be nul-terminated afaict, rust's CStr(ing) (and the GL client) expects this
                 if *bytes.last().unwrap() != 0 {
                     bytes.push(0);
-                };
+                }
                 CString::from_vec_with_nul(bytes)
                     .unwrap()
                     .into_boxed_c_str()
@@ -452,13 +452,13 @@ impl DebugState {
             }
             if let Some(s) = types.as_mut() {
                 s[count_written as usize].write(msg.meta.ty);
-            };
+            }
             if let Some(s) = ids.as_mut() {
                 s[count_written as usize].write(msg.meta.id);
-            };
+            }
             if let Some(s) = severities.as_mut() {
                 s[count_written as usize].write(msg.meta.sev);
-            };
+            }
             if let Some(s) = lengths.as_mut() {
                 #[expect(
                     clippy::cast_possible_truncation,
@@ -466,7 +466,7 @@ impl DebugState {
                     reason = "no >4gb log message"
                 )]
                 s[count_written as usize].write(msg_len as i32);
-            };
+            }
             if let Some(r) = mem::take(&mut buf) {
                 let (write, remaining) = r.split_at_mut(msg_len);
                 buf = Some(remaining);

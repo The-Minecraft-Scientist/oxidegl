@@ -9,9 +9,6 @@
     clippy::match_bool
 )]
 
-use objc2::{rc::Retained, runtime::ProtocolObject};
-use std::fmt::Debug;
-use std::ops::{Deref, DerefMut};
 
 pub mod context;
 pub mod entry_point;

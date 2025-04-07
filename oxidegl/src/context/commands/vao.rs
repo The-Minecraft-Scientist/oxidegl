@@ -932,7 +932,7 @@ impl Context {
             if normalized {
                 IntegralCastBehavior::Normalize
             } else {
-                { IntegralCastBehavior::Cast }
+                IntegralCastBehavior::Cast
             },
         )
     }

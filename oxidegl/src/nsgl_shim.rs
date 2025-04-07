@@ -358,12 +358,11 @@ unsafe extern "C" fn CFBundleGetFunctionPointerForNameOverride(
             ) == 0
             {
                 panic!("Failed to get C String for NSString symbol name!");
-            };
+            }
             let symbol =
                 CStr::from_bytes_until_nul(&buf).expect("failed to create CStr from NSString");
             trace!(
-                "Redirecting NSGL function lookup of {:?} to OxideGL",
-                symbol
+                "Redirecting NSGL function lookup of {symbol:?} to OxideGL"
             );
             dlsym(get_oxidegl_handle(), symbol.as_ptr())
         } else {

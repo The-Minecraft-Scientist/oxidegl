@@ -1,5 +1,6 @@
 use super::{
     ConvertPixel, Depth, NormalizedIntChannel, RgColorFormat, RgbaColorFormat, SingleChannelFormat,
+    Stencil,
 };
 use crate::enums::InternalFormat;
 use half::f16;
@@ -246,12 +247,12 @@ decl_internal_formats! {
             format struct Rg32ui;
         }
 
-        #[mtl_format = R16Float]
+        #[mtl_format = RG16Float]
         repr(RgColorFormat<f16>) {
             #[view_class = Bits16]
             format struct Rg16f;
         }
-        #[mtl_format = R32Float]
+        #[mtl_format = RG32Float]
         repr(RgColorFormat<f32>) {
             #[view_class = Bits32]
             format struct Rg32f;
@@ -400,7 +401,7 @@ decl_internal_formats! {
         #[mtl_format = Depth24Unorm_Stencil8]
         repr(u32) {
             format struct DepthComponent24;
-            format struct DepthComponent24Stencil8;
+            format struct Depth24Stencil8;
             format struct DepthStencil;
         }
 

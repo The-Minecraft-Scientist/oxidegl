@@ -4,10 +4,9 @@
 //!
 //!
 //!
-use std::{borrow::Cow, marker::PhantomData, mem::MaybeUninit, ops::Deref};
+use std::{marker::PhantomData, mem::MaybeUninit};
 
 use half::f16;
-use objc2_metal::MTLPixelFormat;
 
 use crate::{
     context::debug::{gl_trace, gl_warn},
@@ -402,11 +401,8 @@ impl GlPixelTypeFormat {
     }
     /// Returns the `InternalFormat` that matches this type format pair, if any. No ABI compatability guarantees are made about the format of this [`GlPixelTypeFormat`] and the returned [`InternalFormat`].
     pub(crate) fn equivalent_internal_format(self) -> Option<InternalFormat> {
-        use InternalFormat as IF;
-        use PixelFormat::{
-            DepthComponent, DepthStencil, Red, RedInteger, Rg, RgInteger, Rgba, RgbaInteger,
-            StencilIndex,
-        };
+        
+        
 
         gl_trace!(
             "attempting to lower (type {:?}, fmt {:?}) tuple to a metal pixel format",

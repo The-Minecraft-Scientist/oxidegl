@@ -1,5 +1,5 @@
 use crate::{
-    context::{Context, platform::Dirty},
+    context::{Context, platform::Dirty, state::Capabilities},
     dispatch::gl_types::GLuint,
     enums::EnableCap,
 };

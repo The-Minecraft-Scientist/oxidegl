@@ -1941,7 +1941,7 @@ impl Context {
                 u => {
                     panic!("unimplemented GetPName: \"{u:?}\"")
                 }
-            };
+            }
         }
     }
     pub unsafe fn oxidegl_get_booleanv(&self, pname: GetPName, data: *mut GLboolean) {

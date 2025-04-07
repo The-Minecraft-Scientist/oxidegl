@@ -761,7 +761,7 @@ impl Context {
                 .platform_state
                 .device
                 .newBufferWithLength_options(size, options);
-        };
+        }
         let buffer = buffer.expect("Metal Buffer allocation failiure");
         buf.allocation = Some(RealizedBufferInternal {
             mapping: None,
