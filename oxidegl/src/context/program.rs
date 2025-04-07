@@ -252,7 +252,7 @@ impl Program {
                 .newFunctionWithName(&NSString::from_str(&entry_name))
                 .unwrap(),
             lib,
-            resources: LinkedProgramResources::from_compiler(&artifact)
+            resources: LinkedProgramResources::get_from_compiler(&artifact)
                 .expect("failed to get resource bindings during program linkage!"),
             artifact: artifact.into(),
         })
@@ -379,7 +379,7 @@ pub struct LinkedProgramResources {
 }
 impl LinkedProgramResources {
     //TODO XFBs
-    fn from_compiler(spirvc: &Compiler<Msl>) -> Result<Self, SpirvCrossError> {
+    fn get_from_compiler(spirvc: &Compiler<Msl>) -> Result<Self, SpirvCrossError> {
         let value = spirvc.shader_resources()?;
         let uniform_buffers = to_resource_vec(
             value.resources_for_type(spirv_cross2::reflect::ResourceType::UniformBuffer)?,

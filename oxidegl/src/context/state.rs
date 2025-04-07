@@ -348,7 +348,7 @@ pub const MAX_SHADER_STORAGE_BUFFER_BINDINGS: usize = 16;
 pub const MAX_TRANSFORM_FEEDBACK_BUFFER_BINDINGS: usize = 16;
 pub const MAX_UNIFORM_BUFFER_BINDINGS: usize = 16;
 
-/// Keeps track of all buffer bindings in this OpenGL context
+/// Keeps track of all buffer bindings to this OpenGL context
 #[derive(Debug, Clone, Copy, Default)]
 pub struct BufferBindings {
     /// Vertex attribute buffer

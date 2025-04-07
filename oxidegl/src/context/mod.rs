@@ -73,7 +73,6 @@ impl Default for Context {
     }
 }
 
-#[expect(clippy::inline_always)]
 #[inline]
 #[expect(unused_mut, unused_variables, reason = "lint bug")]
 pub(crate) fn with_ctx_mut<

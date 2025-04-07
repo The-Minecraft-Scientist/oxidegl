@@ -82,7 +82,7 @@ pub unsafe extern "C" fn oxidegl_platform_init() {
 
 #[unsafe(no_mangle)]
 /// # Safety
-/// This function must be called EXACTLY once per context, or it will result in a double free
+/// This function must be called at most once per allocated context to avoid a double free
 unsafe extern "C" fn oxidegl_destroy_context(ctx: Option<NonNull<Context>>) {
     if let Some(c) = ctx {
         // Safety: caller ensures c points to a valid Context struct, allocated via a Box with the same allocator
