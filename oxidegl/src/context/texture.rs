@@ -104,7 +104,7 @@ impl Anisotropy {
             #[expect(
                 clippy::cast_possible_truncation,
                 clippy::cast_sign_loss,
-                reason = "cast will not truncate due to range qualifier on match arm"
+                reason = "cast will not truncate due to range of pattern"
             )]
             VAL..=16.0 => Some(Self::Samples(val.floor() as u8)),
             _ => None,
@@ -142,19 +142,19 @@ impl SamplerParams {
     ) -> GlFallible {
         match pname {
             SamplerParameter::TextureMagFilter => {
-                self.mag_filter = u32::try_into_enum(param.convert())?;
+                self.mag_filter = param.try_into_enum()?;
             }
             SamplerParameter::TextureMinFilter => {
-                self.min_filter = u32::try_into_enum(param.convert())?;
+                self.min_filter = param.try_into_enum()?;
             }
             SamplerParameter::TextureWrapS => {
-                self.wrap_mode_s = u32::try_into_enum(param.convert())?;
+                self.wrap_mode_s = param.try_into_enum()?;
             }
             SamplerParameter::TextureWrapT => {
-                self.wrap_mode_t = u32::try_into_enum(param.convert())?;
+                self.wrap_mode_t = param.try_into_enum()?;
             }
             SamplerParameter::TextureWrapR => {
-                self.wrap_mode_r = u32::try_into_enum(param.convert())?;
+                self.wrap_mode_r = param.try_into_enum()?;
             }
             SamplerParameter::TextureMinLod => todo!(),
             SamplerParameter::TextureMaxLod => todo!(),
@@ -162,7 +162,7 @@ impl SamplerParams {
             SamplerParameter::TextureCompareMode => todo!(),
             SamplerParameter::TextureCompareFunc => todo!(),
             SamplerParameter::TextureMaxAnisotropy => todo!(),
-            _ => {
+            SamplerParameter::TextureBorderColor => {
                 unreachable!()
             }
         }

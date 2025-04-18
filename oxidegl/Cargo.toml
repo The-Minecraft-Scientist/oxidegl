@@ -49,7 +49,7 @@ strum_macros = "0.27.1"
 
 # Logging
 log = "0.4.21"
-flexi_logger = "0.29"
+flexi_logger = "0.30.1"
 
 # Bitflags for GL Bitmasks
 bitflags = "2.6.0"
@@ -74,10 +74,11 @@ glslang = "0.6.1"
 
 # used to optimize for the hot path in `with_context`
 likely_stable = "0.1.2"
+# f16, used for texture formats
 half = "2.4.1"
 
 [build-dependencies]
-# you do not want to know what this is for
+# you do not want to know what this is for (see build.rs)
 deterministic-hash = "1.0.1"
 
 # Expose max log level features

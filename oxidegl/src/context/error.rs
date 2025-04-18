@@ -31,6 +31,8 @@ pub(crate) enum GlError {
 }
 impl GlError {
     #[inline]
+    /// Wraps this [`GlError`] in a [`GlFallibleError`] for use in the [`Err`] variant of [`GlFallible`]. Used to bypass the From impl that logs unhandled errors (which is automatically
+    /// invoked by [`FromResidual`] when using ? to coalesce [`GlFallible`])
     pub(crate) fn e(self) -> GlFallibleError {
         GlFallibleError {
             #[cfg(not(feature = "unsound_noerror"))]
@@ -64,7 +66,7 @@ impl GlFallibleError {
 }
 #[cfg(not(feature = "unsound_noerror"))]
 impl From<GlError> for GlFallibleError {
-    #[inline(always)]
+    #[inline]
     #[cfg_attr(debug_assertions, track_caller)]
     fn from(err: GlError) -> Self {
         #[cfg(debug_assertions)]
@@ -77,7 +79,7 @@ impl From<GlError> for GlFallibleError {
 }
 #[cfg(feature = "unsound_noerror")]
 impl From<GlError> for GlFallibleError {
-    #[inline(always)]
+    #[inline]
     fn from(_: GlError) -> Self {
         // Safety: user opts into and thus takes responsibility for any potential unsoundess/UB by enabling this feature
         unsafe { std::hint::unreachable_unchecked() }
@@ -88,10 +90,10 @@ pub(crate) trait GlResult<T, E>: Sized {
     /// Convert this possibly-fallible value into a `Result<T, Self::Error>`
     fn into_result(self) -> Result<T, E>;
     /// Normalize this possibly-fallible value into a `Result<T, GlErrorInternal>`.
-    /// This function is used purely to get the right error type inference in generated code.
+    /// This function is only used to get the right error type inference in generated code.
     /// prefer using [`Self::into_result`](GlResult::into_result) where possible because it preserves
-    /// infallibility (i.e. it does not erase [`<Self as GlResult>::Error`](`GlResult::Error`))
-    #[inline(always)]
+    /// the Error type
+    #[inline]
     fn normalize(self) -> GlFallible<T>
     where
         E: Into<GlFallibleError>,
@@ -99,23 +101,15 @@ pub(crate) trait GlResult<T, E>: Sized {
         self.into_result().map_err(Into::into)
     }
 }
-trait GlFallibleExt<T> {
-    fn normalize(self) -> GlFallible<T>;
-}
-impl<T> GlFallibleExt<T> for GlFallible<T> {
-    fn normalize(self) -> GlFallible<T> {
-        self
-    }
-}
 
 impl<T> GlResult<T, Infallible> for T {
-    #[inline(always)]
+    #[inline]
     fn into_result(self) -> Result<T, Infallible> {
         Ok(self)
     }
 }
 impl<T> GlResult<T, GlFallibleError> for GlFallible<T> {
-    #[inline(always)]
+    #[inline]
     fn into_result(self) -> Result<T, GlFallibleError> {
         self
     }
@@ -139,7 +133,7 @@ impl From<GlFallibleError> for ErrorCode {
 }
 pub type GlFallible<T = ()> = Result<T, GlFallibleError>;
 
-/// Trait that defines the value returned from a GL command returning this type if there is an error within that command
+/// Trait that declares the (constant) value to be returned when a GL command that returns a value of type T fails
 pub(crate) trait GetErrorReturnValue<T> {
     #[inline]
     fn get() -> T {

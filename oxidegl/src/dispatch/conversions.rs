@@ -36,20 +36,22 @@ pub(crate) trait GLenumExt<T> {
     unsafe fn into_enum(self) -> T;
 }
 
-impl<T> GLenumExt<T> for GLenum
+impl<T, U: SrcType<GLenum>> GLenumExt<T> for U
 where
     T: GlEnumGroup,
+    U: SrcType<GLenum>,
 {
     #[inline]
     unsafe fn into_enum(self) -> T {
-        unsafe { T::from_enum_noerr(self) }
+        unsafe { T::from_enum_noerr(self.convert()) }
     }
     #[inline]
     fn try_into_enum(self) -> GlFallible<T> {
-        T::from_enum(self).ok_or_else(
+        let val = self.convert();
+        T::from_enum(val).ok_or_else(
             #[inline]
             || {
-                gl_err!(ty: Error, "invalid value {self} for GLenum group {}", trimmed_type_name::<T>());
+                gl_err!(ty: Error, "invalid value {val} for GLenum group {}", trimmed_type_name::<T>());
                 GlError::InvalidEnum.e()
             },
         )
